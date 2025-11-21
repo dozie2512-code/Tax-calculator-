@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UK Payroll Calculator (2025/2026 illustrative)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; max-width:800px; margin:2rem auto; padding:1rem; color:#111; }
+    h1 { margin-bottom:.25rem; }
+    p.lead { color:#444; margin-top:0; margin-bottom:1rem; }
+    label { display:block; margin-top:.75rem; font-weight:600; }
+    input[type="number"], select { width:220px; padding:.5rem; font-size:1rem; margin-top:.25rem; }
+    button { margin-top:1rem; padding:.6rem 1rem; font-size:1rem; }
+    .results { margin-top:1.25rem; background:#f8f9fb; padding:1rem; border-radius:6px; }
+    .row { display:flex; justify-content:space-between; padding:.25rem 0; border-bottom:1px dashed #e4e7eb; }
+    .row:last-child { border-bottom:0; }
+    code { background:#eef2ff; padding:.08rem .25rem; border-radius:4px; }
+    footer { margin-top:1.25rem; color:#666; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <h1>UK Payroll Calculator — illustrative (2025/2026)</h1>
+  <p class="lead">Enter an annual gross salary to calculate monthly PAYE (income tax), employee NICs and net pay. This is illustrative only — not HMRC-verified payroll software.</p>
+
+  <label for="salary">Annual Gross Salary (£)</label>
+  <input id="salary" type="number" step="0.01" min="0" value="35000" />
+
+  <label for="niCategory">NI Category</label>
+  <select id="niCategory">
+    <option value="A" selected>A (standard employee)</option>
+    <option value="B">B</option>
+    <option value="C">C</option>
+    <option value="X">X</option>
+  </select>
+
+  <div>
+    <button id="calcBtn">Calculate</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+
+  <div class="results" id="results" aria-live="polite" style="display:none;">
+    <div class="row"><div>Monthly Gross Pay</div><div id="monthlyGross">—</div></div>
+    <div class="row"><div>Monthly PAYE (Tax)</div><div id="monthlyPAYE">—</div></div>
+    <div class="row"><div>Monthly NICs</div><div id="monthlyNICs">—</div></div>
+    <div class="row"><div>Total Monthly Deductions</div><div id="totalDeductions">—</div></div>
+    <div class="row"><div><strong>Monthly Net Pay</strong></div><div id="monthlyNetPay"><strong>—</strong></div></div>
+  </div>
+
+  <footer>
+    Constants used: Personal allowance <code>£12,570</code>, basic rate threshold <code>£50,270</code>, higher rate threshold <code>£150,000</code>. NIC thresholds and rates are illustrative for ex[...]
+  </footer>
+
+  <script>
+    // Mirror of the Python logic in the repo (illustrative for 2025/2026)
+    function calculateUkPayroll(annualGrossSalary, niCategory='A') {
+      // Constants (illustrative)
+      const PERSONAL_ALLOWANCE = 12570;
+      const BASIC_RATE_THRESHOLD = 50270;
+      const HIGHER_RATE_THRESHOLD = 150000;
+
+      const BASIC_RATE = 0.20;
+      const HIGHER_RATE = 0.40;
+      const ADDITIONAL_RATE = 0.45;
+
+      // Monthly NIC thresholds (illustrative, taken from python file)
+      const NI_PT_THRESHOLD_MONTHLY = 1048;  // approx £12,570 pa
+      const NI_UEL_THRESHOLD_MONTHLY = 4189; // approx £50,270 pa
+      const NI_RATE_BELOW_UEL = 0.08;  // employee rate used in example
+      const NI_RATE_ABOVE_UEL = 0.02;  // employee rate used in example
+
+      const monthlyGross = annualGrossSalary / 12;
+
+      // 1. PAYE (annual then monthly)
+      const taxableIncome = Math.max(0, annualGrossSalary - PERSONAL_ALLOWANCE);
+      let payeAnnual = 0;
+
+      if (taxableIncome > 0) {
+        const basicBandIncome = Math.max(0, Math.min(taxableIncome, BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE));
+        if (taxableIncome <= (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE)) {
+          payeAnnual = basicBandIncome * BASIC_RATE;
+        } else if (taxableIncome <= (HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE)) {
+          payeAnnual = basicBandIncome * BASIC_RATE;
+          payeAnnual += (taxableIncome - basicBandIncome) * HIGHER_RATE;
+        } else {
+          const higherBandIncome = (HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE) - (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE);
+          payeAnnual = basicBandIncome * BASIC_RATE;
+          payeAnnual += higherBandIncome * HIGHER_RATE;
+          payeAnnual += (taxableIncome - basicBandIncome - higherBandIncome) * ADDITIONAL_RATE;
+        }
+      }
+
+      const monthlyPaye = payeAnnual / 12;
+
+      // 2. NICs (employee part, monthly)
+      let employeeNics = 0;
+      if (monthlyGross > NI_PT_THRESHOLD_MONTHLY) {
+        const incomeBetween = Math.min(monthlyGross, NI_UEL_THRESHOLD_MONTHLY) - NI_PT_THRESHOLD_MONTHLY;
+        if (incomeBetween > 0) employeeNics += incomeBetween * NI_RATE_BELOW_UEL;
+
+        if (monthlyGross > NI_UEL_THRESHOLD_MONTHLY) {
+          const incomeAboveUel = monthlyGross - NI_UEL_THRESHOLD_MONTHLY;
+          employeeNics += incomeAboveUel * NI_RATE_ABOVE_UEL;
+        }
+      }
+
+      const monthlyDeductions = monthlyPaye + employeeNics;
+      const monthlyNetPay = monthlyGross - monthlyDeductions;
+
+      // Round to 2 decimals
+      function r(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+
+      return {
+        monthlyGross: r(monthlyGross),
+        monthlyPaye: r(monthlyPaye),
+        monthlyNics: r(employeeNics),
+        totalMonthlyDeductions: r(monthlyDeductions),
+        monthlyNetPay: r(monthlyNetPay)
+      };
+    }
+
+    // UI wiring
+    const salaryEl = document.getElementById('salary');
+    const niEl = document.getElementById('niCategory');
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultsBox = document.getElementById('results');
+
+    function showResults(obj) {
+      document.getElementById('monthlyGross').textContent = '£' + obj.monthlyGross.toFixed(2);
+      document.getElementById('monthlyPAYE').textContent = '£' + obj.monthlyPaye.toFixed(2);
+      document.getElementById('monthlyNICs').textContent = '£' + obj.monthlyNics.toFixed(2);
+      document.getElementById('totalDeductions').textContent = '£' + obj.totalMonthlyDeductions.toFixed(2);
+      document.getElementById('monthlyNetPay').textContent = '£' + obj.monthlyNetPay.toFixed(2);
+      resultsBox.style.display = 'block';
+    }
+
+    calcBtn.addEventListener('click', function() {
+      const annual = parseFloat(salaryEl.value || 0);
+      if (isNaN(annual) || annual < 0) {
+        alert('Please enter a valid annual salary (number >= 0).');
+        return;
+      }
+      const res = calculateUkPayroll(annual, niEl.value);
+      showResults(res);
+    });
+
+    resetBtn.addEventListener('click', function() {
+      salaryEl.value = '35000';
+      niEl.value = 'A';
+      resultsBox.style.display = 'none';
+    });
+
+    // initial calc
+    calcBtn.click();
+  </script>
+</body>
+</html>
