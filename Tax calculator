@@ -1,102 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Nigeria New PIT Calculator (2026)</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    label { display: block; margin-top: 10px; }
-    input { width: 200px; padding: 5px; }
-    #result { margin-top: 20px; padding: 10px; background-color: #f0f0f0; }
-  </style>
-</head>
-<body>
-  <h2>Nigeria New Personal Income Tax Calculator (from Jan 2026)</h2>
-  <label>
-    Gross Annual Income (₦):
-    <input type="number" id="grossIncome" />
-  </label>
-  <label>
-    Other Deductions (pension, NHF, insurance etc) (₦):
-    <input type="number" id="otherDeductions" value="0" />
-  </label>
-  <label>
-    Annual Rent Paid (₦):
-    <input type="number" id="rentPaid" value="0" />
-  </label>
-  <button onclick="calculateTax()">Calculate Tax</button>
-  <div id="result"></div>
+def calculate_uk_payroll(annual_gross_salary, ni_category='A'):
+    """
+    Calculates illustrative monthly PAYE and NICs for the 2025/2026 tax year.
+    Uses basic tax code 1257L and NI category A.
+    Note: Real-world payroll requires professional, HMRC-compliant software.
+    """
+    
+    # Constants for 2025/2026 (illustrative)
+    PERSONAL_ALLOWANCE = 12570
+    BASIC_RATE_THRESHOLD = 50270
+    HIGHER_RATE_THRESHOLD = 150000
+    
+    BASIC_RATE = 0.20
+    HIGHER_RATE = 0.40
+    ADDITIONAL_RATE = 0.45
+    
+    NI_PT_THRESHOLD_MONTHLY = 1048 # Primary Threshold (approx £12,570 annually)
+    NI_UEL_THRESHOLD_MONTHLY = 4189 # Upper Earnings Limit (approx £50,270 annually)
+    NI_RATE_BELOW_UEL = 0.08 # Example employee rate
+    NI_RATE_ABOVE_UEL = 0.02 # Example employee rate
 
-  <script>
-    function calculateTax() {
-      let gross = parseFloat(document.getElementById('grossIncome').value) || 0;
-      let other = parseFloat(document.getElementById('otherDeductions').value) || 0;
-      let rent = parseFloat(document.getElementById('rentPaid').value) || 0;
+    # Monthly Gross Pay
+    monthly_gross = annual_gross_salary / 12
 
-      // Rent relief: 20% of rent, capped at 500,000
-      let rentRelief = rent * 0.20;
-      if (rentRelief > 500000) rentRelief = 500000;
+    # --- 1. Calculate PAYE (Income Tax) ---
+    taxable_income = max(0, annual_gross_salary - PERSONAL_ALLOWANCE)
+    paye_annual = 0
 
-      // Adjusted income after deductions
-      let adj = gross - other - rentRelief;
-      if (adj < 0) adj = 0;
+    if taxable_income > 0:
+        if taxable_income <= (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE):
+            paye_annual = taxable_income * BASIC_RATE
+        elif taxable_income <= (HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE):
+            basic_band_income = BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE
+            paye_annual = basic_band_income * BASIC_RATE
+            paye_annual += (taxable_income - basic_band_income) * HIGHER_RATE
+        else:
+            basic_band_income = BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE
+            higher_band_income = HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE - basic_band_income
+            paye_annual = basic_band_income * BASIC_RATE
+            paye_annual += higher_band_income * HIGHER_RATE
+            paye_annual += (taxable_income - basic_band_income - higher_band_income) * ADDITIONAL_RATE
+            
+    monthly_paye = paye_annual / 12
 
-      // If adj ≤ 800,000 → no tax
-      if (adj <= 800000) {
-        document.getElementById('result').innerHTML =
-          `<strong>No tax payable</strong> (taxable income ₦${adj.toLocaleString()}).`;
-        return;
-      }
+    # --- 2. Calculate NICs (National Insurance Contributions) ---
+    employee_nics = 0
+    if monthly_gross > NI_PT_THRESHOLD_MONTHLY:
+        # Calculate NICs up to the UEL
+        income_between_pt_uel = min(monthly_gross, NI_UEL_THRESHOLD_MONTHLY) - NI_PT_THRESHOLD_MONTHLY
+        employee_nics += income_between_pt_uel * NI_RATE_BELOW_UEL
+        
+        # Calculate NICs above the UEL
+        if monthly_gross > NI_UEL_THRESHOLD_MONTHLY:
+            income_above_uel = monthly_gross - NI_UEL_THRESHOLD_MONTHLY
+            employee_nics += income_above_uel * NI_RATE_ABOVE_UEL
+            
+    # --- 3. Calculate Net Pay ---
+    monthly_deductions = monthly_paye + employee_nics
+    monthly_net_pay = monthly_gross - monthly_deductions
 
-      // Apply tax bands
-      let taxable = adj;
-      let tax = 0;
-
-      // Helper function: tax a slice
-      function taxSlice(amount, rate) {
-        return amount * rate;
-      }
-
-      // Band 1: 0% up to 800,000 → 0 tax on that portion
-      let remaining = taxable - 800000;
-
-      // Band 2: 800,001 – 3,000,000 @ 15%
-      if (remaining > 0) {
-        let slice = Math.min(remaining, 3000000 - 800000);
-        tax += taxSlice(slice, 0.15);
-        remaining -= slice;
-      }
-      // Band 3: 3,000,001 – 12,000,000 @ 18%
-      if (remaining > 0) {
-        let slice = Math.min(remaining, 12000000 - 3000000);
-        tax += taxSlice(slice, 0.18);
-        remaining -= slice;
-      }
-      // Band 4: 12,000,001 – 25,000,000 @ 21%
-      if (remaining > 0) {
-        let slice = Math.min(remaining, 25000000 - 12000000);
-        tax += taxSlice(slice, 0.21);
-        remaining -= slice;
-      }
-      // Band 5: 25,000,001 – 50,000,000 @ 23%
-      if (remaining > 0) {
-        let slice = Math.min(remaining, 50000000 - 25000000);
-        tax += taxSlice(slice, 0.23);
-        remaining -= slice;
-      }
-      // Band 6: above 50,000,000 @ 25%
-      if (remaining > 0) {
-        tax += taxSlice(remaining, 0.25);
-      }
-
-      // Effective tax rate (on gross income)
-      let effRate = (tax / gross) * 100;
-
-      document.getElementById('result').innerHTML =
-        `<p>Taxable income after deductions: ₦${adj.toLocaleString()}</p>` +
-        `<p><strong>Tax payable:</strong> ₦${tax.toLocaleString(undefined, {maximumFractionDigits:0})}</p>` +
-        `<p>Effective tax rate on gross income: ${effRate.toFixed(2)}%</p>`;
+    # --- 4. Return Results ---
+    return {
+        "Monthly Gross Pay": round(monthly_gross, 2),
+        "Monthly PAYE (Tax)": round(monthly_paye, 2),
+        "Monthly NICs": round(employee_nics, 2),
+        "Total Monthly Deductions": round(monthly_deductions, 2),
+        "Monthly Net Pay": round(monthly_net_pay, 2)
     }
-  </script>
-</body>
-</html>
+
+# Example Usage:
+salary_input = 35000 # Example annual salary
+results = calculate_uk_payroll(salary_input)
+print(f"--- Payroll Calculation for £{salary_input} annually ---")
+for key, value in results.items():
+    print(f"{key}: £{value}")
+
