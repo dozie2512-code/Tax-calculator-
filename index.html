@@ -1,157 +1,533 @@
+GitHub Copilot Chat Assistant
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UK Payroll Calculator (2025/2026 illustrative)</title>
+  <title>Ride Demo — Leaflet single-file</title>
+
+  <!-- Leaflet CSS (CDN) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+g1X6b1Q0p+v0oH0uGk2l8q2bXj2a3mYv9Z8y+g7M=" crossorigin=""/>
+
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; max-width:800px; margin:2rem auto; padding:1rem; color:#111; }
-    h1 { margin-bottom:.25rem; }
-    p.lead { color:#444; margin-top:0; margin-bottom:1rem; }
-    label { display:block; margin-top:.75rem; font-weight:600; }
-    input[type="number"], select { width:220px; padding:.5rem; font-size:1rem; margin-top:.25rem; }
-    button { margin-top:1rem; padding:.6rem 1rem; font-size:1rem; }
-    .results { margin-top:1.25rem; background:#f8f9fb; padding:1rem; border-radius:6px; }
-    .row { display:flex; justify-content:space-between; padding:.25rem 0; border-bottom:1px dashed #e4e7eb; }
-    .row:last-child { border-bottom:0; }
-    code { background:#eef2ff; padding:.08rem .25rem; border-radius:4px; }
-    footer { margin-top:1.25rem; color:#666; font-size:.9rem; }
+    :root{
+      --panel-bg: #ffffff;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --card: #f8fafc;
+    }
+    html,body{height:100%; margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    #app{display:flex; flex-direction:column; height:100vh;}
+    header{padding:12px 16px; background:linear-gradient(90deg,#0ea5e9 0,#60a5fa 100%); color:white;}
+    header h1{margin:0; font-size:1.05rem;}
+    main{flex:1; display:flex; gap:12px; padding:12px; box-sizing:border-box; align-items:stretch;}
+    #map { flex:1; border-radius:8px; height:100%; min-height:400px; box-shadow:0 6px 18px rgba(16,24,40,0.08); }
+    .sidebar{width:360px; background:var(--panel-bg); border-radius:8px; padding:12px; box-shadow:0 6px 18px rgba(16,24,40,0.06); display:flex; flex-direction:column; gap:10px;}
+    .controls { display:flex; gap:8px; flex-wrap:wrap; }
+    button, .btn { background:var(--accent); color:white; border:0; padding:8px 10px; border-radius:6px; cursor:pointer; font-weight:600; }
+    button.secondary{ background:#e6eefc; color:var(--accent); font-weight:700; }
+    button.ghost{ background:transparent; color:var(--muted); border:1px solid #e6eefc; }
+    .note{ color:var(--muted); font-size:.9rem; margin-top:4px; }
+    .field{ display:flex; gap:8px; align-items:center; }
+    .field label{ flex:0 0 120px; font-weight:700; color:#111827; }
+    .info { background:var(--card); padding:10px; border-radius:6px; font-size:0.95rem; color:#0f172a; }
+    .status { display:flex; gap:8px; align-items:center; }
+    .status .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+    .status-text{ font-weight:700; }
+    .stat-row{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eef2ff; }
+    .stat-row:last-child{ border-bottom:0; }
+    .muted{ color:var(--muted); font-size:.9rem; }
+    .progress{ height:10px; background:#e6eefc; border-radius:999px; overflow:hidden; }
+    .progress > i{ display:block; height:100%; background:linear-gradient(90deg,#34d399,#06b6d4); width:0%; }
+    footer{ font-size:.82rem; color:var(--muted); margin-top:auto; }
+    .small{ font-size:.85rem; color:var(--muted); }
+    .actions { display:flex; gap:8px; margin-top:6px; }
+    .driver-card{ display:flex; gap:8px; align-items:center; }
+    .avatar{ width:46px; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; }
+    .ride-log{ max-height:160px; overflow:auto; font-size:.95rem; background:#fff; padding:8px; border-radius:6px; border:1px solid #f1f5f9; }
+    @media (max-width:900px){
+      main{flex-direction:column;}
+      .sidebar{width:auto;}
+    }
   </style>
 </head>
 <body>
-  <h1>UK Payroll Calculator — illustrative (2025/2026)</h1>
-  <p class="lead">Enter an annual gross salary to calculate monthly PAYE (income tax), employee NICs and net pay. This is illustrative only — not HMRC-verified payroll software.</p>
+  <div id="app">
+    <header>
+      <h1>Ride Demo — single-file Leaflet simulation</h1>
+    </header>
 
-  <label for="salary">Annual Gross Salary (£)</label>
-  <input id="salary" type="number" step="0.01" min="0" value="35000" />
+    <main>
+      <div id="map"></div>
 
-  <label for="niCategory">NI Category</label>
-  <select id="niCategory">
-    <option value="A" selected>A (standard employee)</option>
-    <option value="B">B</option>
-    <option value="C">C</option>
-    <option value="X">X</option>
-  </select>
+      <aside class="sidebar" aria-live="polite">
+        <div class="controls">
+          <button id="setPickupBtn" class="btn">Set pickup (click map)</button>
+          <button id="setDropoffBtn" class="btn secondary">Set dropoff (click map)</button>
+          <button id="requestBtn" class="btn" style="flex:1">Request ride</button>
+          <button id="cancelBtn" class="btn ghost" style="display:none">Cancel ride</button>
+        </div>
 
-  <div>
-    <button id="calcBtn">Calculate</button>
-    <button id="resetBtn" type="button">Reset</button>
+        <div class="info">
+          <div class="field"><label>Pickup</label><div id="pickupText" class="muted">Not set</div></div>
+          <div class="field"><label>Dropoff</label><div id="dropoffText" class="muted">Not set</div></div>
+          <div class="field"><label>Est. distance</label><div id="estDistance" class="muted">—</div></div>
+          <div class="field"><label>Fare estimate</label><div id="fareEstimate" class="muted">—</div></div>
+          <div class="field"><label>ETA</label><div id="etaText" class="muted">—</div></div>
+        </div>
+
+        <div class="info">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="status">
+              <span class="dot" id="statusDot" style="background:#f59e0b"></span>
+              <div style="margin-left:6px">
+                <div class="status-text" id="rideStatus">Idle</div>
+                <div class="small muted" id="statusSub">Ready to set pickup & dropoff</div>
+              </div>
+            </div>
+            <div id="driverShort" class="muted small">—</div>
+          </div>
+
+          <div style="margin-top:8px;">
+            <div class="progress" aria-hidden="true" style="margin-bottom:8px"><i id="progressFiller"></i></div>
+          </div>
+
+          <div class="driver-card" style="margin-top:8px;">
+            <div id="driverAvatar" class="avatar" style="background:#60a5fa">DR</div>
+            <div>
+              <div id="driverName" style="font-weight:700">No driver</div>
+              <div id="driverCar" class="muted small">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight:800; margin-bottom:6px">Ride log</div>
+          <div id="rideLog" class="ride-log" aria-live="polite"></div>
+        </div>
+
+        <footer>
+          This is a demo. Map tiles from OpenStreetMap & Leaflet. No external APIs required. Click "Set pickup", click a point on the map, then "Set dropoff".
+        </footer>
+      </aside>
+    </main>
   </div>
 
-  <div class="results" id="results" aria-live="polite" style="display:none;">
-    <div class="row"><div>Monthly Gross Pay</div><div id="monthlyGross">—</div></div>
-    <div class="row"><div>Monthly PAYE (Tax)</div><div id="monthlyPAYE">—</div></div>
-    <div class="row"><div>Monthly NICs</div><div id="monthlyNICs">—</div></div>
-    <div class="row"><div>Total Monthly Deductions</div><div id="totalDeductions">—</div></div>
-    <div class="row"><div><strong>Monthly Net Pay</strong></div><div id="monthlyNetPay"><strong>—</strong></div></div>
-  </div>
-
-  <footer>
-    Constants used: Personal allowance <code>£12,570</code>, basic rate threshold <code>£50,270</code>, higher rate threshold <code>£150,000</code>. NIC thresholds and rates are illustrative for ex[...]
-  </footer>
+  <!-- Leaflet JS (CDN) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-vlR8fI6v1j8QkXw3u6C2j0m8b8Kqk1b3lQf6nWlDkGI=" crossorigin=""></script>
 
   <script>
-    // Mirror of the Python logic in the repo (illustrative for 2025/2026)
-    function calculateUkPayroll(annualGrossSalary, niCategory='A') {
-      // Constants (illustrative)
-      const PERSONAL_ALLOWANCE = 12570;
-      const BASIC_RATE_THRESHOLD = 50270;
-      const HIGHER_RATE_THRESHOLD = 150000;
+    // --- CONFIG ---
+    const START_CENTER = [51.5074, -0.1278]; // London by default
+    const DRIVER_SPEED_TO_PICKUP_MPS = 8.5; // ~30.6 km/h
+    const DRIVER_SPEED_TO_DROPOFF_MPS = 11; // ~39.6 km/h
+    const DRIVER_SPAWN_RADIUS_M = 1500; // drivers spawned within this radius of pickup
+    const BASE_FARE = 2.0; // GBP
+    const PER_KM = 1.5; // GBP per km
+    const PER_MIN = 0.25; // GBP per minute
+    const SIM_PAUSE_AT_PICKUP_MS = 1500; // pause when picking rider up
 
-      const BASIC_RATE = 0.20;
-      const HIGHER_RATE = 0.40;
-      const ADDITIONAL_RATE = 0.45;
+    // --- STATE ---
+    let map, pickupMarker = null, dropoffMarker = null, driverMarker = null, routeLine = null;
+    let mode = null; // 'pickup', 'dropoff', null
+    let ride = null; // {status:'searching'|'assigned'|'toPickup'|'riding'|'complete'|'cancelled', driver, etc.}
+    let animationHandle = null;
 
-      // Monthly NIC thresholds (illustrative, taken from python file)
-      const NI_PT_THRESHOLD_MONTHLY = 1048;  // approx £12,570 pa
-      const NI_UEL_THRESHOLD_MONTHLY = 4189; // approx £50,270 pa
-      const NI_RATE_BELOW_UEL = 0.08;  // employee rate used in example
-      const NI_RATE_ABOVE_UEL = 0.02;  // employee rate used in example
+    // elements
+    const setPickupBtn = document.getElementById('setPickupBtn');
+    const setDropoffBtn = document.getElementById('setDropoffBtn');
+    const requestBtn = document.getElementById('requestBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const pickupText = document.getElementById('pickupText');
+    const dropoffText = document.getElementById('dropoffText');
+    const estDistanceEl = document.getElementById('estDistance');
+    const fareEstimateEl = document.getElementById('fareEstimate');
+    const etaText = document.getElementById('etaText');
+    const rideStatusEl = document.getElementById('rideStatus');
+    const statusSubEl = document.getElementById('statusSub');
+    const statusDot = document.getElementById('statusDot');
+    const progressFiller = document.getElementById('progressFiller');
+    const driverNameEl = document.getElementById('driverName');
+    const driverCarEl = document.getElementById('driverCar');
+    const driverAvatar = document.getElementById('driverAvatar');
+    const driverShort = document.getElementById('driverShort');
+    const rideLog = document.getElementById('rideLog');
 
-      const monthlyGross = annualGrossSalary / 12;
+    // Utilities
+    function log(msg){
+      const time = new Date().toLocaleTimeString();
+      rideLog.insertAdjacentHTML('afterbegin', `<div style="padding:6px 0;border-bottom:1px solid #f1f5f9"><strong class="small">${time}</strong> — <span>${msg}</span></div>`);
+    }
+    function formatLatLng(ll){
+      return ll.lat.toFixed(5) + ', ' + ll.lng.toFixed(5);
+    }
+    function metersToKm(m){ return (m/1000); }
+    function formatDistance(m){
+      if (m < 1000) return Math.round(m) + ' m';
+      return (m/1000).toFixed(2) + ' km';
+    }
+    function money(n){ return '£' + n.toFixed(2); }
+    function randomChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-      // 1. PAYE (annual then monthly)
-      const taxableIncome = Math.max(0, annualGrossSalary - PERSONAL_ALLOWANCE);
-      let payeAnnual = 0;
-
-      if (taxableIncome > 0) {
-        const basicBandIncome = Math.max(0, Math.min(taxableIncome, BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE));
-        if (taxableIncome <= (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE)) {
-          payeAnnual = basicBandIncome * BASIC_RATE;
-        } else if (taxableIncome <= (HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE)) {
-          payeAnnual = basicBandIncome * BASIC_RATE;
-          payeAnnual += (taxableIncome - basicBandIncome) * HIGHER_RATE;
-        } else {
-          const higherBandIncome = (HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE) - (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE);
-          payeAnnual = basicBandIncome * BASIC_RATE;
-          payeAnnual += higherBandIncome * HIGHER_RATE;
-          payeAnnual += (taxableIncome - basicBandIncome - higherBandIncome) * ADDITIONAL_RATE;
-        }
-      }
-
-      const monthlyPaye = payeAnnual / 12;
-
-      // 2. NICs (employee part, monthly)
-      let employeeNics = 0;
-      if (monthlyGross > NI_PT_THRESHOLD_MONTHLY) {
-        const incomeBetween = Math.min(monthlyGross, NI_UEL_THRESHOLD_MONTHLY) - NI_PT_THRESHOLD_MONTHLY;
-        if (incomeBetween > 0) employeeNics += incomeBetween * NI_RATE_BELOW_UEL;
-
-        if (monthlyGross > NI_UEL_THRESHOLD_MONTHLY) {
-          const incomeAboveUel = monthlyGross - NI_UEL_THRESHOLD_MONTHLY;
-          employeeNics += incomeAboveUel * NI_RATE_ABOVE_UEL;
-        }
-      }
-
-      const monthlyDeductions = monthlyPaye + employeeNics;
-      const monthlyNetPay = monthlyGross - monthlyDeductions;
-
-      // Round to 2 decimals
-      function r(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
-
-      return {
-        monthlyGross: r(monthlyGross),
-        monthlyPaye: r(monthlyPaye),
-        monthlyNics: r(employeeNics),
-        totalMonthlyDeductions: r(monthlyDeductions),
-        monthlyNetPay: r(monthlyNetPay)
-      };
+    // Haversine / Leaflet distance:
+    function distanceMeters(a,b){
+      return map.distance(a,b);
     }
 
-    // UI wiring
-    const salaryEl = document.getElementById('salary');
-    const niEl = document.getElementById('niCategory');
-    const calcBtn = document.getElementById('calcBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const resultsBox = document.getElementById('results');
+    // Create map
+    function initMap(){
+      map = L.map('map', {preferCanvas:true}).setView(START_CENTER, 13);
 
-    function showResults(obj) {
-      document.getElementById('monthlyGross').textContent = '£' + obj.monthlyGross.toFixed(2);
-      document.getElementById('monthlyPAYE').textContent = '£' + obj.monthlyPaye.toFixed(2);
-      document.getElementById('monthlyNICs').textContent = '£' + obj.monthlyNics.toFixed(2);
-      document.getElementById('totalDeductions').textContent = '£' + obj.totalMonthlyDeductions.toFixed(2);
-      document.getElementById('monthlyNetPay').textContent = '£' + obj.monthlyNetPay.toFixed(2);
-      resultsBox.style.display = 'block';
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      }).addTo(map);
+
+      map.on('click', onMapClick);
     }
 
-    calcBtn.addEventListener('click', function() {
-      const annual = parseFloat(salaryEl.value || 0);
-      if (isNaN(annual) || annual < 0) {
-        alert('Please enter a valid annual salary (number >= 0).');
+    // UI helpers
+    function setMode(m){
+      mode = m;
+      if (m === 'pickup'){
+        setPickupBtn.textContent = 'Click map to set pickup...';
+        setDropoffBtn.textContent = 'Set dropoff (click map)';
+        setPickupBtn.disabled = true;
+        setDropoffBtn.disabled = false;
+        statusSubEl.textContent = 'Click a point on the map to set pickup';
+      } else if (m === 'dropoff'){
+        setDropoffBtn.textContent = 'Click map to set dropoff...';
+        setPickupBtn.textContent = 'Set pickup (click map)';
+        setDropoffBtn.disabled = true;
+        setPickupBtn.disabled = false;
+        statusSubEl.textContent = 'Click a point on the map to set dropoff';
+      } else {
+        setPickupBtn.textContent = 'Set pickup (click map)';
+        setDropoffBtn.textContent = 'Set dropoff (click map)';
+        setPickupBtn.disabled = false;
+        setDropoffBtn.disabled = false;
+        statusSubEl.textContent = 'Ready to set pickup & dropoff';
+      }
+    }
+
+    function updateSummary(){
+      if (pickupMarker && dropoffMarker){
+        const d = distanceMeters(pickupMarker.getLatLng(), dropoffMarker.getLatLng());
+        estDistanceEl.textContent = formatDistance(d);
+        // estimate time assuming average speed 30 kph
+        const estMin = Math.max(1, Math.round((d/1000) / 30 * 60));
+        etaText.textContent = estMin + ' min (trip only)';
+        const fare = BASE_FARE + PER_KM * (d/1000) + PER_MIN * estMin;
+        fareEstimateEl.textContent = money(fare);
+      } else {
+        estDistanceEl.textContent = '—';
+        fareEstimateEl.textContent = '—';
+        etaText.textContent = '—';
+      }
+    }
+
+    // Map click handler: set pickup/dropoff depending on mode
+    function onMapClick(e){
+      if (mode === 'pickup'){
+        setPickup(e.latlng);
+        setMode(null);
+      } else if (mode === 'dropoff'){
+        setDropoff(e.latlng);
+        setMode(null);
+      }
+    }
+
+    // Add or update marker
+    function setPickup(latlng){
+      if (pickupMarker) map.removeLayer(pickupMarker);
+      pickupMarker = L.marker(latlng, {draggable:true}).addTo(map);
+      pickupMarker.bindPopup('Pickup').openPopup();
+      pickupMarker.on('dragend', () => { pickupText.textContent = formatLatLng(pickupMarker.getLatLng()); updateSummary(); });
+      pickupText.textContent = formatLatLng(latlng);
+      log('Pickup set at ' + formatLatLng(latlng));
+      updateSummary();
+      ensureMapFits();
+    }
+    function setDropoff(latlng){
+      if (dropoffMarker) map.removeLayer(dropoffMarker);
+      dropoffMarker = L.marker(latlng, {draggable:true}).addTo(map);
+      dropoffMarker.bindPopup('Dropoff').openPopup();
+      dropoffMarker.on('dragend', () => { dropoffText.textContent = formatLatLng(dropoffMarker.getLatLng()); updateSummary(); });
+      dropoffText.textContent = formatLatLng(latlng);
+      log('Dropoff set at ' + formatLatLng(latlng));
+      updateSummary();
+      ensureMapFits();
+    }
+
+    function ensureMapFits(){
+      const pts = [];
+      if (pickupMarker) pts.push(pickupMarker.getLatLng());
+      if (dropoffMarker) pts.push(dropoffMarker.getLatLng());
+      if (driverMarker) pts.push(driverMarker.getLatLng());
+      if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.25));
+    }
+
+    // Request ride flow
+    function requestRide(){
+      if (!pickupMarker || !dropoffMarker){
+        alert('Please set both pickup and dropoff first.');
         return;
       }
-      const res = calculateUkPayroll(annual, niEl.value);
-      showResults(res);
+      if (ride && ride.status !== 'idle' && ride.status !== 'complete' && ride.status !== 'cancelled'){
+        alert('Trip already in progress.');
+        return;
+      }
+
+      // Clean previous driver/route
+      if (driverMarker) { map.removeLayer(driverMarker); driverMarker = null; }
+      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+
+      ride = { status: 'searching' };
+      updateRideStatusUI();
+      log('Searching for nearby drivers...');
+
+      // Simulate search delay
+      setTimeout(() => {
+        // "Assign" a driver: spawn one near pickup
+        const pickup = pickupMarker.getLatLng();
+        const driverStart = randomPointAround(pickup, DRIVER_SPAWN_RADIUS_M);
+        const driver = {
+          id: Math.floor(Math.random()*99999),
+          name: randomChoice(['Alex','Sam','Taylor','Jordan','Charlie','Riley','Casey','Morgan']),
+          car: randomChoice(['Toyota Corolla','Honda Civic','Ford Focus','VW Polo','Hyundai i30']),
+          color: randomChoice(['#fb7185','#60a5fa','#34d399','#f97316','#a78bfa']),
+          pos: driverStart
+        };
+        ride.driver = driver;
+        ride.status = 'assigned';
+        log(`Driver ${driver.name} (${driver.car}) assigned, arriving shortly.`);
+        updateRideStatusUI();
+
+        // create driver marker
+        driverMarker = L.marker(driver.pos, {
+          icon: L.divIcon({
+            className: 'driver-icon',
+            html: `<div style="transform:translate(-50%,-50%);font-size:18px">🚗</div>`,
+            iconSize: [28,28]
+          })
+        }).addTo(map);
+        driverMarker.bindPopup(`${driver.name} — ${driver.car}`);
+
+        // show short info
+        driverNameEl.textContent = `${driver.name}`;
+        driverCarEl.textContent = `${driver.car}`;
+        driverAvatar.style.background = driver.color;
+        driverAvatar.textContent = driver.name.slice(0,2).toUpperCase();
+        driverShort.textContent = `${driver.name} nearby`;
+
+        // Start moving to pickup
+        setTimeout(() => startDriveToPickup(), 600);
+      }, 900 + Math.random()*1600);
+      cancelBtn.style.display = 'inline-block';
+      requestBtn.disabled = true;
+    }
+
+    function cancelRide(reason='cancelled by user'){
+      if (!ride) return;
+      if (animationHandle) { cancelAnimationFrame(animationHandle); animationHandle = null; }
+      ride.status = 'cancelled';
+      updateRideStatusUI();
+      log('Ride cancelled — ' + reason);
+      // cleanup driver and route
+      if (driverMarker) { map.removeLayer(driverMarker); driverMarker = null; }
+      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+      progressFiller.style.width = '0%';
+      driverNameEl.textContent = 'No driver';
+      driverCarEl.textContent = '—';
+      driverAvatar.textContent = 'DR';
+      driverAvatar.style.background = '#60a5fa';
+      driverShort.textContent = '—';
+      cancelBtn.style.display = 'none';
+      requestBtn.disabled = false;
+      ride = null;
+    }
+
+    function startDriveToPickup(){
+      if (!ride || !ride.driver || !pickupMarker) return;
+      ride.status = 'toPickup';
+      updateRideStatusUI();
+      log('Driver is en route to pickup.');
+
+      const startLatLng = ride.driver.pos;
+      const targetLatLng = pickupMarker.getLatLng();
+      animateMarker(driverMarker, startLatLng, targetLatLng, DRIVER_SPEED_TO_PICKUP_MPS, (info) => {
+        // upon arrival
+        log(`Driver arrived at pickup (ETA reached).`);
+        progressFiller.style.width = '0%';
+        // pause to simulate pickup
+        setTimeout(() => {
+          startRideToDropoff();
+        }, SIM_PAUSE_AT_PICKUP_MS);
+      }, (progressPct) => {
+        // optional progress updates
+        progressFiller.style.width = Math.round(progressPct*100) + '%';
+        statusSubEl.textContent = `Driver arriving — ${Math.round(progressPct*100)}%`;
+      });
+    }
+
+    function startRideToDropoff(){
+      if (!ride || !ride.driver || !dropoffMarker) return;
+      ride.status = 'riding';
+      updateRideStatusUI();
+      log('Trip started.');
+
+      // route line
+      if (routeLine) map.removeLayer(routeLine);
+      routeLine = L.polyline([pickupMarker.getLatLng(), dropoffMarker.getLatLng()], {color:'#60a5fa', weight:4, opacity:0.7}).addTo(map);
+
+      const startLatLng = pickupMarker.getLatLng();
+      const targetLatLng = dropoffMarker.getLatLng();
+
+      animateMarker(driverMarker, startLatLng, targetLatLng, DRIVER_SPEED_TO_DROPOFF_MPS, (info) => {
+        // arrival at dropoff
+        ride.status = 'complete';
+        updateRideStatusUI();
+        log('Trip complete. Rider dropped off.');
+        computeFinalFare(info.totalMeters, info.totalSeconds);
+        // cleanup after short delay
+        setTimeout(()=>{
+          if (driverMarker) map.removeLayer(driverMarker);
+          driverMarker = null;
+          cancelBtn.style.display = 'none';
+          requestBtn.disabled = false;
+        }, 1400);
+      }, (progressPct) => {
+        progressFiller.style.width = Math.round(progressPct*100) + '%';
+        statusSubEl.textContent = `On trip — ${Math.round(progressPct*100)}%`;
+      });
+    }
+
+    function computeFinalFare(totalMeters, totalSeconds){
+      const km = metersToKm(totalMeters);
+      const mins = Math.max(1, Math.round(totalSeconds / 60));
+      const fare = BASE_FARE + PER_KM * km + PER_MIN * mins;
+      log(`Distance travelled: ${km.toFixed(2)} km — Time: ${mins} min — Fare: ${money(fare)}`);
+      // update UI
+      fareEstimateEl.textContent = money(fare);
+    }
+
+    // Animate a marker from startLatLng to targetLatLng at speedMetersPerSec
+    // callbackOnComplete(info), callbackOnProgress(progressPct)
+    function animateMarker(marker, startLatLng, targetLatLng, speedMps, onComplete, onProgress){
+      if (!marker) return;
+      const start = L.latLng(startLatLng);
+      const target = L.latLng(targetLatLng);
+      const totalMeters = distanceMeters(start, target);
+      if (totalMeters < 1){
+        marker.setLatLng(target);
+        if (onComplete) onComplete({totalMeters: totalMeters, totalSeconds: 0});
+        return;
+      }
+      const totalSeconds = totalMeters / speedMps;
+      const startTime = performance.now();
+      let lastPos = start;
+      const step = (now) => {
+        const elapsed = (now - startTime) / 1000.0;
+        const t = Math.min(1, elapsed / totalSeconds);
+        const curLat = start.lat + (target.lat - start.lat) * t;
+        const curLng = start.lng + (target.lng - start.lng) * t;
+        const cur = L.latLng(curLat, curLng);
+        marker.setLatLng(cur);
+        // update popup position if open
+        if (marker.getPopup && marker.isPopupOpen && marker.isPopupOpen()) marker.setPopupContent(marker.getPopup().getContent());
+
+        if (onProgress){
+          onProgress(t);
+        }
+        if (t < 1){
+          animationHandle = requestAnimationFrame(step);
+        } else {
+          animationHandle = null;
+          if (onComplete) onComplete({totalMeters: totalMeters, totalSeconds: totalSeconds});
+        }
+      };
+      animationHandle = requestAnimationFrame(step);
+    }
+
+    // Helper: random point around latlng within radius meters
+    function randomPointAround(latlng, radiusMeters){
+      // random bearing & distance
+      const bearing = Math.random() * Math.PI * 2;
+      const distance = Math.random() * radiusMeters;
+      // approximate conversion using meters-per-degree
+      const earthRadius = 6378137;
+      const lat1 = latlng.lat * Math.PI/180;
+      const lon1 = latlng.lng * Math.PI/180;
+      const dr = distance / earthRadius;
+      const lat2 = Math.asin( Math.sin(lat1)*Math.cos(dr) + Math.cos(lat1)*Math.sin(dr)*Math.cos(bearing) );
+      const lon2 = lon1 + Math.atan2(Math.sin(bearing)*Math.sin(dr)*Math.cos(lat1), Math.cos(dr)-Math.sin(lat1)*Math.sin(lat2));
+      return L.latLng(lat2*180/Math.PI, lon2*180/Math.PI);
+    }
+
+    // UI state updates
+    function updateRideStatusUI(){
+      if (!ride){
+        rideStatusEl.textContent = 'Idle';
+        statusDot.style.background = '#f59e0b';
+        statusSubEl.textContent = 'Ready';
+        return;
+      }
+      const s = ride.status;
+      if (s === 'searching'){
+        rideStatusEl.textContent = 'Searching';
+        statusDot.style.background = '#f59e0b';
+      } else if (s === 'assigned'){
+        rideStatusEl.textContent = 'Driver assigned';
+        statusDot.style.background = '#60a5fa';
+      } else if (s === 'toPickup'){
+        rideStatusEl.textContent = 'Driver arriving';
+        statusDot.style.background = '#60a5fa';
+      } else if (s === 'riding'){
+        rideStatusEl.textContent = 'On trip';
+        statusDot.style.background = '#16a34a';
+      } else if (s === 'complete'){
+        rideStatusEl.textContent = 'Complete';
+        statusDot.style.background = '#16a34a';
+        statusSubEl.textContent = 'Trip finished';
+      } else if (s === 'cancelled'){
+        rideStatusEl.textContent = 'Cancelled';
+        statusDot.style.background = '#ef4444';
+        statusSubEl.textContent = 'Trip cancelled';
+      }
+    }
+
+    // Wire up UI events
+    setPickupBtn.addEventListener('click', () => { setMode('pickup'); });
+    setDropoffBtn.addEventListener('click', () => { setMode('dropoff'); });
+    requestBtn.addEventListener('click', () => { requestRide(); });
+    cancelBtn.addEventListener('click', () => { if (confirm('Cancel the ride?')) cancelRide('cancelled by user'); });
+
+    // allow pressing Escape to cancel mode
+    document.addEventListener('keydown', (e)=> {
+      if (e.key === 'Escape') setMode(null);
     });
 
-    resetBtn.addEventListener('click', function() {
-      salaryEl.value = '35000';
-      niEl.value = 'A';
-      resultsBox.style.display = 'none';
+    // initialize
+    initMap();
+    setMode(null);
+    updateSummary();
+    updateRideStatusUI();
+    log('Demo ready. Use the controls to simulate a ride.');
+
+    // Small UI nicety: if markers are moved manually, update texts
+    // Drag listeners added when creating markers; also watch for map move events
+    // Fit map to markers if user sets both
+    map.whenReady(() => {
+      // Add a subtle "help" marker at center for starting
+      L.marker(START_CENTER, {
+        icon: L.divIcon({className:'startIcon', html:'📍', iconSize:[24,24]})
+      }).addTo(map).bindPopup('Map center (default start)').openPopup();
     });
 
-    // initial calc
-    calcBtn.click();
   </script>
 </body>
 </html>
