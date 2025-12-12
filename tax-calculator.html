@@ -539,9 +539,12 @@
       } else if (category === 'exempt') {
         vatRate = 0;
         categoryName = 'Exempt';
-      } else {
+      } else if (category === 'zero-rated') {
         vatRate = 0;
         categoryName = 'Zero-rated';
+      } else {
+        vatRate = 0;
+        categoryName = 'Unknown';
       }
       
       const vatCharged = roundNaira(amount * (vatRate / 100));
@@ -696,7 +699,7 @@
       for (let i = 0; i < bands.length && remaining > 0; i++) {
         const band = bands[i];
         const bandAmount = Math.min(remaining, band.limit - previousLimit);
-        const bandTax = roundNaira(bandAmount * (band.rate / 100));
+        const bandTax = bandAmount * (band.rate / 100);
         tax += bandTax;
         
         if (bandAmount > 0) {
@@ -705,7 +708,7 @@
             to: Math.min(taxableIncome, band.limit),
             amount: bandAmount,
             rate: band.rate,
-            tax: bandTax
+            tax: roundNaira(bandTax)
           });
         }
         
@@ -713,6 +716,7 @@
         previousLimit = band.limit;
       }
       
+      tax = roundNaira(tax);
       const effectiveRate = taxableIncome > 0 ? (tax / taxableIncome) * 100 : 0;
       const monthlyGross = roundNaira(totalIncome / 12);
       const monthlyTax = roundNaira(tax / 12);
