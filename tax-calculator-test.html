@@ -410,7 +410,7 @@
             </div>
             <div class="test-item">
               <span class="test-label">PAYE Tax:</span>
-              <span class="test-value">₦537,500</span>
+              <span class="test-value">₦595,500</span>
             </div>
           </div>
         </div>
@@ -698,11 +698,11 @@
       const passed = pensionContribution === 400000 && 
                      nhfContribution === 125000 && 
                      taxableIncome === 4475000 && 
-                     tax === 537500;
+                     tax === 595500;
       
       showResult('paye-test-1-result', passed,
         `Pension: ${formatCurrency(pensionContribution)}, NHF: ${formatCurrency(nhfContribution)}, Taxable: ${formatCurrency(taxableIncome)}, Tax: ${formatCurrency(tax)}`,
-        'Pension: ₦400,000, NHF: ₦125,000, Taxable: ₦4,475,000, Tax: ₦537,500');
+        'Pension: ₦400,000, NHF: ₦125,000, Taxable: ₦4,475,000, Tax: ₦595,500');
       return passed;
     }
 

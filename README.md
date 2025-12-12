@@ -112,8 +112,8 @@ All monetary amounts are **rounded to the nearest Naira (₦)**. This follows st
 - Pension Contribution: ₦400,000
 - NHF Contribution: ₦125,000
 - Taxable Income: ₦4,475,000
-- Annual PAYE Tax: ₦537,500
-- Monthly Net Income: ₦335,625
+- Annual PAYE Tax: ₦595,500
+- Monthly Net Income: ₦323,292
 
 ### Example 4: CIT for Small Company
 **Input:**
