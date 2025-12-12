@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nigeria Tax Calculator 2026</title>
+  <style>
+    :root {
+      --panel-bg: #ffffff;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --card: #f8fafc;
+      --border: #e5e7eb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    header {
+      padding: 16px 20px;
+      background: linear-gradient(90deg, #0ea5e9 0%, #60a5fa 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    header p {
+      margin: 4px 0 0 0;
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .disclaimer {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .disclaimer h3 {
+      color: #92400e;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .disclaimer p {
+      color: #78350f;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .disclaimer p:last-child {
+      margin-bottom: 0;
+    }
+
+    .privacy-notice {
+      background: #dbeafe;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .privacy-notice p {
+      color: #1e40af;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      background: white;
+      border: 2px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .tab-button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #374151;
+      border-bottom: 2px solid var(--card);
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+
+    .results {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .results h3 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+      align-items: center;
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .result-value {
+      font-weight: 700;
+      color: #111827;
+      font-size: 1.1rem;
+    }
+
+    .result-value.highlight {
+      color: var(--success);
+      font-size: 1.3rem;
+    }
+
+    .explanation {
+      background: #eff6ff;
+      border-left: 4px solid var(--accent);
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 4px;
+    }
+
+    .explanation p {
+      color: #1e40af;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .explanation p:last-child {
+      margin-bottom: 0;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      border: 2px solid var(--danger);
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 12px;
+      }
+
+      .tab-content {
+        padding: 16px;
+      }
+
+      .result-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header role="banner">
+    <h1>🇳🇬 Nigeria Tax Calculator 2026</h1>
+    <p>Calculate VAT, WHT, PAYE/PIT, and CIT based on Nigeria Tax Act effective January 1, 2026</p>
+  </header>
+
+  <div class="container">
+    <div class="disclaimer" role="alert" aria-label="Important Disclaimer">
+      <h3>⚠️ Important Disclaimer</h3>
+      <p><strong>Estimates Only — Not Tax or Legal Advice:</strong> This calculator provides estimates based on publicly available advisory summaries of the Nigeria Tax Act 2025/2026. Results are for informational purposes only and should not be considered as tax advice, legal advice, or official tax calculations.</p>
+      <p><strong>Verify with Authorities:</strong> Users must verify all rates, thresholds, and calculations against official publications from the Federal Inland Revenue Service (FIRS) or consult qualified tax professionals before making tax decisions.</p>
+    </div>
+
+    <div class="privacy-notice" role="note" aria-label="Privacy Notice">
+      <p>🔒 Client-side only — No data transmitted or stored. All calculations happen in your browser.</p>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-button active" role="tab" aria-selected="true" aria-controls="vat-panel" onclick="switchTab('vat')">VAT Calculator</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="wht-panel" onclick="switchTab('wht')">WHT Calculator</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="paye-panel" onclick="switchTab('paye')">PAYE/PIT Calculator</button>
+      <button class="tab-button" role="tab" aria-selected="false" aria-controls="cit-panel" onclick="switchTab('cit')">CIT Calculator</button>
+    </div>
+
+    <!-- VAT Calculator -->
+    <div id="vat-panel" class="tab-content active" role="tabpanel" aria-labelledby="vat-tab">
+      <h2>Value Added Tax (VAT) Calculator</h2>
+      
+      <div class="form-section">
+        <h3>Transaction Details</h3>
+        
+        <div class="form-group">
+          <label for="vat-amount">Transaction Amount (₦)</label>
+          <input type="number" id="vat-amount" min="0" step="0.01" placeholder="Enter amount" aria-required="true">
+          <small>Enter the base amount (excluding VAT)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="vat-category">Item Category</label>
+          <select id="vat-category" aria-required="true">
+            <option value="taxable">Taxable (Standard Rate 7.5%)</option>
+            <option value="exempt">Exempt (0% - No VAT)</option>
+            <option value="zero-rated">Zero-rated (0% - Claimable Input VAT)</option>
+          </select>
+          <small>Select the applicable category for your transaction</small>
+        </div>
+
+        <div class="form-group">
+          <label for="vat-input">Input VAT Amount (₦) - Optional</label>
+          <input type="number" id="vat-input" min="0" step="0.01" value="0" placeholder="Enter input VAT if applicable">
+          <small>Enter VAT paid on purchases if you want to calculate recoverable VAT</small>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="calculateVAT()" aria-label="Calculate VAT">Calculate VAT</button>
+        <button class="secondary" onclick="resetVAT()" aria-label="Reset VAT form">Reset</button>
+      </div>
+
+      <div id="vat-results" class="results" style="display: none;" role="region" aria-live="polite"></div>
+    </div>
+
+    <!-- WHT Calculator -->
+    <div id="wht-panel" class="tab-content" role="tabpanel" aria-labelledby="wht-tab">
+      <h2>Withholding Tax (WHT) Calculator</h2>
+      
+      <div class="form-section">
+        <h3>Payment Details</h3>
+        
+        <div class="form-group">
+          <label for="wht-amount">Payment Amount (₦)</label>
+          <input type="number" id="wht-amount" min="0" step="0.01" placeholder="Enter gross payment amount" aria-required="true">
+          <small>Enter the gross payment amount before WHT deduction</small>
+        </div>
+
+        <div class="form-group">
+          <label for="wht-type">Payment Type</label>
+          <select id="wht-type" onchange="updateWHTRate()" aria-required="true">
+            <option value="5">Contracts (5%)</option>
+            <option value="10">Rent (10%)</option>
+            <option value="10">Dividends (10%)</option>
+            <option value="10">Interest (10%)</option>
+            <option value="10">Royalties (10%)</option>
+            <option value="10">Management/Consultancy Fees (10%)</option>
+            <option value="custom">Custom Rate</option>
+          </select>
+          <small>Select the type of payment or choose custom rate</small>
+        </div>
+
+        <div class="form-group" id="wht-custom-rate-group" style="display: none;">
+          <label for="wht-custom-rate">Custom WHT Rate (%)</label>
+          <input type="number" id="wht-custom-rate" min="0" max="100" step="0.1" placeholder="Enter custom rate">
+          <small>Enter your custom WHT rate as a percentage</small>
+        </div>
+
+        <div class="form-group">
+          <label for="wht-payer-type">Payer Type</label>
+          <select id="wht-payer-type" aria-required="true">
+            <option value="company">Company</option>
+            <option value="individual">Individual</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="calculateWHT()" aria-label="Calculate WHT">Calculate WHT</button>
+        <button class="secondary" onclick="resetWHT()" aria-label="Reset WHT form">Reset</button>
+      </div>
+
+      <div id="wht-results" class="results" style="display: none;" role="region" aria-live="polite"></div>
+    </div>
+
+    <!-- PAYE/PIT Calculator -->
+    <div id="paye-panel" class="tab-content" role="tabpanel" aria-labelledby="paye-tab">
+      <h2>PAYE / Personal Income Tax (PIT) Calculator</h2>
+      
+      <div class="form-section">
+        <h3>Salary & Allowances</h3>
+        
+        <div class="form-group">
+          <label for="paye-gross-salary">Annual Gross Salary (₦)</label>
+          <input type="number" id="paye-gross-salary" min="0" step="0.01" placeholder="Enter annual gross salary" aria-required="true">
+          <small>Enter total annual gross salary before deductions</small>
+        </div>
+
+        <div class="form-group">
+          <label for="paye-allowances">Annual Allowances (₦)</label>
+          <input type="number" id="paye-allowances" min="0" step="0.01" value="0" placeholder="Enter annual allowances">
+          <small>Enter taxable allowances (housing, transport, etc.)</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Deductions & Reliefs</h3>
+        
+        <div class="form-group">
+          <label for="paye-pension-rate">Pension Contribution Rate (%)</label>
+          <input type="number" id="paye-pension-rate" min="0" max="100" step="0.1" value="8" placeholder="8">
+          <small>Employee pension contribution (default: 8%)</small>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="paye-nhf" checked>
+          <label for="paye-nhf">Include NHF (National Housing Fund) - 2.5% of basic salary</label>
+        </div>
+
+        <div class="form-group">
+          <label for="paye-other-reliefs">Other Reliefs/Deductions (₦)</label>
+          <input type="number" id="paye-other-reliefs" min="0" step="0.01" value="0" placeholder="0">
+          <small>Enter any other permitted reliefs or deductions</small>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="calculatePAYE()" aria-label="Calculate PAYE">Calculate PAYE</button>
+        <button class="secondary" onclick="resetPAYE()" aria-label="Reset PAYE form">Reset</button>
+      </div>
+
+      <div id="paye-results" class="results" style="display: none;" role="region" aria-live="polite"></div>
+    </div>
+
+    <!-- CIT Calculator -->
+    <div id="cit-panel" class="tab-content" role="tabpanel" aria-labelledby="cit-tab">
+      <h2>Companies Income Tax (CIT) Calculator</h2>
+      
+      <div class="form-section">
+        <h3>Company Information</h3>
+        
+        <div class="form-group">
+          <label for="cit-revenue">Annual Revenue (₦)</label>
+          <input type="number" id="cit-revenue" min="0" step="0.01" placeholder="Enter annual revenue" aria-required="true">
+          <small>Enter total annual revenue/turnover</small>
+        </div>
+
+        <div class="form-group">
+          <label for="cit-expenses">Allowable Expenses (₦)</label>
+          <input type="number" id="cit-expenses" min="0" step="0.01" placeholder="Enter allowable expenses" aria-required="true">
+          <small>Enter total allowable business expenses</small>
+        </div>
+
+        <div class="form-group">
+          <label for="cit-turnover">Company Turnover (₦)</label>
+          <input type="number" id="cit-turnover" min="0" step="0.01" placeholder="Enter company turnover">
+          <small>Used to determine small company exemption (≤ ₦100,000,000)</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Tax Options</h3>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="cit-dev-levy" checked>
+          <label for="cit-dev-levy">Apply Development Levy (4%)</label>
+        </div>
+
+        <div class="form-group">
+          <label for="cit-rate">CIT Rate (%)</label>
+          <input type="number" id="cit-rate" min="0" max="100" step="0.1" value="30" placeholder="30">
+          <small>Standard rate is 30% (will be 0% if small company exemption applies)</small>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="calculateCIT()" aria-label="Calculate CIT">Calculate CIT</button>
+        <button class="secondary" onclick="resetCIT()" aria-label="Reset CIT form">Reset</button>
+        <button class="secondary" onclick="exportToCSV()" aria-label="Export results to CSV">📥 Export to CSV</button>
+      </div>
+
+      <div id="cit-results" class="results" style="display: none;" role="region" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <footer role="contentinfo">
+    <p><strong>Default rates based on:</strong> PwC Nigeria Tax Summaries, EY Tax Alert Nigeria, Forvis Mazars Nigeria Tax Guide, and publicly available advisory summaries.</p>
+    <p>
+      <strong>Sources:</strong>
+      <a href="https://taxsummaries.pwc.com/nigeria" target="_blank" rel="noopener noreferrer">PwC Nigeria</a> |
+      <a href="https://www.ey.com/en_ng" target="_blank" rel="noopener noreferrer">EY Nigeria</a> |
+      <a href="https://www.mazars.ng/" target="_blank" rel="noopener noreferrer">Mazars Nigeria</a> |
+      <a href="https://africacheck.org/" target="_blank" rel="noopener noreferrer">AfricaCheck</a>
+    </p>
+    <p><em>Defaults reflect tax law and advisory summaries effective January 1, 2026. Users should verify with official gazette or Federal Inland Revenue Service (FIRS).</em></p>
+  </footer>
+
+  <script>
+    // Global state for last calculations (for CSV export)
+    let lastCalculation = null;
+
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tabs
+      const tabs = document.querySelectorAll('.tab-content');
+      const buttons = document.querySelectorAll('.tab-button');
+      
+      tabs.forEach(tab => {
+        tab.classList.remove('active');
+        tab.style.display = 'none';
+      });
+      
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      
+      // Show selected tab
+      const selectedTab = document.getElementById(tabName + '-panel');
+      const selectedButton = event.target;
+      
+      if (selectedTab) {
+        selectedTab.classList.add('active');
+        selectedTab.style.display = 'block';
+      }
+      
+      if (selectedButton) {
+        selectedButton.classList.add('active');
+        selectedButton.setAttribute('aria-selected', 'true');
+      }
+    }
+
+    // Utility functions
+    function formatCurrency(amount) {
+      return '₦' + Math.round(amount).toLocaleString('en-NG');
+    }
+
+    function roundToNaira(amount) {
+      return Math.round(amount);
+    }
+
+    function showError(containerId, message) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `<div class="error-message">${message}</div>`;
+      container.style.display = 'block';
+    }
+
+    // VAT Calculator
+    function calculateVAT() {
+      const amount = parseFloat(document.getElementById('vat-amount').value);
+      const category = document.getElementById('vat-category').value;
+      const inputVAT = parseFloat(document.getElementById('vat-input').value) || 0;
+
+      if (isNaN(amount) || amount < 0) {
+        showError('vat-results', 'Please enter a valid transaction amount.');
+        return;
+      }
+
+      let vatRate = 0;
+      let vatCharged = 0;
+      let explanation = '';
+
+      if (category === 'taxable') {
+        vatRate = 7.5;
+        vatCharged = roundToNaira(amount * 0.075);
+        explanation = 'Standard VAT rate of 7.5% applied to taxable supplies.';
+      } else if (category === 'exempt') {
+        vatRate = 0;
+        vatCharged = 0;
+        explanation = 'Exempt supplies are not subject to VAT. No VAT is charged or can be reclaimed.';
+      } else if (category === 'zero-rated') {
+        vatRate = 0;
+        vatCharged = 0;
+        explanation = 'Zero-rated supplies have 0% VAT, but input VAT can be reclaimed.';
+      }
+
+      const totalAmount = roundToNaira(amount + vatCharged);
+      const netVAT = roundToNaira(vatCharged - inputVAT);
+
+      lastCalculation = {
+        type: 'VAT',
+        inputs: { amount, category, inputVAT },
+        results: { vatRate, vatCharged, inputVAT, netVAT, totalAmount }
+      };
+
+      const resultsHTML = `
+        <h3>VAT Calculation Results</h3>
+        <div class="result-row">
+          <span class="result-label">Base Amount:</span>
+          <span class="result-value">${formatCurrency(amount)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">VAT Rate:</span>
+          <span class="result-value">${vatRate}%</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">VAT Charged:</span>
+          <span class="result-value">${formatCurrency(vatCharged)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Input VAT (Recoverable):</span>
+          <span class="result-value">${formatCurrency(inputVAT)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Net VAT Payable:</span>
+          <span class="result-value highlight">${formatCurrency(netVAT)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Total Amount (incl. VAT):</span>
+          <span class="result-value highlight">${formatCurrency(totalAmount)}</span>
+        </div>
+        <div class="explanation">
+          <p><strong>Explanation:</strong> ${explanation}</p>
+          <p><strong>Rounding:</strong> All amounts rounded to the nearest Naira (₦).</p>
+        </div>
+      `;
+
+      document.getElementById('vat-results').innerHTML = resultsHTML;
+      document.getElementById('vat-results').style.display = 'block';
+    }
+
+    function resetVAT() {
+      document.getElementById('vat-amount').value = '';
+      document.getElementById('vat-category').value = 'taxable';
+      document.getElementById('vat-input').value = '0';
+      document.getElementById('vat-results').style.display = 'none';
+    }
+
+    // WHT Calculator
+    function updateWHTRate() {
+      const whtType = document.getElementById('wht-type').value;
+      const customRateGroup = document.getElementById('wht-custom-rate-group');
+      
+      if (whtType === 'custom') {
+        customRateGroup.style.display = 'block';
+      } else {
+        customRateGroup.style.display = 'none';
+      }
+    }
+
+    function calculateWHT() {
+      const amount = parseFloat(document.getElementById('wht-amount').value);
+      const whtTypeSelect = document.getElementById('wht-type');
+      const whtType = whtTypeSelect.options[whtTypeSelect.selectedIndex].text;
+      let rate = parseFloat(whtTypeSelect.value);
+      
+      if (whtTypeSelect.value === 'custom') {
+        rate = parseFloat(document.getElementById('wht-custom-rate').value);
+        if (isNaN(rate) || rate < 0 || rate > 100) {
+          showError('wht-results', 'Please enter a valid custom WHT rate between 0 and 100.');
+          return;
+        }
+      }
+
+      const payerType = document.getElementById('wht-payer-type').value;
+
+      if (isNaN(amount) || amount < 0) {
+        showError('wht-results', 'Please enter a valid payment amount.');
+        return;
+      }
+
+      const whtAmount = roundToNaira(amount * (rate / 100));
+      const netPayment = roundToNaira(amount - whtAmount);
+
+      lastCalculation = {
+        type: 'WHT',
+        inputs: { amount, whtType, rate, payerType },
+        results: { whtAmount, netPayment }
+      };
+
+      const resultsHTML = `
+        <h3>WHT Calculation Results</h3>
+        <div class="result-row">
+          <span class="result-label">Gross Payment:</span>
+          <span class="result-value">${formatCurrency(amount)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Payment Type:</span>
+          <span class="result-value">${whtType}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">WHT Rate:</span>
+          <span class="result-value">${rate}%</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">WHT Amount:</span>
+          <span class="result-value highlight">${formatCurrency(whtAmount)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Net Payment to Recipient:</span>
+          <span class="result-value highlight">${formatCurrency(netPayment)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Payer Type:</span>
+          <span class="result-value">${payerType === 'company' ? 'Company' : 'Individual'}</span>
+        </div>
+        <div class="explanation">
+          <p><strong>Explanation:</strong> Withholding Tax (WHT) is deducted at source from payments. The payer must remit the WHT amount to FIRS.</p>
+          <p><strong>Default Rates:</strong> Contracts (5%), Rent/Dividends/Interest/Royalties/Management Fees (10%).</p>
+          <p><strong>Rounding:</strong> All amounts rounded to the nearest Naira (₦).</p>
+        </div>
+      `;
+
+      document.getElementById('wht-results').innerHTML = resultsHTML;
+      document.getElementById('wht-results').style.display = 'block';
+    }
+
+    function resetWHT() {
+      document.getElementById('wht-amount').value = '';
+      document.getElementById('wht-type').value = '5';
+      document.getElementById('wht-custom-rate').value = '';
+      document.getElementById('wht-payer-type').value = 'company';
+      document.getElementById('wht-custom-rate-group').style.display = 'none';
+      document.getElementById('wht-results').style.display = 'none';
+    }
+
+    // PAYE/PIT Calculator
+    function calculatePAYE() {
+      const grossSalary = parseFloat(document.getElementById('paye-gross-salary').value);
+      const allowances = parseFloat(document.getElementById('paye-allowances').value) || 0;
+      const pensionRate = parseFloat(document.getElementById('paye-pension-rate').value) || 8;
+      const includeNHF = document.getElementById('paye-nhf').checked;
+      const otherReliefs = parseFloat(document.getElementById('paye-other-reliefs').value) || 0;
+
+      if (isNaN(grossSalary) || grossSalary < 0) {
+        showError('paye-results', 'Please enter a valid gross salary.');
+        return;
+      }
+
+      const totalIncome = grossSalary + allowances;
+      
+      // Calculate deductions
+      const pensionContribution = roundToNaira(grossSalary * (pensionRate / 100));
+      const nhfContribution = includeNHF ? roundToNaira(grossSalary * 0.025) : 0;
+      
+      // Taxable income after deductions
+      const taxableIncome = totalIncome - pensionContribution - nhfContribution - otherReliefs;
+
+      // Apply 2026 tax bands
+      let tax = 0;
+      const bands = [
+        { limit: 800000, rate: 0, name: '0 - 800,000' },
+        { limit: 3000000, rate: 0.15, name: '800,001 - 3,000,000' },
+        { limit: 12000000, rate: 0.18, name: '3,000,001 - 12,000,000' },
+        { limit: 25000000, rate: 0.21, name: '12,000,001 - 25,000,000' },
+        { limit: 50000000, rate: 0.23, name: '25,000,001 - 50,000,000' },
+        { limit: Infinity, rate: 0.25, name: 'Above 50,000,000' }
+      ];
+
+      let remainingIncome = Math.max(0, taxableIncome);
+      let previousLimit = 0;
+      let bandBreakdown = '';
+
+      for (const band of bands) {
+        if (remainingIncome <= 0) break;
+        
+        const bandIncome = Math.min(remainingIncome, band.limit - previousLimit);
+        const bandTax = roundToNaira(bandIncome * band.rate);
+        tax += bandTax;
+        
+        if (bandIncome > 0) {
+          bandBreakdown += `<p>Band ${band.name}: ${formatCurrency(bandIncome)} × ${(band.rate * 100)}% = ${formatCurrency(bandTax)}</p>`;
+        }
+        
+        remainingIncome -= bandIncome;
+        previousLimit = band.limit;
+      }
+
+      tax = roundToNaira(tax);
+      const netIncome = roundToNaira(totalIncome - pensionContribution - nhfContribution - tax);
+      const effectiveRate = totalIncome > 0 ? ((tax / totalIncome) * 100).toFixed(2) : 0;
+
+      lastCalculation = {
+        type: 'PAYE',
+        inputs: { grossSalary, allowances, pensionRate, includeNHF, otherReliefs },
+        results: { totalIncome, pensionContribution, nhfContribution, taxableIncome, tax, netIncome, effectiveRate }
+      };
+
+      const resultsHTML = `
+        <h3>PAYE/PIT Calculation Results</h3>
+        <div class="result-row">
+          <span class="result-label">Gross Salary:</span>
+          <span class="result-value">${formatCurrency(grossSalary)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Allowances:</span>
+          <span class="result-value">${formatCurrency(allowances)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Total Income:</span>
+          <span class="result-value">${formatCurrency(totalIncome)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Pension Contribution (${pensionRate}%):</span>
+          <span class="result-value">${formatCurrency(pensionContribution)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">NHF Contribution (2.5%):</span>
+          <span class="result-value">${formatCurrency(nhfContribution)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Other Reliefs:</span>
+          <span class="result-value">${formatCurrency(otherReliefs)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Taxable Income:</span>
+          <span class="result-value">${formatCurrency(taxableIncome)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Annual PAYE Tax:</span>
+          <span class="result-value highlight">${formatCurrency(tax)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Effective Tax Rate:</span>
+          <span class="result-value">${effectiveRate}%</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Net Annual Income:</span>
+          <span class="result-value highlight">${formatCurrency(netIncome)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Monthly Net Income:</span>
+          <span class="result-value highlight">${formatCurrency(netIncome / 12)}</span>
+        </div>
+        <div class="explanation">
+          <p><strong>2026 Tax Bands Applied:</strong></p>
+          ${bandBreakdown}
+          <p><strong>Deductions:</strong> Pension and NHF contributions are deducted before tax. The first ₦800,000 is tax-free.</p>
+          <p><strong>Rounding:</strong> All amounts rounded to the nearest Naira (₦).</p>
+        </div>
+      `;
+
+      document.getElementById('paye-results').innerHTML = resultsHTML;
+      document.getElementById('paye-results').style.display = 'block';
+    }
+
+    function resetPAYE() {
+      document.getElementById('paye-gross-salary').value = '';
+      document.getElementById('paye-allowances').value = '0';
+      document.getElementById('paye-pension-rate').value = '8';
+      document.getElementById('paye-nhf').checked = true;
+      document.getElementById('paye-other-reliefs').value = '0';
+      document.getElementById('paye-results').style.display = 'none';
+    }
+
+    // CIT Calculator
+    function calculateCIT() {
+      const revenue = parseFloat(document.getElementById('cit-revenue').value);
+      const expenses = parseFloat(document.getElementById('cit-expenses').value);
+      const turnover = parseFloat(document.getElementById('cit-turnover').value) || revenue;
+      const applyDevLevy = document.getElementById('cit-dev-levy').checked;
+      let citRate = parseFloat(document.getElementById('cit-rate').value);
+
+      if (isNaN(revenue) || revenue < 0) {
+        showError('cit-results', 'Please enter a valid revenue amount.');
+        return;
+      }
+
+      if (isNaN(expenses) || expenses < 0) {
+        showError('cit-results', 'Please enter a valid expenses amount.');
+        return;
+      }
+
+      const taxableProfit = Math.max(0, revenue - expenses);
+      
+      // Small company exemption
+      const isSmallCompany = turnover <= 100000000;
+      if (isSmallCompany) {
+        citRate = 0;
+      }
+
+      const citAmount = roundToNaira(taxableProfit * (citRate / 100));
+      const devLevy = applyDevLevy ? roundToNaira(taxableProfit * 0.04) : 0;
+      const totalTax = roundToNaira(citAmount + devLevy);
+      const netProfit = roundToNaira(taxableProfit - totalTax);
+      const effectiveRate = taxableProfit > 0 ? ((totalTax / taxableProfit) * 100).toFixed(2) : 0;
+
+      lastCalculation = {
+        type: 'CIT',
+        inputs: { revenue, expenses, turnover, applyDevLevy, citRate },
+        results: { taxableProfit, isSmallCompany, citAmount, devLevy, totalTax, netProfit, effectiveRate }
+      };
+
+      const resultsHTML = `
+        <h3>CIT Calculation Results</h3>
+        <div class="result-row">
+          <span class="result-label">Annual Revenue:</span>
+          <span class="result-value">${formatCurrency(revenue)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Allowable Expenses:</span>
+          <span class="result-value">${formatCurrency(expenses)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Taxable Profit:</span>
+          <span class="result-value">${formatCurrency(taxableProfit)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Company Turnover:</span>
+          <span class="result-value">${formatCurrency(turnover)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Company Status:</span>
+          <span class="result-value">${isSmallCompany ? 'Small Company (Exempt)' : 'Standard Company'}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">CIT Rate Applied:</span>
+          <span class="result-value">${citRate}%</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">CIT Amount:</span>
+          <span class="result-value highlight">${formatCurrency(citAmount)}</span>
+        </div>
+        ${applyDevLevy ? `
+        <div class="result-row">
+          <span class="result-label">Development Levy (4%):</span>
+          <span class="result-value">${formatCurrency(devLevy)}</span>
+        </div>
+        ` : ''}
+        <div class="result-row">
+          <span class="result-label">Total Tax:</span>
+          <span class="result-value highlight">${formatCurrency(totalTax)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Effective Tax Rate:</span>
+          <span class="result-value">${effectiveRate}%</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Net Profit After Tax:</span>
+          <span class="result-value highlight">${formatCurrency(netProfit)}</span>
+        </div>
+        <div class="explanation">
+          <p><strong>Small Company Exemption:</strong> ${isSmallCompany ? 'Applied - Companies with turnover ≤ ₦100,000,000 are exempt from CIT (0% rate).' : 'Not applicable - Standard 30% CIT rate applies.'}</p>
+          <p><strong>Development Levy:</strong> ${applyDevLevy ? 'A 4% development levy has been applied to taxable profit.' : 'Development levy not applied.'}</p>
+          <p><strong>Calculation:</strong> CIT is calculated on taxable profit (Revenue - Allowable Expenses).</p>
+          <p><strong>Rounding:</strong> All amounts rounded to the nearest Naira (₦).</p>
+        </div>
+      `;
+
+      document.getElementById('cit-results').innerHTML = resultsHTML;
+      document.getElementById('cit-results').style.display = 'block';
+    }
+
+    function resetCIT() {
+      document.getElementById('cit-revenue').value = '';
+      document.getElementById('cit-expenses').value = '';
+      document.getElementById('cit-turnover').value = '';
+      document.getElementById('cit-dev-levy').checked = true;
+      document.getElementById('cit-rate').value = '30';
+      document.getElementById('cit-results').style.display = 'none';
+    }
+
+    // CSV Export
+    function exportToCSV() {
+      if (!lastCalculation) {
+        alert('Please perform a calculation first before exporting.');
+        return;
+      }
+
+      const calc = lastCalculation;
+      let csvContent = 'data:text/csv;charset=utf-8,';
+      csvContent += 'Nigeria Tax Calculator Results\n';
+      csvContent += `Calculation Type: ${calc.type}\n`;
+      csvContent += `Date: ${new Date().toLocaleString()}\n\n`;
+
+      csvContent += 'Inputs:\n';
+      for (const [key, value] of Object.entries(calc.inputs)) {
+        csvContent += `${key},${value}\n`;
+      }
+
+      csvContent += '\nResults:\n';
+      for (const [key, value] of Object.entries(calc.results)) {
+        csvContent += `${key},${value}\n`;
+      }
+
+      csvContent += '\nDisclaimer: Estimates only - not tax or legal advice\n';
+      csvContent += 'Verify with FIRS or qualified tax professional\n';
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `nigeria-tax-calc-${calc.type.toLowerCase()}-${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Nigeria Tax Calculator 2026 initialized');
+    });
+  </script>
+</body>
+</html>
