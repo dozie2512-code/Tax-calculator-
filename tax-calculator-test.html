@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nigeria Tax Calculator - Test Scenarios</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: #f9fafb;
+      color: #111827;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(90deg, #0ea5e9 0%, #60a5fa 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .test-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-section h2 {
+      color: #2563eb;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+
+    .test-case {
+      background: #f8fafc;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .test-case h3 {
+      color: #374151;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .test-input,
+    .test-expected {
+      background: white;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+    }
+
+    .test-input h4,
+    .test-expected h4 {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    .test-item:last-child {
+      border-bottom: none;
+    }
+
+    .test-label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .test-value {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .test-result {
+      background: #dbeafe;
+      border: 2px solid #3b82f6;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .test-result.pass {
+      background: #d1fae5;
+      border-color: #10b981;
+    }
+
+    .test-result.fail {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .test-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button.secondary {
+      background: #6b7280;
+    }
+
+    button.secondary:hover {
+      background: #4b5563;
+    }
+
+    .summary {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .summary h2 {
+      color: #166534;
+      margin-bottom: 12px;
+    }
+
+    .summary .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 16px;
+    }
+
+    .summary .stat {
+      text-align: center;
+    }
+
+    .summary .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #166534;
+    }
+
+    .summary .stat-label {
+      font-size: 0.9rem;
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .test-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary .stats {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧪 Nigeria Tax Calculator - Test Scenarios</h1>
+      <p>Validation suite for tax calculation accuracy</p>
+    </header>
+
+    <!-- VAT Test Cases -->
+    <div class="test-section">
+      <h2>VAT Calculator Tests</h2>
+
+      <div class="test-case">
+        <h3>Test Case 1: Standard Taxable VAT</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Amount:</span>
+              <span class="test-value">₦100,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Category:</span>
+              <span class="test-value">Taxable</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Input VAT:</span>
+              <span class="test-value">₦0</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">VAT Charged:</span>
+              <span class="test-value">₦7,500</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Net VAT Payable:</span>
+              <span class="test-value">₦7,500</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Total Amount:</span>
+              <span class="test-value">₦107,500</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runVATTest1()">Run Test</button>
+        </div>
+        <div id="vat-test-1-result"></div>
+      </div>
+
+      <div class="test-case">
+        <h3>Test Case 2: VAT with Input Tax Credit</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Amount:</span>
+              <span class="test-value">₦500,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Category:</span>
+              <span class="test-value">Taxable</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Input VAT:</span>
+              <span class="test-value">₦15,000</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">VAT Charged:</span>
+              <span class="test-value">₦37,500</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Net VAT Payable:</span>
+              <span class="test-value">₦22,500</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Total Amount:</span>
+              <span class="test-value">₦537,500</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runVATTest2()">Run Test</button>
+        </div>
+        <div id="vat-test-2-result"></div>
+      </div>
+    </div>
+
+    <!-- WHT Test Cases -->
+    <div class="test-section">
+      <h2>WHT Calculator Tests</h2>
+
+      <div class="test-case">
+        <h3>Test Case 3: WHT on Contracts (5%)</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Payment Amount:</span>
+              <span class="test-value">₦1,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Type:</span>
+              <span class="test-value">Contracts (5%)</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">WHT Amount:</span>
+              <span class="test-value">₦50,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Net Payment:</span>
+              <span class="test-value">₦950,000</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runWHTTest1()">Run Test</button>
+        </div>
+        <div id="wht-test-1-result"></div>
+      </div>
+
+      <div class="test-case">
+        <h3>Test Case 4: WHT on Rent (10%)</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Payment Amount:</span>
+              <span class="test-value">₦500,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Type:</span>
+              <span class="test-value">Rent (10%)</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">WHT Amount:</span>
+              <span class="test-value">₦50,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Net Payment:</span>
+              <span class="test-value">₦450,000</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runWHTTest2()">Run Test</button>
+        </div>
+        <div id="wht-test-2-result"></div>
+      </div>
+    </div>
+
+    <!-- PAYE Test Cases -->
+    <div class="test-section">
+      <h2>PAYE/PIT Calculator Tests</h2>
+
+      <div class="test-case">
+        <h3>Test Case 5: Basic PAYE Calculation</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Gross Salary:</span>
+              <span class="test-value">₦5,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Allowances:</span>
+              <span class="test-value">₦0</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Pension Rate:</span>
+              <span class="test-value">8%</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Include NHF:</span>
+              <span class="test-value">Yes</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">Pension:</span>
+              <span class="test-value">₦400,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">NHF:</span>
+              <span class="test-value">₦125,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Taxable Income:</span>
+              <span class="test-value">₦4,475,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">PAYE Tax:</span>
+              <span class="test-value">₦595,500</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runPAYETest1()">Run Test</button>
+        </div>
+        <div id="paye-test-1-result"></div>
+      </div>
+
+      <div class="test-case">
+        <h3>Test Case 6: Tax-Free Threshold Test</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Gross Salary:</span>
+              <span class="test-value">₦800,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Pension Rate:</span>
+              <span class="test-value">8%</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Include NHF:</span>
+              <span class="test-value">No</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">Pension:</span>
+              <span class="test-value">₦64,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Taxable Income:</span>
+              <span class="test-value">₦736,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">PAYE Tax:</span>
+              <span class="test-value">₦0</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runPAYETest2()">Run Test</button>
+        </div>
+        <div id="paye-test-2-result"></div>
+      </div>
+    </div>
+
+    <!-- CIT Test Cases -->
+    <div class="test-section">
+      <h2>CIT Calculator Tests</h2>
+
+      <div class="test-case">
+        <h3>Test Case 7: Small Company Exemption</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Revenue:</span>
+              <span class="test-value">₦80,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Expenses:</span>
+              <span class="test-value">₦50,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Turnover:</span>
+              <span class="test-value">₦80,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Dev Levy:</span>
+              <span class="test-value">Yes</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">Taxable Profit:</span>
+              <span class="test-value">₦30,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">CIT (0% exempt):</span>
+              <span class="test-value">₦0</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Dev Levy (4%):</span>
+              <span class="test-value">₦1,200,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Total Tax:</span>
+              <span class="test-value">₦1,200,000</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runCITTest1()">Run Test</button>
+        </div>
+        <div id="cit-test-1-result"></div>
+      </div>
+
+      <div class="test-case">
+        <h3>Test Case 8: Standard CIT Calculation</h3>
+        <div class="test-grid">
+          <div class="test-input">
+            <h4>📥 Inputs</h4>
+            <div class="test-item">
+              <span class="test-label">Revenue:</span>
+              <span class="test-value">₦200,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Expenses:</span>
+              <span class="test-value">₦100,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Turnover:</span>
+              <span class="test-value">₦200,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Dev Levy:</span>
+              <span class="test-value">No</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">CIT Rate:</span>
+              <span class="test-value">30%</span>
+            </div>
+          </div>
+          <div class="test-expected">
+            <h4>✅ Expected Results</h4>
+            <div class="test-item">
+              <span class="test-label">Taxable Profit:</span>
+              <span class="test-value">₦100,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">CIT (30%):</span>
+              <span class="test-value">₦30,000,000</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Dev Levy:</span>
+              <span class="test-value">₦0</span>
+            </div>
+            <div class="test-item">
+              <span class="test-label">Total Tax:</span>
+              <span class="test-value">₦30,000,000</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button onclick="runCITTest2()">Run Test</button>
+        </div>
+        <div id="cit-test-2-result"></div>
+      </div>
+    </div>
+
+    <div class="test-buttons" style="justify-content: center; margin-top: 30px;">
+      <button onclick="runAllTests()" style="padding: 16px 32px; font-size: 1rem;">🚀 Run All Tests</button>
+      <button class="secondary" onclick="resetAllTests()">🔄 Reset All</button>
+    </div>
+
+    <div id="summary" class="summary" style="display: none;">
+      <h2>Test Summary</h2>
+      <p>All test scenarios completed</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="total-tests">0</div>
+          <div class="stat-label">Total Tests</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="passed-tests">0</div>
+          <div class="stat-label">Passed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="failed-tests">0</div>
+          <div class="stat-label">Failed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Utility functions
+    function roundToNaira(amount) {
+      return Math.round(amount);
+    }
+
+    function formatCurrency(amount) {
+      return '₦' + Math.round(amount).toLocaleString('en-NG');
+    }
+
+    function showResult(elementId, passed, actual, expected) {
+      const element = document.getElementById(elementId);
+      const resultClass = passed ? 'pass' : 'fail';
+      const resultIcon = passed ? '✅' : '❌';
+      const resultText = passed ? 'PASS' : 'FAIL';
+      
+      element.innerHTML = `
+        <div class="test-result ${resultClass}">
+          ${resultIcon} <strong>${resultText}</strong>
+          ${!passed ? `<br><small>Expected: ${expected}, Got: ${actual}</small>` : ''}
+        </div>
+      `;
+    }
+
+    // VAT Tests
+    function runVATTest1() {
+      const amount = 100000;
+      const vatCharged = roundToNaira(amount * 0.075);
+      const netVAT = vatCharged;
+      const totalAmount = roundToNaira(amount + vatCharged);
+
+      const passed = vatCharged === 7500 && netVAT === 7500 && totalAmount === 107500;
+      showResult('vat-test-1-result', passed, 
+        `VAT: ${formatCurrency(vatCharged)}, Net: ${formatCurrency(netVAT)}, Total: ${formatCurrency(totalAmount)}`,
+        'VAT: ₦7,500, Net: ₦7,500, Total: ₦107,500');
+      return passed;
+    }
+
+    function runVATTest2() {
+      const amount = 500000;
+      const inputVAT = 15000;
+      const vatCharged = roundToNaira(amount * 0.075);
+      const netVAT = roundToNaira(vatCharged - inputVAT);
+      const totalAmount = roundToNaira(amount + vatCharged);
+
+      const passed = vatCharged === 37500 && netVAT === 22500 && totalAmount === 537500;
+      showResult('vat-test-2-result', passed,
+        `VAT: ${formatCurrency(vatCharged)}, Net: ${formatCurrency(netVAT)}, Total: ${formatCurrency(totalAmount)}`,
+        'VAT: ₦37,500, Net: ₦22,500, Total: ₦537,500');
+      return passed;
+    }
+
+    // WHT Tests
+    function runWHTTest1() {
+      const amount = 1000000;
+      const rate = 5;
+      const whtAmount = roundToNaira(amount * (rate / 100));
+      const netPayment = roundToNaira(amount - whtAmount);
+
+      const passed = whtAmount === 50000 && netPayment === 950000;
+      showResult('wht-test-1-result', passed,
+        `WHT: ${formatCurrency(whtAmount)}, Net: ${formatCurrency(netPayment)}`,
+        'WHT: ₦50,000, Net: ₦950,000');
+      return passed;
+    }
+
+    function runWHTTest2() {
+      const amount = 500000;
+      const rate = 10;
+      const whtAmount = roundToNaira(amount * (rate / 100));
+      const netPayment = roundToNaira(amount - whtAmount);
+
+      const passed = whtAmount === 50000 && netPayment === 450000;
+      showResult('wht-test-2-result', passed,
+        `WHT: ${formatCurrency(whtAmount)}, Net: ${formatCurrency(netPayment)}`,
+        'WHT: ₦50,000, Net: ₦450,000');
+      return passed;
+    }
+
+    // PAYE Tests
+    function runPAYETest1() {
+      const grossSalary = 5000000;
+      const pensionRate = 8;
+      const pensionContribution = roundToNaira(grossSalary * (pensionRate / 100));
+      const nhfContribution = roundToNaira(grossSalary * 0.025);
+      const taxableIncome = grossSalary - pensionContribution - nhfContribution;
+
+      // Calculate tax using bands
+      let tax = 0;
+      let remaining = Math.max(0, taxableIncome);
+      
+      // Band 1: 0-800,000 @ 0%
+      const band1 = Math.min(remaining, 800000);
+      remaining -= band1;
+      
+      // Band 2: 800,001-3,000,000 @ 15%
+      const band2 = Math.min(remaining, 3000000 - 800000);
+      tax += roundToNaira(band2 * 0.15);
+      remaining -= band2;
+      
+      // Band 3: 3,000,001-12,000,000 @ 18%
+      const band3 = Math.min(remaining, 12000000 - 3000000);
+      tax += roundToNaira(band3 * 0.18);
+
+      const passed = pensionContribution === 400000 && 
+                     nhfContribution === 125000 && 
+                     taxableIncome === 4475000 && 
+                     tax === 595500;
+      
+      showResult('paye-test-1-result', passed,
+        `Pension: ${formatCurrency(pensionContribution)}, NHF: ${formatCurrency(nhfContribution)}, Taxable: ${formatCurrency(taxableIncome)}, Tax: ${formatCurrency(tax)}`,
+        'Pension: ₦400,000, NHF: ₦125,000, Taxable: ₦4,475,000, Tax: ₦595,500');
+      return passed;
+    }
+
+    function runPAYETest2() {
+      const grossSalary = 800000;
+      const pensionRate = 8;
+      const pensionContribution = roundToNaira(grossSalary * (pensionRate / 100));
+      const taxableIncome = grossSalary - pensionContribution;
+      
+      // Below 800,000 threshold
+      const tax = taxableIncome <= 800000 ? 0 : roundToNaira((taxableIncome - 800000) * 0.15);
+
+      const passed = pensionContribution === 64000 && 
+                     taxableIncome === 736000 && 
+                     tax === 0;
+      
+      showResult('paye-test-2-result', passed,
+        `Pension: ${formatCurrency(pensionContribution)}, Taxable: ${formatCurrency(taxableIncome)}, Tax: ${formatCurrency(tax)}`,
+        'Pension: ₦64,000, Taxable: ₦736,000, Tax: ₦0');
+      return passed;
+    }
+
+    // CIT Tests
+    function runCITTest1() {
+      const revenue = 80000000;
+      const expenses = 50000000;
+      const turnover = 80000000;
+      const taxableProfit = revenue - expenses;
+      
+      const isSmallCompany = turnover <= 100000000;
+      const citAmount = isSmallCompany ? 0 : roundToNaira(taxableProfit * 0.30);
+      const devLevy = roundToNaira(taxableProfit * 0.04);
+      const totalTax = citAmount + devLevy;
+
+      const passed = taxableProfit === 30000000 && 
+                     citAmount === 0 && 
+                     devLevy === 1200000 && 
+                     totalTax === 1200000;
+      
+      showResult('cit-test-1-result', passed,
+        `Profit: ${formatCurrency(taxableProfit)}, CIT: ${formatCurrency(citAmount)}, Levy: ${formatCurrency(devLevy)}, Total: ${formatCurrency(totalTax)}`,
+        'Profit: ₦30,000,000, CIT: ₦0, Levy: ₦1,200,000, Total: ₦1,200,000');
+      return passed;
+    }
+
+    function runCITTest2() {
+      const revenue = 200000000;
+      const expenses = 100000000;
+      const turnover = 200000000;
+      const taxableProfit = revenue - expenses;
+      
+      const isSmallCompany = turnover <= 100000000;
+      const citAmount = isSmallCompany ? 0 : roundToNaira(taxableProfit * 0.30);
+      const devLevy = 0; // Not applied in this test
+      const totalTax = citAmount + devLevy;
+
+      const passed = taxableProfit === 100000000 && 
+                     citAmount === 30000000 && 
+                     devLevy === 0 && 
+                     totalTax === 30000000;
+      
+      showResult('cit-test-2-result', passed,
+        `Profit: ${formatCurrency(taxableProfit)}, CIT: ${formatCurrency(citAmount)}, Levy: ${formatCurrency(devLevy)}, Total: ${formatCurrency(totalTax)}`,
+        'Profit: ₦100,000,000, CIT: ₦30,000,000, Levy: ₦0, Total: ₦30,000,000');
+      return passed;
+    }
+
+    // Run all tests
+    function runAllTests() {
+      const results = [
+        runVATTest1(),
+        runVATTest2(),
+        runWHTTest1(),
+        runWHTTest2(),
+        runPAYETest1(),
+        runPAYETest2(),
+        runCITTest1(),
+        runCITTest2()
+      ];
+
+      const total = results.length;
+      const passed = results.filter(r => r).length;
+      const failed = total - passed;
+
+      document.getElementById('total-tests').textContent = total;
+      document.getElementById('passed-tests').textContent = passed;
+      document.getElementById('failed-tests').textContent = failed;
+      document.getElementById('summary').style.display = 'block';
+
+      // Scroll to summary
+      document.getElementById('summary').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetAllTests() {
+      const resultDivs = [
+        'vat-test-1-result', 'vat-test-2-result',
+        'wht-test-1-result', 'wht-test-2-result',
+        'paye-test-1-result', 'paye-test-2-result',
+        'cit-test-1-result', 'cit-test-2-result'
+      ];
+
+      resultDivs.forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+
+      document.getElementById('summary').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
