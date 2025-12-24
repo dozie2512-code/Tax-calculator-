@@ -4,329 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nigeria Tax Calculator 2026</title>
-  
-  <style>
-    :root{
-      --panel-bg: #ffffff;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning: #f59e0b;
-      --card: #f8fafc;
-      --border: #e5e7eb;
-    }
-    
-    * { box-sizing: border-box; }
-    
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: #f9fafb;
-      color: #111827;
-    }
-    
-    #app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    
-    header {
-      padding: 16px 24px;
-      background: linear-gradient(90deg, #0ea5e9 0, #60a5fa 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    
-    header p {
-      margin: 6px 0 0 0;
-      font-size: 0.9rem;
-      opacity: 0.95;
-    }
-    
-    main {
-      flex: 1;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px;
-    }
-    
-    .disclaimer {
-      background: #fef3c7;
-      border: 2px solid #f59e0b;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-    
-    .disclaimer h2 {
-      margin: 0 0 8px 0;
-      font-size: 1.1rem;
-      color: #92400e;
-    }
-    
-    .disclaimer p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: #78350f;
-    }
-    
-    .privacy-notice {
-      background: #dbeafe;
-      border: 2px solid #3b82f6;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 24px;
-      font-size: 0.9rem;
-      color: #1e40af;
-      text-align: center;
-      font-weight: 600;
-    }
-    
-    .calculator-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .card h3 {
-      margin: 0 0 16px 0;
-      font-size: 1.2rem;
-      color: #1f2937;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 8px;
-    }
-    
-    .form-group {
-      margin-bottom: 16px;
-    }
-    
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #374151;
-      font-size: 0.9rem;
-    }
-    
-    input[type="number"],
-    input[type="text"],
-    select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      transition: border-color 0.2s;
-    }
-    
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    
-    input[type="checkbox"] {
-      margin-right: 8px;
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-    
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      font-weight: normal;
-      cursor: pointer;
-    }
-    
-    button {
-      background: var(--accent);
-      color: white;
-      border: 0;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
-    
-    button:hover {
-      background: #1d4ed8;
-    }
-    
-    button:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-    
-    button.secondary {
-      background: #e5e7eb;
-      color: #374151;
-    }
-    
-    button.secondary:hover {
-      background: #d1d5db;
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-    }
-    
-    .results {
-      background: var(--card);
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-    
-    .results h4 {
-      margin: 0 0 16px 0;
-      font-size: 1.1rem;
-      color: #1f2937;
-    }
-    
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px dashed var(--border);
-    }
-    
-    .result-row:last-child {
-      border-bottom: 0;
-      font-weight: 700;
-      font-size: 1.1rem;
-      padding-top: 16px;
-      margin-top: 8px;
-      border-top: 2px solid var(--accent);
-    }
-    
-    .result-label {
-      color: #4b5563;
-    }
-    
-    .result-value {
-      font-weight: 600;
-      color: #111827;
-    }
-    
-    .explanation {
-      background: #f0f9ff;
-      border-left: 4px solid #3b82f6;
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      color: #1e40af;
-    }
-    
-    .examples {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 24px;
-    }
-    
-    .examples h3 {
-      margin: 0 0 16px 0;
-      font-size: 1.2rem;
-      color: #1f2937;
-    }
-    
-    .example-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    .example-btn {
-      padding: 10px 16px;
-      background: #e0f2fe;
-      color: #0369a1;
-      border: 1px solid #7dd3fc;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    
-    .example-btn:hover {
-      background: #bae6fd;
-    }
-    
-    .help-text {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    
-    footer {
-      padding: 20px 24px;
-      background: white;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-    
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    
-    footer a:hover {
-      text-decoration: underline;
-    }
-    
-    .error {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 16px;
-      font-size: 0.9rem;
-      border: 1px solid #fecaca;
-    }
-    
-    @media (max-width: 900px) {
-      .calculator-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .button-group {
-        flex-direction: column;
-      }
-      
-      button {
-        width: 100%;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
@@ -335,40 +13,40 @@
       <p>VAT, WHT, PAYE/PIT, and CIT Calculator based on Tax Act changes effective January 1, 2026</p>
     </header>
     
-    <main>
-      <div class="disclaimer">
-        <h2>⚠️ Important Disclaimer</h2>
+    <main role="main" aria-label="Tax Calculators">
+      <div class="disclaimer" role="alert" aria-labelledby="disclaimer-heading">
+        <h2 id="disclaimer-heading">⚠️ Important Disclaimer</h2>
         <p><strong>Estimates Only — Not Tax or Legal Advice:</strong> This calculator provides estimates based on publicly available advisory summaries. Tax obligations depend on individual circumstances. Always consult with a qualified tax professional or the Nigeria Revenue Service for official guidance.</p>
       </div>
       
-      <div class="privacy-notice">
+      <div class="privacy-notice" role="note" aria-label="Privacy and security notice">
         🔒 <strong>Privacy & Security:</strong> All calculations are performed entirely in your browser. No data is transmitted or stored externally.
       </div>
       
       <div class="examples">
         <h3>📋 Example Scenarios</h3>
         <p class="help-text">Load pre-filled examples to validate calculations:</p>
-        <div class="example-buttons">
-          <button class="example-btn" onclick="loadExample('vat')">VAT Example</button>
-          <button class="example-btn" onclick="loadExample('wht')">WHT Example</button>
-          <button class="example-btn" onclick="loadExample('paye')">PAYE Example</button>
-          <button class="example-btn" onclick="loadExample('cit')">CIT Example</button>
-          <button class="example-btn" onclick="clearAll()">Clear All</button>
+        <div class="example-buttons" role="group" aria-label="Example scenario buttons">
+          <button class="example-btn" onclick="loadExample('vat')" aria-label="Load VAT example">VAT Example</button>
+          <button class="example-btn" onclick="loadExample('wht')" aria-label="Load WHT example">WHT Example</button>
+          <button class="example-btn" onclick="loadExample('paye')" aria-label="Load PAYE example">PAYE Example</button>
+          <button class="example-btn" onclick="loadExample('cit')" aria-label="Load CIT example">CIT Example</button>
+          <button class="example-btn" onclick="clearAll()" aria-label="Clear all inputs">Clear All</button>
         </div>
       </div>
       
       <div class="calculator-grid">
         <!-- VAT Calculator -->
-        <div class="card">
-          <h3>Value Added Tax (VAT)</h3>
+        <div class="card" role="region" aria-labelledby="vat-heading">
+          <h3 id="vat-heading">Value Added Tax (VAT)</h3>
           <div class="form-group">
             <label for="vatAmount">Transaction Amount (₦)</label>
-            <input type="number" id="vatAmount" placeholder="1000000" min="0" step="0.01" />
-            <div class="help-text">Enter the base transaction amount</div>
+            <input type="number" id="vatAmount" placeholder="1000000" min="0" step="0.01" aria-describedby="vat-amount-help" aria-required="true" />
+            <div class="help-text" id="vat-amount-help">Enter the base transaction amount</div>
           </div>
           <div class="form-group">
             <label for="vatCategory">Item Category</label>
-            <select id="vatCategory">
+            <select id="vatCategory" aria-label="Select VAT category">
               <option value="taxable">Taxable (7.5% VAT)</option>
               <option value="exempt">Exempt (0% VAT)</option>
               <option value="zero-rated">Zero-rated (0% VAT)</option>
@@ -376,23 +54,23 @@
           </div>
           <div class="form-group">
             <label for="vatInputAmount">Input VAT (optional - for recoverable VAT) (₦)</label>
-            <input type="number" id="vatInputAmount" placeholder="0" min="0" step="0.01" />
-            <div class="help-text">Enter input VAT from purchases if applicable</div>
+            <input type="number" id="vatInputAmount" placeholder="0" min="0" step="0.01" aria-describedby="vat-input-help" />
+            <div class="help-text" id="vat-input-help">Enter input VAT from purchases if applicable</div>
           </div>
-          <button onclick="calculateVAT()">Calculate VAT</button>
-          <div id="vatResults"></div>
+          <button onclick="calculateVAT()" aria-label="Calculate VAT">Calculate VAT</button>
+          <div id="vatResults" aria-live="polite" aria-atomic="true"></div>
         </div>
         
         <!-- WHT Calculator -->
-        <div class="card">
-          <h3>Withholding Tax (WHT)</h3>
+        <div class="card" role="region" aria-labelledby="wht-heading">
+          <h3 id="wht-heading">Withholding Tax (WHT)</h3>
           <div class="form-group">
             <label for="whtAmount">Payment Amount (₦)</label>
-            <input type="number" id="whtAmount" placeholder="500000" min="0" step="0.01" />
+            <input type="number" id="whtAmount" placeholder="500000" min="0" step="0.01" aria-required="true" />
           </div>
           <div class="form-group">
             <label for="whtType">Payment Type</label>
-            <select id="whtType" onchange="updateWHTRate()">
+            <select id="whtType" onchange="updateWHTRate()" aria-label="Select payment type">
               <option value="5">Contracts (5%)</option>
               <option value="10" selected>Rent (10%)</option>
               <option value="10">Dividends (10%)</option>
@@ -404,52 +82,52 @@
           </div>
           <div class="form-group" id="customWHTRate" style="display:none;">
             <label for="whtCustomRate">Custom WHT Rate (%)</label>
-            <input type="number" id="whtCustomRate" placeholder="10" min="0" max="100" step="0.1" />
+            <input type="number" id="whtCustomRate" placeholder="10" min="0" max="100" step="0.1" aria-label="Enter custom WHT rate percentage" />
           </div>
-          <button onclick="calculateWHT()">Calculate WHT</button>
-          <div id="whtResults"></div>
+          <button onclick="calculateWHT()" aria-label="Calculate Withholding Tax">Calculate WHT</button>
+          <div id="whtResults" aria-live="polite" aria-atomic="true"></div>
         </div>
       </div>
       
       <div class="calculator-grid">
         <!-- PAYE/PIT Calculator -->
-        <div class="card">
-          <h3>PAYE / Personal Income Tax (PIT)</h3>
+        <div class="card" role="region" aria-labelledby="paye-heading">
+          <h3 id="paye-heading">PAYE / Personal Income Tax (PIT)</h3>
           <div class="form-group">
             <label for="payeGrossSalary">Annual Gross Salary (₦)</label>
-            <input type="number" id="payeGrossSalary" placeholder="6000000" min="0" step="0.01" />
+            <input type="number" id="payeGrossSalary" placeholder="6000000" min="0" step="0.01" aria-required="true" />
           </div>
           <div class="form-group">
             <label for="payeAllowances">Annual Allowances (₦)</label>
-            <input type="number" id="payeAllowances" placeholder="0" min="0" step="0.01" />
-            <div class="help-text">Housing, transport, and other allowances</div>
+            <input type="number" id="payeAllowances" placeholder="0" min="0" step="0.01" aria-describedby="paye-allowances-help" />
+            <div class="help-text" id="paye-allowances-help">Housing, transport, and other allowances</div>
           </div>
           <div class="form-group">
             <label for="payePensionRate">Employee Pension Contribution (%)</label>
-            <input type="number" id="payePensionRate" placeholder="8" min="0" max="100" step="0.1" value="8" />
-            <div class="help-text">Default: 8%</div>
+            <input type="number" id="payePensionRate" placeholder="8" min="0" max="100" step="0.1" value="8" aria-describedby="paye-pension-help" />
+            <div class="help-text" id="paye-pension-help">Default: 8%</div>
           </div>
           <div class="form-group">
             <label class="checkbox-label">
-              <input type="checkbox" id="payeNHF" checked />
-              <span>Deduct NHF (2.5% of basic salary)</span>
+              <input type="checkbox" id="payeNHF" checked aria-describedby="payeNHF-label" />
+              <span id="payeNHF-label">Deduct NHF (2.5% of basic salary)</span>
             </label>
           </div>
           <div class="form-group">
             <label for="payeOtherReliefs">Other Reliefs/Deductions (₦)</label>
-            <input type="number" id="payeOtherReliefs" placeholder="0" min="0" step="0.01" />
-            <div class="help-text">Life insurance, NHIS, etc.</div>
+            <input type="number" id="payeOtherReliefs" placeholder="0" min="0" step="0.01" aria-describedby="paye-reliefs-help" />
+            <div class="help-text" id="paye-reliefs-help">Life insurance, NHIS, etc.</div>
           </div>
-          <button onclick="calculatePAYE()">Calculate PAYE</button>
-          <div id="payeResults"></div>
+          <button onclick="calculatePAYE()" aria-label="Calculate PAYE">Calculate PAYE</button>
+          <div id="payeResults" aria-live="polite" aria-atomic="true"></div>
         </div>
         
         <!-- CIT Calculator -->
-        <div class="card">
-          <h3>Company Income Tax (CIT)</h3>
+        <div class="card" role="region" aria-labelledby="cit-heading">
+          <h3 id="cit-heading">Company Income Tax (CIT)</h3>
           <div class="form-group">
             <label for="citRevenue">Annual Business Revenue (₦)</label>
-            <input type="number" id="citRevenue" placeholder="50000000" min="0" step="0.01" />
+            <input type="number" id="citRevenue" placeholder="50000000" min="0" step="0.01" aria-required="true" />
           </div>
           <div class="form-group">
             <label for="citExpenses">Allowable Business Expenses (₦)</label>
@@ -457,29 +135,29 @@
           </div>
           <div class="form-group">
             <label for="citTurnover">Company Turnover (₦)</label>
-            <input type="number" id="citTurnover" placeholder="50000000" min="0" step="0.01" />
-            <div class="help-text">Companies with turnover ≤ ₦100,000,000 may be exempt</div>
+            <input type="number" id="citTurnover" placeholder="50000000" min="0" step="0.01" aria-describedby="cit-turnover-help" />
+            <div class="help-text" id="cit-turnover-help">Companies with turnover ≤ ₦100,000,000 may be exempt</div>
           </div>
           <div class="form-group">
             <label class="checkbox-label">
-              <input type="checkbox" id="citDevLevy" />
-              <span>Apply 4% Development Levy</span>
+              <input type="checkbox" id="citDevLevy" aria-describedby="citDevLevy-label" />
+              <span id="citDevLevy-label">Apply 4% Development Levy</span>
             </label>
           </div>
-          <button onclick="calculateCIT()">Calculate CIT</button>
-          <div id="citResults"></div>
+          <button onclick="calculateCIT()" aria-label="Calculate Company Income Tax">Calculate CIT</button>
+          <div id="citResults" aria-live="polite" aria-atomic="true"></div>
         </div>
       </div>
       
-      <div class="card">
-        <h3>📊 Export Results</h3>
+      <div class="card" role="region" aria-labelledby="export-heading">
+        <h3 id="export-heading">📊 Export Results</h3>
         <p>Download all your calculations as a CSV file for your records.</p>
-        <button onclick="exportToCSV()">📥 Download CSV</button>
+        <button onclick="exportToCSV()" aria-label="Download calculations as CSV">📥 Download CSV</button>
       </div>
     </main>
     
-    <footer>
-      <p><strong>Sources & References:</strong> Based on advisory summaries from <a href="https://www.pwc.com/ng/en/publications.html" target="_blank" rel="noopener">PwC Nigeria</a>, <a href="https://www.ey.com/en_ng" target="_blank" rel="noopener">EY Tax Alert</a>, Forvis Mazars, and <a href="https://africacheck.org/" target="_blank" rel="noopener">AfricaCheck</a>. Users should verify calculations with official <a href="https://www.firs.gov.ng/" target="_blank" rel="noopener">Nigeria Revenue Service</a> publications.</p>
+    <footer role="contentinfo">
+      <p><strong>Sources & References:</strong> Based on advisory summaries from <a href="https://www.pwc.com/ng/en/publications.html" target="_blank" rel="noopener" aria-label="PwC Nigeria publications">PwC Nigeria</a>, <a href="https://www.ey.com/en_ng" target="_blank" rel="noopener" aria-label="EY Tax Alert">EY Tax Alert</a>, Forvis Mazars, and <a href="https://africacheck.org/" target="_blank" rel="noopener" aria-label="AfricaCheck">AfricaCheck</a>. Users should verify calculations with official <a href="https://www.firs.gov.ng/" target="_blank" rel="noopener" aria-label="Nigeria Revenue Service">Nigeria Revenue Service</a> publications.</p>
       <p style="margin-top:8px;">All rounding to nearest Naira (₦). Calculations effective January 1, 2026.</p>
     </footer>
   </div>
