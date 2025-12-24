@@ -87,10 +87,12 @@ Calculations are based on advisory summaries and should be verified with officia
 
 ```
 /
-├── index.html          # Main tax calculator application
-├── Tax calculator      # Historical chat conversation (UK Payroll Calculator discussion)
+├── index.html          # Main tax calculator application (Nigeria Tax Calculator 2026)
+├── Tax calculator      # Historical file containing chat conversation about a different calculator
 └── README.md          # This documentation file
 ```
+
+**Note**: The "Tax calculator" file contains historical content unrelated to the current Nigeria Tax Calculator application.
 
 ## Usage
 
@@ -105,7 +107,7 @@ To use the calculator:
 ## Future Enhancements
 
 Potential areas for future development:
-- Add the missing `styles.css` file for proper styling
+- Create a `styles.css` file (currently referenced but not present in the repository - the application functions but may benefit from external styling)
 - Implement additional tax types
 - Add more detailed explanations and examples
 - Include tax planning scenarios
