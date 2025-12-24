@@ -109,8 +109,8 @@
           </div>
           <div class="form-group">
             <label class="checkbox-label">
-              <input type="checkbox" id="payeNHF" checked aria-label="Deduct NHF (2.5% of basic salary)" />
-              <span>Deduct NHF (2.5% of basic salary)</span>
+              <input type="checkbox" id="payeNHF" checked aria-describedby="payeNHF-label" />
+              <span id="payeNHF-label">Deduct NHF (2.5% of basic salary)</span>
             </label>
           </div>
           <div class="form-group">
@@ -140,8 +140,8 @@
           </div>
           <div class="form-group">
             <label class="checkbox-label">
-              <input type="checkbox" id="citDevLevy" aria-label="Apply 4% Development Levy" />
-              <span>Apply 4% Development Levy</span>
+              <input type="checkbox" id="citDevLevy" aria-describedby="citDevLevy-label" />
+              <span id="citDevLevy-label">Apply 4% Development Levy</span>
             </label>
           </div>
           <button onclick="calculateCIT()" aria-label="Calculate Company Income Tax">Calculate CIT</button>
