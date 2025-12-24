@@ -83,7 +83,7 @@ Complete tax calculation logic including:
 
 ### Dependencies
 
-- **External CSS**: References `styles.css` (currently not in repository)
+- **External CSS**: References `styles.css` in the HTML (file not present in repository - application is fully functional using default browser styling)
 - **No JavaScript Libraries**: Pure vanilla JavaScript
 - **No External APIs**: Fully self-contained
 
