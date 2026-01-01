@@ -1,0 +1,10 @@
+date,reference,description,amount
+2024-12-01,REF001,ABC Corp deposit,15000.00
+2024-12-05,REF002,Payment to XYZ Ltd,-5000.00
+2024-12-10,REF003,DEF Inc payment,8500.00
+2024-12-15,REF004,Rent - December,-3000.00
+2024-12-18,REF005,GHI Ltd payment,12000.00
+2024-12-20,REF006,Utilities,-450.00
+2024-12-22,REF007,Payroll,-8000.00
+2024-12-28,REF008,JKL Corp deposit,6500.00
+2024-12-29,REF010,Bank Fee,-25.00

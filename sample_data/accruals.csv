@@ -1,0 +1,4 @@
+type,principal,asset_cost,salvage_value,useful_life_years,months,name,annual_amount,debit_account,credit_account,date
+interest,100000,,,,,,,7200,2300,2024-12-31
+depreciation,,50000,5000,5,,,,7100,1500,2024-12-31
+expense,,,,,1,Insurance,12000,6100,2000,2024-12-31

@@ -1,0 +1,31 @@
+date,account,description,debit,credit
+2024-12-01,1000,Cash - Opening Balance,50000.00,0
+2024-12-01,3000,Equity - Opening Balance,0,50000.00
+2024-12-01,4100,Sales Revenue - ABC Corp,0,15000.00
+2024-12-01,1200,Accounts Receivable - ABC,15000.00,0
+2024-12-01,1200,Payment Received - ABC,0,15000.00
+2024-12-01,1000,Cash Received - ABC,15000.00,0
+2024-12-05,5100,Cost of Goods Sold,5000.00,0
+2024-12-05,2100,Accounts Payable - XYZ,0,5000.00
+2024-12-05,2100,Payment to XYZ,5000.00,0
+2024-12-05,1000,Cash Payment to XYZ,0,5000.00
+2024-12-10,4100,Sales Revenue - DEF Inc,0,8500.00
+2024-12-10,1200,Accounts Receivable - DEF,8500.00,0
+2024-12-10,1200,Payment Received - DEF,0,8500.00
+2024-12-10,1000,Cash Received - DEF,8500.00,0
+2024-12-15,6100,Rent Expense,3000.00,0
+2024-12-15,1000,Cash Payment - Rent,0,3000.00
+2024-12-18,4100,Sales Revenue - GHI Ltd,0,12000.00
+2024-12-18,1200,Accounts Receivable - GHI,12000.00,0
+2024-12-18,1200,Payment Received - GHI,0,12000.00
+2024-12-18,1000,Cash Received - GHI,12000.00,0
+2024-12-20,6200,Utility Expense,450.00,0
+2024-12-20,1000,Cash Payment - Utilities,0,450.00
+2024-12-22,6000,Salary Expense,8000.00,0
+2024-12-22,1000,Cash Payment - Salaries,0,8000.00
+2024-12-28,4100,Sales Revenue - JKL Corp,0,6500.00
+2024-12-28,1200,Accounts Receivable - JKL,6500.00,0
+2024-12-28,1200,Payment Received - JKL,0,6500.00
+2024-12-28,1000,Cash Received - JKL,6500.00,0
+2024-12-30,6100,Office Supplies Expense,750.00,0
+2024-12-30,1000,Cash Payment - Supplies,0,750.00

@@ -1,0 +1,10 @@
+date,reference,description,amount
+2024-12-01,REF001,Customer Payment - ABC Corp,15000.00
+2024-12-05,REF002,Supplier Payment - XYZ Ltd,-5000.00
+2024-12-10,REF003,Customer Payment - DEF Inc,8500.00
+2024-12-15,REF004,Rent Payment,-3000.00
+2024-12-18,REF005,Customer Payment - GHI Ltd,12000.00
+2024-12-20,REF006,Utility Payment,-450.00
+2024-12-22,REF007,Salary Payment,-8000.00
+2024-12-28,REF008,Customer Payment - JKL Corp,6500.00
+2024-12-30,REF009,Office Supplies,-750.00
