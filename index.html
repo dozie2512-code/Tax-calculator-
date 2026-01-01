@@ -135,11 +135,13 @@ python run_server.py
 # In another terminal, run the test workflow
 python test_workflow.py
 </code></pre>
-<p>The test script will demonstrate:<br />
-- Importing transactions with automatic risk scoring<br />
-- Auto-reconciling low-risk transactions<br />
-- Posting accruals based on historical data<br />
-- Executing the autonomous month-end close process</p>
+<p>The test script will demonstrate:</p>
+<ul>
+<li>Importing transactions with automatic risk scoring</li>
+<li>Auto-reconciling low-risk transactions</li>
+<li>Posting accruals based on historical data</li>
+<li>Executing the autonomous month-end close process</li>
+</ul>
 <h2>API Documentation</h2>
 <p>Once the service is running, you can access:</p>
 <ul>
@@ -218,11 +220,7 @@ python test_workflow.py
 <p>The system uses a simplified risk scoring model (0-100) based on:</p>
 <h3>Amount-Based Risk</h3>
 <ul>
-<li>
-<blockquote>
-<p>$10,000: 50 points</p>
-</blockquote>
-</li>
+<li>&gt; $10,000: 50 points</li>
 <li>$5,000 - $10,000: 30 points</li>
 <li>$1,000 - $5,000: 15 points</li>
 <li>&lt; $1,000: 5 points</li>
