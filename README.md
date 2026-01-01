@@ -50,6 +50,24 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 The API will be available at `http://localhost:8000`
 
+## Quick Test
+
+To quickly test the complete workflow:
+
+```bash
+# In one terminal, start the server
+python run_server.py
+
+# In another terminal, run the test workflow
+python test_workflow.py
+```
+
+The test script will demonstrate:
+- Importing transactions with automatic risk scoring
+- Auto-reconciling low-risk transactions
+- Posting accruals based on historical data
+- Executing the autonomous month-end close process
+
 ## API Documentation
 
 Once the service is running, you can access:
