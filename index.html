@@ -1,751 +1,261 @@
- <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nigeria Tax Calculator 2026</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div id="app">
-    <header>
-      <h1>🇳🇬 Nigeria Tax Calculator 2026</h1>
-      <p>VAT, WHT, PAYE/PIT, and CIT Calculator based on Tax Act changes effective January 1, 2026</p>
-    </header>
-    
-    <main role="main" aria-label="Tax Calculators">
-      <div class="disclaimer" role="alert" aria-labelledby="disclaimer-heading">
-        <h2 id="disclaimer-heading">⚠️ Important Disclaimer</h2>
-        <p><strong>Estimates Only — Not Tax or Legal Advice:</strong> This calculator provides estimates based on publicly available advisory summaries. Tax obligations depend on individual circumstances. Always consult with a qualified tax professional or the Nigeria Revenue Service for official guidance.</p>
-      </div>
-      
-      <div class="privacy-notice" role="note" aria-label="Privacy and security notice">
-        🔒 <strong>Privacy & Security:</strong> All calculations are performed entirely in your browser. No data is transmitted or stored externally.
-      </div>
-      
-      <div class="examples">
-        <h3>📋 Example Scenarios</h3>
-        <p class="help-text">Load pre-filled examples to validate calculations:</p>
-        <div class="example-buttons" role="group" aria-label="Example scenario buttons">
-          <button class="example-btn" onclick="loadExample('vat')" aria-label="Load VAT example">VAT Example</button>
-          <button class="example-btn" onclick="loadExample('wht')" aria-label="Load WHT example">WHT Example</button>
-          <button class="example-btn" onclick="loadExample('paye')" aria-label="Load PAYE example">PAYE Example</button>
-          <button class="example-btn" onclick="loadExample('cit')" aria-label="Load CIT example">CIT Example</button>
-          <button class="example-btn" onclick="clearAll()" aria-label="Clear all inputs">Clear All</button>
-        </div>
-      </div>
-      
-      <div class="calculator-grid">
-        <!-- VAT Calculator -->
-        <div class="card" role="region" aria-labelledby="vat-heading">
-          <h3 id="vat-heading">Value Added Tax (VAT)</h3>
-          <div class="form-group">
-            <label for="vatAmount">Transaction Amount (₦)</label>
-            <input type="number" id="vatAmount" placeholder="1000000" min="0" step="0.01" aria-describedby="vat-amount-help" aria-required="true" />
-            <div class="help-text" id="vat-amount-help">Enter the base transaction amount</div>
-          </div>
-          <div class="form-group">
-            <label for="vatCategory">Item Category</label>
-            <select id="vatCategory" aria-label="Select VAT category">
-              <option value="taxable">Taxable (7.5% VAT)</option>
-              <option value="exempt">Exempt (0% VAT)</option>
-              <option value="zero-rated">Zero-rated (0% VAT)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="vatInputAmount">Input VAT (optional - for recoverable VAT) (₦)</label>
-            <input type="number" id="vatInputAmount" placeholder="0" min="0" step="0.01" aria-describedby="vat-input-help" />
-            <div class="help-text" id="vat-input-help">Enter input VAT from purchases if applicable</div>
-          </div>
-          <button onclick="calculateVAT()" aria-label="Calculate VAT">Calculate VAT</button>
-          <div id="vatResults" aria-live="polite" aria-atomic="true"></div>
-        </div>
-        
-        <!-- WHT Calculator -->
-        <div class="card" role="region" aria-labelledby="wht-heading">
-          <h3 id="wht-heading">Withholding Tax (WHT)</h3>
-          <div class="form-group">
-            <label for="whtAmount">Payment Amount (₦)</label>
-            <input type="number" id="whtAmount" placeholder="500000" min="0" step="0.01" aria-required="true" />
-          </div>
-          <div class="form-group">
-            <label for="whtType">Payment Type</label>
-            <select id="whtType" onchange="updateWHTRate()" aria-label="Select payment type">
-              <option value="5">Contracts (5%)</option>
-              <option value="10" selected>Rent (10%)</option>
-              <option value="10">Dividends (10%)</option>
-              <option value="10">Interest (10%)</option>
-              <option value="10">Royalties (10%)</option>
-              <option value="10">Management/Consultancy Fees (10%)</option>
-              <option value="custom">Custom Rate</option>
-            </select>
-          </div>
-          <div class="form-group" id="customWHTRate" style="display:none;">
-            <label for="whtCustomRate">Custom WHT Rate (%)</label>
-            <input type="number" id="whtCustomRate" placeholder="10" min="0" max="100" step="0.1" aria-label="Enter custom WHT rate percentage" />
-          </div>
-          <button onclick="calculateWHT()" aria-label="Calculate Withholding Tax">Calculate WHT</button>
-          <div id="whtResults" aria-live="polite" aria-atomic="true"></div>
-        </div>
-      </div>
-      
-      <div class="calculator-grid">
-        <!-- PAYE/PIT Calculator -->
-        <div class="card" role="region" aria-labelledby="paye-heading">
-          <h3 id="paye-heading">PAYE / Personal Income Tax (PIT)</h3>
-          <div class="form-group">
-            <label for="payeGrossSalary">Annual Gross Salary (₦)</label>
-            <input type="number" id="payeGrossSalary" placeholder="6000000" min="0" step="0.01" aria-required="true" />
-          </div>
-          <div class="form-group">
-            <label for="payeAllowances">Annual Allowances (₦)</label>
-            <input type="number" id="payeAllowances" placeholder="0" min="0" step="0.01" aria-describedby="paye-allowances-help" />
-            <div class="help-text" id="paye-allowances-help">Housing, transport, and other allowances</div>
-          </div>
-          <div class="form-group">
-            <label for="payePensionRate">Employee Pension Contribution (%)</label>
-            <input type="number" id="payePensionRate" placeholder="8" min="0" max="100" step="0.1" value="8" aria-describedby="paye-pension-help" />
-            <div class="help-text" id="paye-pension-help">Default: 8%</div>
-          </div>
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="payeNHF" checked aria-describedby="payeNHF-label" />
-              <span id="payeNHF-label">Deduct NHF (2.5% of basic salary)</span>
-            </label>
-          </div>
-          <div class="form-group">
-            <label for="payeOtherReliefs">Other Reliefs/Deductions (₦)</label>
-            <input type="number" id="payeOtherReliefs" placeholder="0" min="0" step="0.01" aria-describedby="paye-reliefs-help" />
-            <div class="help-text" id="paye-reliefs-help">Life insurance, NHIS, etc.</div>
-          </div>
-          <button onclick="calculatePAYE()" aria-label="Calculate PAYE">Calculate PAYE</button>
-          <div id="payeResults" aria-live="polite" aria-atomic="true"></div>
-        </div>
-        
-        <!-- CIT Calculator -->
-        <div class="card" role="region" aria-labelledby="cit-heading">
-          <h3 id="cit-heading">Company Income Tax (CIT)</h3>
-          <div class="form-group">
-            <label for="citRevenue">Annual Business Revenue (₦)</label>
-            <input type="number" id="citRevenue" placeholder="50000000" min="0" step="0.01" aria-required="true" />
-          </div>
-          <div class="form-group">
-            <label for="citExpenses">Allowable Business Expenses (₦)</label>
-            <input type="number" id="citExpenses" placeholder="20000000" min="0" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label for="citTurnover">Company Turnover (₦)</label>
-            <input type="number" id="citTurnover" placeholder="50000000" min="0" step="0.01" aria-describedby="cit-turnover-help" />
-            <div class="help-text" id="cit-turnover-help">Companies with turnover ≤ ₦100,000,000 may be exempt</div>
-          </div>
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="citDevLevy" aria-describedby="citDevLevy-label" />
-              <span id="citDevLevy-label">Apply 4% Development Levy</span>
-            </label>
-          </div>
-          <button onclick="calculateCIT()" aria-label="Calculate Company Income Tax">Calculate CIT</button>
-          <div id="citResults" aria-live="polite" aria-atomic="true"></div>
-        </div>
-      </div>
-      
-      <div class="card" role="region" aria-labelledby="export-heading">
-        <h3 id="export-heading">📊 Export Results</h3>
-        <p>Download all your calculations as a CSV file for your records.</p>
-        <button onclick="exportToCSV()" aria-label="Download calculations as CSV">📥 Download CSV</button>
-      </div>
-    </main>
-    
-    <footer role="contentinfo">
-      <p><strong>Sources & References:</strong> Based on advisory summaries from <a href="https://www.pwc.com/ng/en/publications.html" target="_blank" rel="noopener" aria-label="PwC Nigeria publications">PwC Nigeria</a>, <a href="https://www.ey.com/en_ng" target="_blank" rel="noopener" aria-label="EY Tax Alert">EY Tax Alert</a>, Forvis Mazars, and <a href="https://africacheck.org/" target="_blank" rel="noopener" aria-label="AfricaCheck">AfricaCheck</a>. Users should verify calculations with official <a href="https://www.firs.gov.ng/" target="_blank" rel="noopener" aria-label="Nigeria Revenue Service">Nigeria Revenue Service</a> publications.</p>
-      <p style="margin-top:8px;">All rounding to nearest Naira (₦). Calculations effective January 1, 2026.</p>
-    </footer>
-  </div>
-  
-  <script>
-    // Storage for results
-    let calculationResults = {
-      vat: null,
-      wht: null,
-      paye: null,
-      cit: null
-    };
-    
-    // Utility: Round to nearest Naira
-    function roundNaira(amount) {
-      return Math.round(amount);
-    }
-    
-    // Utility: Format currency
-    function formatCurrency(amount) {
-      return '₦' + roundNaira(amount).toLocaleString('en-NG');
-    }
-    
-    // Utility: Format percentage
-    function formatPercent(rate) {
-      return rate.toFixed(2) + '%';
-    }
-    
-    // Update WHT rate field visibility
-    function updateWHTRate() {
-      const whtType = document.getElementById('whtType');
-      const customDiv = document.getElementById('customWHTRate');
-      if (whtType.value === 'custom') {
-        customDiv.style.display = 'block';
-      } else {
-        customDiv.style.display = 'none';
+# Month-End Accounting Service
+
+FastAPI-based backend service supporting month-end account reconciliation and financial accruals.
+
+## Features
+
+- **Transaction Import**: Bulk import of financial transactions with automatic risk scoring
+- **Auto-Reconciliation**: Automatically reconcile low-risk transactions based on configurable thresholds
+- **Intelligent Accruals**: Post payroll and utilities accruals based on historical data analysis
+- **Autonomous Month-End Close**: End-to-end month-end close process with approval workflow
+- **Risk Scoring**: Simplified risk assessment model based on amount, category, and vendor
+
+## Installation
+
+### Prerequisites
+
+- Python 3.8+
+- pip
+
+### Setup
+
+1. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. The SQLite database will be automatically created on first run.
+
+## Running the Service
+
+### Development Mode
+
+```bash
+cd backend
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Or simply:
+
+```bash
+python backend/main.py
+```
+
+### Production Mode
+
+```bash
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+The API will be available at `http://localhost:8000`
+
+## Quick Test
+
+To quickly test the complete workflow:
+
+```bash
+# In one terminal, start the server
+python run_server.py
+
+# In another terminal, run the test workflow
+python test_workflow.py
+```
+
+The test script will demonstrate:
+- Importing transactions with automatic risk scoring
+- Auto-reconciling low-risk transactions
+- Posting accruals based on historical data
+- Executing the autonomous month-end close process
+
+## API Documentation
+
+Once the service is running, you can access:
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## API Endpoints
+
+### Transactions
+
+- `POST /transactions/import` - Import multiple transactions
+- `GET /transactions` - List transactions with optional filtering
+
+### Accruals
+
+- `POST /accruals/payroll?period=2026-01` - Post payroll accrual for a period
+- `POST /accruals/utilities?period=2026-01` - Post utilities accrual for a period
+- `GET /accruals` - List accruals with optional filtering
+
+### Reconciliation
+
+- `POST /reconciliation/auto` - Auto-reconcile low-risk transactions
+- `GET /reconciliation/status?period=2026-01` - Get reconciliation status
+- `POST /reconciliation/month-end/close` - Perform autonomous month-end close
+
+## Usage Examples
+
+### 1. Import Transactions
+
+```bash
+curl -X POST "http://localhost:8000/transactions/import" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transactions": [
+      {
+        "description": "Employee salaries - January",
+        "amount": 50000.00,
+        "category": "payroll",
+        "vendor": "Payroll Service Inc",
+        "date": "2026-01-15T00:00:00"
+      },
+      {
+        "description": "Office utilities",
+        "amount": 1200.00,
+        "category": "utilities",
+        "vendor": "Power Company"
       }
-    }
-    
-    // VAT Calculator
-    function calculateVAT() {
-      const amount = parseFloat(document.getElementById('vatAmount').value) || 0;
-      const category = document.getElementById('vatCategory').value;
-      const inputVAT = parseFloat(document.getElementById('vatInputAmount').value) || 0;
-      
-      if (amount <= 0) {
-        document.getElementById('vatResults').innerHTML = '<div class="error">Please enter a valid transaction amount.</div>';
-        return;
-      }
-      
-      let vatRate = 0;
-      let categoryName = '';
-      
-      if (category === 'taxable') {
-        vatRate = 7.5;
-        categoryName = 'Taxable';
-      } else if (category === 'exempt') {
-        vatRate = 0;
-        categoryName = 'Exempt';
-      } else if (category === 'zero-rated') {
-        vatRate = 0;
-        categoryName = 'Zero-rated';
-      } else {
-        vatRate = 0;
-        categoryName = 'Unknown';
-      }
-      
-      const vatCharged = roundNaira(amount * (vatRate / 100));
-      const totalAmount = roundNaira(amount + vatCharged);
-      const netVAT = roundNaira(vatCharged - inputVAT);
-      
-      calculationResults.vat = {
-        amount,
-        category: categoryName,
-        vatRate,
-        vatCharged,
-        inputVAT,
-        netVAT,
-        totalAmount
-      };
-      
-      document.getElementById('vatResults').innerHTML = `
-        <div class="results">
-          <h4>VAT Results</h4>
-          <div class="result-row">
-            <span class="result-label">Base Amount:</span>
-            <span class="result-value">${formatCurrency(amount)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">VAT Rate (${categoryName}):</span>
-            <span class="result-value">${formatPercent(vatRate)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">VAT Charged:</span>
-            <span class="result-value">${formatCurrency(vatCharged)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Input VAT (Recoverable):</span>
-            <span class="result-value">${formatCurrency(inputVAT)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Net VAT Payable:</span>
-            <span class="result-value">${formatCurrency(netVAT)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Total Amount (incl. VAT):</span>
-            <span class="result-value">${formatCurrency(totalAmount)}</span>
-          </div>
-          <div class="explanation">
-            <strong>Explanation:</strong> Standard VAT rate in Nigeria is 7.5% on taxable supplies. ${categoryName} items are charged at ${formatPercent(vatRate)}. Net VAT payable is output VAT charged minus input VAT recoverable.
-          </div>
-        </div>
-      `;
-    }
-    
-    // WHT Calculator
-    function calculateWHT() {
-      const amount = parseFloat(document.getElementById('whtAmount').value) || 0;
-      const whtType = document.getElementById('whtType');
-      let rate;
-      
-      if (whtType.value === 'custom') {
-        rate = parseFloat(document.getElementById('whtCustomRate').value) || 0;
-      } else {
-        rate = parseFloat(whtType.value);
-      }
-      
-      if (amount <= 0) {
-        document.getElementById('whtResults').innerHTML = '<div class="error">Please enter a valid payment amount.</div>';
-        return;
-      }
-      
-      if (rate < 0 || rate > 100) {
-        document.getElementById('whtResults').innerHTML = '<div class="error">Please enter a valid WHT rate (0-100%).</div>';
-        return;
-      }
-      
-      const whtAmount = roundNaira(amount * (rate / 100));
-      const netPayment = roundNaira(amount - whtAmount);
-      
-      calculationResults.wht = {
-        amount,
-        rate,
-        whtAmount,
-        netPayment,
-        type: whtType.options[whtType.selectedIndex].text
-      };
-      
-      document.getElementById('whtResults').innerHTML = `
-        <div class="results">
-          <h4>WHT Results</h4>
-          <div class="result-row">
-            <span class="result-label">Payment Amount:</span>
-            <span class="result-value">${formatCurrency(amount)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">WHT Rate:</span>
-            <span class="result-value">${formatPercent(rate)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">WHT Deducted:</span>
-            <span class="result-value">${formatCurrency(whtAmount)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Net Payment to Recipient:</span>
-            <span class="result-value">${formatCurrency(netPayment)}</span>
-          </div>
-          <div class="explanation">
-            <strong>Explanation:</strong> Withholding Tax must be deducted at source from specified payments. Default rates: Contracts 5%, Rent/Dividends/Interest/Royalties/Management Fees 10%. The WHT is remitted to tax authorities.
-          </div>
-        </div>
-      `;
-    }
-    
-    // PAYE / PIT Calculator
-    function calculatePAYE() {
-      const grossSalary = parseFloat(document.getElementById('payeGrossSalary').value) || 0;
-      const allowances = parseFloat(document.getElementById('payeAllowances').value) || 0;
-      const pensionRate = parseFloat(document.getElementById('payePensionRate').value) || 8;
-      const includeNHF = document.getElementById('payeNHF').checked;
-      const otherReliefs = parseFloat(document.getElementById('payeOtherReliefs').value) || 0;
-      
-      if (grossSalary <= 0) {
-        document.getElementById('payeResults').innerHTML = '<div class="error">Please enter a valid annual gross salary.</div>';
-        return;
-      }
-      
-      const totalIncome = grossSalary + allowances;
-      
-      // Pension contribution (employee portion)
-      const pensionContribution = roundNaira(grossSalary * (pensionRate / 100));
-      
-      // NHF contribution (2.5% of basic salary)
-      const nhfContribution = includeNHF ? roundNaira(grossSalary * 0.025) : 0;
-      
-      // Total deductions before tax
-      const totalReliefs = pensionContribution + nhfContribution + otherReliefs;
-      
-      // Taxable income
-      const taxableIncome = Math.max(0, totalIncome - totalReliefs);
-      
-      // Apply 2026 tax bands
-      let tax = 0;
-      const bands = [
-        { limit: 800000, rate: 0 },
-        { limit: 3000000, rate: 15 },
-        { limit: 12000000, rate: 18 },
-        { limit: 25000000, rate: 21 },
-        { limit: 50000000, rate: 23 },
-        { limit: Infinity, rate: 25 }
-      ];
-      
-      let remaining = taxableIncome;
-      let previousLimit = 0;
-      let breakdown = [];
-      
-      for (let i = 0; i < bands.length && remaining > 0; i++) {
-        const band = bands[i];
-        const bandAmount = Math.min(remaining, band.limit - previousLimit);
-        const bandTax = bandAmount * (band.rate / 100);
-        tax += bandTax;
-        
-        if (bandAmount > 0) {
-          breakdown.push({
-            from: previousLimit,
-            to: Math.min(taxableIncome, band.limit),
-            amount: bandAmount,
-            rate: band.rate,
-            tax: roundNaira(bandTax)
-          });
-        }
-        
-        remaining -= bandAmount;
-        previousLimit = band.limit;
-      }
-      
-      tax = roundNaira(tax);
-      const effectiveRate = taxableIncome > 0 ? (tax / taxableIncome) * 100 : 0;
-      const monthlyGross = roundNaira(totalIncome / 12);
-      const monthlyTax = roundNaira(tax / 12);
-      const monthlyNet = roundNaira((totalIncome - tax) / 12);
-      const annualNet = roundNaira(totalIncome - tax);
-      
-      calculationResults.paye = {
-        grossSalary,
-        allowances,
-        totalIncome,
-        pensionContribution,
-        nhfContribution,
-        otherReliefs,
-        totalReliefs,
-        taxableIncome,
-        tax,
-        effectiveRate,
-        monthlyGross,
-        monthlyTax,
-        monthlyNet,
-        annualNet,
-        breakdown
-      };
-      
-      let breakdownHTML = '';
-      breakdown.forEach(b => {
-        breakdownHTML += `
-          <div class="result-row">
-            <span class="result-label">${formatCurrency(b.from)} - ${formatCurrency(b.to)} @ ${formatPercent(b.rate)}:</span>
-            <span class="result-value">${formatCurrency(b.tax)}</span>
-          </div>
-        `;
-      });
-      
-      document.getElementById('payeResults').innerHTML = `
-        <div class="results">
-          <h4>PAYE / PIT Results</h4>
-          <div class="result-row">
-            <span class="result-label">Gross Salary:</span>
-            <span class="result-value">${formatCurrency(grossSalary)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Allowances:</span>
-            <span class="result-value">${formatCurrency(allowances)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Total Income:</span>
-            <span class="result-value">${formatCurrency(totalIncome)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Pension (${formatPercent(pensionRate)}):</span>
-            <span class="result-value">${formatCurrency(pensionContribution)}</span>
-          </div>
-          ${includeNHF ? `
-          <div class="result-row">
-            <span class="result-label">NHF (2.5%):</span>
-            <span class="result-value">${formatCurrency(nhfContribution)}</span>
-          </div>
-          ` : ''}
-          <div class="result-row">
-            <span class="result-label">Other Reliefs:</span>
-            <span class="result-value">${formatCurrency(otherReliefs)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Total Reliefs:</span>
-            <span class="result-value">${formatCurrency(totalReliefs)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Taxable Income:</span>
-            <span class="result-value">${formatCurrency(taxableIncome)}</span>
-          </div>
-          ${breakdownHTML}
-          <div class="result-row">
-            <span class="result-label">Annual Tax (PAYE):</span>
-            <span class="result-value">${formatCurrency(tax)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Effective Tax Rate:</span>
-            <span class="result-value">${formatPercent(effectiveRate)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Monthly Gross:</span>
-            <span class="result-value">${formatCurrency(monthlyGross)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Monthly Tax:</span>
-            <span class="result-value">${formatCurrency(monthlyTax)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Annual Net Income:</span>
-            <span class="result-value">${formatCurrency(annualNet)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Monthly Net Income:</span>
-            <span class="result-value">${formatCurrency(monthlyNet)}</span>
-          </div>
-          <div class="explanation">
-            <strong>Explanation:</strong> 2026 PAYE bands: ₦0-800k @ 0%, ₦800k-3M @ 15%, ₦3M-12M @ 18%, ₦12M-25M @ 21%, ₦25M-50M @ 23%, >₦50M @ 25%. Tax-free threshold of ₦800,000 applies. Pension and NHF contributions are deducted before tax.
-          </div>
-        </div>
-      `;
-    }
-    
-    // CIT Calculator
-    function calculateCIT() {
-      const revenue = parseFloat(document.getElementById('citRevenue').value) || 0;
-      const expenses = parseFloat(document.getElementById('citExpenses').value) || 0;
-      const turnover = parseFloat(document.getElementById('citTurnover').value) || 0;
-      const applyDevLevy = document.getElementById('citDevLevy').checked;
-      
-      if (revenue <= 0) {
-        document.getElementById('citResults').innerHTML = '<div class="error">Please enter a valid annual revenue.</div>';
-        return;
-      }
-      
-      if (expenses < 0) {
-        document.getElementById('citResults').innerHTML = '<div class="error">Expenses cannot be negative.</div>';
-        return;
-      }
-      
-      const taxableProfit = Math.max(0, revenue - expenses);
-      
-      // Small company exemption (turnover <= 100M)
-      const isSmallCompany = turnover <= 100000000;
-      const citRate = isSmallCompany ? 0 : 30;
-      
-      const citAmount = roundNaira(taxableProfit * (citRate / 100));
-      
-      // Development levy (4% of taxable profit if applicable)
-      const devLevy = applyDevLevy ? roundNaira(taxableProfit * 0.04) : 0;
-      
-      const totalTax = roundNaira(citAmount + devLevy);
-      const effectiveRate = taxableProfit > 0 ? (totalTax / taxableProfit) * 100 : 0;
-      const netProfit = roundNaira(taxableProfit - totalTax);
-      
-      calculationResults.cit = {
-        revenue,
-        expenses,
-        taxableProfit,
-        turnover,
-        isSmallCompany,
-        citRate,
-        citAmount,
-        devLevy,
-        totalTax,
-        effectiveRate,
-        netProfit
-      };
-      
-      document.getElementById('citResults').innerHTML = `
-        <div class="results">
-          <h4>CIT Results</h4>
-          <div class="result-row">
-            <span class="result-label">Annual Revenue:</span>
-            <span class="result-value">${formatCurrency(revenue)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Allowable Expenses:</span>
-            <span class="result-value">${formatCurrency(expenses)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Taxable Profit:</span>
-            <span class="result-value">${formatCurrency(taxableProfit)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Company Turnover:</span>
-            <span class="result-value">${formatCurrency(turnover)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Small Company Status:</span>
-            <span class="result-value">${isSmallCompany ? 'Yes (Exempt)' : 'No'}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">CIT Rate:</span>
-            <span class="result-value">${formatPercent(citRate)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">CIT Amount:</span>
-            <span class="result-value">${formatCurrency(citAmount)}</span>
-          </div>
-          ${applyDevLevy ? `
-          <div class="result-row">
-            <span class="result-label">Development Levy (4%):</span>
-            <span class="result-value">${formatCurrency(devLevy)}</span>
-          </div>
-          ` : ''}
-          <div class="result-row">
-            <span class="result-label">Total Tax:</span>
-            <span class="result-value">${formatCurrency(totalTax)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Effective Tax Rate:</span>
-            <span class="result-value">${formatPercent(effectiveRate)}</span>
-          </div>
-          <div class="result-row">
-            <span class="result-label">Net Profit After Tax:</span>
-            <span class="result-value">${formatCurrency(netProfit)}</span>
-          </div>
-          <div class="explanation">
-            <strong>Explanation:</strong> Standard CIT rate is 30%. Small companies with turnover ≤ ₦100,000,000 may be exempt (0% CIT). Development levy of 4% may apply to certain companies. CIT is calculated on taxable profit (revenue minus allowable expenses).
-          </div>
-        </div>
-      `;
-    }
-    
-    // Load example scenarios
-    function loadExample(type) {
-      clearAll();
-      
-      switch(type) {
-        case 'vat':
-          document.getElementById('vatAmount').value = '1000000';
-          document.getElementById('vatCategory').value = 'taxable';
-          document.getElementById('vatInputAmount').value = '50000';
-          calculateVAT();
-          break;
-          
-        case 'wht':
-          document.getElementById('whtAmount').value = '500000';
-          document.getElementById('whtType').value = '10';
-          updateWHTRate();
-          calculateWHT();
-          break;
-          
-        case 'paye':
-          document.getElementById('payeGrossSalary').value = '6000000';
-          document.getElementById('payeAllowances').value = '1200000';
-          document.getElementById('payePensionRate').value = '8';
-          document.getElementById('payeNHF').checked = true;
-          document.getElementById('payeOtherReliefs').value = '0';
-          calculatePAYE();
-          break;
-          
-        case 'cit':
-          document.getElementById('citRevenue').value = '50000000';
-          document.getElementById('citExpenses').value = '30000000';
-          document.getElementById('citTurnover').value = '50000000';
-          document.getElementById('citDevLevy').checked = false;
-          calculateCIT();
-          break;
-      }
-    }
-    
-    // Clear all inputs and results
-    function clearAll() {
-      // VAT
-      document.getElementById('vatAmount').value = '';
-      document.getElementById('vatCategory').value = 'taxable';
-      document.getElementById('vatInputAmount').value = '';
-      document.getElementById('vatResults').innerHTML = '';
-      
-      // WHT
-      document.getElementById('whtAmount').value = '';
-      document.getElementById('whtType').value = '10';
-      document.getElementById('whtCustomRate').value = '';
-      updateWHTRate();
-      document.getElementById('whtResults').innerHTML = '';
-      
-      // PAYE
-      document.getElementById('payeGrossSalary').value = '';
-      document.getElementById('payeAllowances').value = '';
-      document.getElementById('payePensionRate').value = '8';
-      document.getElementById('payeNHF').checked = true;
-      document.getElementById('payeOtherReliefs').value = '';
-      document.getElementById('payeResults').innerHTML = '';
-      
-      // CIT
-      document.getElementById('citRevenue').value = '';
-      document.getElementById('citExpenses').value = '';
-      document.getElementById('citTurnover').value = '';
-      document.getElementById('citDevLevy').checked = false;
-      document.getElementById('citResults').innerHTML = '';
-      
-      // Clear results
-      calculationResults = { vat: null, wht: null, paye: null, cit: null };
-    }
-    
-    // Export to CSV
-    function exportToCSV() {
-      let csv = 'Nigeria Tax Calculator Results - ' + new Date().toLocaleString() + '\n\n';
-      
-      if (calculationResults.vat) {
-        csv += 'VALUE ADDED TAX (VAT)\n';
-        csv += 'Base Amount,' + calculationResults.vat.amount + '\n';
-        csv += 'Category,' + calculationResults.vat.category + '\n';
-        csv += 'VAT Rate (%),' + calculationResults.vat.vatRate + '\n';
-        csv += 'VAT Charged,' + calculationResults.vat.vatCharged + '\n';
-        csv += 'Input VAT,' + calculationResults.vat.inputVAT + '\n';
-        csv += 'Net VAT Payable,' + calculationResults.vat.netVAT + '\n';
-        csv += 'Total Amount,' + calculationResults.vat.totalAmount + '\n\n';
-      }
-      
-      if (calculationResults.wht) {
-        csv += 'WITHHOLDING TAX (WHT)\n';
-        csv += 'Payment Amount,' + calculationResults.wht.amount + '\n';
-        csv += 'Payment Type,' + calculationResults.wht.type + '\n';
-        csv += 'WHT Rate (%),' + calculationResults.wht.rate + '\n';
-        csv += 'WHT Deducted,' + calculationResults.wht.whtAmount + '\n';
-        csv += 'Net Payment,' + calculationResults.wht.netPayment + '\n\n';
-      }
-      
-      if (calculationResults.paye) {
-        csv += 'PAYE / PERSONAL INCOME TAX\n';
-        csv += 'Gross Salary,' + calculationResults.paye.grossSalary + '\n';
-        csv += 'Allowances,' + calculationResults.paye.allowances + '\n';
-        csv += 'Total Income,' + calculationResults.paye.totalIncome + '\n';
-        csv += 'Pension Contribution,' + calculationResults.paye.pensionContribution + '\n';
-        csv += 'NHF Contribution,' + calculationResults.paye.nhfContribution + '\n';
-        csv += 'Other Reliefs,' + calculationResults.paye.otherReliefs + '\n';
-        csv += 'Total Reliefs,' + calculationResults.paye.totalReliefs + '\n';
-        csv += 'Taxable Income,' + calculationResults.paye.taxableIncome + '\n';
-        csv += 'Annual Tax,' + calculationResults.paye.tax + '\n';
-        csv += 'Effective Rate (%),' + calculationResults.paye.effectiveRate.toFixed(2) + '\n';
-        csv += 'Monthly Gross,' + calculationResults.paye.monthlyGross + '\n';
-        csv += 'Monthly Tax,' + calculationResults.paye.monthlyTax + '\n';
-        csv += 'Monthly Net,' + calculationResults.paye.monthlyNet + '\n';
-        csv += 'Annual Net,' + calculationResults.paye.annualNet + '\n\n';
-      }
-      
-      if (calculationResults.cit) {
-        csv += 'COMPANY INCOME TAX (CIT)\n';
-        csv += 'Annual Revenue,' + calculationResults.cit.revenue + '\n';
-        csv += 'Allowable Expenses,' + calculationResults.cit.expenses + '\n';
-        csv += 'Taxable Profit,' + calculationResults.cit.taxableProfit + '\n';
-        csv += 'Company Turnover,' + calculationResults.cit.turnover + '\n';
-        csv += 'Small Company Status,' + (calculationResults.cit.isSmallCompany ? 'Yes (Exempt)' : 'No') + '\n';
-        csv += 'CIT Rate (%),' + calculationResults.cit.citRate + '\n';
-        csv += 'CIT Amount,' + calculationResults.cit.citAmount + '\n';
-        csv += 'Development Levy,' + calculationResults.cit.devLevy + '\n';
-        csv += 'Total Tax,' + calculationResults.cit.totalTax + '\n';
-        csv += 'Effective Rate (%),' + calculationResults.cit.effectiveRate.toFixed(2) + '\n';
-        csv += 'Net Profit,' + calculationResults.cit.netProfit + '\n\n';
-      }
-      
-      csv += '\nDISCLAIMER\n';
-      csv += 'These calculations are estimates only and should not be considered tax or legal advice.\n';
-      csv += 'All amounts in Nigerian Naira (NGN) rounded to nearest naira.\n';
-      csv += 'Calculations based on Tax Act changes effective January 1 2026.\n';
-      csv += 'Please consult with a qualified tax professional or the Nigeria Revenue Service for official guidance.\n';
-      
-      // Create download
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', 'nigeria-tax-calculator-results-' + Date.now() + '.csv');
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
-</body>
-</html>
+    ]
+  }'
+```
+
+### 2. Auto-Reconcile Low-Risk Transactions
+
+```bash
+curl -X POST "http://localhost:8000/reconciliation/auto" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "threshold": 50.0,
+    "period": "2026-01"
+  }'
+```
+
+### 3. Post Payroll Accrual
+
+```bash
+curl -X POST "http://localhost:8000/accruals/payroll?period=2026-01"
+```
+
+### 4. Post Utilities Accrual
+
+```bash
+curl -X POST "http://localhost:8000/accruals/utilities?period=2026-01"
+```
+
+### 5. Autonomous Month-End Close
+
+```bash
+curl -X POST "http://localhost:8000/reconciliation/month-end/close" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "period": "2026-01",
+    "auto_reconcile": true,
+    "reconciliation_threshold": 50.0,
+    "post_payroll_accrual": true,
+    "post_utilities_accrual": true
+  }'
+```
+
+### 6. Check Reconciliation Status
+
+```bash
+curl "http://localhost:8000/reconciliation/status?period=2026-01"
+```
+
+## Risk Scoring Model
+
+The system uses a simplified risk scoring model (0-100) based on:
+
+### Amount-Based Risk
+- > $10,000: 50 points
+- $5,000 - $10,000: 30 points
+- $1,000 - $5,000: 15 points
+- < $1,000: 5 points
+
+### Category-Based Risk
+- High-risk categories (consulting, legal, miscellaneous): +25 points
+- Low-risk categories (utilities, payroll, rent, insurance): +5 points
+- Other categories: +15 points
+
+### Vendor-Based Risk
+- Missing or empty vendor: +15 points
+
+### Reconciliation Threshold
+- Transactions with risk score ≤ threshold are auto-reconciled
+- Default threshold: 50.0 (low-risk transactions only)
+
+## Database Schema
+
+### Transactions Table
+- `id`: Primary key
+- `date`: Transaction date
+- `description`: Transaction description
+- `amount`: Transaction amount
+- `category`: Transaction category
+- `vendor`: Vendor name
+- `risk_score`: Calculated risk score (0-100)
+- `is_reconciled`: Reconciliation status
+- `reconciled_at`: Reconciliation timestamp
+
+### Accruals Table
+- `id`: Primary key
+- `period`: Period (YYYY-MM)
+- `accrual_type`: Type (payroll/utilities)
+- `description`: Accrual description
+- `amount`: Accrual amount
+- `is_posted`: Posted status
+- `based_on_historical`: Whether based on historical data
+- `historical_average`: Historical average amount
+
+### Reconciliation Records Table
+- `id`: Primary key
+- `period`: Period (YYYY-MM)
+- `status`: Status (pending/in_progress/completed)
+- `total_transactions`: Total transaction count
+- `reconciled_count`: Reconciled transaction count
+- `pending_count`: Pending transaction count
+- `is_month_end_closed`: Month-end close status
+
+## Architecture
+
+```
+backend/
+├── main.py                 # FastAPI application entry point
+├── schemas.py              # Pydantic models for request/response
+├── models/                 # SQLAlchemy database models
+│   ├── database.py         # Database configuration
+│   ├── transaction.py      # Transaction model
+│   ├── accrual.py          # Accrual model
+│   └── reconciliation.py   # Reconciliation record model
+├── services/               # Business logic layer
+│   ├── transaction_service.py
+│   ├── accrual_service.py
+│   └── reconciliation_service.py
+└── routers/                # API endpoints
+    ├── transactions.py
+    ├── accruals.py
+    └── reconciliation.py
+```
+
+## Development
+
+### Project Structure
+
+The backend follows a clean architecture pattern:
+
+1. **Models Layer**: SQLAlchemy ORM models for database entities
+2. **Services Layer**: Business logic and domain operations
+3. **Routers Layer**: FastAPI endpoints and request handling
+4. **Schemas Layer**: Pydantic models for data validation
+
+### Adding New Features
+
+1. Define database models in `backend/models/`
+2. Create service classes in `backend/services/`
+3. Add API endpoints in `backend/routers/`
+4. Register routers in `backend/main.py`
+
+## License
+
+MIT License
