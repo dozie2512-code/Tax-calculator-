@@ -365,7 +365,7 @@
         async function init() {
             try {
                 // Try to load the month-end close results
-                const response = await fetch('../output/month_end_close_results.json');
+                const response = await fetch('output/month_end_close_results.json');
                 if (!response.ok) {
                     throw new Error('Results file not found. Please run the month-end close process first.');
                 }
