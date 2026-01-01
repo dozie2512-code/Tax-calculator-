@@ -116,7 +116,7 @@ class ReconciliationService:
         
         if existing_record and existing_record.is_month_end_closed:
             workflow_steps.append({
-                'step': 'validation',
+                'step': 'already_closed_check',
                 'status': 'skipped',
                 'message': f'Month-end already closed for {period}',
                 'timestamp': datetime.utcnow().isoformat()

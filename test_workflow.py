@@ -17,7 +17,7 @@ def print_section(title):
 
 def print_response(response):
     """Pretty print JSON response."""
-    if response.status_code >= 200 and response.status_code < 300:
+    if 200 <= response.status_code < 300:
         print(f"✓ Success ({response.status_code})")
         print(json.dumps(response.json(), indent=2))
     else:

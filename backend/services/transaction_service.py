@@ -98,7 +98,6 @@ class TransactionService:
         
         # Filter by period if provided
         if period:
-            year, month = period.split('-')
             query = query.filter(
                 func.strftime('%Y-%m', Transaction.date) == period
             )

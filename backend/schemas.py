@@ -110,7 +110,7 @@ class WorkflowStep(BaseModel):
     step: str
     status: str
     message: str
-    timestamp: datetime
+    timestamp: str  # ISO format timestamp string
 
 
 class MonthEndCloseResponse(BaseModel):
