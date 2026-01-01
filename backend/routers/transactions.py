@@ -2,6 +2,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from ..models import get_db
 from ..schemas import (
@@ -27,16 +28,21 @@ def import_transactions(
     - Category
     - Vendor information
     """
-    # Convert to dict list
-    transactions_data = [txn.model_dump() for txn in import_data.transactions]
-    
-    # Import transactions
-    imported = TransactionService.import_transactions(db, transactions_data)
-    
-    return {
-        "imported_count": len(imported),
-        "transactions": imported
-    }
+    try:
+        # Convert to dict list
+        transactions_data = [txn.model_dump() for txn in import_data.transactions]
+        
+        # Import transactions
+        imported = TransactionService.import_transactions(db, transactions_data)
+        
+        return {
+            "imported_count": len(imported),
+            "transactions": imported
+        }
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error importing transactions: {str(e)}")
 
 
 @router.get("", response_model=List[TransactionResponse])
@@ -55,7 +61,15 @@ def list_transactions(
     - **skip**: Number of records to skip (pagination)
     - **limit**: Maximum number of records to return
     """
-    transactions = TransactionService.get_transactions(
-        db, period=period, is_reconciled=is_reconciled, skip=skip, limit=limit
-    )
-    return transactions
+    try:
+        transactions = TransactionService.get_transactions(
+            db, period=period, is_reconciled=is_reconciled, skip=skip, limit=limit
+        )
+        return transactions
+    except HTTPException:
+        # Re-raise HTTPException from validation
+        raise
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing transactions: {str(e)}")

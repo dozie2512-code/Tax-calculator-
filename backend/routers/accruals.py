@@ -2,6 +2,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from ..models import get_db
 from ..schemas import AccrualResponse
@@ -23,8 +24,16 @@ def post_payroll_accrual(
     
     - **period**: Period in YYYY-MM format (e.g., "2026-01")
     """
-    accrual = AccrualService.post_payroll_accrual(db, period)
-    return accrual
+    try:
+        accrual = AccrualService.post_payroll_accrual(db, period)
+        return accrual
+    except HTTPException:
+        # Re-raise HTTPException from validation
+        raise
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error posting payroll accrual: {str(e)}")
 
 
 @router.post("/utilities", response_model=AccrualResponse)
@@ -40,8 +49,16 @@ def post_utilities_accrual(
     
     - **period**: Period in YYYY-MM format (e.g., "2026-01")
     """
-    accrual = AccrualService.post_utilities_accrual(db, period)
-    return accrual
+    try:
+        accrual = AccrualService.post_utilities_accrual(db, period)
+        return accrual
+    except HTTPException:
+        # Re-raise HTTPException from validation
+        raise
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error posting utilities accrual: {str(e)}")
 
 
 @router.get("", response_model=List[AccrualResponse])
@@ -60,7 +77,15 @@ def list_accruals(
     - **skip**: Number of records to skip (pagination)
     - **limit**: Maximum number of records to return
     """
-    accruals = AccrualService.get_accruals(
-        db, period=period, accrual_type=accrual_type, skip=skip, limit=limit
-    )
-    return accruals
+    try:
+        accruals = AccrualService.get_accruals(
+            db, period=period, accrual_type=accrual_type, skip=skip, limit=limit
+        )
+        return accruals
+    except HTTPException:
+        # Re-raise HTTPException from validation
+        raise
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing accruals: {str(e)}")

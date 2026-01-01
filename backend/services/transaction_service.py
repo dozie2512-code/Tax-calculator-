@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from ..models import Transaction
+from ..utils import get_period_date_range
 
 
 def calculate_risk_score(amount: float, category: str, vendor: Optional[str]) -> float:
@@ -94,20 +95,12 @@ class TransactionService:
         query = db.query(Transaction)
         
         if period:
-            # Filter by period (YYYY-MM)
-            year, month = period.split("-")
+            # Filter by period (YYYY-MM) with validation
+            start_date, end_date = get_period_date_range(period)
             query = query.filter(
-                Transaction.date >= datetime(int(year), int(month), 1)
+                Transaction.date >= start_date,
+                Transaction.date < end_date
             )
-            # Simple month filter (doesn't handle end of month perfectly)
-            if int(month) < 12:
-                query = query.filter(
-                    Transaction.date < datetime(int(year), int(month) + 1, 1)
-                )
-            else:
-                query = query.filter(
-                    Transaction.date < datetime(int(year) + 1, 1, 1)
-                )
         
         if is_reconciled is not None:
             query = query.filter(Transaction.is_reconciled == is_reconciled)

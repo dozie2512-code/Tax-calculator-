@@ -4,10 +4,46 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from ..models import Transaction, ReconciliationRecord
 from .accrual_service import AccrualService
+from ..utils import get_period_date_range
 
 
 class ReconciliationService:
     """Service for reconciliation operations."""
+    
+    @staticmethod
+    def _get_period_transaction_query(db: Session, period: str):
+        """
+        Helper method to get query for transactions in a period.
+        
+        Args:
+            db: Database session
+            period: Period in YYYY-MM format
+            
+        Returns:
+            SQLAlchemy query filtered by period
+        """
+        start_date, end_date = get_period_date_range(period)
+        return db.query(Transaction).filter(
+            Transaction.date >= start_date,
+            Transaction.date < end_date
+        )
+    
+    @staticmethod
+    def _get_period_counts(db: Session, period: str) -> tuple[int, int]:
+        """
+        Helper method to get transaction counts for a period.
+        
+        Args:
+            db: Database session
+            period: Period in YYYY-MM format
+            
+        Returns:
+            Tuple of (total_count, reconciled_count)
+        """
+        query = ReconciliationService._get_period_transaction_query(db, period)
+        total = query.count()
+        reconciled = query.filter(Transaction.is_reconciled == True).count()
+        return total, reconciled
     
     @staticmethod
     def auto_reconcile(
@@ -34,18 +70,11 @@ class ReconciliationService:
         
         # Apply period filter if provided
         if period:
-            year, month = period.split("-")
+            start_date, end_date = get_period_date_range(period)
             query = query.filter(
-                Transaction.date >= datetime(int(year), int(month), 1)
+                Transaction.date >= start_date,
+                Transaction.date < end_date
             )
-            if int(month) < 12:
-                query = query.filter(
-                    Transaction.date < datetime(int(year), int(month) + 1, 1)
-                )
-            else:
-                query = query.filter(
-                    Transaction.date < datetime(int(year) + 1, 1, 1)
-                )
         
         # Get transactions to reconcile
         transactions = query.all()
@@ -59,22 +88,8 @@ class ReconciliationService:
         
         db.commit()
         
-        # Get total transaction count
-        total_query = db.query(Transaction)
-        if period:
-            year, month = period.split("-")
-            total_query = total_query.filter(
-                Transaction.date >= datetime(int(year), int(month), 1)
-            )
-            if int(month) < 12:
-                total_query = total_query.filter(
-                    Transaction.date < datetime(int(year), int(month) + 1, 1)
-                )
-            else:
-                total_query = total_query.filter(
-                    Transaction.date < datetime(int(year) + 1, 1, 1)
-                )
-        
+        # Get total transaction count using helper
+        total_query = ReconciliationService._get_period_transaction_query(db, period) if period else db.query(Transaction)
         total_count = total_query.count()
         
         return {
@@ -86,23 +101,8 @@ class ReconciliationService:
     @staticmethod
     def get_reconciliation_status(db: Session, period: str) -> dict:
         """Get reconciliation status for a period."""
-        year, month = period.split("-")
-        
-        # Query transactions for the period
-        query = db.query(Transaction).filter(
-            Transaction.date >= datetime(int(year), int(month), 1)
-        )
-        if int(month) < 12:
-            query = query.filter(
-                Transaction.date < datetime(int(year), int(month) + 1, 1)
-            )
-        else:
-            query = query.filter(
-                Transaction.date < datetime(int(year) + 1, 1, 1)
-            )
-        
-        total_count = query.count()
-        reconciled_count = query.filter(Transaction.is_reconciled == True).count()
+        # Use helper method to get counts
+        total_count, reconciled_count = ReconciliationService._get_period_counts(db, period)
         pending_count = total_count - reconciled_count
         
         # Check if month-end is closed
@@ -168,22 +168,8 @@ class ReconciliationService:
         ).first()
         
         if not record:
-            # Get counts
-            year, month = period.split("-")
-            query = db.query(Transaction).filter(
-                Transaction.date >= datetime(int(year), int(month), 1)
-            )
-            if int(month) < 12:
-                query = query.filter(
-                    Transaction.date < datetime(int(year), int(month) + 1, 1)
-                )
-            else:
-                query = query.filter(
-                    Transaction.date < datetime(int(year) + 1, 1, 1)
-                )
-            
-            total = query.count()
-            reconciled = query.filter(Transaction.is_reconciled == True).count()
+            # Get counts using helper method
+            total, reconciled = ReconciliationService._get_period_counts(db, period)
             
             record = ReconciliationRecord(
                 period=period,
@@ -195,22 +181,8 @@ class ReconciliationService:
             )
             db.add(record)
         else:
-            # Update existing record
-            year, month = period.split("-")
-            query = db.query(Transaction).filter(
-                Transaction.date >= datetime(int(year), int(month), 1)
-            )
-            if int(month) < 12:
-                query = query.filter(
-                    Transaction.date < datetime(int(year), int(month) + 1, 1)
-                )
-            else:
-                query = query.filter(
-                    Transaction.date < datetime(int(year) + 1, 1, 1)
-                )
-            
-            total = query.count()
-            reconciled = query.filter(Transaction.is_reconciled == True).count()
+            # Update existing record using helper method
+            total, reconciled = ReconciliationService._get_period_counts(db, period)
             
             record.status = "completed"
             record.total_transactions = total
