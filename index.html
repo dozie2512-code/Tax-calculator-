@@ -1,226 +1,283 @@
-# Month-End Accounting Service
-
-FastAPI-based backend service supporting month-end account reconciliation and financial accruals.
-
-## Features
-
-- **Transaction Import**: Bulk import of financial transactions with automatic risk scoring
-- **Auto-Reconciliation**: Automatically reconcile low-risk transactions based on configurable thresholds
-- **Intelligent Accruals**: Post payroll and utilities accruals based on historical data analysis
-- **Autonomous Month-End Close**: End-to-end month-end close process with approval workflow
-- **Risk Scoring**: Simplified risk assessment model based on amount, category, and vendor
-
-## Installation
-
-### Prerequisites
-
-- Python 3.8+
-- pip
-
-### Setup
-
-1. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. The SQLite database will be automatically created on first run.
-
-## Running the Service
-
-### Development Mode
-
-```bash
-cd backend
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Month-End Accounting Service</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #fff;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 8px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+        pre code {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            padding-left: 15px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<h1>Month-End Accounting Service</h1>
+<p>FastAPI-based backend service supporting month-end account reconciliation and financial accruals.</p>
+<h2>Features</h2>
+<ul>
+<li><strong>Transaction Import</strong>: Bulk import of financial transactions with automatic risk scoring</li>
+<li><strong>Auto-Reconciliation</strong>: Automatically reconcile low-risk transactions based on configurable thresholds</li>
+<li><strong>Intelligent Accruals</strong>: Post payroll and utilities accruals based on historical data analysis</li>
+<li><strong>Autonomous Month-End Close</strong>: End-to-end month-end close process with approval workflow</li>
+<li><strong>Risk Scoring</strong>: Simplified risk assessment model based on amount, category, and vendor</li>
+</ul>
+<h2>Installation</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li>Python 3.8+</li>
+<li>pip</li>
+</ul>
+<h3>Setup</h3>
+<ol>
+<li>Install dependencies:</li>
+</ol>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<ol start="2">
+<li>The SQLite database will be automatically created on first run.</li>
+</ol>
+<h2>Running the Service</h2>
+<h3>Development Mode</h3>
+<pre><code class="language-bash">cd backend
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Or simply:
-
-```bash
-python backend/main.py
-```
-
-### Production Mode
-
-```bash
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
-```
-
-The API will be available at `http://localhost:8000`
-
-## Quick Test
-
-To quickly test the complete workflow:
-
-```bash
-# In one terminal, start the server
+</code></pre>
+<p>Or simply:</p>
+<pre><code class="language-bash">python backend/main.py
+</code></pre>
+<h3>Production Mode</h3>
+<pre><code class="language-bash">python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
+</code></pre>
+<p>The API will be available at <code>http://localhost:8000</code></p>
+<h2>Quick Test</h2>
+<p>To quickly test the complete workflow:</p>
+<pre><code class="language-bash"># In one terminal, start the server
 python run_server.py
 
 # In another terminal, run the test workflow
 python test_workflow.py
-```
-
-The test script will demonstrate:
-- Importing transactions with automatic risk scoring
-- Auto-reconciling low-risk transactions
-- Posting accruals based on historical data
-- Executing the autonomous month-end close process
-
-## API Documentation
-
-Once the service is running, you can access:
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-## API Endpoints
-
-### Transactions
-
-- `POST /transactions/import` - Import multiple transactions
-- `GET /transactions` - List transactions with optional filtering
-
-### Accruals
-
-- `POST /accruals/payroll?period=2026-01` - Post payroll accrual for a period
-- `POST /accruals/utilities?period=2026-01` - Post utilities accrual for a period
-- `GET /accruals` - List accruals with optional filtering
-
-### Reconciliation
-
-- `POST /reconciliation/auto` - Auto-reconcile low-risk transactions
-- `GET /reconciliation/status?period=2026-01` - Get reconciliation status
-- `POST /reconciliation/month-end/close` - Perform autonomous month-end close
-
-## Usage Examples
-
-### 1. Import Transactions
-
-```bash
-curl -X POST "http://localhost:8000/transactions/import" \
-  -H "Content-Type: application/json" \
+</code></pre>
+<p>The test script will demonstrate:<br />
+- Importing transactions with automatic risk scoring<br />
+- Auto-reconciling low-risk transactions<br />
+- Posting accruals based on historical data<br />
+- Executing the autonomous month-end close process</p>
+<h2>API Documentation</h2>
+<p>Once the service is running, you can access:</p>
+<ul>
+<li><strong>Swagger UI</strong>: http://localhost:8000/docs</li>
+<li><strong>ReDoc</strong>: http://localhost:8000/redoc</li>
+</ul>
+<h2>API Endpoints</h2>
+<h3>Transactions</h3>
+<ul>
+<li><code>POST /transactions/import</code> - Import multiple transactions</li>
+<li><code>GET /transactions</code> - List transactions with optional filtering</li>
+</ul>
+<h3>Accruals</h3>
+<ul>
+<li><code>POST /accruals/payroll?period=2026-01</code> - Post payroll accrual for a period</li>
+<li><code>POST /accruals/utilities?period=2026-01</code> - Post utilities accrual for a period</li>
+<li><code>GET /accruals</code> - List accruals with optional filtering</li>
+</ul>
+<h3>Reconciliation</h3>
+<ul>
+<li><code>POST /reconciliation/auto</code> - Auto-reconcile low-risk transactions</li>
+<li><code>GET /reconciliation/status?period=2026-01</code> - Get reconciliation status</li>
+<li><code>POST /reconciliation/month-end/close</code> - Perform autonomous month-end close</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>1. Import Transactions</h3>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:8000/transactions/import&quot; \
+  -H &quot;Content-Type: application/json&quot; \
   -d '{
-    "transactions": [
+    &quot;transactions&quot;: [
       {
-        "description": "Employee salaries - January",
-        "amount": 50000.00,
-        "category": "payroll",
-        "vendor": "Payroll Service Inc",
-        "date": "2026-01-15T00:00:00"
+        &quot;description&quot;: &quot;Employee salaries - January&quot;,
+        &quot;amount&quot;: 50000.00,
+        &quot;category&quot;: &quot;payroll&quot;,
+        &quot;vendor&quot;: &quot;Payroll Service Inc&quot;,
+        &quot;date&quot;: &quot;2026-01-15T00:00:00&quot;
       },
       {
-        "description": "Office utilities",
-        "amount": 1200.00,
-        "category": "utilities",
-        "vendor": "Power Company"
+        &quot;description&quot;: &quot;Office utilities&quot;,
+        &quot;amount&quot;: 1200.00,
+        &quot;category&quot;: &quot;utilities&quot;,
+        &quot;vendor&quot;: &quot;Power Company&quot;
       }
     ]
   }'
-```
-
-### 2. Auto-Reconcile Low-Risk Transactions
-
-```bash
-curl -X POST "http://localhost:8000/reconciliation/auto" \
-  -H "Content-Type: application/json" \
+</code></pre>
+<h3>2. Auto-Reconcile Low-Risk Transactions</h3>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:8000/reconciliation/auto&quot; \
+  -H &quot;Content-Type: application/json&quot; \
   -d '{
-    "threshold": 50.0,
-    "period": "2026-01"
+    &quot;threshold&quot;: 50.0,
+    &quot;period&quot;: &quot;2026-01&quot;
   }'
-```
-
-### 3. Post Payroll Accrual
-
-```bash
-curl -X POST "http://localhost:8000/accruals/payroll?period=2026-01"
-```
-
-### 4. Post Utilities Accrual
-
-```bash
-curl -X POST "http://localhost:8000/accruals/utilities?period=2026-01"
-```
-
-### 5. Autonomous Month-End Close
-
-```bash
-curl -X POST "http://localhost:8000/reconciliation/month-end/close" \
-  -H "Content-Type: application/json" \
+</code></pre>
+<h3>3. Post Payroll Accrual</h3>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:8000/accruals/payroll?period=2026-01&quot;
+</code></pre>
+<h3>4. Post Utilities Accrual</h3>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:8000/accruals/utilities?period=2026-01&quot;
+</code></pre>
+<h3>5. Autonomous Month-End Close</h3>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:8000/reconciliation/month-end/close&quot; \
+  -H &quot;Content-Type: application/json&quot; \
   -d '{
-    "period": "2026-01",
-    "auto_reconcile": true,
-    "reconciliation_threshold": 50.0,
-    "post_payroll_accrual": true,
-    "post_utilities_accrual": true
+    &quot;period&quot;: &quot;2026-01&quot;,
+    &quot;auto_reconcile&quot;: true,
+    &quot;reconciliation_threshold&quot;: 50.0,
+    &quot;post_payroll_accrual&quot;: true,
+    &quot;post_utilities_accrual&quot;: true
   }'
-```
-
-### 6. Check Reconciliation Status
-
-```bash
-curl "http://localhost:8000/reconciliation/status?period=2026-01"
-```
-
-## Risk Scoring Model
-
-The system uses a simplified risk scoring model (0-100) based on:
-
-### Amount-Based Risk
-- > $10,000: 50 points
-- $5,000 - $10,000: 30 points
-- $1,000 - $5,000: 15 points
-- < $1,000: 5 points
-
-### Category-Based Risk
-- High-risk categories (consulting, legal, miscellaneous): +25 points
-- Low-risk categories (utilities, payroll, rent, insurance): +5 points
-- Other categories: +15 points
-
-### Vendor-Based Risk
-- Missing or empty vendor: +15 points
-
-### Reconciliation Threshold
-- Transactions with risk score ≤ threshold are auto-reconciled
-- Default threshold: 50.0 (low-risk transactions only)
-
-## Database Schema
-
-### Transactions Table
-- `id`: Primary key
-- `date`: Transaction date
-- `description`: Transaction description
-- `amount`: Transaction amount
-- `category`: Transaction category
-- `vendor`: Vendor name
-- `risk_score`: Calculated risk score (0-100)
-- `is_reconciled`: Reconciliation status
-- `reconciled_at`: Reconciliation timestamp
-
-### Accruals Table
-- `id`: Primary key
-- `period`: Period (YYYY-MM)
-- `accrual_type`: Type (payroll/utilities)
-- `description`: Accrual description
-- `amount`: Accrual amount
-- `is_posted`: Posted status
-- `based_on_historical`: Whether based on historical data
-- `historical_average`: Historical average amount
-
-### Reconciliation Records Table
-- `id`: Primary key
-- `period`: Period (YYYY-MM)
-- `status`: Status (pending/in_progress/completed)
-- `total_transactions`: Total transaction count
-- `reconciled_count`: Reconciled transaction count
-- `pending_count`: Pending transaction count
-- `is_month_end_closed`: Month-end close status
-
-## Architecture
-
-```
-backend/
+</code></pre>
+<h3>6. Check Reconciliation Status</h3>
+<pre><code class="language-bash">curl &quot;http://localhost:8000/reconciliation/status?period=2026-01&quot;
+</code></pre>
+<h2>Risk Scoring Model</h2>
+<p>The system uses a simplified risk scoring model (0-100) based on:</p>
+<h3>Amount-Based Risk</h3>
+<ul>
+<li>
+<blockquote>
+<p>$10,000: 50 points</p>
+</blockquote>
+</li>
+<li>$5,000 - $10,000: 30 points</li>
+<li>$1,000 - $5,000: 15 points</li>
+<li>&lt; $1,000: 5 points</li>
+</ul>
+<h3>Category-Based Risk</h3>
+<ul>
+<li>High-risk categories (consulting, legal, miscellaneous): +25 points</li>
+<li>Low-risk categories (utilities, payroll, rent, insurance): +5 points</li>
+<li>Other categories: +15 points</li>
+</ul>
+<h3>Vendor-Based Risk</h3>
+<ul>
+<li>Missing or empty vendor: +15 points</li>
+</ul>
+<h3>Reconciliation Threshold</h3>
+<ul>
+<li>Transactions with risk score ≤ threshold are auto-reconciled</li>
+<li>Default threshold: 50.0 (low-risk transactions only)</li>
+</ul>
+<h2>Database Schema</h2>
+<h3>Transactions Table</h3>
+<ul>
+<li><code>id</code>: Primary key</li>
+<li><code>date</code>: Transaction date</li>
+<li><code>description</code>: Transaction description</li>
+<li><code>amount</code>: Transaction amount</li>
+<li><code>category</code>: Transaction category</li>
+<li><code>vendor</code>: Vendor name</li>
+<li><code>risk_score</code>: Calculated risk score (0-100)</li>
+<li><code>is_reconciled</code>: Reconciliation status</li>
+<li><code>reconciled_at</code>: Reconciliation timestamp</li>
+</ul>
+<h3>Accruals Table</h3>
+<ul>
+<li><code>id</code>: Primary key</li>
+<li><code>period</code>: Period (YYYY-MM)</li>
+<li><code>accrual_type</code>: Type (payroll/utilities)</li>
+<li><code>description</code>: Accrual description</li>
+<li><code>amount</code>: Accrual amount</li>
+<li><code>is_posted</code>: Posted status</li>
+<li><code>based_on_historical</code>: Whether based on historical data</li>
+<li><code>historical_average</code>: Historical average amount</li>
+</ul>
+<h3>Reconciliation Records Table</h3>
+<ul>
+<li><code>id</code>: Primary key</li>
+<li><code>period</code>: Period (YYYY-MM)</li>
+<li><code>status</code>: Status (pending/in_progress/completed)</li>
+<li><code>total_transactions</code>: Total transaction count</li>
+<li><code>reconciled_count</code>: Reconciled transaction count</li>
+<li><code>pending_count</code>: Pending transaction count</li>
+<li><code>is_month_end_closed</code>: Month-end close status</li>
+</ul>
+<h2>Architecture</h2>
+<pre><code>backend/
 ├── main.py                 # FastAPI application entry point
 ├── schemas.py              # Pydantic models for request/response
 ├── models/                 # SQLAlchemy database models
@@ -236,26 +293,24 @@ backend/
     ├── transactions.py
     ├── accruals.py
     └── reconciliation.py
-```
-
-## Development
-
-### Project Structure
-
-The backend follows a clean architecture pattern:
-
-1. **Models Layer**: SQLAlchemy ORM models for database entities
-2. **Services Layer**: Business logic and domain operations
-3. **Routers Layer**: FastAPI endpoints and request handling
-4. **Schemas Layer**: Pydantic models for data validation
-
-### Adding New Features
-
-1. Define database models in `backend/models/`
-2. Create service classes in `backend/services/`
-3. Add API endpoints in `backend/routers/`
-4. Register routers in `backend/main.py`
-
-## License
-
-MIT License
+</code></pre>
+<h2>Development</h2>
+<h3>Project Structure</h3>
+<p>The backend follows a clean architecture pattern:</p>
+<ol>
+<li><strong>Models Layer</strong>: SQLAlchemy ORM models for database entities</li>
+<li><strong>Services Layer</strong>: Business logic and domain operations</li>
+<li><strong>Routers Layer</strong>: FastAPI endpoints and request handling</li>
+<li><strong>Schemas Layer</strong>: Pydantic models for data validation</li>
+</ol>
+<h3>Adding New Features</h3>
+<ol>
+<li>Define database models in <code>backend/models/</code></li>
+<li>Create service classes in <code>backend/services/</code></li>
+<li>Add API endpoints in <code>backend/routers/</code></li>
+<li>Register routers in <code>backend/main.py</code></li>
+</ol>
+<h2>License</h2>
+<p>MIT License</p>
+</body>
+</html>
