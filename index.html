@@ -1,2 +1,588 @@
-  
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Month-End Close Approval Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .metric-value.positive {
+            color: #28a745;
+        }
+        
+        .metric-value.negative {
+            color: #dc3545;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #218838;
+            transform: scale(1.02);
+        }
+        
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #c82333;
+            transform: scale(1.02);
+        }
+        
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #5568d3;
+            transform: scale(1.02);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .detail-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .detail-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .approval-history {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-item {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .history-item h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .history-item p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .instructions {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #666;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                Month-End Close Approval Dashboard
+                <span class="status-badge status-pending" id="overall-status">Pending Review</span>
+            </h1>
+            <p>Review and approve the automated month-end close results</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li>Run the month-end close process: <code>python run_month_end_close.py</code></li>
+                <li>Review each section below (Reconciliation, Accruals, Financial Statements)</li>
+                <li>Click "View Details" to see detailed information</li>
+                <li>Approve or reject each component</li>
+                <li>All components must be approved to complete the month-end close</li>
+            </ol>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading month-end close results...
+        </div>
+        
+        <div id="content" style="display: none;">
+            <div class="grid">
+                <!-- Reconciliation Card -->
+                <div class="card">
+                    <h2>
+                        🔍 Account Reconciliation
+                        <span class="status-badge status-pending" id="recon-status">Pending</span>
+                    </h2>
+                    <div id="recon-metrics">
+                        <!-- Metrics will be populated by JavaScript -->
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-view" onclick="viewDetails('reconciliation')">View Details</button>
+                        <button class="btn btn-approve" onclick="approveItem('reconciliation')">Approve</button>
+                        <button class="btn btn-reject" onclick="rejectItem('reconciliation')">Reject</button>
+                    </div>
+                </div>
+                
+                <!-- Accruals Card -->
+                <div class="card">
+                    <h2>
+                        📊 Accrual Postings
+                        <span class="status-badge status-pending" id="accruals-status">Pending</span>
+                    </h2>
+                    <div id="accruals-metrics">
+                        <!-- Metrics will be populated by JavaScript -->
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-view" onclick="viewDetails('accruals')">View Details</button>
+                        <button class="btn btn-approve" onclick="approveItem('accruals')">Approve</button>
+                        <button class="btn btn-reject" onclick="rejectItem('accruals')">Reject</button>
+                    </div>
+                </div>
+                
+                <!-- Financial Statements Card -->
+                <div class="card">
+                    <h2>
+                        💰 Financial Statements
+                        <span class="status-badge status-pending" id="statements-status">Pending</span>
+                    </h2>
+                    <div id="statements-metrics">
+                        <!-- Metrics will be populated by JavaScript -->
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-view" onclick="viewDetails('statements')">View Details</button>
+                        <button class="btn btn-approve" onclick="approveItem('statements')">Approve</button>
+                        <button class="btn btn-reject" onclick="rejectItem('statements')">Reject</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="approval-history">
+                <h2>📝 Approval History</h2>
+                <div id="approval-history">
+                    <p style="color: #999; text-align: center;">No approvals yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let monthEndData = null;
+        let approvals = {
+            reconciliation: null,
+            accruals: null,
+            statements: null
+        };
+        let approvalHistory = [];
+
+        // Initialize dashboard
+        async function init() {
+            try {
+                // Try to load the month-end close results
+                const response = await fetch('../output/month_end_close_results.json');
+                if (!response.ok) {
+                    throw new Error('Results file not found. Please run the month-end close process first.');
+                }
+                
+                monthEndData = await response.json();
+                displayResults();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loading').innerHTML = `
+                    <div class="error-message">
+                        <strong>Error:</strong> ${error.message}
+                        <br><br>
+                        Please run: <code>python run_month_end_close.py</code>
+                    </div>
+                `;
+            }
+        }
+
+        // Display results in the dashboard
+        function displayResults() {
+            // Display reconciliation metrics
+            if (monthEndData.steps.reconciliation && monthEndData.steps.reconciliation.summary) {
+                const recon = monthEndData.steps.reconciliation.summary;
+                document.getElementById('recon-metrics').innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Total GL Transactions</span>
+                        <span class="metric-value">${recon.total_gl_transactions}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Bank Transactions</span>
+                        <span class="metric-value">${recon.total_bank_transactions}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Matched</span>
+                        <span class="metric-value positive">${recon.matched_transactions}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Unmatched GL</span>
+                        <span class="metric-value ${recon.unmatched_gl_transactions > 0 ? 'negative' : ''}">${recon.unmatched_gl_transactions}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Reconciliation %</span>
+                        <span class="metric-value">${recon.reconciliation_percentage}%</span>
+                    </div>
+                `;
+            }
+
+            // Display accruals metrics
+            if (monthEndData.steps.accruals && monthEndData.steps.accruals.summary) {
+                const accruals = monthEndData.steps.accruals.summary;
+                document.getElementById('accruals-metrics').innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Journal Entries</span>
+                        <span class="metric-value">${accruals.total_journal_entries}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Debits</span>
+                        <span class="metric-value">${accruals.total_debits}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Credits</span>
+                        <span class="metric-value">${accruals.total_credits}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Balanced</span>
+                        <span class="metric-value ${accruals.balanced ? 'positive' : 'negative'}">${accruals.balanced ? 'Yes' : 'No'}</span>
+                    </div>
+                `;
+            }
+
+            // Display financial statements metrics
+            if (monthEndData.steps.financial_statements) {
+                const statements = monthEndData.steps.financial_statements;
+                document.getElementById('statements-metrics').innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Net Income</span>
+                        <span class="metric-value positive">${statements.profit_and_loss?.net_income || 'N/A'}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Assets</span>
+                        <span class="metric-value">${statements.balance_sheet?.total_assets || 'N/A'}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Balance Sheet Balanced</span>
+                        <span class="metric-value ${statements.balance_sheet?.balanced ? 'positive' : 'negative'}">
+                            ${statements.balance_sheet?.balanced ? 'Yes' : 'No'}
+                        </span>
+                    </div>
+                `;
+            }
+        }
+
+        // View detailed information
+        function viewDetails(section) {
+            let detailsHtml = '<div class="detail-section">';
+            
+            if (section === 'reconciliation' && monthEndData.steps.reconciliation) {
+                const recon = monthEndData.steps.reconciliation.summary;
+                detailsHtml += '<h4>Reconciliation Details</h4>';
+                Object.keys(recon).forEach(key => {
+                    detailsHtml += `<div class="detail-item"><strong>${key}:</strong> ${recon[key]}</div>`;
+                });
+                detailsHtml += '<p style="margin-top: 10px;"><em>View detailed CSV files in the output directory</em></p>';
+            } else if (section === 'accruals' && monthEndData.steps.accruals) {
+                const accruals = monthEndData.steps.accruals.summary;
+                detailsHtml += '<h4>Accruals Details</h4>';
+                Object.keys(accruals).forEach(key => {
+                    if (key === 'entry_types') {
+                        detailsHtml += '<div class="detail-item"><strong>Entry Types:</strong><br>';
+                        Object.keys(accruals[key]).forEach(type => {
+                            detailsHtml += `&nbsp;&nbsp;• ${type}: ${accruals[key][type]}<br>`;
+                        });
+                        detailsHtml += '</div>';
+                    } else {
+                        detailsHtml += `<div class="detail-item"><strong>${key}:</strong> ${accruals[key]}</div>`;
+                    }
+                });
+                detailsHtml += '<p style="margin-top: 10px;"><em>View journal entries in output/journal_entries.json</em></p>';
+            } else if (section === 'statements' && monthEndData.steps.financial_statements) {
+                detailsHtml += '<h4>Financial Statements Available</h4>';
+                detailsHtml += '<div class="detail-item">• Profit & Loss Statement</div>';
+                detailsHtml += '<div class="detail-item">• Balance Sheet</div>';
+                detailsHtml += '<div class="detail-item">• Cash Flow Statement</div>';
+                detailsHtml += '<p style="margin-top: 10px;"><em>View complete statements in output/financial_statements.json</em></p>';
+            }
+            
+            detailsHtml += '</div>';
+            
+            // Show in an alert for simplicity (could be a modal in production)
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = detailsHtml;
+            alert(tempDiv.textContent || tempDiv.innerText);
+        }
+
+        // Approve an item
+        function approveItem(section) {
+            approvals[section] = 'approved';
+            updateStatus(section, 'approved');
+            addToHistory(section, 'approved');
+            checkOverallStatus();
+        }
+
+        // Reject an item
+        function rejectItem(section) {
+            const reason = prompt('Please provide a reason for rejection:');
+            if (reason) {
+                approvals[section] = 'rejected';
+                updateStatus(section, 'rejected');
+                addToHistory(section, 'rejected', reason);
+                checkOverallStatus();
+            }
+        }
+
+        // Update status badge
+        function updateStatus(section, status) {
+            const statusBadge = document.getElementById(`${section === 'statements' ? 'statements' : section === 'accruals' ? 'accruals' : 'recon'}-status`);
+            statusBadge.className = 'status-badge status-' + (status === 'approved' ? 'completed' : 'rejected');
+            statusBadge.textContent = status === 'approved' ? 'Approved' : 'Rejected';
+        }
+
+        // Add to approval history
+        function addToHistory(section, action, reason = '') {
+            const timestamp = new Date().toLocaleString();
+            const entry = {
+                section,
+                action,
+                reason,
+                timestamp
+            };
+            approvalHistory.push(entry);
+            
+            const historyDiv = document.getElementById('approval-history');
+            historyDiv.innerHTML = '';
+            
+            approvalHistory.forEach(item => {
+                historyDiv.innerHTML += `
+                    <div class="history-item">
+                        <h4>${item.section.charAt(0).toUpperCase() + item.section.slice(1)} - ${item.action.toUpperCase()}</h4>
+                        ${item.reason ? `<p>Reason: ${item.reason}</p>` : ''}
+                        <div class="timestamp">${item.timestamp}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Check overall status
+        function checkOverallStatus() {
+            const allApproved = Object.values(approvals).every(status => status === 'approved');
+            const anyRejected = Object.values(approvals).some(status => status === 'rejected');
+            
+            const overallStatus = document.getElementById('overall-status');
+            if (allApproved) {
+                overallStatus.className = 'status-badge status-completed';
+                overallStatus.textContent = 'All Approved';
+                showCompletionMessage();
+            } else if (anyRejected) {
+                overallStatus.className = 'status-badge status-rejected';
+                overallStatus.textContent = 'Rejected';
+            } else {
+                overallStatus.className = 'status-badge status-pending';
+                overallStatus.textContent = 'Pending Review';
+            }
+        }
+
+        // Show completion message
+        function showCompletionMessage() {
+            const header = document.querySelector('.header');
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.innerHTML = '<strong>✓ Success!</strong> All components have been approved. Month-end close is complete.';
+            header.appendChild(successMsg);
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
