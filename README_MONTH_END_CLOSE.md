@@ -30,16 +30,27 @@ cd Tax-calculator-
 
 ### Running the Process
 
-1. **Run the month-end close process:**
+**⭐ NEW: Standalone Version Available!**
+
+You can now run the entire process with a single consolidated file:
+
+```bash
+python month_end_close_standalone.py
+```
+
+Or use the original modular version:
+
 ```bash
 python run_month_end_close.py
 ```
 
-This will:
+Both versions provide identical functionality and will:
 - Perform account reconciliation between GL and bank statements
 - Calculate and post accruals (interest, depreciation, expenses)
 - Generate financial statements (P&L, Balance Sheet, Cash Flow)
 - Save all results to the `output/` directory
+
+📖 See [README_STANDALONE.md](README_STANDALONE.md) for detailed information about the standalone version.
 
 2. **Review and approve results:**
 
@@ -76,9 +87,36 @@ Tax-calculator-/
 │   ├── journal_entries.*      # Journal entries
 │   ├── financial_statements.json # Financial statements
 │   └── month_end_close_results.json # Complete results
-├── run_month_end_close.py     # Main orchestration script
+├── month_end_close_standalone.py  # ⭐ NEW: Consolidated standalone script
+├── run_month_end_close.py     # Main orchestration script (modular version)
+├── README_STANDALONE.md       # Documentation for standalone version
 └── README.md                  # This file
 ```
+
+## 🆕 Standalone vs Modular Version
+
+This project now offers **two ways** to run the month-end close process:
+
+### Standalone Version (Recommended for Production)
+- **File**: `month_end_close_standalone.py`
+- **Pros**: Single file, easy deployment, no import issues
+- **Use Cases**: Production, Docker, scheduled jobs, quick demos
+- **Documentation**: [README_STANDALONE.md](README_STANDALONE.md)
+
+```bash
+python month_end_close_standalone.py
+```
+
+### Modular Version (Recommended for Development)
+- **Files**: `backend/*.py` + `run_month_end_close.py`
+- **Pros**: Better code organization, easier to maintain
+- **Use Cases**: Development, testing individual modules
+
+```bash
+python run_month_end_close.py
+```
+
+**Both versions provide identical functionality and produce the same results.**
 
 ## 🔧 Usage
 
