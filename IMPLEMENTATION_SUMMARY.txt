@@ -47,7 +47,7 @@ MODULES CREATED:
    - JSON results output
    - Process summary generation
 
-6. frontend/dashboard.html (520 lines)
+6. index.html (520 lines)
    - Beautiful gradient UI design
    - Real-time data loading from JSON
    - Interactive approval/rejection workflow
@@ -121,7 +121,7 @@ USAGE:
    $ python run_month_end_close.py
 
 2. Open the dashboard:
-   $ open frontend/dashboard.html
+   $ open index.html
    (or navigate to the file in your browser)
 
 3. Review and approve/reject each component

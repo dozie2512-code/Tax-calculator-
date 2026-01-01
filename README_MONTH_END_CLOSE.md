@@ -46,13 +46,13 @@ This will:
 Open the approval dashboard in your browser:
 ```bash
 # On Linux/Mac
-open frontend/dashboard.html
+open index.html
 
 # On Windows
-start frontend/dashboard.html
+start index.html
 
 # Or navigate directly to:
-# file:///path/to/Tax-calculator-/frontend/dashboard.html
+# file:///path/to/Tax-calculator-/index.html
 ```
 
 ## 📁 Project Structure
@@ -64,8 +64,6 @@ Tax-calculator-/
 │   ├── accruals.py            # Accrual calculations module
 │   ├── financial_statements.py # Statement generation module
 │   └── utils.py               # Utility functions
-├── frontend/
-│   └── dashboard.html         # Approval workflow UI
 ├── sample_data/
 │   ├── general_ledger.csv     # Sample GL transactions
 │   ├── bank_statement.csv     # Sample bank transactions
@@ -76,6 +74,7 @@ Tax-calculator-/
 │   ├── journal_entries.*      # Journal entries
 │   ├── financial_statements.json # Financial statements
 │   └── month_end_close_results.json # Complete results
+├── index.html                 # Approval workflow UI dashboard
 ├── run_month_end_close.py     # Main orchestration script
 └── README.md                  # This file
 ```
@@ -167,7 +166,7 @@ python financial_statements.py
 
 ## 🎨 Approval Dashboard
 
-The frontend dashboard provides a user-friendly interface for reviewing and approving month-end close results.
+The approval dashboard (index.html) provides a user-friendly interface for reviewing and approving month-end close results.
 
 **Features:**
 - Visual summary of reconciliation results
@@ -178,7 +177,7 @@ The frontend dashboard provides a user-friendly interface for reviewing and appr
 - Responsive design
 
 **Access:**
-Open `frontend/dashboard.html` in your web browser after running the month-end close process.
+Open `index.html` in your web browser after running the month-end close process.
 
 ## 📊 Sample Data
 

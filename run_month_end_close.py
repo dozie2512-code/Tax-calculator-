@@ -208,7 +208,7 @@ class MonthEndCloseProcess:
         print(f"Started: {self.results['process_start']}")
         print(f"Ended: {self.results.get('process_end', 'N/A')}")
         print("\nAll output files are available in the 'output' directory.")
-        print("Review the results in the approval dashboard: frontend/dashboard.html")
+        print("Review the results in the approval dashboard: index.html")
         print("="*60 + "\n")
 
 
