@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
+from io import StringIO
 import re
 
 
@@ -44,7 +45,8 @@ class BankTransactionParser:
         """Build keyword-based categorization rules"""
         return {
             # Income keywords
-            r'(payment|deposit|transfer in|credit|invoice|sale)': 'Sales',
+            r'(payment|deposit|credit|invoice|sale)': 'Sales',
+            r'(transfer\s+in)': 'Sales',
             r'(interest|dividend)': 'Interest Income',
             
             # Expense keywords
@@ -85,8 +87,9 @@ class BankTransactionParser:
                 "error": "CSV file must contain headers and at least one transaction"
             }
         
-        # Parse CSV
-        reader = csv.DictReader(lines)
+        # Parse CSV using StringIO for proper CSV handling
+        csv_file = StringIO(csv_content)
+        reader = csv.DictReader(csv_file)
         
         for idx, row in enumerate(reader, start=2):  # Start from 2 (header is 1)
             try:

@@ -31,12 +31,17 @@ class TaxCalculatorAPIClient {
 
     /**
      * Hash password (simple implementation for demo)
+     * Note: For production, use proper crypto library like bcrypt
      */
     hashPassword(password) {
-        // In production, use proper crypto library
+        // Add simple salt for basic protection
+        const salt = 'taxcalc_salt_2024';
+        const salted = salt + password + salt;
+        
+        // Simple hash implementation (not production-ready)
         let hash = 0;
-        for (let i = 0; i < password.length; i++) {
-            const char = password.charCodeAt(i);
+        for (let i = 0; i < salted.length; i++) {
+            const char = salted.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash;
         }
@@ -371,12 +376,14 @@ class TaxCalculatorAPIClient {
 
     /**
      * Categorize transaction based on description
+     * Note: Uses keyword matching - patterns are case-insensitive
      */
     categorizeTransaction(description, amount) {
         const desc = description.toLowerCase();
         
-        // Income patterns
-        if (desc.match(/(payment|deposit|transfer in|credit|invoice|sale)/)) return 'Sales';
+        // Income patterns (spaces properly escaped)
+        if (desc.match(/(payment|deposit|credit|invoice|sale)/)) return 'Sales';
+        if (desc.match(/transfer\s+in/)) return 'Sales';
         if (desc.match(/(interest|dividend)/)) return 'Interest Income';
         
         // Expense patterns

@@ -51,8 +51,14 @@ class AuthenticationSystem:
             json.dump(data, f, indent=2)
     
     def _hash_password(self, password: str) -> str:
-        """Hash password using SHA-256"""
-        return hashlib.sha256(password.encode()).hexdigest()
+        """
+        Hash password using SHA-256 with salt
+        Note: For production use, consider bcrypt, scrypt, or Argon2
+        """
+        # Add a simple salt for basic protection (still not production-ready)
+        salt = "taxcalc_salt_2024"  # In production, use per-user random salt
+        salted = salt + password + salt
+        return hashlib.sha256(salted.encode()).hexdigest()
     
     def register_user(self, username: str, password: str, email: str, 
                      full_name: str = "") -> Dict[str, Any]:

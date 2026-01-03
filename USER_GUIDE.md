@@ -178,6 +178,8 @@ Transactions are automatically categorized into:
 2. **Logout**: Always logout when using shared computers
 3. **Data Privacy**: Data is stored locally in your browser
 
+> ⚠️ **Production Security Notice:** The current implementation uses simplified password hashing (SHA-256 with static salt) suitable for demonstration. For production use, implement proper password hashing with bcrypt, scrypt, or Argon2, along with per-user random salts and a secure backend authentication server.
+
 ## Transaction Categorization Rules
 
 The system uses keyword matching to categorize transactions:
