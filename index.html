@@ -1,1199 +1,1226 @@
-"""
-Autonomous Month-End Close Process - Standalone Consolidated Version
-=====================================================================
-
-This standalone script consolidates all modules for the month-end close process:
-- Utility functions for CSV handling and formatting
-- Account reconciliation between GL and bank statements
-- Accrual calculations and journal entry generation
-- Financial statement generation (P&L, Balance Sheet, Cash Flow)
-- Complete process orchestration
-
-All functionality is contained in this single file for easy distribution and use.
-No external dependencies required - uses only Python standard library.
-
-Usage:
-    python month_end_close_standalone.py
-
-Author: Tax Calculator Project
-Date: 2026-01-01
-"""
-
-import os
-import csv
-import json
-from datetime import datetime
-from typing import List, Dict, Any, Tuple
-from collections import defaultdict
-
-
-# ============================================================================
-# UTILITY FUNCTIONS
-# ============================================================================
-
-def read_csv_file(filepath: str) -> List[Dict[str, Any]]:
-    """
-    Read a CSV file and return a list of dictionaries.
-    
-    Args:
-        filepath: Path to the CSV file
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Month-End Close Automation - Front-End Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-    Returns:
-        List of dictionaries where keys are column headers
-    """
-    data = []
-    try:
-        with open(filepath, 'r', encoding='utf-8') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                data.append(row)
-    except FileNotFoundError:
-        print(f"Error: File '{filepath}' not found.")
-    except Exception as e:
-        print(f"Error reading CSV file: {e}")
-    
-    return data
-
-
-def write_csv_file(filepath: str, data: List[Dict[str, Any]], fieldnames: List[str]):
-    """
-    Write data to a CSV file.
-    
-    Args:
-        filepath: Path to the output CSV file
-        data: List of dictionaries to write
-        fieldnames: List of column headers
-    """
-    try:
-        with open(filepath, 'w', encoding='utf-8', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(data)
-        print(f"Data successfully written to {filepath}")
-    except Exception as e:
-        print(f"Error writing CSV file: {e}")
-
-
-def parse_date(date_str: str, format: str = '%Y-%m-%d') -> datetime:
-    """
-    Parse a date string into a datetime object.
-    
-    Args:
-        date_str: Date string to parse
-        format: Expected date format (default: '%Y-%m-%d')
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
         
-    Returns:
-        datetime object
-    """
-    try:
-        return datetime.strptime(date_str, format)
-    except ValueError:
-        # Try alternative formats
-        for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y/%m/%d']:
-            try:
-                return datetime.strptime(date_str, fmt)
-            except ValueError:
-                continue
-        raise ValueError(f"Unable to parse date: {date_str}")
-
-
-def format_currency(amount: float) -> str:
-    """
-    Format a number as currency (GBP).
-    
-    Args:
-        amount: Numerical amount
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
         
-    Returns:
-        Formatted currency string
-    """
-    return f"£{amount:,.2f}"
-
-
-def safe_float(value: Any, default: float = 0.0) -> float:
-    """
-    Safely convert a value to float.
-    
-    Args:
-        value: Value to convert
-        default: Default value if conversion fails
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
         
-    Returns:
-        Float value or default
-    """
-    try:
-        return float(value)
-    except (ValueError, TypeError):
-        return default
-
-
-def safe_int(value: Any, default: int = 0) -> int:
-    """
-    Safely convert a value to int.
-    
-    Args:
-        value: Value to convert
-        default: Default value if conversion fails
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
         
-    Returns:
-        Int value or default
-    """
-    try:
-        if isinstance(value, str) and not value.strip():
-            return default
-        return int(value)
-    except (ValueError, TypeError):
-        return default
-
-
-# ============================================================================
-# ACCOUNT RECONCILIATION MODULE
-# ============================================================================
-
-class AccountReconciliation:
-    """
-    Performs account reconciliation between general ledger and bank statements.
-    Identifies matched and unmatched transactions, flags discrepancies.
-    """
-    
-    def __init__(self, gl_file: str, bank_file: str):
-        """
-        Initialize the reconciliation with GL and bank statement files.
+        .header p {
+            color: #666;
+        }
         
-        Args:
-            gl_file: Path to general ledger CSV file
-            bank_file: Path to bank statement CSV file
-        """
-        self.gl_transactions = read_csv_file(gl_file)
-        self.bank_transactions = read_csv_file(bank_file)
-        self.matched = []
-        self.unmatched_gl = []
-        self.unmatched_bank = []
-        self.discrepancies = []
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
         
-    def reconcile(self, tolerance: float = 0.01) -> Dict[str, Any]:
-        """
-        Perform reconciliation between GL and bank transactions.
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
         
-        Args:
-            tolerance: Acceptable difference for amount matching (default: 0.01)
-            
-        Returns:
-            Dictionary containing reconciliation results
-        """
-        # Create copies to track unmatched items
-        remaining_gl = self.gl_transactions.copy()
-        remaining_bank = self.bank_transactions.copy()
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
         
-        # Try to match GL transactions with bank transactions
-        for gl_tx in self.gl_transactions:
-            gl_amount = safe_float(gl_tx.get('amount', 0))
-            gl_date = gl_tx.get('date', '')
-            gl_desc = gl_tx.get('description', '').lower()
-            gl_ref = gl_tx.get('reference', '')
-            
-            match_found = False
-            
-            for bank_tx in remaining_bank[:]:
-                bank_amount = safe_float(bank_tx.get('amount', 0))
-                bank_date = bank_tx.get('date', '')
-                bank_desc = bank_tx.get('description', '').lower()
-                bank_ref = bank_tx.get('reference', '')
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            font-family: monospace;
+        }
+        
+        .form-group input[type="number"] {
+            max-width: 300px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: scale(1.02);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .results {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .results h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .metric-value.positive {
+            color: #28a745;
+        }
+        
+        .metric-value.negative {
+            color: #dc3545;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Month-End Close Automation System</h1>
+            <p>Standalone front-end prototype for account reconciliation, accrual postings, and financial statement generation</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="switchTab('reconciliation')">🔍 Reconciliation</button>
+            <button class="tab" onclick="switchTab('accruals')">📝 Accruals</button>
+            <button class="tab" onclick="switchTab('statements')">💰 Financial Statements</button>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>Welcome to the Month-End Close System</h2>
+                <div class="alert alert-info">
+                    <strong>ℹ️ About this prototype:</strong> This is a browser-based implementation of the Python month-end close process. 
+                    All calculations run in your browser using JavaScript. No data is sent to any server.
+                </div>
                 
-                # Matching criteria: amount, date, and reference/description similarity
-                amount_match = abs(gl_amount - bank_amount) <= tolerance
-                date_match = gl_date == bank_date
-                ref_match = (gl_ref and gl_ref == bank_ref) or \
-                           (gl_desc and bank_desc and gl_desc in bank_desc) or \
-                           (bank_desc and gl_desc and bank_desc in gl_desc)
+                <h3>Features</h3>
+                <ul style="margin-left: 20px; color: #666; line-height: 1.8;">
+                    <li><strong>Account Reconciliation:</strong> Match GL transactions with bank statements</li>
+                    <li><strong>Accrual Postings:</strong> Calculate interest, depreciation, and expense accruals</li>
+                    <li><strong>Financial Statements:</strong> Generate P&L, Balance Sheet, and Cash Flow statements</li>
+                </ul>
                 
-                if amount_match and (date_match or ref_match):
-                    # Match found
-                    self.matched.append({
-                        'gl_transaction': gl_tx,
-                        'bank_transaction': bank_tx,
-                        'match_confidence': 'High' if date_match and ref_match else 'Medium'
-                    })
+                <h3>How to Use</h3>
+                <ol style="margin-left: 20px; color: #666; line-height: 1.8; margin-bottom: 20px;">
+                    <li>Navigate to each tab to access different features</li>
+                    <li>Enter your transaction data in CSV format</li>
+                    <li>Click "Process" to run calculations</li>
+                    <li>Review results and export if needed</li>
+                </ol>
+                
+                <div class="grid">
+                    <div class="stat-card">
+                        <h3>Account Reconciliation</h3>
+                        <div class="value" id="recon-count">0</div>
+                        <div class="label">Transactions Processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Accrual Postings</h3>
+                        <div class="value" id="accrual-count">0</div>
+                        <div class="label">Journal Entries Created</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Financial Statements</h3>
+                        <div class="value" id="statement-count">0</div>
+                        <div class="label">Statements Generated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reconciliation Tab -->
+        <div id="reconciliation" class="tab-content">
+            <div class="card">
+                <h2>🔍 Account Reconciliation</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Match general ledger transactions with bank statements to identify discrepancies.
+                </p>
+                
+                <div class="form-group">
+                    <label for="gl-data">General Ledger Transactions (CSV)</label>
+                    <textarea id="gl-data" placeholder="date,reference,description,amount
+2026-01-01,INV001,Client Payment,1500.00
+2026-01-02,INV002,Office Supplies,-250.00"></textarea>
+                    <div class="help-text">Format: date, reference, description, amount</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bank-data">Bank Statement Transactions (CSV)</label>
+                    <textarea id="bank-data" placeholder="date,reference,description,amount
+2026-01-01,INV001,Payment Received,1500.00
+2026-01-02,SUP001,Office Supplies,-250.00"></textarea>
+                    <div class="help-text">Format: date, reference, description, amount</div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="performReconciliation()">🔍 Perform Reconciliation</button>
+                <button class="btn btn-danger" onclick="clearReconciliation()">Clear</button>
+                
+                <div id="recon-results"></div>
+            </div>
+        </div>
+        
+        <!-- Accruals Tab -->
+        <div id="accruals" class="tab-content">
+            <div class="card">
+                <h2>📝 Accrual Postings</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Calculate interest, depreciation, and periodic expense accruals.
+                </p>
+                
+                <div class="form-group">
+                    <label for="accrual-type">Accrual Type</label>
+                    <select id="accrual-type" onchange="updateAccrualForm()">
+                        <option value="interest">Interest Accrual</option>
+                        <option value="depreciation">Depreciation</option>
+                        <option value="expense">Periodic Expense</option>
+                    </select>
+                </div>
+                
+                <div id="accrual-form">
+                    <!-- Dynamic form content -->
+                </div>
+                
+                <button class="btn btn-primary" onclick="calculateAccrual()">📊 Calculate Accrual</button>
+                <button class="btn btn-success" onclick="generateJournalEntry()">📄 Generate Journal Entry</button>
+                <button class="btn btn-danger" onclick="clearAccruals()">Clear</button>
+                
+                <div id="accrual-results"></div>
+            </div>
+        </div>
+        
+        <!-- Financial Statements Tab -->
+        <div id="statements" class="tab-content">
+            <div class="card">
+                <h2>💰 Financial Statements</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Generate Profit & Loss, Balance Sheet, and Cash Flow statements from transaction data.
+                </p>
+                
+                <div class="form-group">
+                    <label for="transaction-data">Transaction Data (CSV)</label>
+                    <textarea id="transaction-data" placeholder="date,account,account_type,description,debit,credit
+2026-01-01,4000,Revenue,Sales Revenue,0,5000
+2026-01-01,1000,Asset,Cash,5000,0
+2026-01-02,6000,Expense,Rent,1000,0
+2026-01-02,1000,Asset,Cash,0,1000"></textarea>
+                    <div class="help-text">
+                        Format: date, account, account_type, description, debit, credit<br>
+                        Account types: Asset, Liability, Equity, Revenue, COGS, Expense
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="statement-type">Statement Type</label>
+                    <select id="statement-type">
+                        <option value="all">All Statements</option>
+                        <option value="pl">Profit & Loss Only</option>
+                        <option value="bs">Balance Sheet Only</option>
+                        <option value="cf">Cash Flow Only</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateStatements()">📈 Generate Statements</button>
+                <button class="btn btn-danger" onclick="clearStatements()">Clear</button>
+                
+                <div id="statement-results"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================================
+        // GLOBAL STATE
+        // ============================================================================
+        
+        let reconciliationResults = null;
+        let currentAccrual = null;
+        let journalEntries = [];
+        let statementResults = null;
+        
+        // ============================================================================
+        // TAB SWITCHING
+        // ============================================================================
+        
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+        
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+        
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                data.push(row);
+            }
+            
+            return data;
+        }
+        
+        function formatCurrency(amount) {
+            return '£' + parseFloat(amount).toLocaleString('en-GB', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        function safeFloat(value) {
+            const num = parseFloat(value);
+            return isNaN(num) ? 0 : num;
+        }
+        
+        // ============================================================================
+        // ACCOUNT RECONCILIATION
+        // ============================================================================
+        
+        function performReconciliation() {
+            const glText = document.getElementById('gl-data').value;
+            const bankText = document.getElementById('bank-data').value;
+            
+            if (!glText || !bankText) {
+                alert('Please enter both GL and Bank transaction data');
+                return;
+            }
+            
+            const glTransactions = parseCSV(glText);
+            const bankTransactions = parseCSV(bankText);
+            
+            const matched = [];
+            const unmatchedGL = [];
+            const unmatchedBank = [];
+            const discrepancies = [];
+            
+            const remainingBank = [...bankTransactions];
+            
+            // Try to match GL transactions with bank transactions
+            glTransactions.forEach(gl => {
+                let matchFound = false;
+                const glAmount = safeFloat(gl.amount);
+                
+                for (let i = 0; i < remainingBank.length; i++) {
+                    const bank = remainingBank[i];
+                    const bankAmount = safeFloat(bank.amount);
                     
-                    if gl_tx in remaining_gl:
-                        remaining_gl.remove(gl_tx)
-                    remaining_bank.remove(bank_tx)
-                    match_found = True
-                    break
-            
-            if not match_found and gl_amount != 0:
-                # Check for potential discrepancies
-                for bank_tx in self.bank_transactions:
-                    bank_amount = safe_float(bank_tx.get('amount', 0))
-                    if abs(abs(gl_amount) - abs(bank_amount)) < 100 and abs(gl_amount - bank_amount) > tolerance:
-                        self.discrepancies.append({
-                            'gl_transaction': gl_tx,
-                            'bank_transaction': bank_tx,
-                            'difference': gl_amount - bank_amount,
-                            'type': 'Amount Mismatch'
-                        })
-        
-        # Store remaining unmatched transactions
-        self.unmatched_gl = remaining_gl
-        self.unmatched_bank = remaining_bank
-        
-        return self.generate_summary()
-    
-    def generate_summary(self) -> Dict[str, Any]:
-        """
-        Generate a summary report of the reconciliation.
-        
-        Returns:
-            Dictionary containing reconciliation summary
-        """
-        total_gl_amount = sum(safe_float(tx.get('amount', 0)) for tx in self.gl_transactions)
-        total_bank_amount = sum(safe_float(tx.get('amount', 0)) for tx in self.bank_transactions)
-        matched_amount = sum(safe_float(match['gl_transaction'].get('amount', 0)) 
-                            for match in self.matched)
-        
-        summary = {
-            'total_gl_transactions': len(self.gl_transactions),
-            'total_bank_transactions': len(self.bank_transactions),
-            'matched_transactions': len(self.matched),
-            'unmatched_gl_transactions': len(self.unmatched_gl),
-            'unmatched_bank_transactions': len(self.unmatched_bank),
-            'discrepancies_found': len(self.discrepancies),
-            'total_gl_amount': format_currency(total_gl_amount),
-            'total_bank_amount': format_currency(total_bank_amount),
-            'matched_amount': format_currency(matched_amount),
-            'reconciliation_percentage': round((len(self.matched) / max(len(self.gl_transactions), 1)) * 100, 2)
-        }
-        
-        return summary
-    
-    def export_results(self, output_prefix: str = 'reconciliation'):
-        """
-        Export reconciliation results to CSV files.
-        
-        Args:
-            output_prefix: Prefix for output files
-        """
-        # Export matched transactions
-        if self.matched:
-            matched_data = []
-            for match in self.matched:
-                matched_data.append({
-                    'gl_date': match['gl_transaction'].get('date', ''),
-                    'gl_reference': match['gl_transaction'].get('reference', ''),
-                    'gl_description': match['gl_transaction'].get('description', ''),
-                    'gl_amount': match['gl_transaction'].get('amount', ''),
-                    'bank_date': match['bank_transaction'].get('date', ''),
-                    'bank_reference': match['bank_transaction'].get('reference', ''),
-                    'bank_description': match['bank_transaction'].get('description', ''),
-                    'bank_amount': match['bank_transaction'].get('amount', ''),
-                    'confidence': match['match_confidence']
-                })
-            write_csv_file(f'{output_prefix}_matched.csv', matched_data, 
-                          list(matched_data[0].keys()) if matched_data else [])
-        
-        # Export unmatched GL transactions
-        if self.unmatched_gl:
-            write_csv_file(f'{output_prefix}_unmatched_gl.csv', self.unmatched_gl,
-                          list(self.unmatched_gl[0].keys()) if self.unmatched_gl else [])
-        
-        # Export unmatched bank transactions
-        if self.unmatched_bank:
-            write_csv_file(f'{output_prefix}_unmatched_bank.csv', self.unmatched_bank,
-                          list(self.unmatched_bank[0].keys()) if self.unmatched_bank else [])
-        
-        # Export discrepancies
-        if self.discrepancies:
-            disc_data = []
-            for disc in self.discrepancies:
-                disc_data.append({
-                    'gl_reference': disc['gl_transaction'].get('reference', ''),
-                    'gl_description': disc['gl_transaction'].get('description', ''),
-                    'gl_amount': disc['gl_transaction'].get('amount', ''),
-                    'bank_reference': disc['bank_transaction'].get('reference', ''),
-                    'bank_description': disc['bank_transaction'].get('description', ''),
-                    'bank_amount': disc['bank_transaction'].get('amount', ''),
-                    'difference': disc['difference'],
-                    'type': disc['type']
-                })
-            write_csv_file(f'{output_prefix}_discrepancies.csv', disc_data,
-                          list(disc_data[0].keys()) if disc_data else [])
-        
-        # Export summary as JSON
-        summary = self.generate_summary()
-        with open(f'{output_prefix}_summary.json', 'w') as f:
-            json.dump(summary, f, indent=2)
-        print(f"Reconciliation summary saved to {output_prefix}_summary.json")
-
-
-# ============================================================================
-# ACCRUAL POSTINGS MODULE
-# ============================================================================
-
-class AccrualCalculator:
-    """
-    Calculates accruals for interest, depreciation, and other periodic expenses.
-    Generates journal entries for the calculated accruals.
-    """
-    
-    def __init__(self, config_file: str = None):
-        """
-        Initialize the accrual calculator with configuration.
-        
-        Args:
-            config_file: Optional path to configuration file for accrual rates
-        """
-        self.journal_entries = []
-        self.accruals = {}
-        
-        # Default accrual rates (can be overridden by config file)
-        self.config = {
-            'interest_rate': 0.05,  # 5% annual interest rate
-            'depreciation_rate': 0.10,  # 10% straight-line depreciation
-            'accrual_accounts': {
-                'interest_expense': '7200',
-                'interest_payable': '2300',
-                'depreciation_expense': '7100',
-                'accumulated_depreciation': '1500'
-            }
-        }
-        
-        if config_file:
-            self.load_config(config_file)
-    
-    def load_config(self, config_file: str):
-        """
-        Load accrual configuration from JSON file.
-        
-        Args:
-            config_file: Path to JSON configuration file
-        """
-        try:
-            with open(config_file, 'r') as f:
-                loaded_config = json.load(f)
-                self.config.update(loaded_config)
-            print(f"Configuration loaded from {config_file}")
-        except FileNotFoundError:
-            print(f"Config file not found: {config_file}. Using defaults.")
-        except Exception as e:
-            print(f"Error loading config: {e}. Using defaults.")
-    
-    def calculate_interest_accrual(self, principal: float, months: int = 1) -> Dict[str, Any]:
-        """
-        Calculate interest accrual for the period.
-        
-        Args:
-            principal: Principal amount
-            months: Number of months (default: 1)
-            
-        Returns:
-            Dictionary containing accrual details
-        """
-        annual_rate = self.config.get('interest_rate', 0.05)
-        monthly_rate = annual_rate / 12
-        interest_amount = principal * monthly_rate * months
-        
-        accrual = {
-            'type': 'Interest Accrual',
-            'principal': principal,
-            'rate': annual_rate,
-            'period_months': months,
-            'accrual_amount': round(interest_amount, 2),
-            'calculation_date': datetime.now().strftime('%Y-%m-%d')
-        }
-        
-        return accrual
-    
-    def calculate_depreciation_accrual(self, asset_cost: float, 
-                                      salvage_value: float = 0, 
-                                      useful_life_years: int = 5) -> Dict[str, Any]:
-        """
-        Calculate monthly depreciation accrual using straight-line method.
-        
-        Args:
-            asset_cost: Original cost of the asset
-            salvage_value: Expected salvage value at end of useful life
-            useful_life_years: Expected useful life in years
-            
-        Returns:
-            Dictionary containing depreciation details
-        """
-        depreciable_amount = asset_cost - salvage_value
-        annual_depreciation = depreciable_amount / useful_life_years
-        monthly_depreciation = annual_depreciation / 12
-        
-        accrual = {
-            'type': 'Depreciation Accrual',
-            'asset_cost': asset_cost,
-            'salvage_value': salvage_value,
-            'useful_life_years': useful_life_years,
-            'monthly_depreciation': round(monthly_depreciation, 2),
-            'annual_depreciation': round(annual_depreciation, 2),
-            'calculation_date': datetime.now().strftime('%Y-%m-%d')
-        }
-        
-        return accrual
-    
-    def calculate_expense_accrual(self, expense_name: str, 
-                                  annual_amount: float, 
-                                  months: int = 1) -> Dict[str, Any]:
-        """
-        Calculate accrual for periodic expenses (e.g., rent, utilities).
-        
-        Args:
-            expense_name: Name of the expense
-            annual_amount: Annual expense amount
-            months: Number of months to accrue (default: 1)
-            
-        Returns:
-            Dictionary containing expense accrual details
-        """
-        monthly_amount = annual_amount / 12
-        accrual_amount = monthly_amount * months
-        
-        accrual = {
-            'type': f'{expense_name} Accrual',
-            'annual_amount': annual_amount,
-            'monthly_amount': round(monthly_amount, 2),
-            'period_months': months,
-            'accrual_amount': round(accrual_amount, 2),
-            'calculation_date': datetime.now().strftime('%Y-%m-%d')
-        }
-        
-        return accrual
-    
-    def generate_journal_entry(self, accrual: Dict[str, Any], 
-                              debit_account: str, 
-                              credit_account: str,
-                              entry_date: str = None) -> Dict[str, Any]:
-        """
-        Generate a journal entry for an accrual.
-        
-        Args:
-            accrual: Accrual dictionary with calculation details
-            debit_account: Account to debit
-            credit_account: Account to credit
-            entry_date: Date for the journal entry (default: today)
-            
-        Returns:
-            Dictionary containing journal entry details
-        """
-        if not entry_date:
-            entry_date = datetime.now().strftime('%Y-%m-%d')
-        
-        amount = accrual.get('accrual_amount', 0) or \
-                accrual.get('monthly_depreciation', 0)
-        
-        entry = {
-            'entry_date': entry_date,
-            'description': accrual.get('type', 'Accrual Entry'),
-            'lines': [
-                {
-                    'account': debit_account,
-                    'account_type': 'Expense',
-                    'debit': round(amount, 2),
-                    'credit': 0
-                },
-                {
-                    'account': credit_account,
-                    'account_type': 'Liability/Contra-Asset',
-                    'debit': 0,
-                    'credit': round(amount, 2)
+                    // Matching criteria
+                    const amountMatch = Math.abs(glAmount - bankAmount) < 0.01;
+                    const dateMatch = gl.date === bank.date;
+                    const refMatch = gl.reference === bank.reference;
+                    const descMatch = gl.description && bank.description && 
+                                    (gl.description.toLowerCase().includes(bank.description.toLowerCase()) ||
+                                     bank.description.toLowerCase().includes(gl.description.toLowerCase()));
+                    
+                    if (amountMatch && (dateMatch || refMatch || descMatch)) {
+                        matched.push({
+                            gl: gl,
+                            bank: bank,
+                            confidence: (dateMatch && refMatch) ? 'High' : 'Medium'
+                        });
+                        remainingBank.splice(i, 1);
+                        matchFound = true;
+                        break;
+                    }
                 }
-            ],
-            'total_debit': round(amount, 2),
-            'total_credit': round(amount, 2),
-            'balanced': True
-        }
-        
-        self.journal_entries.append(entry)
-        return entry
-    
-    def process_accruals_from_file(self, accruals_file: str) -> List[Dict[str, Any]]:
-        """
-        Process accruals from a CSV file containing accrual specifications.
-        
-        Args:
-            accruals_file: Path to CSV file with accrual data
-            
-        Returns:
-            List of calculated accruals
-        """
-        accrual_data = read_csv_file(accruals_file)
-        calculated_accruals = []
-        
-        for row in accrual_data:
-            accrual_type = row.get('type', '').lower()
-            
-            if accrual_type == 'interest':
-                principal = safe_float(row.get('principal', 0))
-                months = safe_int(row.get('months', 1), 1)
-                accrual = self.calculate_interest_accrual(principal, months)
-                calculated_accruals.append(accrual)
                 
-                # Generate journal entry
-                self.generate_journal_entry(
-                    accrual,
-                    self.config['accrual_accounts']['interest_expense'],
-                    self.config['accrual_accounts']['interest_payable'],
-                    row.get('date')
-                )
-                
-            elif accrual_type == 'depreciation':
-                asset_cost = safe_float(row.get('asset_cost', 0))
-                salvage = safe_float(row.get('salvage_value', 0))
-                life = safe_int(row.get('useful_life_years', 5), 5)
-                accrual = self.calculate_depreciation_accrual(asset_cost, salvage, life)
-                calculated_accruals.append(accrual)
-                
-                # Generate journal entry
-                self.generate_journal_entry(
-                    accrual,
-                    self.config['accrual_accounts']['depreciation_expense'],
-                    self.config['accrual_accounts']['accumulated_depreciation'],
-                    row.get('date')
-                )
-                
-            elif accrual_type == 'expense':
-                expense_name = row.get('name', 'General Expense')
-                annual_amount = safe_float(row.get('annual_amount', 0))
-                months = safe_int(row.get('months', 1), 1)
-                accrual = self.calculate_expense_accrual(expense_name, annual_amount, months)
-                calculated_accruals.append(accrual)
-                
-                # Generate journal entry (use generic accounts)
-                debit_acct = row.get('debit_account', '6000')
-                credit_acct = row.get('credit_account', '2000')
-                self.generate_journal_entry(accrual, debit_acct, credit_acct, row.get('date'))
-        
-        return calculated_accruals
-    
-    def export_journal_entries(self, output_file: str = 'output/journal_entries.json'):
-        """
-        Export journal entries to JSON file.
-        
-        Args:
-            output_file: Path to output JSON file
-        """
-        with open(output_file, 'w') as f:
-            json.dump(self.journal_entries, f, indent=2)
-        print(f"Journal entries exported to {output_file}")
-        
-        # Also create CSV version for easier viewing
-        csv_file = output_file.replace('.json', '.csv')
-        csv_data = []
-        for entry in self.journal_entries:
-            for line in entry['lines']:
-                csv_data.append({
-                    'date': entry['entry_date'],
-                    'description': entry['description'],
-                    'account': line['account'],
-                    'account_type': line['account_type'],
-                    'debit': line['debit'],
-                    'credit': line['credit']
-                })
-        
-        if csv_data:
-            write_csv_file(csv_file, csv_data, list(csv_data[0].keys()))
-    
-    def get_summary(self) -> Dict[str, Any]:
-        """
-        Get summary of all accruals and journal entries.
-        
-        Returns:
-            Dictionary containing summary information
-        """
-        total_debits = sum(entry['total_debit'] for entry in self.journal_entries)
-        total_credits = sum(entry['total_credit'] for entry in self.journal_entries)
-        
-        summary = {
-            'total_journal_entries': len(self.journal_entries),
-            'total_debits': format_currency(total_debits),
-            'total_credits': format_currency(total_credits),
-            'balanced': total_debits == total_credits,
-            'entry_types': {}
-        }
-        
-        # Count entry types
-        for entry in self.journal_entries:
-            desc = entry['description']
-            summary['entry_types'][desc] = summary['entry_types'].get(desc, 0) + 1
-        
-        return summary
-
-
-# ============================================================================
-# FINANCIAL STATEMENT GENERATION MODULE
-# ============================================================================
-
-class FinancialStatementGenerator:
-    """
-    Generates financial statements from transaction data.
-    Produces Profit & Loss (Income Statement), Balance Sheet, and Cash Flow Statement.
-    """
-    
-    def __init__(self, transactions_file: str):
-        """
-        Initialize the statement generator with transaction data.
-        
-        Args:
-            transactions_file: Path to CSV file containing all transactions
-        """
-        self.transactions = read_csv_file(transactions_file)
-        self.accounts = defaultdict(lambda: {'balance': 0.0, 'type': 'Unknown', 'debits': 0.0, 'credits': 0.0})
-        self.period_start = None
-        self.period_end = None
-        
-        # Standard account type mappings (can be customized)
-        self.account_types = {
-            # Assets (1000-1999)
-            '1000': 'Asset', '1100': 'Asset', '1200': 'Asset', '1300': 'Asset',
-            # Liabilities (2000-2999)
-            '2000': 'Liability', '2100': 'Liability', '2200': 'Liability', '2300': 'Liability',
-            # Equity (3000-3999)
-            '3000': 'Equity', '3100': 'Equity',
-            # Revenue (4000-4999)
-            '4000': 'Revenue', '4100': 'Revenue', '4200': 'Revenue',
-            # Cost of Goods Sold (5000-5999)
-            '5000': 'COGS', '5100': 'COGS',
-            # Expenses (6000-7999)
-            '6000': 'Expense', '6100': 'Expense', '6200': 'Expense',
-            '7000': 'Expense', '7100': 'Expense', '7200': 'Expense'
-        }
-    
-    def process_transactions(self):
-        """
-        Process all transactions and update account balances.
-        """
-        print(f"Processing {len(self.transactions)} transactions...")
-        
-        for tx in self.transactions:
-            account = tx.get('account', '')
-            debit = safe_float(tx.get('debit', 0))
-            credit = safe_float(tx.get('credit', 0))
-            date = tx.get('date', '')
-            
-            # Track period dates
-            if date:
-                if not self.period_start or date < self.period_start:
-                    self.period_start = date
-                if not self.period_end or date > self.period_end:
-                    self.period_end = date
-            
-            # Determine account type
-            account_type = self.account_types.get(account, 'Unknown')
-            if account_type == 'Unknown' and account:
-                # Try to infer from account number
-                first_digit = account[0] if account else '0'
-                if first_digit == '1':
-                    account_type = 'Asset'
-                elif first_digit == '2':
-                    account_type = 'Liability'
-                elif first_digit == '3':
-                    account_type = 'Equity'
-                elif first_digit == '4':
-                    account_type = 'Revenue'
-                elif first_digit == '5':
-                    account_type = 'COGS'
-                elif first_digit in ['6', '7']:
-                    account_type = 'Expense'
-            
-            # Update account balances
-            if account:
-                self.accounts[account]['type'] = account_type
-                self.accounts[account]['debits'] += debit
-                self.accounts[account]['credits'] += credit
-                
-                # Calculate balance based on account type
-                if account_type in ['Asset', 'Expense', 'COGS']:
-                    # Normal debit balance accounts
-                    self.accounts[account]['balance'] += debit - credit
-                else:
-                    # Normal credit balance accounts (Liability, Equity, Revenue)
-                    self.accounts[account]['balance'] += credit - debit
-        
-        print(f"Processed {len(self.accounts)} unique accounts")
-    
-    def generate_profit_and_loss(self) -> Dict[str, Any]:
-        """
-        Generate Profit & Loss Statement (Income Statement).
-        
-        Returns:
-            Dictionary containing P&L statement
-        """
-        revenue = 0.0
-        cogs = 0.0
-        expenses = 0.0
-        
-        revenue_details = []
-        cogs_details = []
-        expense_details = []
-        
-        for account, data in self.accounts.items():
-            account_type = data['type']
-            balance = data['balance']
-            
-            if account_type == 'Revenue':
-                revenue += balance
-                revenue_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-            elif account_type == 'COGS':
-                cogs += balance
-                cogs_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-            elif account_type == 'Expense':
-                expenses += balance
-                expense_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-        
-        gross_profit = revenue - cogs
-        operating_income = gross_profit - expenses
-        net_income = operating_income  # Simplified (no other income/expenses)
-        
-        pl_statement = {
-            'statement_type': 'Profit & Loss Statement',
-            'period_start': self.period_start,
-            'period_end': self.period_end,
-            'revenue': {
-                'total': revenue,
-                'formatted': format_currency(revenue),
-                'details': revenue_details
-            },
-            'cost_of_goods_sold': {
-                'total': cogs,
-                'formatted': format_currency(cogs),
-                'details': cogs_details
-            },
-            'gross_profit': {
-                'total': gross_profit,
-                'formatted': format_currency(gross_profit)
-            },
-            'operating_expenses': {
-                'total': expenses,
-                'formatted': format_currency(expenses),
-                'details': expense_details
-            },
-            'operating_income': {
-                'total': operating_income,
-                'formatted': format_currency(operating_income)
-            },
-            'net_income': {
-                'total': net_income,
-                'formatted': format_currency(net_income)
-            }
-        }
-        
-        return pl_statement
-    
-    def generate_balance_sheet(self) -> Dict[str, Any]:
-        """
-        Generate Balance Sheet.
-        
-        Returns:
-            Dictionary containing balance sheet
-        """
-        assets = 0.0
-        liabilities = 0.0
-        equity = 0.0
-        
-        asset_details = []
-        liability_details = []
-        equity_details = []
-        
-        for account, data in self.accounts.items():
-            account_type = data['type']
-            balance = data['balance']
-            
-            if account_type == 'Asset':
-                assets += balance
-                asset_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-            elif account_type == 'Liability':
-                liabilities += balance
-                liability_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-            elif account_type == 'Equity':
-                equity += balance
-                equity_details.append({
-                    'account': account,
-                    'amount': balance
-                })
-        
-        # Add net income to equity
-        pl_statement = self.generate_profit_and_loss()
-        net_income = pl_statement['net_income']['total']
-        equity += net_income
-        equity_details.append({
-            'account': 'Retained Earnings (Net Income)',
-            'amount': net_income
-        })
-        
-        total_liabilities_equity = liabilities + equity
-        balanced = abs(assets - total_liabilities_equity) < 0.01
-        
-        balance_sheet = {
-            'statement_type': 'Balance Sheet',
-            'as_of_date': self.period_end or datetime.now().strftime('%Y-%m-%d'),
-            'assets': {
-                'total': assets,
-                'formatted': format_currency(assets),
-                'details': asset_details
-            },
-            'liabilities': {
-                'total': liabilities,
-                'formatted': format_currency(liabilities),
-                'details': liability_details
-            },
-            'equity': {
-                'total': equity,
-                'formatted': format_currency(equity),
-                'details': equity_details
-            },
-            'total_liabilities_and_equity': {
-                'total': total_liabilities_equity,
-                'formatted': format_currency(total_liabilities_equity)
-            },
-            'balanced': balanced
-        }
-        
-        return balance_sheet
-    
-    def generate_cash_flow(self) -> Dict[str, Any]:
-        """
-        Generate Cash Flow Statement (simplified version).
-        
-        Returns:
-            Dictionary containing cash flow statement
-        """
-        # Simplified cash flow based on account movements
-        operating_cash = 0.0
-        investing_cash = 0.0
-        financing_cash = 0.0
-        
-        operating_details = []
-        investing_details = []
-        financing_details = []
-        
-        # Get net income from P&L
-        pl_statement = self.generate_profit_and_loss()
-        net_income = pl_statement['net_income']['total']
-        operating_cash += net_income
-        operating_details.append({
-            'description': 'Net Income',
-            'amount': net_income
-        })
-        
-        # Analyze account changes for cash flow classification
-        for account, data in self.accounts.items():
-            account_type = data['type']
-            balance = data['balance']
-            
-            # Simplified classification
-            if account_type in ['Asset', 'Liability'] and account.startswith('1'):
-                # Current assets changes (simplified)
-                if account not in ['1000', '1001']:  # Exclude cash accounts
-                    operating_cash -= balance
-                    operating_details.append({
-                        'description': f'Account {account} change',
-                        'amount': -balance
-                    })
-            elif account.startswith('15'):  # Fixed assets (example)
-                investing_cash -= balance
-                investing_details.append({
-                    'description': f'Asset acquisition {account}',
-                    'amount': -balance
-                })
-            elif account_type == 'Liability' and account.startswith('25'):  # Long-term debt
-                financing_cash += balance
-                financing_details.append({
-                    'description': f'Debt change {account}',
-                    'amount': balance
-                })
-        
-        net_cash_change = operating_cash + investing_cash + financing_cash
-        
-        cash_flow = {
-            'statement_type': 'Cash Flow Statement',
-            'period_start': self.period_start,
-            'period_end': self.period_end,
-            'operating_activities': {
-                'total': operating_cash,
-                'formatted': format_currency(operating_cash),
-                'details': operating_details
-            },
-            'investing_activities': {
-                'total': investing_cash,
-                'formatted': format_currency(investing_cash),
-                'details': investing_details
-            },
-            'financing_activities': {
-                'total': financing_cash,
-                'formatted': format_currency(financing_cash),
-                'details': financing_details
-            },
-            'net_cash_change': {
-                'total': net_cash_change,
-                'formatted': format_currency(net_cash_change)
-            }
-        }
-        
-        return cash_flow
-    
-    def generate_all_statements(self) -> Dict[str, Any]:
-        """
-        Generate all financial statements.
-        
-        Returns:
-            Dictionary containing all statements
-        """
-        self.process_transactions()
-        
-        statements = {
-            'generation_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'profit_and_loss': self.generate_profit_and_loss(),
-            'balance_sheet': self.generate_balance_sheet(),
-            'cash_flow': self.generate_cash_flow()
-        }
-        
-        return statements
-    
-    def export_statements(self, output_file: str = 'output/financial_statements.json'):
-        """
-        Export all financial statements to JSON file.
-        
-        Args:
-            output_file: Path to output JSON file
-        """
-        statements = self.generate_all_statements()
-        
-        with open(output_file, 'w') as f:
-            json.dump(statements, f, indent=2)
-        
-        print(f"Financial statements exported to {output_file}")
-        
-        return statements
-
-
-# ============================================================================
-# MONTH-END CLOSE ORCHESTRATION
-# ============================================================================
-
-class MonthEndCloseProcess:
-    """
-    Orchestrates the complete month-end close process.
-    """
-    
-    def __init__(self, output_dir: str = 'output'):
-        """
-        Initialize the month-end close process.
-        
-        Args:
-            output_dir: Directory for output files
-        """
-        self.output_dir = output_dir
-        self.results = {
-            'process_start': datetime.now().isoformat(),
-            'status': 'In Progress',
-            'steps': {}
-        }
-        
-        # Create output directory if it doesn't exist
-        os.makedirs(output_dir, exist_ok=True)
-    
-    def step_1_reconciliation(self) -> dict:
-        """
-        Step 1: Perform account reconciliation.
-        
-        Returns:
-            Reconciliation results
-        """
-        print("\n" + "="*60)
-        print("STEP 1: ACCOUNT RECONCILIATION")
-        print("="*60)
-        
-        try:
-            reconciler = AccountReconciliation(
-                'sample_data/general_ledger.csv',
-                'sample_data/bank_statement.csv'
-            )
-            
-            summary = reconciler.reconcile()
-            reconciler.export_results(f'{self.output_dir}/reconciliation')
-            
-            self.results['steps']['reconciliation'] = {
-                'status': 'Completed',
-                'summary': summary
-            }
-            
-            print("\n✓ Reconciliation completed successfully")
-            return summary
-            
-        except Exception as e:
-            print(f"\n✗ Reconciliation failed: {e}")
-            self.results['steps']['reconciliation'] = {
-                'status': 'Failed',
-                'error': str(e)
-            }
-            return {}
-    
-    def step_2_accruals(self) -> dict:
-        """
-        Step 2: Calculate and post accruals.
-        
-        Returns:
-            Accruals summary
-        """
-        print("\n" + "="*60)
-        print("STEP 2: ACCRUAL POSTINGS")
-        print("="*60)
-        
-        try:
-            calculator = AccrualCalculator()
-            
-            # Process accruals from file
-            accruals = calculator.process_accruals_from_file('sample_data/accruals.csv')
-            calculator.export_journal_entries(f'{self.output_dir}/journal_entries.json')
-            
-            summary = calculator.get_summary()
-            
-            self.results['steps']['accruals'] = {
-                'status': 'Completed',
-                'summary': summary,
-                'accruals_count': len(accruals)
-            }
-            
-            print("\n✓ Accrual postings completed successfully")
-            return summary
-            
-        except Exception as e:
-            print(f"\n✗ Accrual postings failed: {e}")
-            self.results['steps']['accruals'] = {
-                'status': 'Failed',
-                'error': str(e)
-            }
-            return {}
-    
-    def step_3_financial_statements(self) -> dict:
-        """
-        Step 3: Generate financial statements.
-        
-        Returns:
-            Financial statements
-        """
-        print("\n" + "="*60)
-        print("STEP 3: FINANCIAL STATEMENT GENERATION")
-        print("="*60)
-        
-        try:
-            generator = FinancialStatementGenerator('sample_data/transactions.csv')
-            statements = generator.export_statements(f'{self.output_dir}/financial_statements.json')
-            
-            self.results['steps']['financial_statements'] = {
-                'status': 'Completed',
-                'profit_and_loss': {
-                    'net_income': statements['profit_and_loss']['net_income']['formatted']
-                },
-                'balance_sheet': {
-                    'total_assets': statements['balance_sheet']['assets']['formatted'],
-                    'balanced': statements['balance_sheet']['balanced']
+                if (!matchFound && glAmount !== 0) {
+                    unmatchedGL.push(gl);
                 }
+            });
+            
+            unmatchedBank.push(...remainingBank);
+            
+            reconciliationResults = {
+                matched,
+                unmatchedGL,
+                unmatchedBank,
+                discrepancies
+            };
+            
+            displayReconciliationResults();
+            updateOverviewStats();
+        }
+        
+        function displayReconciliationResults() {
+            const resultsDiv = document.getElementById('recon-results');
+            const r = reconciliationResults;
+            
+            const totalGL = safeFloat(r.matched.reduce((sum, m) => sum + safeFloat(m.gl.amount), 0));
+            const matchedAmount = totalGL;
+            
+            let html = '<div class="results">';
+            html += '<h4>Reconciliation Summary</h4>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Matched Transactions</span>';
+            html += `<span class="metric-value positive">${r.matched.length}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Unmatched GL Transactions</span>';
+            html += `<span class="metric-value ${r.unmatchedGL.length > 0 ? 'negative' : ''}">${r.unmatchedGL.length}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Unmatched Bank Transactions</span>';
+            html += `<span class="metric-value ${r.unmatchedBank.length > 0 ? 'negative' : ''}">${r.unmatchedBank.length}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Matched Amount</span>';
+            html += `<span class="metric-value">${formatCurrency(matchedAmount)}</span>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            // Matched transactions table
+            if (r.matched.length > 0) {
+                html += '<div class="table-container">';
+                html += '<h4 style="margin-top: 20px; margin-bottom: 10px;">Matched Transactions</h4>';
+                html += '<table>';
+                html += '<thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Amount</th><th>Confidence</th></tr></thead>';
+                html += '<tbody>';
+                r.matched.forEach(m => {
+                    html += `<tr>
+                        <td>${m.gl.date}</td>
+                        <td>${m.gl.reference}</td>
+                        <td>${m.gl.description}</td>
+                        <td>${formatCurrency(m.gl.amount)}</td>
+                        <td>${m.confidence}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
             }
             
-            print("\n✓ Financial statements generated successfully")
-            return statements
-            
-        except Exception as e:
-            print(f"\n✗ Financial statement generation failed: {e}")
-            self.results['steps']['financial_statements'] = {
-                'status': 'Failed',
-                'error': str(e)
+            // Unmatched GL transactions
+            if (r.unmatchedGL.length > 0) {
+                html += '<div class="table-container">';
+                html += '<h4 style="margin-top: 20px; margin-bottom: 10px;">Unmatched GL Transactions</h4>';
+                html += '<table>';
+                html += '<thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Amount</th></tr></thead>';
+                html += '<tbody>';
+                r.unmatchedGL.forEach(tx => {
+                    html += `<tr>
+                        <td>${tx.date}</td>
+                        <td>${tx.reference}</td>
+                        <td>${tx.description}</td>
+                        <td>${formatCurrency(tx.amount)}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
             }
-            return {}
-    
-    def run_complete_process(self):
-        """
-        Run the complete month-end close process.
-        """
-        print("\n" + "="*60)
-        print("AUTONOMOUS MONTH-END CLOSE PROCESS")
-        print("="*60)
-        print(f"Started at: {self.results['process_start']}")
-        
-        # Step 1: Reconciliation
-        self.step_1_reconciliation()
-        
-        # Step 2: Accruals
-        self.step_2_accruals()
-        
-        # Step 3: Financial Statements
-        self.step_3_financial_statements()
-        
-        # Mark process as complete
-        self.results['process_end'] = datetime.now().isoformat()
-        self.results['status'] = 'Completed'
-        
-        # Save final results
-        self.save_results()
-        
-        # Print summary
-        self.print_summary()
-    
-    def save_results(self):
-        """
-        Save the complete process results to JSON file.
-        """
-        results_file = f'{self.output_dir}/month_end_close_results.json'
-        with open(results_file, 'w') as f:
-            json.dump(self.results, f, indent=2)
-        print(f"\nComplete results saved to: {results_file}")
-    
-    def print_summary(self):
-        """
-        Print a summary of the month-end close process.
-        """
-        print("\n" + "="*60)
-        print("MONTH-END CLOSE SUMMARY")
-        print("="*60)
-        
-        for step_name, step_data in self.results['steps'].items():
-            status = step_data.get('status', 'Unknown')
-            status_symbol = "✓" if status == "Completed" else "✗"
-            print(f"\n{status_symbol} {step_name.upper()}: {status}")
             
-            if status == "Completed" and 'summary' in step_data:
-                summary = step_data['summary']
-                if isinstance(summary, dict):
-                    for key, value in list(summary.items())[:5]:  # Show first 5 items
-                        print(f"  - {key}: {value}")
+            // Unmatched bank transactions
+            if (r.unmatchedBank.length > 0) {
+                html += '<div class="table-container">';
+                html += '<h4 style="margin-top: 20px; margin-bottom: 10px;">Unmatched Bank Transactions</h4>';
+                html += '<table>';
+                html += '<thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Amount</th></tr></thead>';
+                html += '<tbody>';
+                r.unmatchedBank.forEach(tx => {
+                    html += `<tr>
+                        <td>${tx.date}</td>
+                        <td>${tx.reference}</td>
+                        <td>${tx.description}</td>
+                        <td>${formatCurrency(tx.amount)}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table></div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
         
-        print(f"\nProcess Status: {self.results['status']}")
-        print(f"Started: {self.results['process_start']}")
-        print(f"Ended: {self.results.get('process_end', 'N/A')}")
-        print("\nAll output files are available in the 'output' directory.")
-        print("Review the results in the approval dashboard: frontend/dashboard.html")
-        print("="*60 + "\n")
-
-
-# ============================================================================
-# MAIN ENTRY POINT
-# ============================================================================
-
-def main():
-    """
-    Main entry point for the month-end close process.
-    """
-    process = MonthEndCloseProcess()
-    process.run_complete_process()
-
-
-if __name__ == '__main__':
-    main()
+        function clearReconciliation() {
+            document.getElementById('gl-data').value = '';
+            document.getElementById('bank-data').value = '';
+            document.getElementById('recon-results').innerHTML = '';
+            reconciliationResults = null;
+            updateOverviewStats();
+        }
+        
+        // ============================================================================
+        // ACCRUAL POSTINGS
+        // ============================================================================
+        
+        function updateAccrualForm() {
+            const type = document.getElementById('accrual-type').value;
+            const formDiv = document.getElementById('accrual-form');
+            
+            let html = '';
+            
+            if (type === 'interest') {
+                html = `
+                    <div class="form-group">
+                        <label for="principal">Principal Amount (£)</label>
+                        <input type="number" id="principal" step="0.01" value="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="interest-rate">Annual Interest Rate (%)</label>
+                        <input type="number" id="interest-rate" step="0.01" value="5.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="months">Number of Months</label>
+                        <input type="number" id="months" min="1" value="1">
+                    </div>
+                `;
+            } else if (type === 'depreciation') {
+                html = `
+                    <div class="form-group">
+                        <label for="asset-cost">Asset Cost (£)</label>
+                        <input type="number" id="asset-cost" step="0.01" value="50000">
+                    </div>
+                    <div class="form-group">
+                        <label for="salvage-value">Salvage Value (£)</label>
+                        <input type="number" id="salvage-value" step="0.01" value="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="useful-life">Useful Life (years)</label>
+                        <input type="number" id="useful-life" min="1" value="5">
+                    </div>
+                `;
+            } else if (type === 'expense') {
+                html = `
+                    <div class="form-group">
+                        <label for="expense-name">Expense Name</label>
+                        <input type="text" id="expense-name" value="Rent">
+                    </div>
+                    <div class="form-group">
+                        <label for="annual-amount">Annual Amount (£)</label>
+                        <input type="number" id="annual-amount" step="0.01" value="12000">
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-months">Number of Months</label>
+                        <input type="number" id="expense-months" min="1" value="1">
+                    </div>
+                `;
+            }
+            
+            formDiv.innerHTML = html;
+        }
+        
+        function calculateAccrual() {
+            const type = document.getElementById('accrual-type').value;
+            let accrual = { type: type, date: new Date().toISOString().split('T')[0] };
+            
+            if (type === 'interest') {
+                const principal = safeFloat(document.getElementById('principal').value);
+                const rate = safeFloat(document.getElementById('interest-rate').value) / 100;
+                const months = parseInt(document.getElementById('months').value) || 1;
+                
+                const monthlyRate = rate / 12;
+                const accrualAmount = principal * monthlyRate * months;
+                
+                accrual.principal = principal;
+                accrual.rate = rate * 100;
+                accrual.months = months;
+                accrual.amount = accrualAmount;
+                accrual.description = `Interest Accrual: ${rate * 100}% on £${principal.toLocaleString()} for ${months} month(s)`;
+                
+            } else if (type === 'depreciation') {
+                const assetCost = safeFloat(document.getElementById('asset-cost').value);
+                const salvageValue = safeFloat(document.getElementById('salvage-value').value);
+                const usefulLife = parseInt(document.getElementById('useful-life').value) || 5;
+                
+                const depreciableAmount = assetCost - salvageValue;
+                const annualDepreciation = depreciableAmount / usefulLife;
+                const monthlyDepreciation = annualDepreciation / 12;
+                
+                accrual.assetCost = assetCost;
+                accrual.salvageValue = salvageValue;
+                accrual.usefulLife = usefulLife;
+                accrual.annualDepreciation = annualDepreciation;
+                accrual.amount = monthlyDepreciation;
+                accrual.description = `Depreciation: £${assetCost.toLocaleString()} asset over ${usefulLife} years`;
+                
+            } else if (type === 'expense') {
+                const name = document.getElementById('expense-name').value;
+                const annualAmount = safeFloat(document.getElementById('annual-amount').value);
+                const months = parseInt(document.getElementById('expense-months').value) || 1;
+                
+                const monthlyAmount = annualAmount / 12;
+                const accrualAmount = monthlyAmount * months;
+                
+                accrual.name = name;
+                accrual.annualAmount = annualAmount;
+                accrual.months = months;
+                accrual.amount = accrualAmount;
+                accrual.description = `${name} Accrual: £${annualAmount.toLocaleString()}/year for ${months} month(s)`;
+            }
+            
+            currentAccrual = accrual;
+            displayAccrualResults(accrual);
+        }
+        
+        function displayAccrualResults(accrual) {
+            const resultsDiv = document.getElementById('accrual-results');
+            
+            let html = '<div class="results">';
+            html += '<h4>Accrual Calculation Results</h4>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Type</span>';
+            html += `<span class="metric-value">${accrual.type.charAt(0).toUpperCase() + accrual.type.slice(1)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Description</span>';
+            html += `<span class="metric-value">${accrual.description}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Accrual Amount</span>';
+            html += `<span class="metric-value positive">${formatCurrency(accrual.amount)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Date</span>';
+            html += `<span class="metric-value">${accrual.date}</span>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function generateJournalEntry() {
+            if (!currentAccrual) {
+                alert('Please calculate an accrual first');
+                return;
+            }
+            
+            const accrual = currentAccrual;
+            const entry = {
+                date: accrual.date,
+                description: accrual.description,
+                amount: accrual.amount,
+                lines: []
+            };
+            
+            if (accrual.type === 'interest') {
+                entry.lines = [
+                    { account: '7200', accountName: 'Interest Expense', debit: accrual.amount, credit: 0 },
+                    { account: '2300', accountName: 'Interest Payable', debit: 0, credit: accrual.amount }
+                ];
+            } else if (accrual.type === 'depreciation') {
+                entry.lines = [
+                    { account: '7100', accountName: 'Depreciation Expense', debit: accrual.amount, credit: 0 },
+                    { account: '1500', accountName: 'Accumulated Depreciation', debit: 0, credit: accrual.amount }
+                ];
+            } else if (accrual.type === 'expense') {
+                entry.lines = [
+                    { account: '6000', accountName: `${accrual.name} Expense`, debit: accrual.amount, credit: 0 },
+                    { account: '2000', accountName: 'Accrued Expenses', debit: 0, credit: accrual.amount }
+                ];
+            }
+            
+            journalEntries.push(entry);
+            displayJournalEntry(entry);
+            updateOverviewStats();
+        }
+        
+        function displayJournalEntry(entry) {
+            const resultsDiv = document.getElementById('accrual-results');
+            
+            let html = resultsDiv.innerHTML;
+            html += '<div class="table-container" style="margin-top: 20px;">';
+            html += '<h4>Journal Entry</h4>';
+            html += `<p><strong>Date:</strong> ${entry.date} | <strong>Description:</strong> ${entry.description}</p>`;
+            html += '<table>';
+            html += '<thead><tr><th>Account</th><th>Account Name</th><th>Debit</th><th>Credit</th></tr></thead>';
+            html += '<tbody>';
+            
+            entry.lines.forEach(line => {
+                html += `<tr>
+                    <td>${line.account}</td>
+                    <td>${line.accountName}</td>
+                    <td>${line.debit > 0 ? formatCurrency(line.debit) : '-'}</td>
+                    <td>${line.credit > 0 ? formatCurrency(line.credit) : '-'}</td>
+                </tr>`;
+            });
+            
+            const totalDebit = entry.lines.reduce((sum, l) => sum + l.debit, 0);
+            const totalCredit = entry.lines.reduce((sum, l) => sum + l.credit, 0);
+            
+            html += `<tr style="font-weight: bold; background: #f0f0f0;">
+                <td colspan="2">Total</td>
+                <td>${formatCurrency(totalDebit)}</td>
+                <td>${formatCurrency(totalCredit)}</td>
+            </tr>`;
+            html += '</tbody></table>';
+            html += `<p style="margin-top: 10px;"><strong>Balanced:</strong> ${totalDebit === totalCredit ? '✓ Yes' : '✗ No'}</p>`;
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function clearAccruals() {
+            document.getElementById('accrual-form').innerHTML = '';
+            document.getElementById('accrual-results').innerHTML = '';
+            currentAccrual = null;
+            updateAccrualForm();
+        }
+        
+        // ============================================================================
+        // FINANCIAL STATEMENTS
+        // ============================================================================
+        
+        function generateStatements() {
+            const transactionText = document.getElementById('transaction-data').value;
+            const statementType = document.getElementById('statement-type').value;
+            
+            if (!transactionText) {
+                alert('Please enter transaction data');
+                return;
+            }
+            
+            const transactions = parseCSV(transactionText);
+            const accounts = {};
+            
+            // Process transactions
+            transactions.forEach(tx => {
+                const account = tx.account;
+                const accountType = tx.account_type;
+                const debit = safeFloat(tx.debit);
+                const credit = safeFloat(tx.credit);
+                
+                if (!accounts[account]) {
+                    accounts[account] = {
+                        type: accountType,
+                        debits: 0,
+                        credits: 0,
+                        balance: 0
+                    };
+                }
+                
+                accounts[account].debits += debit;
+                accounts[account].credits += credit;
+                
+                // Calculate balance based on account type
+                if (['Asset', 'Expense', 'COGS'].includes(accountType)) {
+                    accounts[account].balance += debit - credit;
+                } else {
+                    accounts[account].balance += credit - debit;
+                }
+            });
+            
+            statementResults = {
+                accounts: accounts,
+                profitLoss: generateProfitLoss(accounts),
+                balanceSheet: generateBalanceSheet(accounts),
+                cashFlow: generateCashFlow(accounts)
+            };
+            
+            displayStatements(statementType);
+            updateOverviewStats();
+        }
+        
+        function generateProfitLoss(accounts) {
+            let revenue = 0;
+            let cogs = 0;
+            let expenses = 0;
+            
+            const revenueAccounts = [];
+            const cogsAccounts = [];
+            const expenseAccounts = [];
+            
+            Object.keys(accounts).forEach(account => {
+                const data = accounts[account];
+                if (data.type === 'Revenue') {
+                    revenue += data.balance;
+                    revenueAccounts.push({ account, balance: data.balance });
+                } else if (data.type === 'COGS') {
+                    cogs += data.balance;
+                    cogsAccounts.push({ account, balance: data.balance });
+                } else if (data.type === 'Expense') {
+                    expenses += data.balance;
+                    expenseAccounts.push({ account, balance: data.balance });
+                }
+            });
+            
+            const grossProfit = revenue - cogs;
+            const netIncome = grossProfit - expenses;
+            
+            return {
+                revenue,
+                cogs,
+                grossProfit,
+                expenses,
+                netIncome,
+                revenueAccounts,
+                cogsAccounts,
+                expenseAccounts
+            };
+        }
+        
+        function generateBalanceSheet(accounts) {
+            let assets = 0;
+            let liabilities = 0;
+            let equity = 0;
+            
+            const assetAccounts = [];
+            const liabilityAccounts = [];
+            const equityAccounts = [];
+            
+            Object.keys(accounts).forEach(account => {
+                const data = accounts[account];
+                if (data.type === 'Asset') {
+                    assets += data.balance;
+                    assetAccounts.push({ account, balance: data.balance });
+                } else if (data.type === 'Liability') {
+                    liabilities += data.balance;
+                    liabilityAccounts.push({ account, balance: data.balance });
+                } else if (data.type === 'Equity') {
+                    equity += data.balance;
+                    equityAccounts.push({ account, balance: data.balance });
+                }
+            });
+            
+            // Add net income to equity
+            const pl = generateProfitLoss(accounts);
+            equity += pl.netIncome;
+            
+            const totalLiabilitiesEquity = liabilities + equity;
+            const balanced = Math.abs(assets - totalLiabilitiesEquity) < 0.01;
+            
+            return {
+                assets,
+                liabilities,
+                equity,
+                totalLiabilitiesEquity,
+                balanced,
+                assetAccounts,
+                liabilityAccounts,
+                equityAccounts
+            };
+        }
+        
+        function generateCashFlow(accounts) {
+            const pl = generateProfitLoss(accounts);
+            
+            return {
+                operatingCash: pl.netIncome,
+                investingCash: 0,
+                financingCash: 0,
+                netCashChange: pl.netIncome
+            };
+        }
+        
+        function displayStatements(type) {
+            const resultsDiv = document.getElementById('statement-results');
+            let html = '';
+            
+            if (type === 'all' || type === 'pl') {
+                html += displayProfitLoss();
+            }
+            
+            if (type === 'all' || type === 'bs') {
+                html += displayBalanceSheet();
+            }
+            
+            if (type === 'all' || type === 'cf') {
+                html += displayCashFlow();
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayProfitLoss() {
+            const pl = statementResults.profitLoss;
+            
+            let html = '<div class="results">';
+            html += '<h4>📊 Profit & Loss Statement</h4>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Revenue</span>';
+            html += `<span class="metric-value positive">${formatCurrency(pl.revenue)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Cost of Goods Sold</span>';
+            html += `<span class="metric-value">${formatCurrency(pl.cogs)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Gross Profit</span>';
+            html += `<span class="metric-value ${pl.grossProfit >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl.grossProfit)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Operating Expenses</span>';
+            html += `<span class="metric-value">${formatCurrency(pl.expenses)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label"><strong>Net Income</strong></span>';
+            html += `<span class="metric-value ${pl.netIncome >= 0 ? 'positive' : 'negative'}"><strong>${formatCurrency(pl.netIncome)}</strong></span>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            return html;
+        }
+        
+        function displayBalanceSheet() {
+            const bs = statementResults.balanceSheet;
+            
+            let html = '<div class="results" style="margin-top: 20px;">';
+            html += '<h4>💼 Balance Sheet</h4>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Total Assets</span>';
+            html += `<span class="metric-value">${formatCurrency(bs.assets)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Total Liabilities</span>';
+            html += `<span class="metric-value">${formatCurrency(bs.liabilities)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Total Equity</span>';
+            html += `<span class="metric-value">${formatCurrency(bs.equity)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Total Liabilities & Equity</span>';
+            html += `<span class="metric-value">${formatCurrency(bs.totalLiabilitiesEquity)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label"><strong>Balanced</strong></span>';
+            html += `<span class="metric-value ${bs.balanced ? 'positive' : 'negative'}"><strong>${bs.balanced ? '✓ Yes' : '✗ No'}</strong></span>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            return html;
+        }
+        
+        function displayCashFlow() {
+            const cf = statementResults.cashFlow;
+            
+            let html = '<div class="results" style="margin-top: 20px;">';
+            html += '<h4>�� Cash Flow Statement (Simplified)</h4>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Operating Activities</span>';
+            html += `<span class="metric-value ${cf.operatingCash >= 0 ? 'positive' : 'negative'}">${formatCurrency(cf.operatingCash)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Investing Activities</span>';
+            html += `<span class="metric-value">${formatCurrency(cf.investingCash)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label">Financing Activities</span>';
+            html += `<span class="metric-value">${formatCurrency(cf.financingCash)}</span>`;
+            html += '</div>';
+            
+            html += '<div class="metric">';
+            html += '<span class="metric-label"><strong>Net Cash Change</strong></span>';
+            html += `<span class="metric-value ${cf.netCashChange >= 0 ? 'positive' : 'negative'}"><strong>${formatCurrency(cf.netCashChange)}</strong></span>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            return html;
+        }
+        
+        function clearStatements() {
+            document.getElementById('transaction-data').value = '';
+            document.getElementById('statement-results').innerHTML = '';
+            statementResults = null;
+            updateOverviewStats();
+        }
+        
+        // ============================================================================
+        // OVERVIEW STATISTICS
+        // ============================================================================
+        
+        function updateOverviewStats() {
+            const reconCount = reconciliationResults ? 
+                (reconciliationResults.matched.length + reconciliationResults.unmatchedGL.length) : 0;
+            document.getElementById('recon-count').textContent = reconCount;
+            
+            document.getElementById('accrual-count').textContent = journalEntries.length;
+            
+            const statementCount = statementResults ? 3 : 0;
+            document.getElementById('statement-count').textContent = statementCount;
+        }
+        
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            updateAccrualForm();
+            updateOverviewStats();
+        });
+    </script>
+</body>
+</html>
