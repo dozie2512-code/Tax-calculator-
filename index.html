@@ -690,6 +690,132 @@
                 <h2>🇬🇧 UK Tax Summary Computations</h2>
                 <p style="color: #666; margin-bottom: 20px;">Calculate various UK taxes including PAYE, Self-Assessment, VAT, and Corporate Tax with real-time computations</p>
                 
+                <!-- User and Business Selection -->
+                <div class="data-entry-area" style="margin-bottom: 20px;">
+                    <h3>👤 Multi-User & Multi-Business Selection</h3>
+                    <div class="grid">
+                        <div class="input-group">
+                            <label>Select User</label>
+                            <select id="ukTaxUser" onchange="updateUKTaxSelection()">
+                                <option value="">-- Select User --</option>
+                                <option value="user1">John Smith</option>
+                                <option value="user2">Jane Doe</option>
+                                <option value="user3">Michael Brown</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Select Business</label>
+                            <select id="ukTaxBusiness" onchange="updateUKTaxSelection()">
+                                <option value="">-- Select Business --</option>
+                                <option value="biz1">Tech Solutions Ltd</option>
+                                <option value="biz2">Consulting Services Ltd</option>
+                                <option value="biz3">Retail Ventures Ltd</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="selectionStatus" class="info-message" style="margin-top: 10px; display: none;">
+                        <strong>Selected:</strong> <span id="selectedUserBusiness"></span>
+                    </div>
+                </div>
+                
+                <!-- CSV Import Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('csvimport')">
+                        <span>📁 Import Bank Transaction Data (CSV)</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="csvimport-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>CSV Import:</strong> Upload bank transaction data in CSV format to calculate taxes dynamically. Required columns: date, description, amount. Optional: reference, category.
+                            <br><br>
+                            <strong>Format Example:</strong><br>
+                            <code style="background: white; padding: 5px; display: block; margin-top: 5px;">
+                            date,description,amount,reference,category<br>
+                            2024-12-01,Client Payment,15000.00,INV001,Income<br>
+                            2024-12-05,Office Rent,-3000.00,RENT12,Expense
+                            </code>
+                        </div>
+                        
+                        <div class="data-entry-area">
+                            <h3>Upload CSV File or Paste Data</h3>
+                            <div class="input-group">
+                                <label>Upload CSV File</label>
+                                <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVFileUpload()" style="padding: 10px; border: 2px dashed #667eea; background: white;">
+                            </div>
+                            <div class="input-group">
+                                <label>Or Paste CSV Data</label>
+                                <textarea id="csvDataInput" placeholder="Paste CSV data here or upload a file above&#10;Format: date,description,amount,reference,category" style="min-height: 120px;"></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="importAndValidateCSV()">Validate & Import CSV</button>
+                            <button class="btn sample-data-btn" onclick="loadSampleBankTransactions()">Load Sample Data</button>
+                            <button class="btn btn-secondary" onclick="clearCSVImport()">Clear</button>
+                        </div>
+                        
+                        <div id="csvValidationResults" class="hidden">
+                            <h3>Validation Results</h3>
+                            <div id="csvValidationMessage"></div>
+                        </div>
+                        
+                        <div id="csvPreview" class="hidden">
+                            <h3>Transaction Preview</h3>
+                            <div id="csvPreviewTable"></div>
+                            <div style="margin-top: 15px;">
+                                <button class="btn btn-success" onclick="confirmImportTransactions()">✓ Confirm Import</button>
+                                <button class="btn btn-danger" onclick="cancelImport()">✗ Cancel</button>
+                            </div>
+                        </div>
+                        
+                        <div id="importSuccess" class="hidden">
+                            <div class="alert alert-success">
+                                <strong>✓ Import Successful!</strong>
+                                <div id="importSummary"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transaction-Based Tax Computation Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('transactiontax')">
+                        <span>📊 Dynamic Tax Computation from Transactions</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="transactiontax-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>Dynamic Tax Computation:</strong> Automatically compute Corporation Tax and VAT based on imported transaction data for the selected user and business combination.
+                        </div>
+                        
+                        <div id="noTransactionsMessage" class="alert alert-warning">
+                            ⚠️ No transactions imported yet. Please import transaction data using the CSV Import section above for the selected user and business.
+                        </div>
+                        
+                        <div id="transactionTaxArea" class="hidden">
+                            <div style="margin-bottom: 20px;">
+                                <button class="btn btn-primary" onclick="computeTaxFromTransactions()">Calculate Taxes from Transactions</button>
+                            </div>
+                            
+                            <div id="transactionTaxResults" class="hidden">
+                                <div class="tax-result">
+                                    <h3>Tax Computation Results</h3>
+                                    <div id="transactionTaxBreakdown"></div>
+                                </div>
+                                
+                                <h3>Transaction Summary</h3>
+                                <div class="grid">
+                                    <div class="card" style="box-shadow: none; padding: 15px; background: #f9fafb;">
+                                        <h4 style="color: #10b981; margin-bottom: 10px;">Income Transactions</h4>
+                                        <div id="incomeTransactionsList"></div>
+                                    </div>
+                                    <div class="card" style="box-shadow: none; padding: 15px; background: #f9fafb;">
+                                        <h4 style="color: #ef4444; margin-bottom: 10px;">Expense Transactions</h4>
+                                        <div id="expenseTransactionsList"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- PAYE Section -->
                 <div class="accordion">
                     <div class="accordion-header" onclick="toggleAccordion('paye')">
@@ -2231,6 +2357,444 @@
                 </div>
             `;
         }
+        
+        // UK Tax Multi-User/Business Functions
+        
+        // Global state for UK Tax computations
+        const ukTaxState = {
+            selectedUser: null,
+            selectedBusiness: null,
+            csvData: null,
+            validatedData: null,
+            importedTransactions: {},  // {user_id-business_id: transactions[]}
+            computations: {}           // {user_id-business_id: computation}
+        };
+        
+        function updateUKTaxSelection() {
+            const userId = document.getElementById('ukTaxUser').value;
+            const businessId = document.getElementById('ukTaxBusiness').value;
+            
+            ukTaxState.selectedUser = userId || null;
+            ukTaxState.selectedBusiness = businessId || null;
+            
+            const statusDiv = document.getElementById('selectionStatus');
+            const statusSpan = document.getElementById('selectedUserBusiness');
+            
+            if (userId && businessId) {
+                const userName = document.getElementById('ukTaxUser').selectedOptions[0].text;
+                const businessName = document.getElementById('ukTaxBusiness').selectedOptions[0].text;
+                statusSpan.textContent = `${userName} - ${businessName}`;
+                statusDiv.style.display = 'block';
+                
+                // Check if transactions exist for this combination
+                const key = `${userId}-${businessId}`;
+                if (ukTaxState.importedTransactions[key]) {
+                    document.getElementById('noTransactionsMessage').style.display = 'none';
+                    document.getElementById('transactionTaxArea').classList.remove('hidden');
+                } else {
+                    document.getElementById('noTransactionsMessage').style.display = 'block';
+                    document.getElementById('transactionTaxArea').classList.add('hidden');
+                }
+            } else {
+                statusDiv.style.display = 'none';
+                document.getElementById('transactionTaxArea').classList.add('hidden');
+            }
+        }
+        
+        function handleCSVFileUpload() {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('csvDataInput').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+        
+        function loadSampleBankTransactions() {
+            const sampleCSV = `date,description,amount,reference,category
+2024-12-01,Client Payment - ABC Corp,15000.00,INV001,Income
+2024-12-03,Sales Revenue - DEF Ltd,8500.00,INV002,Income
+2024-12-05,Office Rent Payment,-3000.00,RENT-DEC,Expense
+2024-12-07,Supplier Invoice - XYZ Ltd,-2000.00,PO-123,Expense
+2024-12-10,Consulting Service Fee,12000.00,INV003,Income
+2024-12-12,Utilities Payment,-500.00,UTIL-DEC,Expense
+2024-12-15,Professional Services,-1500.00,PS-456,Expense
+2024-12-18,Sales - GHI Company,6500.00,INV004,Income
+2024-12-20,Marketing Expenses,-800.00,MKT-789,Expense
+2024-12-22,Equipment Purchase,-4000.00,EQ-012,Expense`;
+            
+            document.getElementById('csvDataInput').value = sampleCSV;
+        }
+        
+        function clearCSVImport() {
+            document.getElementById('csvDataInput').value = '';
+            document.getElementById('csvFileInput').value = '';
+            document.getElementById('csvValidationResults').classList.add('hidden');
+            document.getElementById('csvPreview').classList.add('hidden');
+            document.getElementById('importSuccess').classList.add('hidden');
+            ukTaxState.csvData = null;
+            ukTaxState.validatedData = null;
+        }
+        
+        function validateCSVFormat(csvText) {
+            const errors = [];
+            const warnings = [];
+            let isValid = true;
+            
+            try {
+                const lines = csvText.trim().split('\n');
+                if (lines.length < 2) {
+                    errors.push('CSV must contain at least a header row and one data row');
+                    return { valid: false, errors, warnings, rowCount: 0 };
+                }
+                
+                // Parse CSV
+                const headers = lines[0].split(',').map(h => h.trim());
+                const requiredFields = ['date', 'description', 'amount'];
+                const missingFields = requiredFields.filter(field => !headers.includes(field));
+                
+                if (missingFields.length > 0) {
+                    errors.push(`Missing required fields: ${missingFields.join(', ')}`);
+                    isValid = false;
+                }
+                
+                // Validate each row
+                let rowCount = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    rowCount++;
+                    
+                    const values = lines[i].split(',').map(v => v.trim());
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    
+                    // Validate amount
+                    if (row.amount) {
+                        const amount = parseFloat(row.amount);
+                        if (isNaN(amount)) {
+                            errors.push(`Row ${i}: Invalid amount value: ${row.amount}`);
+                            isValid = false;
+                        }
+                    } else {
+                        errors.push(`Row ${i}: Amount is empty`);
+                        isValid = false;
+                    }
+                    
+                    // Check for empty required fields
+                    requiredFields.forEach(field => {
+                        if (!row[field] || !row[field].trim()) {
+                            errors.push(`Row ${i}: ${field} is empty`);
+                            isValid = false;
+                        }
+                    });
+                }
+                
+                return { valid: isValid, errors, warnings, rowCount };
+            } catch (e) {
+                errors.push(`CSV parsing error: ${e.message}`);
+                return { valid: false, errors, warnings, rowCount: 0 };
+            }
+        }
+        
+        function importAndValidateCSV() {
+            const csvText = document.getElementById('csvDataInput').value.trim();
+            
+            if (!csvText) {
+                alert('Please paste CSV data or upload a file');
+                return;
+            }
+            
+            if (!ukTaxState.selectedUser || !ukTaxState.selectedBusiness) {
+                alert('Please select both a user and a business before importing');
+                return;
+            }
+            
+            // Validate CSV
+            const validation = validateCSVFormat(csvText);
+            
+            // Display validation results
+            const validationDiv = document.getElementById('csvValidationResults');
+            const messageDiv = document.getElementById('csvValidationMessage');
+            
+            if (validation.valid) {
+                messageDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>✓ Validation Passed</strong><br>
+                        Found ${validation.rowCount} valid transaction(s)
+                        ${validation.warnings.length > 0 ? '<br><br><strong>Warnings:</strong><ul>' + validation.warnings.map(w => `<li>${w}</li>`).join('') + '</ul>' : ''}
+                    </div>
+                `;
+                
+                // Parse and preview
+                ukTaxState.csvData = csvText;
+                ukTaxState.validatedData = parseCSV(csvText);
+                displayCSVPreview(ukTaxState.validatedData);
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>✗ Validation Failed</strong><br>
+                        Please fix the following errors:<br>
+                        <ul>${validation.errors.map(e => `<li>${e}</li>`).join('')}</ul>
+                    </div>
+                `;
+                document.getElementById('csvPreview').classList.add('hidden');
+            }
+            
+            validationDiv.classList.remove('hidden');
+        }
+        
+        function displayCSVPreview(transactions) {
+            const previewDiv = document.getElementById('csvPreview');
+            const tableDiv = document.getElementById('csvPreviewTable');
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Reference</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            transactions.forEach(tx => {
+                const amount = parseFloat(tx.amount);
+                const amountClass = amount >= 0 ? 'style="color: #10b981;"' : 'style="color: #ef4444;"';
+                html += `
+                    <tr>
+                        <td>${tx.date}</td>
+                        <td>${tx.description}</td>
+                        <td ${amountClass}>${formatCurrency(amount)}</td>
+                        <td>${tx.reference || '-'}</td>
+                        <td>${tx.category || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            tableDiv.innerHTML = html;
+            previewDiv.classList.remove('hidden');
+        }
+        
+        function confirmImportTransactions() {
+            if (!ukTaxState.validatedData) {
+                alert('No validated data to import');
+                return;
+            }
+            
+            const key = `${ukTaxState.selectedUser}-${ukTaxState.selectedBusiness}`;
+            
+            // Store transactions for this user-business combination
+            if (!ukTaxState.importedTransactions[key]) {
+                ukTaxState.importedTransactions[key] = [];
+            }
+            
+            // Add user_id and business_id to each transaction
+            const transactions = ukTaxState.validatedData.map(tx => ({
+                ...tx,
+                user_id: ukTaxState.selectedUser,
+                business_id: ukTaxState.selectedBusiness,
+                imported_at: new Date().toISOString()
+            }));
+            
+            ukTaxState.importedTransactions[key] = transactions;
+            
+            // Show success message
+            const successDiv = document.getElementById('importSuccess');
+            const summaryDiv = document.getElementById('importSummary');
+            summaryDiv.innerHTML = `
+                <p>Imported ${transactions.length} transaction(s) for:<br>
+                <strong>${document.getElementById('ukTaxUser').selectedOptions[0].text}</strong> - 
+                <strong>${document.getElementById('ukTaxBusiness').selectedOptions[0].text}</strong></p>
+            `;
+            successDiv.classList.remove('hidden');
+            
+            // Hide preview
+            document.getElementById('csvPreview').classList.add('hidden');
+            
+            // Update transaction tax area
+            document.getElementById('noTransactionsMessage').style.display = 'none';
+            document.getElementById('transactionTaxArea').classList.remove('hidden');
+            
+            // Clear CSV input
+            setTimeout(() => {
+                clearCSVImport();
+            }, 3000);
+        }
+        
+        function cancelImport() {
+            document.getElementById('csvPreview').classList.add('hidden');
+            ukTaxState.csvData = null;
+            ukTaxState.validatedData = null;
+        }
+        
+        function computeTaxFromTransactions() {
+            if (!ukTaxState.selectedUser || !ukTaxState.selectedBusiness) {
+                alert('Please select both a user and a business');
+                return;
+            }
+            
+            const key = `${ukTaxState.selectedUser}-${ukTaxState.selectedBusiness}`;
+            const transactions = ukTaxState.importedTransactions[key];
+            
+            if (!transactions || transactions.length === 0) {
+                alert('No transactions found for this user and business');
+                return;
+            }
+            
+            // Calculate totals
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            const incomeTransactions = [];
+            const expenseTransactions = [];
+            
+            transactions.forEach(tx => {
+                const amount = safeFloat(tx.amount);
+                if (amount > 0) {
+                    totalIncome += amount;
+                    incomeTransactions.push(tx);
+                } else {
+                    totalExpenses += Math.abs(amount);
+                    expenseTransactions.push(tx);
+                }
+            });
+            
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Calculate Corporation Tax
+            let corporationTax = 0;
+            let taxRate = 0;
+            let taxCalculation = '';
+            
+            if (netProfit > 0) {
+                if (netProfit <= 50000) {
+                    taxRate = 0.19;
+                    corporationTax = netProfit * taxRate;
+                    taxCalculation = `${formatCurrency(netProfit)} × 19% (Small Profits Rate) = ${formatCurrency(corporationTax)}`;
+                } else if (netProfit >= 250000) {
+                    taxRate = 0.25;
+                    corporationTax = netProfit * taxRate;
+                    taxCalculation = `${formatCurrency(netProfit)} × 25% (Main Rate) = ${formatCurrency(corporationTax)}`;
+                } else {
+                    taxRate = 0.25;
+                    const marginalRelief = (250000 - netProfit) * 0.015;
+                    corporationTax = (netProfit * taxRate) - marginalRelief;
+                    taxCalculation = `${formatCurrency(netProfit)} × 25% - Marginal Relief ${formatCurrency(marginalRelief)} = ${formatCurrency(corporationTax)}`;
+                }
+            } else {
+                taxCalculation = 'No tax due (loss or zero profit)';
+            }
+            
+            // Calculate VAT
+            const vatOnSales = totalIncome * 0.20;
+            const vatOnPurchases = totalExpenses * 0.20;
+            const vatDue = vatOnSales - vatOnPurchases;
+            
+            // Display results
+            const resultsDiv = document.getElementById('transactionTaxResults');
+            const breakdownDiv = document.getElementById('transactionTaxBreakdown');
+            
+            breakdownDiv.innerHTML = `
+                <div class="info-message">
+                    <strong>Computation Based on ${transactions.length} Transaction(s)</strong><br><br>
+                    1. Total Income: ${formatCurrency(totalIncome)}<br>
+                    2. Total Expenses: ${formatCurrency(totalExpenses)}<br>
+                    3. Net Profit: ${formatCurrency(netProfit)}<br>
+                    4. Corporation Tax Calculation: ${taxCalculation}
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">Transaction Count</span>
+                        <span class="tax-value">${transactions.length}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Total Income</span>
+                        <span class="tax-value" style="color: #10b981;">${formatCurrency(totalIncome)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Total Expenses</span>
+                        <span class="tax-value" style="color: #ef4444;">${formatCurrency(totalExpenses)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Net Profit</span>
+                        <span class="tax-value">${formatCurrency(netProfit)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Effective Tax Rate</span>
+                        <span class="tax-value">${(taxRate * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Corporation Tax Liability</span>
+                        <span class="tax-value">${formatCurrency(corporationTax)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">VAT on Sales (20%)</span>
+                        <span class="tax-value">${formatCurrency(vatOnSales)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">VAT on Purchases (20%)</span>
+                        <span class="tax-value">${formatCurrency(vatOnPurchases)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Net VAT ${vatDue >= 0 ? 'Payable' : 'Refund'}</span>
+                        <span class="tax-value" style="color: ${vatDue >= 0 ? '#ef4444' : '#10b981'}">${formatCurrency(Math.abs(vatDue))}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Display transaction lists
+            document.getElementById('incomeTransactionsList').innerHTML = incomeTransactions.length > 0 ? `
+                <table style="font-size: 14px;">
+                    <thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
+                    <tbody>${incomeTransactions.map(tx => `
+                        <tr>
+                            <td>${tx.date}</td>
+                            <td>${tx.description}</td>
+                            <td style="color: #10b981;">${formatCurrency(safeFloat(tx.amount))}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            ` : '<p>No income transactions</p>';
+            
+            document.getElementById('expenseTransactionsList').innerHTML = expenseTransactions.length > 0 ? `
+                <table style="font-size: 14px;">
+                    <thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
+                    <tbody>${expenseTransactions.map(tx => `
+                        <tr>
+                            <td>${tx.date}</td>
+                            <td>${tx.description}</td>
+                            <td style="color: #ef4444;">${formatCurrency(safeFloat(tx.amount))}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            ` : '<p>No expense transactions</p>';
+            
+            resultsDiv.classList.remove('hidden');
+            
+            // Store computation
+            ukTaxState.computations[key] = {
+                totalIncome,
+                totalExpenses,
+                netProfit,
+                corporationTax,
+                taxRate,
+                vatOnSales,
+                vatOnPurchases,
+                vatDue,
+                transactionCount: transactions.length,
+                computationDate: new Date().toISOString()
+            };
+        }
     </script>
 </body>
-                                </html>
+</html>
