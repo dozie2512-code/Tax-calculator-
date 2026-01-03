@@ -11,6 +11,10 @@ build/
 # Output files
 output/
 
+# User data and database files
+data/
+backend/data/
+
 # IDEs
 .vscode/
 .idea/
