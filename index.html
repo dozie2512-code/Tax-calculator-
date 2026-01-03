@@ -356,6 +356,103 @@
         .sample-data-btn:hover {
             background: #7c3aed;
         }
+        
+        .accordion {
+            margin-bottom: 15px;
+        }
+        
+        .accordion-header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .accordion-header:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .accordion-header.active {
+            background: #5568d3;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .accordion-icon {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            display: none;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+        }
+        
+        .accordion-content.active {
+            display: block;
+        }
+        
+        .tax-result {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .tax-breakdown {
+            margin-top: 15px;
+        }
+        
+        .tax-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .tax-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 18px;
+            color: #667eea;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+        }
+        
+        .tax-label {
+            color: #666;
+        }
+        
+        .tax-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .info-message {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #1e40af;
+        }
     </style>
 </head>
 <body>
@@ -371,6 +468,7 @@
             <button class="tab" onclick="showTab('statements')">📈 Financial Statements</button>
             <button class="tab" onclick="showTab('close')">🎯 Automated Close</button>
             <button class="tab" onclick="showTab('approval')">✅ Approval Workflow</button>
+            <button class="tab" onclick="showTab('uktax')">🇬🇧 UK Tax Computations</button>
         </div>
         
         <!-- Reconciliation Tab -->
@@ -583,6 +681,259 @@
                 
                 <h3>Approval History</h3>
                 <div id="approvalHistory"></div>
+            </div>
+        </div>
+        
+        <!-- UK Tax Computations Tab -->
+        <div id="uktax" class="tab-content">
+            <div class="card">
+                <h2>🇬🇧 UK Tax Summary Computations</h2>
+                <p style="color: #666; margin-bottom: 20px;">Calculate various UK taxes including PAYE, Self-Assessment, VAT, and Corporate Tax with real-time computations</p>
+                
+                <!-- PAYE Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('paye')">
+                        <span>💼 PAYE (Pay As You Earn)</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="paye-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>PAYE Information:</strong> Calculate income tax and National Insurance contributions for employees. UK tax rates for 2024/25: Personal Allowance £12,570, Basic rate 20% (£12,571-£50,270), Higher rate 40% (£50,271-£125,140), Additional rate 45% (over £125,140).
+                        </div>
+                        
+                        <div class="grid">
+                            <div>
+                                <div class="input-group">
+                                    <label>Annual Gross Salary (£)</label>
+                                    <input type="number" id="payeGrossSalary" value="45000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Tax Code</label>
+                                    <input type="text" id="payeTaxCode" value="1257L">
+                                </div>
+                                <div class="input-group">
+                                    <label>Pension Contribution (%)</label>
+                                    <input type="number" id="payePension" value="5" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="input-group">
+                                    <label>Student Loan Plan</label>
+                                    <select id="payeStudentLoan">
+                                        <option value="none">None</option>
+                                        <option value="plan1">Plan 1</option>
+                                        <option value="plan2">Plan 2</option>
+                                        <option value="plan4">Plan 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="input-group">
+                                    <label>Pay Period</label>
+                                    <select id="payePeriod">
+                                        <option value="annual" selected>Annual</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="weekly">Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Age</label>
+                                    <input type="number" id="payeAge" value="35" min="16" max="100">
+                                </div>
+                                <button class="btn btn-primary" onclick="calculatePAYE()">Calculate PAYE</button>
+                                <button class="btn sample-data-btn" onclick="loadSamplePAYE()">Load Sample</button>
+                            </div>
+                        </div>
+                        
+                        <div id="payeResults" class="hidden">
+                            <div class="tax-result">
+                                <h3>PAYE Calculation Results</h3>
+                                <div id="payeBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Self-Assessment Tax Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('selfassessment')">
+                        <span>📋 Self-Assessment Tax</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="selfassessment-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>Self-Assessment Information:</strong> Calculate tax liability for self-employed individuals and other income sources. Includes income from freelance work, rental properties, dividends, and savings interest.
+                        </div>
+                        
+                        <div class="grid">
+                            <div>
+                                <div class="input-group">
+                                    <label>Employment Income (£)</label>
+                                    <input type="number" id="saEmploymentIncome" value="25000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Self-Employment Income (£)</label>
+                                    <input type="number" id="saSelfEmploymentIncome" value="35000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Rental Income (£)</label>
+                                    <input type="number" id="saRentalIncome" value="12000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Dividend Income (£)</label>
+                                    <input type="number" id="saDividendIncome" value="5000" step="0.01">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="input-group">
+                                    <label>Savings Interest (£)</label>
+                                    <input type="number" id="saSavingsInterest" value="1500" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Allowable Expenses (£)</label>
+                                    <input type="number" id="saExpenses" value="8000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Pension Contributions (£)</label>
+                                    <input type="number" id="saPension" value="4000" step="0.01">
+                                </div>
+                                <button class="btn btn-primary" onclick="calculateSelfAssessment()">Calculate Tax</button>
+                                <button class="btn sample-data-btn" onclick="loadSampleSelfAssessment()">Load Sample</button>
+                            </div>
+                        </div>
+                        
+                        <div id="saResults" class="hidden">
+                            <div class="tax-result">
+                                <h3>Self-Assessment Tax Results</h3>
+                                <div id="saBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VAT Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('vat')">
+                        <span>🧾 VAT (Value Added Tax)</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="vat-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>VAT Information:</strong> Calculate VAT charges and rebates. Standard UK VAT rate is 20%, reduced rate is 5%, and zero rate is 0%. VAT registration threshold is £85,000.
+                        </div>
+                        
+                        <div class="grid">
+                            <div>
+                                <h3>VAT Calculation</h3>
+                                <div class="input-group">
+                                    <label>Calculation Type</label>
+                                    <select id="vatCalcType" onchange="updateVATFields()">
+                                        <option value="addvat">Add VAT to Net Amount</option>
+                                        <option value="removevat">Remove VAT from Gross Amount</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label id="vatAmountLabel">Net Amount (£)</label>
+                                    <input type="number" id="vatAmount" value="1000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>VAT Rate (%)</label>
+                                    <select id="vatRate">
+                                        <option value="20" selected>Standard - 20%</option>
+                                        <option value="5">Reduced - 5%</option>
+                                        <option value="0">Zero - 0%</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="calculateVAT()">Calculate VAT</button>
+                                <button class="btn sample-data-btn" onclick="loadSampleVAT()">Load Sample</button>
+                            </div>
+                            <div>
+                                <h3>VAT Return Summary</h3>
+                                <div class="input-group">
+                                    <label>Sales (Output VAT) (£)</label>
+                                    <input type="number" id="vatSales" value="50000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Purchases (Input VAT) (£)</label>
+                                    <input type="number" id="vatPurchases" value="30000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>VAT Rate for Return (%)</label>
+                                    <select id="vatReturnRate">
+                                        <option value="20" selected>Standard - 20%</option>
+                                        <option value="5">Reduced - 5%</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="calculateVATReturn()">Calculate VAT Return</button>
+                            </div>
+                        </div>
+                        
+                        <div id="vatResults" class="hidden">
+                            <div class="tax-result">
+                                <h3>VAT Calculation Results</h3>
+                                <div id="vatBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Corporate Tax Section -->
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleAccordion('corporatetax')">
+                        <span>🏢 Corporate Tax</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div id="corporatetax-content" class="accordion-content">
+                        <div class="info-message">
+                            💡 <strong>Corporate Tax Information:</strong> Calculate UK Corporation Tax for limited companies. Main rate is 25% for profits over £250,000, small profits rate is 19% for profits up to £50,000, with marginal relief for profits between £50,000 and £250,000.
+                        </div>
+                        
+                        <div class="grid">
+                            <div>
+                                <div class="input-group">
+                                    <label>Turnover (£)</label>
+                                    <input type="number" id="ctTurnover" value="500000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Cost of Sales (£)</label>
+                                    <input type="number" id="ctCostOfSales" value="200000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Operating Expenses (£)</label>
+                                    <input type="number" id="ctExpenses" value="150000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Other Income (£)</label>
+                                    <input type="number" id="ctOtherIncome" value="10000" step="0.01">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="input-group">
+                                    <label>Capital Allowances (£)</label>
+                                    <input type="number" id="ctCapitalAllowances" value="15000" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label>Accounting Period (months)</label>
+                                    <input type="number" id="ctPeriod" value="12" min="1" max="18">
+                                </div>
+                                <div class="input-group">
+                                    <label>Tax Year</label>
+                                    <select id="ctTaxYear">
+                                        <option value="2024" selected>2024/25</option>
+                                        <option value="2023">2023/24</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="calculateCorporateTax()">Calculate Corporation Tax</button>
+                                <button class="btn sample-data-btn" onclick="loadSampleCorporateTax()">Load Sample</button>
+                            </div>
+                        </div>
+                        
+                        <div id="ctResults" class="hidden">
+                            <div class="tax-result">
+                                <h3>Corporation Tax Results</h3>
+                                <div id="ctBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1293,6 +1644,592 @@
                     `).join('')}</tbody>
                 </table>
             ` : '<p>No approval history yet</p>';
+        }
+
+        // UK Tax Computations Functions
+        
+        // Accordion toggle function
+        function toggleAccordion(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const header = content.previousElementSibling;
+            
+            // Toggle active class
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                header.classList.remove('active');
+            } else {
+                content.classList.add('active');
+                header.classList.add('active');
+            }
+        }
+        
+        // PAYE Functions
+        function loadSamplePAYE() {
+            document.getElementById('payeGrossSalary').value = '45000';
+            document.getElementById('payeTaxCode').value = '1257L';
+            document.getElementById('payePension').value = '5';
+            document.getElementById('payeStudentLoan').value = 'plan2';
+            document.getElementById('payePeriod').value = 'annual';
+            document.getElementById('payeAge').value = '35';
+        }
+        
+        function calculatePAYE() {
+            const grossSalary = safeFloat(document.getElementById('payeGrossSalary').value);
+            const taxCode = document.getElementById('payeTaxCode').value;
+            const pensionPercent = safeFloat(document.getElementById('payePension').value);
+            const studentLoanPlan = document.getElementById('payeStudentLoan').value;
+            const period = document.getElementById('payePeriod').value;
+            const age = parseInt(document.getElementById('payeAge').value);
+            
+            // Calculate pension contribution
+            const pensionContribution = grossSalary * (pensionPercent / 100);
+            const taxableIncome = grossSalary - pensionContribution;
+            
+            // Extract personal allowance from tax code (1257L = £12,570)
+            const personalAllowance = parseInt(taxCode) * 10;
+            
+            // Calculate taxable amount after personal allowance
+            const taxableAfterAllowance = Math.max(0, taxableIncome - personalAllowance);
+            
+            // UK Tax Bands 2024/25
+            const basicRateLimit = 37700; // £50,270 - £12,570
+            const higherRateLimit = 112570; // £125,140 - £12,570
+            
+            let incomeTax = 0;
+            let basicRateTax = 0;
+            let higherRateTax = 0;
+            let additionalRateTax = 0;
+            
+            // Calculate income tax
+            if (taxableAfterAllowance > 0) {
+                // Basic rate 20%
+                if (taxableAfterAllowance <= basicRateLimit) {
+                    basicRateTax = taxableAfterAllowance * 0.20;
+                    incomeTax = basicRateTax;
+                } else if (taxableAfterAllowance <= higherRateLimit) {
+                    basicRateTax = basicRateLimit * 0.20;
+                    higherRateTax = (taxableAfterAllowance - basicRateLimit) * 0.40;
+                    incomeTax = basicRateTax + higherRateTax;
+                } else {
+                    basicRateTax = basicRateLimit * 0.20;
+                    higherRateTax = (higherRateLimit - basicRateLimit) * 0.40;
+                    additionalRateTax = (taxableAfterAllowance - higherRateLimit) * 0.45;
+                    incomeTax = basicRateTax + higherRateTax + additionalRateTax;
+                }
+            }
+            
+            // Calculate National Insurance
+            let nationalInsurance = 0;
+            const niPrimary = 12570; // Primary threshold
+            const niUpper = 50270; // Upper earnings limit
+            
+            if (grossSalary > niPrimary) {
+                if (grossSalary <= niUpper) {
+                    nationalInsurance = (grossSalary - niPrimary) * 0.12;
+                } else {
+                    nationalInsurance = (niUpper - niPrimary) * 0.12 + (grossSalary - niUpper) * 0.02;
+                }
+            }
+            
+            // Calculate Student Loan repayment
+            let studentLoan = 0;
+            if (studentLoanPlan !== 'none') {
+                let threshold = 0;
+                let rate = 0.09;
+                
+                switch(studentLoanPlan) {
+                    case 'plan1':
+                        threshold = 22015;
+                        break;
+                    case 'plan2':
+                        threshold = 27295;
+                        break;
+                    case 'plan4':
+                        threshold = 27660;
+                        break;
+                }
+                
+                if (grossSalary > threshold) {
+                    studentLoan = (grossSalary - threshold) * rate;
+                }
+            }
+            
+            const totalDeductions = incomeTax + nationalInsurance + studentLoan + pensionContribution;
+            const netSalary = grossSalary - totalDeductions;
+            
+            // Adjust for pay period
+            let periodMultiplier = 1;
+            let periodLabel = 'Annual';
+            if (period === 'monthly') {
+                periodMultiplier = 1 / 12;
+                periodLabel = 'Monthly';
+            } else if (period === 'weekly') {
+                periodMultiplier = 1 / 52;
+                periodLabel = 'Weekly';
+            }
+            
+            // Display results
+            document.getElementById('payeResults').classList.remove('hidden');
+            document.getElementById('payeBreakdown').innerHTML = `
+                <div class="info-message">
+                    <strong>Computation Steps:</strong><br>
+                    1. Gross Salary: ${formatCurrency(grossSalary)}<br>
+                    2. Pension Contribution (${pensionPercent}%): ${formatCurrency(pensionContribution)}<br>
+                    3. Taxable Income: ${formatCurrency(taxableIncome)}<br>
+                    4. Personal Allowance (Tax Code ${taxCode}): ${formatCurrency(personalAllowance)}<br>
+                    5. Income after allowances: ${formatCurrency(taxableAfterAllowance)}<br>
+                    ${basicRateTax > 0 ? `6. Basic Rate Tax (20%): ${formatCurrency(basicRateTax)}<br>` : ''}
+                    ${higherRateTax > 0 ? `7. Higher Rate Tax (40%): ${formatCurrency(higherRateTax)}<br>` : ''}
+                    ${additionalRateTax > 0 ? `8. Additional Rate Tax (45%): ${formatCurrency(additionalRateTax)}<br>` : ''}
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">${periodLabel} Gross Salary</span>
+                        <span class="tax-value">${formatCurrency(grossSalary * periodMultiplier)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Income Tax</span>
+                        <span class="tax-value">${formatCurrency(incomeTax * periodMultiplier)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">National Insurance</span>
+                        <span class="tax-value">${formatCurrency(nationalInsurance * periodMultiplier)}</span>
+                    </div>
+                    ${studentLoan > 0 ? `
+                    <div class="tax-row">
+                        <span class="tax-label">Student Loan (${studentLoanPlan.toUpperCase()})</span>
+                        <span class="tax-value">${formatCurrency(studentLoan * periodMultiplier)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="tax-row">
+                        <span class="tax-label">Pension Contribution</span>
+                        <span class="tax-value">${formatCurrency(pensionContribution * periodMultiplier)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Total Deductions</span>
+                        <span class="tax-value">${formatCurrency(totalDeductions * periodMultiplier)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">${periodLabel} Net Salary</span>
+                        <span class="tax-value">${formatCurrency(netSalary * periodMultiplier)}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Self-Assessment Functions
+        function loadSampleSelfAssessment() {
+            document.getElementById('saEmploymentIncome').value = '25000';
+            document.getElementById('saSelfEmploymentIncome').value = '35000';
+            document.getElementById('saRentalIncome').value = '12000';
+            document.getElementById('saDividendIncome').value = '5000';
+            document.getElementById('saSavingsInterest').value = '1500';
+            document.getElementById('saExpenses').value = '8000';
+            document.getElementById('saPension').value = '4000';
+        }
+        
+        function calculateSelfAssessment() {
+            const employmentIncome = safeFloat(document.getElementById('saEmploymentIncome').value);
+            const selfEmploymentIncome = safeFloat(document.getElementById('saSelfEmploymentIncome').value);
+            const rentalIncome = safeFloat(document.getElementById('saRentalIncome').value);
+            const dividendIncome = safeFloat(document.getElementById('saDividendIncome').value);
+            const savingsInterest = safeFloat(document.getElementById('saSavingsInterest').value);
+            const expenses = safeFloat(document.getElementById('saExpenses').value);
+            const pensionContributions = safeFloat(document.getElementById('saPension').value);
+            
+            // Calculate total income
+            const totalIncome = employmentIncome + selfEmploymentIncome + rentalIncome + dividendIncome + savingsInterest;
+            
+            // Calculate adjusted income (after expenses and pension)
+            const netSelfEmployment = selfEmploymentIncome - expenses;
+            const adjustedIncome = employmentIncome + netSelfEmployment + rentalIncome - pensionContributions;
+            
+            // Personal allowance
+            const personalAllowance = 12570;
+            const taxableIncome = Math.max(0, adjustedIncome - personalAllowance);
+            
+            // Calculate income tax on non-savings, non-dividend income
+            const basicRateLimit = 37700;
+            const higherRateLimit = 112570;
+            
+            let incomeTax = 0;
+            let basicRateTax = 0;
+            let higherRateTax = 0;
+            let additionalRateTax = 0;
+            
+            const nonDividendIncome = Math.max(0, adjustedIncome - dividendIncome - savingsInterest - personalAllowance);
+            
+            if (nonDividendIncome > 0) {
+                if (nonDividendIncome <= basicRateLimit) {
+                    basicRateTax = nonDividendIncome * 0.20;
+                    incomeTax = basicRateTax;
+                } else if (nonDividendIncome <= higherRateLimit) {
+                    basicRateTax = basicRateLimit * 0.20;
+                    higherRateTax = (nonDividendIncome - basicRateLimit) * 0.40;
+                    incomeTax = basicRateTax + higherRateTax;
+                } else {
+                    basicRateTax = basicRateLimit * 0.20;
+                    higherRateTax = (higherRateLimit - basicRateLimit) * 0.40;
+                    additionalRateTax = (nonDividendIncome - higherRateLimit) * 0.45;
+                    incomeTax = basicRateTax + higherRateTax + additionalRateTax;
+                }
+            }
+            
+            // Calculate dividend tax (with £500 allowance for 2024/25)
+            const dividendAllowance = 500;
+            const taxableDividends = Math.max(0, dividendIncome - dividendAllowance);
+            let dividendTax = 0;
+            
+            if (taxableDividends > 0) {
+                const usedBasicRate = Math.min(nonDividendIncome, basicRateLimit);
+                const remainingBasicRate = Math.max(0, basicRateLimit - usedBasicRate);
+                
+                if (taxableDividends <= remainingBasicRate) {
+                    dividendTax = taxableDividends * 0.0875; // 8.75% basic rate
+                } else {
+                    dividendTax = remainingBasicRate * 0.0875;
+                    const higherRateDividends = Math.min(taxableDividends - remainingBasicRate, higherRateLimit - basicRateLimit);
+                    dividendTax += higherRateDividends * 0.3375; // 33.75% higher rate
+                    
+                    if (taxableDividends > remainingBasicRate + higherRateDividends) {
+                        dividendTax += (taxableDividends - remainingBasicRate - higherRateDividends) * 0.3935; // 39.35% additional rate
+                    }
+                }
+            }
+            
+            // Calculate savings tax (with personal savings allowance)
+            let savingsAllowance = 1000;
+            if (taxableIncome > higherRateLimit) {
+                savingsAllowance = 0;
+            } else if (taxableIncome > basicRateLimit) {
+                savingsAllowance = 500;
+            }
+            
+            const taxableSavings = Math.max(0, savingsInterest - savingsAllowance);
+            let savingsTax = 0;
+            
+            if (taxableSavings > 0) {
+                const usedBasicRate = Math.min(nonDividendIncome, basicRateLimit);
+                const remainingBasicRate = Math.max(0, basicRateLimit - usedBasicRate);
+                
+                if (taxableSavings <= remainingBasicRate) {
+                    savingsTax = taxableSavings * 0.20;
+                } else {
+                    savingsTax = remainingBasicRate * 0.20 + (taxableSavings - remainingBasicRate) * 0.40;
+                }
+            }
+            
+            // Calculate Class 2 and Class 4 NI for self-employed
+            let class2NI = 0;
+            let class4NI = 0;
+            
+            if (netSelfEmployment > 6725) { // Small profits threshold
+                class2NI = 3.45 * 52; // £3.45 per week
+            }
+            
+            if (netSelfEmployment > 12570) {
+                const class4Lower = 12570;
+                const class4Upper = 50270;
+                
+                if (netSelfEmployment <= class4Upper) {
+                    class4NI = (netSelfEmployment - class4Lower) * 0.09;
+                } else {
+                    class4NI = (class4Upper - class4Lower) * 0.09 + (netSelfEmployment - class4Upper) * 0.02;
+                }
+            }
+            
+            const totalTax = incomeTax + dividendTax + savingsTax;
+            const totalNI = class2NI + class4NI;
+            const totalLiability = totalTax + totalNI;
+            
+            // Display results
+            document.getElementById('saResults').classList.remove('hidden');
+            document.getElementById('saBreakdown').innerHTML = `
+                <div class="info-message">
+                    <strong>Computation Steps:</strong><br>
+                    1. Total Gross Income: ${formatCurrency(totalIncome)}<br>
+                    2. Less: Business Expenses: ${formatCurrency(expenses)}<br>
+                    3. Less: Pension Contributions: ${formatCurrency(pensionContributions)}<br>
+                    4. Adjusted Income: ${formatCurrency(adjustedIncome)}<br>
+                    5. Less: Personal Allowance: ${formatCurrency(personalAllowance)}<br>
+                    6. Taxable Income: ${formatCurrency(taxableIncome)}<br>
+                    7. Tax calculated on different income types at applicable rates
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">Employment Income</span>
+                        <span class="tax-value">${formatCurrency(employmentIncome)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Self-Employment Income (Net)</span>
+                        <span class="tax-value">${formatCurrency(netSelfEmployment)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Rental Income</span>
+                        <span class="tax-value">${formatCurrency(rentalIncome)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Dividend Income</span>
+                        <span class="tax-value">${formatCurrency(dividendIncome)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Savings Interest</span>
+                        <span class="tax-value">${formatCurrency(savingsInterest)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Income Tax</span>
+                        <span class="tax-value">${formatCurrency(incomeTax)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Dividend Tax</span>
+                        <span class="tax-value">${formatCurrency(dividendTax)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Savings Tax</span>
+                        <span class="tax-value">${formatCurrency(savingsTax)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Class 2 NI</span>
+                        <span class="tax-value">${formatCurrency(class2NI)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Class 4 NI</span>
+                        <span class="tax-value">${formatCurrency(class4NI)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Total Tax and NI Liability</span>
+                        <span class="tax-value">${formatCurrency(totalLiability)}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // VAT Functions
+        function updateVATFields() {
+            const calcType = document.getElementById('vatCalcType').value;
+            const label = document.getElementById('vatAmountLabel');
+            
+            if (calcType === 'addvat') {
+                label.textContent = 'Net Amount (£)';
+            } else {
+                label.textContent = 'Gross Amount (£)';
+            }
+        }
+        
+        function loadSampleVAT() {
+            document.getElementById('vatCalcType').value = 'addvat';
+            document.getElementById('vatAmount').value = '1000';
+            document.getElementById('vatRate').value = '20';
+            document.getElementById('vatSales').value = '50000';
+            document.getElementById('vatPurchases').value = '30000';
+            document.getElementById('vatReturnRate').value = '20';
+            updateVATFields();
+        }
+        
+        function calculateVAT() {
+            const calcType = document.getElementById('vatCalcType').value;
+            const amount = safeFloat(document.getElementById('vatAmount').value);
+            const vatRate = safeFloat(document.getElementById('vatRate').value) / 100;
+            
+            let netAmount, vatAmount, grossAmount;
+            
+            if (calcType === 'addvat') {
+                netAmount = amount;
+                vatAmount = netAmount * vatRate;
+                grossAmount = netAmount + vatAmount;
+            } else {
+                grossAmount = amount;
+                netAmount = grossAmount / (1 + vatRate);
+                vatAmount = grossAmount - netAmount;
+            }
+            
+            document.getElementById('vatResults').classList.remove('hidden');
+            document.getElementById('vatBreakdown').innerHTML = `
+                <div class="info-message">
+                    <strong>VAT Computation:</strong><br>
+                    ${calcType === 'addvat' ? 
+                        `1. Net Amount: ${formatCurrency(netAmount)}<br>
+                         2. VAT Rate: ${(vatRate * 100)}%<br>
+                         3. VAT Amount: ${formatCurrency(netAmount)} × ${(vatRate * 100)}% = ${formatCurrency(vatAmount)}<br>
+                         4. Gross Amount: ${formatCurrency(netAmount)} + ${formatCurrency(vatAmount)} = ${formatCurrency(grossAmount)}` :
+                        `1. Gross Amount: ${formatCurrency(grossAmount)}<br>
+                         2. VAT Rate: ${(vatRate * 100)}%<br>
+                         3. Net Amount: ${formatCurrency(grossAmount)} ÷ (1 + ${(vatRate * 100)}%) = ${formatCurrency(netAmount)}<br>
+                         4. VAT Amount: ${formatCurrency(grossAmount)} - ${formatCurrency(netAmount)} = ${formatCurrency(vatAmount)}`
+                    }
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">Net Amount (Excluding VAT)</span>
+                        <span class="tax-value">${formatCurrency(netAmount)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">VAT Amount (${(vatRate * 100)}%)</span>
+                        <span class="tax-value">${formatCurrency(vatAmount)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Gross Amount (Including VAT)</span>
+                        <span class="tax-value">${formatCurrency(grossAmount)}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function calculateVATReturn() {
+            const sales = safeFloat(document.getElementById('vatSales').value);
+            const purchases = safeFloat(document.getElementById('vatPurchases').value);
+            const vatRate = safeFloat(document.getElementById('vatReturnRate').value) / 100;
+            
+            const outputVAT = sales * vatRate;
+            const inputVAT = purchases * vatRate;
+            const vatDue = outputVAT - inputVAT;
+            
+            document.getElementById('vatResults').classList.remove('hidden');
+            document.getElementById('vatBreakdown').innerHTML = `
+                <div class="info-message">
+                    <strong>VAT Return Computation:</strong><br>
+                    1. Sales (excluding VAT): ${formatCurrency(sales)}<br>
+                    2. Output VAT (${(vatRate * 100)}%): ${formatCurrency(sales)} × ${(vatRate * 100)}% = ${formatCurrency(outputVAT)}<br>
+                    3. Purchases (excluding VAT): ${formatCurrency(purchases)}<br>
+                    4. Input VAT (${(vatRate * 100)}%): ${formatCurrency(purchases)} × ${(vatRate * 100)}% = ${formatCurrency(inputVAT)}<br>
+                    5. VAT ${vatDue >= 0 ? 'Due to HMRC' : 'Refund from HMRC'}: ${formatCurrency(outputVAT)} - ${formatCurrency(inputVAT)} = ${formatCurrency(Math.abs(vatDue))}
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">Total Sales (Net)</span>
+                        <span class="tax-value">${formatCurrency(sales)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Output VAT (VAT on Sales)</span>
+                        <span class="tax-value">${formatCurrency(outputVAT)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Total Purchases (Net)</span>
+                        <span class="tax-value">${formatCurrency(purchases)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Input VAT (VAT on Purchases)</span>
+                        <span class="tax-value">${formatCurrency(inputVAT)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">${vatDue >= 0 ? 'VAT Payable to HMRC' : 'VAT Refund from HMRC'}</span>
+                        <span class="tax-value" style="color: ${vatDue >= 0 ? '#ef4444' : '#10b981'}">${formatCurrency(Math.abs(vatDue))}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Corporate Tax Functions
+        function loadSampleCorporateTax() {
+            document.getElementById('ctTurnover').value = '500000';
+            document.getElementById('ctCostOfSales').value = '200000';
+            document.getElementById('ctExpenses').value = '150000';
+            document.getElementById('ctOtherIncome').value = '10000';
+            document.getElementById('ctCapitalAllowances').value = '15000';
+            document.getElementById('ctPeriod').value = '12';
+            document.getElementById('ctTaxYear').value = '2024';
+        }
+        
+        function calculateCorporateTax() {
+            const turnover = safeFloat(document.getElementById('ctTurnover').value);
+            const costOfSales = safeFloat(document.getElementById('ctCostOfSales').value);
+            const expenses = safeFloat(document.getElementById('ctExpenses').value);
+            const otherIncome = safeFloat(document.getElementById('ctOtherIncome').value);
+            const capitalAllowances = safeFloat(document.getElementById('ctCapitalAllowances').value);
+            const period = parseInt(document.getElementById('ctPeriod').value);
+            const taxYear = document.getElementById('ctTaxYear').value;
+            
+            // Calculate profit
+            const grossProfit = turnover - costOfSales;
+            const operatingProfit = grossProfit - expenses + otherIncome;
+            const taxableProfit = operatingProfit - capitalAllowances;
+            
+            // UK Corporation Tax rates 2024/25
+            const smallProfitsRate = 0.19; // 19% for profits up to £50,000
+            const mainRate = 0.25; // 25% for profits over £250,000
+            const lowerLimit = 50000;
+            const upperLimit = 250000;
+            
+            let corporationTax = 0;
+            let effectiveRate = 0;
+            let taxCalculation = '';
+            
+            if (taxableProfit <= 0) {
+                corporationTax = 0;
+                effectiveRate = 0;
+                taxCalculation = 'No tax due (loss or zero profit)';
+            } else if (taxableProfit <= lowerLimit) {
+                // Small profits rate
+                corporationTax = taxableProfit * smallProfitsRate;
+                effectiveRate = smallProfitsRate;
+                taxCalculation = `${formatCurrency(taxableProfit)} × 19% = ${formatCurrency(corporationTax)}`;
+            } else if (taxableProfit >= upperLimit) {
+                // Main rate
+                corporationTax = taxableProfit * mainRate;
+                effectiveRate = mainRate;
+                taxCalculation = `${formatCurrency(taxableProfit)} × 25% = ${formatCurrency(corporationTax)}`;
+            } else {
+                // Marginal relief applies
+                const marginalReliefFraction = 0.015; // 3/200
+                const marginalRelief = (upperLimit - taxableProfit) * marginalReliefFraction;
+                corporationTax = (taxableProfit * mainRate) - marginalRelief;
+                effectiveRate = corporationTax / taxableProfit;
+                taxCalculation = `${formatCurrency(taxableProfit)} × 25% - Marginal Relief ${formatCurrency(marginalRelief)} = ${formatCurrency(corporationTax)}`;
+            }
+            
+            // Adjust for accounting period if not 12 months
+            if (period !== 12) {
+                corporationTax = corporationTax * (period / 12);
+            }
+            
+            const profitAfterTax = taxableProfit - corporationTax;
+            
+            document.getElementById('ctResults').classList.remove('hidden');
+            document.getElementById('ctBreakdown').innerHTML = `
+                <div class="info-message">
+                    <strong>Corporation Tax Computation:</strong><br>
+                    1. Turnover: ${formatCurrency(turnover)}<br>
+                    2. Less: Cost of Sales: ${formatCurrency(costOfSales)}<br>
+                    3. Gross Profit: ${formatCurrency(grossProfit)}<br>
+                    4. Less: Operating Expenses: ${formatCurrency(expenses)}<br>
+                    5. Add: Other Income: ${formatCurrency(otherIncome)}<br>
+                    6. Operating Profit: ${formatCurrency(operatingProfit)}<br>
+                    7. Less: Capital Allowances: ${formatCurrency(capitalAllowances)}<br>
+                    8. Taxable Profit: ${formatCurrency(taxableProfit)}<br>
+                    9. Tax Calculation: ${taxCalculation}<br>
+                    ${period !== 12 ? `10. Adjusted for ${period} months period<br>` : ''}
+                </div>
+                <div class="tax-breakdown">
+                    <div class="tax-row">
+                        <span class="tax-label">Turnover</span>
+                        <span class="tax-value">${formatCurrency(turnover)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Gross Profit</span>
+                        <span class="tax-value">${formatCurrency(grossProfit)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Operating Profit</span>
+                        <span class="tax-value">${formatCurrency(operatingProfit)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Taxable Profit</span>
+                        <span class="tax-value">${formatCurrency(taxableProfit)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Effective Tax Rate</span>
+                        <span class="tax-value">${(effectiveRate * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Corporation Tax Liability</span>
+                        <span class="tax-value">${formatCurrency(corporationTax)}</span>
+                    </div>
+                    <div class="tax-row">
+                        <span class="tax-label">Profit After Tax</span>
+                        <span class="tax-value">${formatCurrency(profitAfterTax)}</span>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>
