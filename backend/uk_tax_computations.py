@@ -5,8 +5,9 @@ Handles multi-user and multi-business tax computations with CSV import support
 
 import json
 from typing import List, Dict, Any, Optional
-from utils import read_csv_file, write_csv_file, safe_float, format_currency
+from utils import safe_float, format_currency
 import csv
+import io
 from datetime import datetime
 
 
@@ -70,14 +71,18 @@ class UKTaxComputations:
         row_count = 0
         
         try:
-            lines = csv_content.strip().split('\n')
-            if len(lines) < 2:
-                errors.append("CSV must contain at least a header row and one data row")
+            # Check if CSV content is empty or only has headers
+            if not csv_content.strip():
+                errors.append("CSV is empty")
                 return {'valid': False, 'errors': errors, 'warnings': warnings, 'row_count': 0}
             
-            # Parse CSV
-            reader = csv.DictReader(lines)
+            # Parse CSV using StringIO for proper handling of quoted fields
+            reader = csv.DictReader(io.StringIO(csv_content))
             headers = reader.fieldnames
+            
+            if not headers:
+                errors.append("CSV must contain a header row")
+                return {'valid': False, 'errors': errors, 'warnings': warnings, 'row_count': 0}
             
             # Required fields for bank transactions
             required_fields = ['date', 'description', 'amount']
@@ -88,7 +93,9 @@ class UKTaxComputations:
                 is_valid = False
             
             # Validate each row
+            rows_found = False
             for idx, row in enumerate(reader, start=2):
+                rows_found = True
                 row_count += 1
                 
                 # Validate date
@@ -114,6 +121,11 @@ class UKTaxComputations:
                     if field in row and not row[field].strip():
                         errors.append(f"Row {idx}: {field} is empty")
                         is_valid = False
+            
+            # Check if we found any data rows
+            if not rows_found:
+                errors.append("CSV must contain at least a header row and one data row")
+                is_valid = False
                         
         except Exception as e:
             errors.append(f"CSV parsing error: {str(e)}")
@@ -152,8 +164,8 @@ class UKTaxComputations:
         transactions = []
         
         try:
-            lines = csv_content.strip().split('\n')
-            reader = csv.DictReader(lines)
+            # Parse CSV using StringIO for proper handling of quoted fields
+            reader = csv.DictReader(io.StringIO(csv_content))
             
             for row in reader:
                 transaction = {
