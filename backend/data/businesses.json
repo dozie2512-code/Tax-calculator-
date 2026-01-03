@@ -1,0 +1,19 @@
+{
+  "9285dbf6-a619-4d67-bc08-96ccd5c12c22": {
+    "business_id": "9285dbf6-a619-4d67-bc08-96ccd5c12c22",
+    "name": "Demo Business Ltd",
+    "owner_id": "0d2f669e-6d73-4890-86d7-a79b4a1778d5",
+    "business_type": "Limited Company",
+    "tax_number": "UTR123456",
+    "address": "",
+    "created_at": "2026-01-03T18:35:05.867937",
+    "users": [
+      "0d2f669e-6d73-4890-86d7-a79b4a1778d5"
+    ],
+    "settings": {
+      "tax_year": "2024/25",
+      "vat_registered": false,
+      "accounting_period_end": "31-03"
+    }
+  }
+}

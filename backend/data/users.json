@@ -1,0 +1,13 @@
+{
+  "demo_user": {
+    "user_id": "0d2f669e-6d73-4890-86d7-a79b4a1778d5",
+    "username": "demo_user",
+    "password": "57af7bbd7acc1aa1fdd7fcd79d9d479a9ca3b525177b374ddb07cf06f613957b",
+    "email": "demo@example.com",
+    "full_name": "Demo User",
+    "created_at": "2026-01-03T18:35:05.867314",
+    "businesses": [
+      "9285dbf6-a619-4d67-bc08-96ccd5c12c22"
+    ]
+  }
+}
