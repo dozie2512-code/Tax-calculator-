@@ -474,19 +474,23 @@ print(generate_tax_report(75000, 5000))
 ```
 Tax-calculator-/
 ├── backend/
-│   ├── uk_tax_calculator.py      # Main tax calculation module
-│   ├── utils.py                  # Utility functions
-│   ├── reconciliation.py         # Account reconciliation
-│   ├── accruals.py              # Accrual calculations
-│   └── financial_statements.py   # Financial statements
+│   ├── uk_tax_calculator.py      # UK tax calculation module (NEW)
+│   ├── utils.py                  # Utility functions (existing)
+│   ├── reconciliation.py         # Account reconciliation (existing)
+│   ├── accruals.py              # Accrual calculations (existing)
+│   └── financial_statements.py   # Financial statements (existing)
 ├── frontend/
 │   └── dashboard.html           # Month-end close dashboard
 ├── sample_data/                 # Sample data files
 ├── output/                      # Generated output files
-├── README.md                    # This file
+├── examples_uk_tax.py           # UK tax calculator examples (NEW)
+├── README.md                    # UK tax calculator documentation (NEW)
 ├── README_MONTH_END_CLOSE.md   # Month-end close documentation
+├── index.html                   # Month-end close prototype
 └── run_month_end_close.py      # Month-end close orchestrator
 ```
+
+**Note:** This repository contains both UK tax calculation functionality (new) and month-end close accounting processes (existing).
 
 ## 🔒 Important Notes
 

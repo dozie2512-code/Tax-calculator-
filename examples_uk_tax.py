@@ -81,6 +81,7 @@ def example_paye_pension():
     print_subsection("Example 4: With Pension Contributions (£60,000 income, £8,000 pension)")
     
     result = calculate_paye(gross_income=60000, deductions=8000)
+    result_no_pension = calculate_paye(gross_income=60000)
     
     print(f"Gross Income:        £{result['gross_income']:>12,.2f}")
     print(f"Pension Deduction:   £{result['deductions']:>12,.2f}")
@@ -90,7 +91,7 @@ def example_paye_pension():
     print(f"  Basic Rate (20%):  £{result['tax_breakdown']['basic_rate']:>12,.2f}")
     print(f"  Higher Rate (40%): £{result['tax_breakdown']['higher_rate']:>12,.2f}")
     print(f"\nTotal Tax:           £{result['total_tax']:>12,.2f}")
-    print(f"Tax Saved by Pension: £{calculate_paye(60000)['total_tax'] - result['total_tax']:>11,.2f}")
+    print(f"Tax Saved by Pension: £{result_no_pension['total_tax'] - result['total_tax']:>11,.2f}")
 
 
 def example_paye_tapered():

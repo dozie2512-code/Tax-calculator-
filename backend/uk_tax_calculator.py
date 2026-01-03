@@ -343,8 +343,7 @@ class CorporateTaxCalculator:
         upper_limit = self.MAIN_RATE_THRESHOLD
         standard_fraction = Decimal('0.015')  # 3/200
         
-        marginal_relief = ((upper_limit - taxable_profit) * standard_fraction * 
-                          (taxable_profit / taxable_profit))
+        marginal_relief = (upper_limit - taxable_profit) * standard_fraction
         
         return marginal_relief.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
