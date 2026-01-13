@@ -1,0 +1,14 @@
+date,description,amount,reference,category
+2024-12-01,Client Payment - ABC Corp,15000.00,INV001,Income
+2024-12-03,Sales Revenue - DEF Ltd,8500.00,INV002,Income
+2024-12-05,Office Rent Payment,-3000.00,RENT-DEC,Expense
+2024-12-07,Supplier Invoice - XYZ Ltd,-2000.00,PO-123,Expense
+2024-12-10,Consulting Service Fee,12000.00,INV003,Income
+2024-12-12,Utilities Payment,-500.00,UTIL-DEC,Expense
+2024-12-15,Professional Services,-1500.00,PS-456,Expense
+2024-12-18,Sales - GHI Company,6500.00,INV004,Income
+2024-12-20,Marketing Expenses,-800.00,MKT-789,Expense
+2024-12-22,Equipment Purchase,-4000.00,EQ-012,Expense
+2024-12-25,Year-end Bonus Payment,-5000.00,BONUS-2024,Expense
+2024-12-28,Client Retainer Fee,20000.00,RET-Q1,Income
+2024-12-30,Software Subscription,-300.00,SUB-DEC,Expense
