@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 from reconciliation import AccountReconciliation
 from accruals import AccrualCalculator
 from financial_statements import FinancialStatementGenerator
+from tax_sync import TaxDataSynchronizer
 
 
 class MonthEndCloseProcess:
@@ -148,6 +149,38 @@ class MonthEndCloseProcess:
             }
             return {}
     
+    def step_4_tax_synchronization(self) -> dict:
+        """
+        Step 4: Synchronize tax data from postings.
+        
+        Returns:
+            Tax synchronization results
+        """
+        print("\n" + "="*60)
+        print("STEP 4: TAX DATA SYNCHRONIZATION")
+        print("="*60)
+        
+        try:
+            synchronizer = TaxDataSynchronizer('sample_data/transactions.csv')
+            sync_result = synchronizer.export_synchronized_data(f'{self.output_dir}/tax_synchronized_data.json')
+            
+            self.results['steps']['tax_synchronization'] = {
+                'status': 'Completed',
+                'summary': sync_result.get('summary', {}),
+                'entities_synced': list(sync_result.get('entities', {}).keys())
+            }
+            
+            print("\n✓ Tax data synchronization completed successfully")
+            return sync_result
+            
+        except Exception as e:
+            print(f"\n✗ Tax data synchronization failed: {e}")
+            self.results['steps']['tax_synchronization'] = {
+                'status': 'Failed',
+                'error': str(e)
+            }
+            return {}
+    
     def run_complete_process(self):
         """
         Run the complete month-end close process.
@@ -165,6 +198,9 @@ class MonthEndCloseProcess:
         
         # Step 3: Financial Statements
         self.step_3_financial_statements()
+        
+        # Step 4: Tax Data Synchronization
+        self.step_4_tax_synchronization()
         
         # Mark process as complete
         self.results['process_end'] = datetime.now().isoformat()
