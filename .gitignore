@@ -10,6 +10,7 @@ build/
 
 # Output files
 output/
+*_tax_report.txt
 
 # IDEs
 .vscode/
