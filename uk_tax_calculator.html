@@ -539,6 +539,7 @@
             CORPORATION_TAX_MAIN: 0.25,
             CORPORATION_TAX_LOWER_LIMIT: 50000,
             CORPORATION_TAX_UPPER_LIMIT: 250000,
+            MARGINAL_RELIEF_FRACTION: 0.015,
             CGT_ANNUAL_EXEMPTION: 3000,
             CGT_BASIC_RATE: 0.10,
             CGT_HIGHER_RATE: 0.20
@@ -870,7 +871,7 @@
             } else {
                 // Marginal relief
                 const mainRate = profit * TAX_CONSTANTS.CORPORATION_TAX_MAIN;
-                const marginalRelief = (TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT - profit) * 0.015;
+                const marginalRelief = (TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT - profit) * TAX_CONSTANTS.MARGINAL_RELIEF_FRACTION;
                 return Math.round(mainRate - marginalRelief);
             }
         }
