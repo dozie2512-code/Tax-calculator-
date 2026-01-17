@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UK Tax Optimization</title>
+  <title>Xero Accounting Integration & Tax Optimization</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -41,15 +41,13 @@
     button:hover {
       background: #555;
     }
-    .result {
+    .result, .error {
       margin-top: 20px;
       padding: 10px;
       background: #eef;
       border-left: 5px solid #88f;
     }
     .error {
-      margin-top: 20px;
-      padding: 10px;
       background: #ffeef0;
       border-left: 5px solid #f88;
     }
@@ -57,124 +55,45 @@
 </head>
 <body>
   <header>
-    <h1>UK Tax Optimization</h1>
-    <p>Optimize your taxes with ease!</p>
+    <h1>Xero Tax Optimizer</h1>
+    <p>Optimize taxes based on HMRC rules!</p>
   </header>
   <div class="container">
-    <h2>Select Your Role</h2>
-    <select id="roleSelect" onchange="loadRoleForm()">
-      <option value="">-- Select a Role --</option>
-      <option value="director">Company Director</option>
-      <option value="soleTrader">Sole Trader</option>
-      <option value="companyOwner">Company Owner</option>
-      <option value="landlord">Landlord</option>
-    </select>
-    <div id="formContainer"></div>
+    <button id="connectXero">Connect to Xero</button>
+    <div id="connectedStatus"></div>
+
+    <h3>Fetch Optimized Tax Data</h3>
+    <button onclick="fetchTaxOptimization()">Fetch Tax Optimization</button>
     <div id="resultContainer"></div>
   </div>
 
   <script>
-    const apiEndpoints = {
-      director: '/api/optimize/director',
-      soleTrader: '/api/optimize/sole-trader',
-      companyOwner: '/api/optimize/company-owner',
-      landlord: '/api/optimize/landlord'
-    };
-
-    function loadRoleForm() {
-      const role = document.getElementById("roleSelect").value;
-      const formContainer = document.getElementById("formContainer");
-      formContainer.innerHTML = ""; // Clear previous form
-      document.getElementById("resultContainer").innerHTML = ""; // Clear results
-
-      let formHtml = "";
-      
-      if (role === "director") {
-        formHtml = `
-          <h3>Company Director Tax Optimization</h3>
-          <label for="salary">Salary:</label>
-          <input type="number" id="salary" placeholder="Enter salary" step="0.01">
-          <label for="dividends">Dividends:</label>
-          <input type="number" id="dividends" placeholder="Enter dividends" step="0.01">
-          <label for="companyProfit">Company Profit:</label>
-          <input type="number" id="companyProfit" placeholder="Enter company profit" step="0.01">
-          <label for="pensionContribution">Pension Contribution (optional):</label>
-          <input type="number" id="pensionContribution" placeholder="Optional" step="0.01">
-          <button onclick="submitData('director')">Optimize</button>
-        `;
-      } else if (role === "soleTrader") {
-        formHtml = `
-          <h3>Sole Trader Tax Optimization</h3>
-          <label for="tradingIncome">Trading Income:</label>
-          <input type="number" id="tradingIncome" placeholder="Enter trading income" step="0.01">
-          <label for="allowableExpenses">Allowable Expenses (optional):</label>
-          <input type="number" id="allowableExpenses" placeholder="Optional" step="0.01">
-          <label for="pensionContribution">Pension Contribution (optional):</label>
-          <input type="number" id="pensionContribution" placeholder="Optional" step="0.01">
-          <label for="capitalAllowances">Capital Allowances (optional):</label>
-          <input type="number" id="capitalAllowances" placeholder="Optional" step="0.01">
-          <button onclick="submitData('soleTrader')">Optimize</button>
-        `;
-      } else if (role === "companyOwner") {
-        formHtml = `
-          <h3>Company Owner Tax Optimization</h3>
-          <label for="companyProfit">Company Profit:</label>
-          <input type="number" id="companyProfit" placeholder="Enter company profit" step="0.01">
-          <label for="salary">Salary:</label>
-          <input type="number" id="salary" placeholder="Enter salary" step="0.01">
-          <label for="dividends">Dividends:</label>
-          <input type="number" id="dividends" placeholder="Enter dividends" step="0.01">
-          <label for="rndExpenditure">R&D Expenditure (optional):</label>
-          <input type="number" id="rndExpenditure" placeholder="Optional" step="0.01">
-          <label for="capitalInvestment">Capital Investment (optional):</label>
-          <input type="number" id="capitalInvestment" placeholder="Optional" step="0.01">
-          <button onclick="submitData('companyOwner')">Optimize</button>
-        `;
-      } else if (role === "landlord") {
-        formHtml = `
-          <h3>Landlord Tax Optimization</h3>
-          <label for="rentalIncome">Rental Income:</label>
-          <input type="number" id="rentalIncome" placeholder="Enter rental income" step="0.01">
-          <label for="mortgageInterest">Mortgage Interest (optional):</label>
-          <input type="number" id="mortgageInterest" placeholder="Optional" step="0.01">
-          <label for="otherExpenses">Other Expenses (optional):</label>
-          <input type="number" id="otherExpenses" placeholder="Optional" step="0.01">
-          <label for="isFurnished">Is Property Furnished?</label>
-          <select id="isFurnished">
-            <option value="true">Yes</option>
-            <option value="false" selected>No</option>
-          </select>
-          <label for="numberOfProperties">Number of Properties (optional):</label>
-          <input type="number" id="numberOfProperties" placeholder="Optional" step="1" min="1">
-          <button onclick="submitData('landlord')">Optimize</button>
-        `;
+    async function connectToXero() {
+      try {
+        const response = await fetch('/api/connect-xero');
+        if (!response.ok) throw new Error('Failed to connect to Xero');
+        const data = await response.json();
+        document.getElementById('connectedStatus').innerText = 'Connected to Xero!';
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('connectedStatus').innerText = 'Error connecting to Xero.';
       }
-      formContainer.innerHTML = formHtml;
     }
 
-    function submitData(role) {
-      const endpoint = apiEndpoints[role];
-      const inputs = [...document.querySelectorAll('#formContainer input, #formContainer select')];
-      const body = inputs.reduce((obj, input) => {
-        if (input.value !== "") obj[input.id] = input.type === "number" ? parseFloat(input.value) : input.value === "true";
-        return obj;
-      }, {});
-
-      fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      })
-        .then(response => response.json())
-        .then(result => {
-          console.log(result);
-          document.getElementById("resultContainer").innerHTML = `<div class="result"><strong>Result:</strong> ${JSON.stringify(result, null, 2)}</div>`;
-        })
-        .catch(error => {
-          console.error(error);
-          document.getElementById("resultContainer").innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
-        });
+    async function fetchTaxOptimization() {
+      try {
+        const response = await fetch('/api/optimize-tax');
+        if (!response.ok) throw new Error('Failed to fetch tax optimization');
+        const data = await response.json();
+        document.getElementById('resultContainer').innerHTML = `<div class="result"><strong>Results:</strong> ${JSON.stringify(data, null, 2)}</div>`;
+      } catch (error) {
+        console.error(error);
+        document.getElementById("resultContainer").innerHTML = `<div class="error">Error: ${error.message}</div>`;
+      }
     }
+
+    document.getElementById('connectXero').addEventListener('click', connectToXero);
   </script>
 </body>
 </html>
