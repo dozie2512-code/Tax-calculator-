@@ -1,344 +1,729 @@
-"""
-Flask REST API for UK Tax Optimization
-
-Provides RESTful endpoints for tax optimization calculations for:
-- Company Directors
-- Sole Traders
-- Company Owners
-- Landlords
-"""
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import sys
-import os
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from backend.tax_optimization_engine import TaxOptimizationEngine
-import traceback
-
-app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend access
-
-# Initialize the optimization engine
-optimizer = TaxOptimizationEngine()
-
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """Health check endpoint."""
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Tax Optimization API is running',
-        'version': '1.0.0'
-    }), 200
-
-
-@app.route('/api/optimize/director', methods=['POST'])
-def optimize_director():
-    """
-    Optimize tax position for a company director.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Optimization Tool</title>
     
-    Expected JSON body:
-    {
-        "salary": 30000.00,
-        "dividends": 20000.00,
-        "company_profit": 60000.00,
-        "pension_contribution": 5000.00
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['salary', 'dividends', 'company_profit']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['salary', 'dividends', 'company_profit', 'pension_contribution']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Set default for optional fields
-        if 'pension_contribution' not in data:
-            data['pension_contribution'] = 0
-        
-        # Perform optimization
-        result = optimizer.optimize_director(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_director: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/sole-trader', methods=['POST'])
-def optimize_sole_trader():
-    """
-    Optimize tax position for a sole trader.
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
-    Expected JSON body:
-    {
-        "trading_income": 50000.00,
-        "allowable_expenses": 8000.00,
-        "pension_contribution": 3000.00,
-        "capital_allowances": 2000.00
-    }
-    """
-    try:
-        data = request.get_json()
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+        }
         
-        # Validate required fields
-        required_fields = ['trading_income']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
         
-        # Validate data types and ranges
-        for field in ['trading_income', 'allowable_expenses', 'pension_contribution', 'capital_allowances']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
         
-        # Set defaults for optional fields
-        if 'allowable_expenses' not in data:
-            data['allowable_expenses'] = 0
-        if 'pension_contribution' not in data:
-            data['pension_contribution'] = 0
-        if 'capital_allowances' not in data:
-            data['capital_allowances'] = 0
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-color);
+        }
         
-        # Perform optimization
-        result = optimizer.optimize_sole_trader(data)
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
         
-        return jsonify(result), 200
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
         
-    except Exception as e:
-        print(f"Error in optimize_sole_trader: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/company-owner', methods=['POST'])
-def optimize_company_owner():
-    """
-    Optimize tax position for a company owner.
+        .health-status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .health-status.healthy {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .health-status.unhealthy {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .health-status i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .tab-content {
+            padding: 30px 0;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .results-container {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+        }
+        
+        .results-container h4 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-card h5 {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .result-value {
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .result-value.highlight {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .recommendations {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .recommendations h5 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .recommendations h5 i {
+            margin-right: 10px;
+        }
+        
+        .recommendations ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .recommendations li {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-width: 3px;
+        }
+        
+        .loading-text {
+            margin-left: 10px;
+            font-weight: 600;
+        }
+        
+        .invalid-feedback {
+            display: block;
+            font-weight: 600;
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="bi bi-calculator"></i> UK Tax Optimization Tool</h1>
+                <p>Calculate and optimize your tax position for different taxpayer categories</p>
+            </div>
+            
+            <!-- Health Status -->
+            <div id="healthStatus" class="health-status">
+                <div>
+                    <i class="bi bi-hourglass-split"></i>
+                    <strong>Checking API status...</strong>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="director-tab" data-bs-toggle="tab" data-bs-target="#director" type="button" role="tab">
+                        <i class="bi bi-person-badge"></i> Company Director
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sole-trader-tab" data-bs-toggle="tab" data-bs-target="#sole-trader" type="button" role="tab">
+                        <i class="bi bi-briefcase"></i> Sole Trader
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="company-owner-tab" data-bs-toggle="tab" data-bs-target="#company-owner" type="button" role="tab">
+                        <i class="bi bi-building"></i> Company Owner
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="landlord-tab" data-bs-toggle="tab" data-bs-target="#landlord" type="button" role="tab">
+                        <i class="bi bi-house"></i> Landlord
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="categoryTabContent">
+                <!-- Company Director Form -->
+                <div class="tab-pane fade show active" id="director" role="tabpanel">
+                    <div class="card-icon text-center">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <h3 class="text-center mb-4">Company Director Tax Optimization</h3>
+                    
+                    <form id="directorForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="directorSalary" class="form-label">Salary (£) *</label>
+                                <input type="number" class="form-control" id="directorSalary" required min="0" step="0.01" placeholder="30000.00">
+                                <div class="invalid-feedback">Please enter a valid salary amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="directorDividends" class="form-label">Dividends (£) *</label>
+                                <input type="number" class="form-control" id="directorDividends" required min="0" step="0.01" placeholder="20000.00">
+                                <div class="invalid-feedback">Please enter a valid dividends amount.</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="directorCompanyProfit" class="form-label">Company Profit (£) *</label>
+                                <input type="number" class="form-control" id="directorCompanyProfit" required min="0" step="0.01" placeholder="60000.00">
+                                <div class="invalid-feedback">Please enter a valid company profit amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="directorPension" class="form-label">Pension Contribution (£)</label>
+                                <input type="number" class="form-control" id="directorPension" min="0" step="0.01" placeholder="5000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calculator"></i> Calculate Tax
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="directorResults"></div>
+                </div>
+                
+                <!-- Sole Trader Form -->
+                <div class="tab-pane fade" id="sole-trader" role="tabpanel">
+                    <div class="card-icon text-center">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h3 class="text-center mb-4">Sole Trader Tax Optimization</h3>
+                    
+                    <form id="soleTraderForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tradingIncome" class="form-label">Trading Income (£) *</label>
+                                <input type="number" class="form-control" id="tradingIncome" required min="0" step="0.01" placeholder="50000.00">
+                                <div class="invalid-feedback">Please enter a valid trading income amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="allowableExpenses" class="form-label">Allowable Expenses (£)</label>
+                                <input type="number" class="form-control" id="allowableExpenses" min="0" step="0.01" placeholder="8000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="soleTraderPension" class="form-label">Pension Contribution (£)</label>
+                                <input type="number" class="form-control" id="soleTraderPension" min="0" step="0.01" placeholder="3000.00" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="capitalAllowances" class="form-label">Capital Allowances (£)</label>
+                                <input type="number" class="form-control" id="capitalAllowances" min="0" step="0.01" placeholder="2000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calculator"></i> Calculate Tax
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="soleTraderResults"></div>
+                </div>
+                
+                <!-- Company Owner Form -->
+                <div class="tab-pane fade" id="company-owner" role="tabpanel">
+                    <div class="card-icon text-center">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="text-center mb-4">Company Owner Tax Optimization</h3>
+                    
+                    <form id="companyOwnerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="ownerCompanyProfit" class="form-label">Company Profit (£) *</label>
+                                <input type="number" class="form-control" id="ownerCompanyProfit" required min="0" step="0.01" placeholder="100000.00">
+                                <div class="invalid-feedback">Please enter a valid company profit amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="ownerSalary" class="form-label">Salary (£) *</label>
+                                <input type="number" class="form-control" id="ownerSalary" required min="0" step="0.01" placeholder="30000.00">
+                                <div class="invalid-feedback">Please enter a valid salary amount.</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="ownerDividends" class="form-label">Dividends (£) *</label>
+                                <input type="number" class="form-control" id="ownerDividends" required min="0" step="0.01" placeholder="40000.00">
+                                <div class="invalid-feedback">Please enter a valid dividends amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rdExpenditure" class="form-label">R&D Expenditure (£)</label>
+                                <input type="number" class="form-control" id="rdExpenditure" min="0" step="0.01" placeholder="15000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="capitalInvestment" class="form-label">Capital Investment (£)</label>
+                                <input type="number" class="form-control" id="capitalInvestment" min="0" step="0.01" placeholder="20000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calculator"></i> Calculate Tax
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="companyOwnerResults"></div>
+                </div>
+                
+                <!-- Landlord Form -->
+                <div class="tab-pane fade" id="landlord" role="tabpanel">
+                    <div class="card-icon text-center">
+                        <i class="bi bi-house"></i>
+                    </div>
+                    <h3 class="text-center mb-4">Landlord Tax Optimization</h3>
+                    
+                    <form id="landlordForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rentalIncome" class="form-label">Rental Income (£) *</label>
+                                <input type="number" class="form-control" id="rentalIncome" required min="0" step="0.01" placeholder="30000.00">
+                                <div class="invalid-feedback">Please enter a valid rental income amount.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="mortgageInterest" class="form-label">Mortgage Interest (£)</label>
+                                <input type="number" class="form-control" id="mortgageInterest" min="0" step="0.01" placeholder="8000.00" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="otherExpenses" class="form-label">Other Expenses (£)</label>
+                                <input type="number" class="form-control" id="otherExpenses" min="0" step="0.01" placeholder="5000.00" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="numProperties" class="form-label">Number of Properties</label>
+                                <input type="number" class="form-control" id="numProperties" min="1" step="1" placeholder="2" value="1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="isFurnished">
+                                    <label class="form-check-label" for="isFurnished">
+                                        Properties are furnished
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calculator"></i> Calculate Tax
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="landlordResults"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    Expected JSON body:
-    {
-        "company_profit": 100000.00,
-        "salary": 30000.00,
-        "dividends": 40000.00,
-        "r_and_d_expenditure": 15000.00,
-        "capital_investment": 20000.00
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['company_profit', 'salary', 'dividends']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['company_profit', 'salary', 'dividends', 'r_and_d_expenditure', 'capital_investment']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Set defaults for optional fields
-        if 'r_and_d_expenditure' not in data:
-            data['r_and_d_expenditure'] = 0
-        if 'capital_investment' not in data:
-            data['capital_investment'] = 0
-        
-        # Perform optimization
-        result = optimizer.optimize_company_owner(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_company_owner: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/landlord', methods=['POST'])
-def optimize_landlord():
-    """
-    Optimize tax position for a landlord.
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    Expected JSON body:
-    {
-        "rental_income": 30000.00,
-        "mortgage_interest": 8000.00,
-        "other_expenses": 5000.00,
-        "is_furnished": true,
-        "number_of_properties": 2
-    }
-    """
-    try:
-        data = request.get_json()
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
         
-        # Validate required fields
-        required_fields = ['rental_income']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
+        // Check API health on page load
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                const healthStatus = document.getElementById('healthStatus');
+                if (response.ok && data.status === 'healthy') {
+                    healthStatus.className = 'health-status healthy';
+                    healthStatus.innerHTML = `
+                        <div>
+                            <i class="bi bi-check-circle-fill"></i>
+                            <strong>API Status: </strong>${data.message} (v${data.version})
+                        </div>
+                        <i class="bi bi-heartbeat"></i>
+                    `;
+                } else {
+                    throw new Error('API unhealthy');
+                }
+            } catch (error) {
+                const healthStatus = document.getElementById('healthStatus');
+                healthStatus.className = 'health-status unhealthy';
+                healthStatus.innerHTML = `
+                    <div>
+                        <i class="bi bi-x-circle-fill"></i>
+                        <strong>API Status: </strong>Unavailable - Please ensure the backend is running
+                    </div>
+                    <i class="bi bi-exclamation-triangle"></i>
+                `;
+            }
+        }
         
-        # Validate data types and ranges
-        for field in ['rental_income', 'mortgage_interest', 'other_expenses']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
+        // Show loading state
+        function showLoading(button) {
+            button.disabled = true;
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="loading-text">Calculating...</span>
+            `;
+        }
         
-        # Validate boolean and integer fields
-        if 'is_furnished' in data and not isinstance(data['is_furnished'], bool):
-            return jsonify({
-                'error': 'is_furnished must be a boolean'
-            }), 400
+        // Hide loading state
+        function hideLoading(button, text = 'Calculate Tax') {
+            button.disabled = false;
+            button.innerHTML = `<i class="bi bi-calculator"></i> ${text}`;
+        }
         
-        if 'number_of_properties' in data:
-            try:
-                value = int(data['number_of_properties'])
-                if value < 1:
-                    return jsonify({
-                        'error': 'number_of_properties must be at least 1'
-                    }), 400
-                data['number_of_properties'] = value
-            except (ValueError, TypeError):
-                return jsonify({
-                    'error': 'number_of_properties must be a valid integer'
-                }), 400
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-GB', {
+                style: 'currency',
+                currency: 'GBP'
+            }).format(amount);
+        }
         
-        # Set defaults for optional fields
-        if 'mortgage_interest' not in data:
-            data['mortgage_interest'] = 0
-        if 'other_expenses' not in data:
-            data['other_expenses'] = 0
-        if 'is_furnished' not in data:
-            data['is_furnished'] = False
-        if 'number_of_properties' not in data:
-            data['number_of_properties'] = 1
+        // Display results
+        function displayResults(containerId, data) {
+            const container = document.getElementById(containerId);
+            
+            if (data.error) {
+                container.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Error:</strong> ${data.error}
+                        ${data.message ? `<br><small>${data.message}</small>` : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="results-container">';
+            html += '<h4><i class="bi bi-graph-up"></i> Tax Calculation Results</h4>';
+            
+            // Summary card
+            if (data.summary) {
+                html += '<div class="result-card">';
+                html += '<h5>Summary</h5>';
+                
+                for (const [key, value] of Object.entries(data.summary)) {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const isHighlight = key.includes('net_income') || key.includes('total_tax');
+                    html += `
+                        <div class="result-row">
+                            <span class="result-label">${label}:</span>
+                            <span class="result-value ${isHighlight ? 'highlight' : ''}">
+                                ${key.includes('rate') ? value + '%' : formatCurrency(value)}
+                            </span>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+            }
+            
+            // Breakdown card
+            if (data.breakdown) {
+                html += '<div class="result-card">';
+                html += '<h5>Detailed Breakdown</h5>';
+                
+                for (const [key, value] of Object.entries(data.breakdown)) {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `
+                        <div class="result-row">
+                            <span class="result-label">${label}:</span>
+                            <span class="result-value">
+                                ${typeof value === 'number' ? formatCurrency(value) : value}
+                            </span>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+            }
+            
+            // Recommendations
+            if (data.recommendations && data.recommendations.length > 0) {
+                html += '<div class="recommendations">';
+                html += '<h5><i class="bi bi-lightbulb"></i> Tax Optimization Recommendations</h5>';
+                html += '<ul>';
+                
+                data.recommendations.forEach(rec => {
+                    html += `<li>${rec}</li>`;
+                });
+                
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
         
-        # Perform optimization
-        result = optimizer.optimize_landlord(data)
+        // Handle form submission
+        async function handleFormSubmit(event, endpoint, formData, resultsContainerId) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const button = form.querySelector('button[type="submit"]');
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+            
+            showLoading(button);
+            
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Server error');
+                }
+                
+                displayResults(resultsContainerId, data);
+                
+            } catch (error) {
+                displayResults(resultsContainerId, {
+                    error: 'Failed to calculate tax',
+                    message: error.message
+                });
+            } finally {
+                hideLoading(button);
+            }
+        }
         
-        return jsonify(result), 200
+        // Company Director form
+        document.getElementById('directorForm').addEventListener('submit', function(e) {
+            const formData = {
+                salary: parseFloat(document.getElementById('directorSalary').value),
+                dividends: parseFloat(document.getElementById('directorDividends').value),
+                company_profit: parseFloat(document.getElementById('directorCompanyProfit').value),
+                pension_contribution: parseFloat(document.getElementById('directorPension').value) || 0
+            };
+            
+            handleFormSubmit(e, '/optimize/director', formData, 'directorResults');
+        });
         
-    except Exception as e:
-        print(f"Error in optimize_landlord: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.errorhandler(404)
-def not_found(error):
-    """Handle 404 errors."""
-    return jsonify({
-        'error': 'Endpoint not found',
-        'message': 'The requested endpoint does not exist'
-    }), 404
-
-
-@app.errorhandler(405)
-def method_not_allowed(error):
-    """Handle 405 errors."""
-    return jsonify({
-        'error': 'Method not allowed',
-        'message': 'The HTTP method is not allowed for this endpoint'
-    }), 405
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    """Handle 500 errors."""
-    return jsonify({
-        'error': 'Internal server error',
-        'message': 'An unexpected error occurred'
-    }), 500
-
-
-def print_routes():
-    """Print available API routes."""
-    print("\n" + "=" * 60)
-    print("Starting Tax Optimization API...")
-    print("=" * 60)
-    print("\nAvailable endpoints:")
-    print("  - POST /api/optimize/director")
-    print("  - POST /api/optimize/sole-trader")
-    print("  - POST /api/optimize/company-owner")
-    print("  - POST /api/optimize/landlord")
-    print("  - GET  /api/health")
-    print("\nServer running on: http://localhost:5000")
-    print("=" * 60 + "\n")
-
-
-if __name__ == '__main__':
-    print_routes()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+        // Sole Trader form
+        document.getElementById('soleTraderForm').addEventListener('submit', function(e) {
+            const formData = {
+                trading_income: parseFloat(document.getElementById('tradingIncome').value),
+                allowable_expenses: parseFloat(document.getElementById('allowableExpenses').value) || 0,
+                pension_contribution: parseFloat(document.getElementById('soleTraderPension').value) || 0,
+                capital_allowances: parseFloat(document.getElementById('capitalAllowances').value) || 0
+            };
+            
+            handleFormSubmit(e, '/optimize/sole-trader', formData, 'soleTraderResults');
+        });
+        
+        // Company Owner form
+        document.getElementById('companyOwnerForm').addEventListener('submit', function(e) {
+            const formData = {
+                company_profit: parseFloat(document.getElementById('ownerCompanyProfit').value),
+                salary: parseFloat(document.getElementById('ownerSalary').value),
+                dividends: parseFloat(document.getElementById('ownerDividends').value),
+                r_and_d_expenditure: parseFloat(document.getElementById('rdExpenditure').value) || 0,
+                capital_investment: parseFloat(document.getElementById('capitalInvestment').value) || 0
+            };
+            
+            handleFormSubmit(e, '/optimize/company-owner', formData, 'companyOwnerResults');
+        });
+        
+        // Landlord form
+        document.getElementById('landlordForm').addEventListener('submit', function(e) {
+            const formData = {
+                rental_income: parseFloat(document.getElementById('rentalIncome').value),
+                mortgage_interest: parseFloat(document.getElementById('mortgageInterest').value) || 0,
+                other_expenses: parseFloat(document.getElementById('otherExpenses').value) || 0,
+                number_of_properties: parseInt(document.getElementById('numProperties').value) || 1,
+                is_furnished: document.getElementById('isFurnished').checked
+            };
+            
+            handleFormSubmit(e, '/optimize/landlord', formData, 'landlordResults');
+        });
+        
+        // Check health on page load
+        checkHealth();
+    </script>
+</body>
+</html>
