@@ -34,7 +34,17 @@ class TaxOptimizationEngine:
     NI_RATE_PRIMARY = 0.12
     NI_RATE_ADDITIONAL = 0.02
     
+    # National Insurance Class 2 & 4 (for sole traders)
+    NI_CLASS2_RATE = 163.80  # Annual flat rate for 2023/24
+    NI_CLASS2_THRESHOLD = 6725  # Small profits threshold
+    NI_CLASS4_RATE = 0.75  # Approximate rate as proportion of Class 1
+    
     CORPORATION_TAX_RATE = 0.19
+    
+    # R&D and Investment Allowances
+    RD_TAX_CREDIT_RATE = 2.30  # 230% deduction for R&D
+    RD_TAX_CREDIT_DISPLAY = 230  # Display value
+    ANNUAL_INVESTMENT_ALLOWANCE = 1000000  # £1M AIA limit
     
     def __init__(self):
         """Initialize the tax optimization engine."""
@@ -182,8 +192,8 @@ class TaxOptimizationEngine:
         
         # Calculate taxes
         income_tax = self.calculate_income_tax(taxable_profit)
-        ni_class2 = 163.80 if taxable_profit > 6725 else 0  # Flat rate for 2023/24
-        ni_class4 = self.calculate_national_insurance(taxable_profit) * 0.75  # Approximate Class 4
+        ni_class2 = self.NI_CLASS2_RATE if taxable_profit > self.NI_CLASS2_THRESHOLD else 0
+        ni_class4 = self.calculate_national_insurance(taxable_profit) * self.NI_CLASS4_RATE
         
         total_tax = income_tax + ni_class2 + ni_class4
         net_income = taxable_profit - total_tax
@@ -253,9 +263,9 @@ class TaxOptimizationEngine:
         # Recommendations
         recommendations = []
         if rd_expenditure == 0:
-            recommendations.append("Consider R&D tax credits if your company innovates - up to 230% deduction available")
-        if capital_investment < 1000000:
-            recommendations.append("Annual Investment Allowance allows up to £1M tax-free capital investment")
+            recommendations.append(f"Consider R&D tax credits if your company innovates - up to {self.RD_TAX_CREDIT_DISPLAY}% deduction available")
+        if capital_investment < self.ANNUAL_INVESTMENT_ALLOWANCE:
+            recommendations.append(f"Annual Investment Allowance allows up to £{self.ANNUAL_INVESTMENT_ALLOWANCE:,} tax-free capital investment")
         if salary < self.NI_LOWER_LIMIT:
             recommendations.append(f"Consider salary of £{self.NI_LOWER_LIMIT:,.2f} for optimal NI benefits")
         

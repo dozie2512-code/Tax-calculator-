@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.tax_optimization_engine import TaxOptimizationEngine
 import traceback
 
-app = Flask(__name__, static_folder='.')
+app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend access
 
 # Initialize the optimization engine
@@ -29,7 +29,7 @@ optimizer = TaxOptimizationEngine()
 @app.route('/')
 def index():
     """Serve the main HTML page."""
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'index.html')
 
 
 @app.route('/api/health', methods=['GET'])
