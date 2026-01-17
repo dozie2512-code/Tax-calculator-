@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Optimization & Savings Calculator - HMRC Guidelines</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .tax-year-badge {
+            display: inline-block;
+            background: #2a5298;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .user-type-selector {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .user-type-selector h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .user-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .user-type-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+        
+        .user-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-type-card.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.05);
+        }
+        
+        .user-type-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .user-type-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .input-section.active {
+            display: block;
+        }
+        
+        .input-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group .helper-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .results-section {
+            display: none;
+        }
+        
+        .results-section.active {
+            display: block;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .result-value.positive {
+            color: #10b981;
+        }
+        
+        .result-value.negative {
+            color: #ef4444;
+        }
+        
+        .savings-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .savings-highlight h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .savings-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .recommendations-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .recommendations-section h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .recommendation-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .recommendation-item h4 {
+            color: #1e3c72;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        
+        .recommendation-item p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .recommendation-saving {
+            background: #10b981;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .disclaimer {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            color: #856404;
+        }
+        
+        .disclaimer h4 {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .savings-amount {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🇬🇧 UK Tax Optimization & Savings Calculator</h1>
+            <p>Comprehensive HMRC-compliant tax calculations and optimization strategies</p>
+            <span class="tax-year-badge">Tax Year 2024/2025</span>
+        </div>
+        
+        <!-- User Type Selector -->
+        <div class="user-type-selector">
+            <h2>Select Your Profile</h2>
+            <div class="user-types">
+                <div class="user-type-card" data-type="director">
+                    <h3>👔 Company Director</h3>
+                    <p>Optimize salary vs dividends, pension contributions, and profit extraction</p>
+                </div>
+                <div class="user-type-card" data-type="sole_trader">
+                    <h3>💼 Sole Trader</h3>
+                    <p>Maximize expense claims, capital allowances, and trading reliefs</p>
+                </div>
+                <div class="user-type-card" data-type="company_owner">
+                    <h3>🏢 Company Owner</h3>
+                    <p>Corporation tax planning, R&D relief, and investment allowances</p>
+                </div>
+                <div class="user-type-card" data-type="landlord">
+                    <h3>🏠 Landlord</h3>
+                    <p>Property allowances, mortgage relief, and incorporation strategies</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Director Input Form -->
+        <div class="input-section" id="director-form">
+            <h2>👔 Company Director - Tax Optimization</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="director-salary">Annual Salary (£)</label>
+                    <input type="number" id="director-salary" value="50000" min="0" step="1000">
+                    <span class="helper-text">Your gross annual salary from the company</span>
+                </div>
+                <div class="form-group">
+                    <label for="director-dividends">Annual Dividends (£)</label>
+                    <input type="number" id="director-dividends" value="30000" min="0" step="1000">
+                    <span class="helper-text">Dividends received from the company</span>
+                </div>
+                <div class="form-group">
+                    <label for="director-profit">Company Profit (£)</label>
+                    <input type="number" id="director-profit" value="100000" min="0" step="1000">
+                    <span class="helper-text">Company's taxable profit before distributions</span>
+                </div>
+                <div class="form-group">
+                    <label for="director-pension">Pension Contribution (£)</label>
+                    <input type="number" id="director-pension" value="0" min="0" step="1000">
+                    <span class="helper-text">Annual employer pension contributions</span>
+                </div>
+            </div>
+            <button class="calculate-btn" onclick="calculateDirector()">Calculate & Optimize</button>
+        </div>
+        
+        <!-- Sole Trader Input Form -->
+        <div class="input-section" id="sole_trader-form">
+            <h2>💼 Sole Trader - Tax Optimization</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="trader-income">Trading Income (£)</label>
+                    <input type="number" id="trader-income" value="60000" min="0" step="1000">
+                    <span class="helper-text">Your gross trading income for the year</span>
+                </div>
+                <div class="form-group">
+                    <label for="trader-expenses">Allowable Expenses (£)</label>
+                    <input type="number" id="trader-expenses" value="15000" min="0" step="1000">
+                    <span class="helper-text">Business expenses (travel, equipment, etc.)</span>
+                </div>
+                <div class="form-group">
+                    <label for="trader-capital">Capital Allowances (£)</label>
+                    <input type="number" id="trader-capital" value="5000" min="0" step="1000">
+                    <span class="helper-text">Equipment and vehicle allowances</span>
+                </div>
+                <div class="form-group">
+                    <label for="trader-pension">Pension Contribution (£)</label>
+                    <input type="number" id="trader-pension" value="0" min="0" step="1000">
+                    <span class="helper-text">Personal pension contributions</span>
+                </div>
+            </div>
+            <button class="calculate-btn" onclick="calculateSoleTrader()">Calculate & Optimize</button>
+        </div>
+        
+        <!-- Company Owner Input Form -->
+        <div class="input-section" id="company_owner-form">
+            <h2>🏢 Company Owner - Tax Optimization</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="owner-profit">Company Profit (£)</label>
+                    <input type="number" id="owner-profit" value="200000" min="0" step="1000">
+                    <span class="helper-text">Company's taxable profit</span>
+                </div>
+                <div class="form-group">
+                    <label for="owner-salary">Director Salary (£)</label>
+                    <input type="number" id="owner-salary" value="50000" min="0" step="1000">
+                    <span class="helper-text">Your annual salary</span>
+                </div>
+                <div class="form-group">
+                    <label for="owner-dividends">Dividends (£)</label>
+                    <input type="number" id="owner-dividends" value="50000" min="0" step="1000">
+                    <span class="helper-text">Dividends paid to you</span>
+                </div>
+                <div class="form-group">
+                    <label for="owner-rd">R&D Expenditure (£)</label>
+                    <input type="number" id="owner-rd" value="0" min="0" step="1000">
+                    <span class="helper-text">Research & Development costs</span>
+                </div>
+                <div class="form-group">
+                    <label for="owner-investment">Capital Investment (£)</label>
+                    <input type="number" id="owner-investment" value="0" min="0" step="1000">
+                    <span class="helper-text">Equipment and asset purchases</span>
+                </div>
+            </div>
+            <button class="calculate-btn" onclick="calculateCompanyOwner()">Calculate & Optimize</button>
+        </div>
+        
+        <!-- Landlord Input Form -->
+        <div class="input-section" id="landlord-form">
+            <h2>🏠 Landlord - Tax Optimization</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="landlord-rental">Rental Income (£)</label>
+                    <input type="number" id="landlord-rental" value="40000" min="0" step="1000">
+                    <span class="helper-text">Gross annual rental income</span>
+                </div>
+                <div class="form-group">
+                    <label for="landlord-mortgage">Mortgage Interest (£)</label>
+                    <input type="number" id="landlord-mortgage" value="12000" min="0" step="1000">
+                    <span class="helper-text">Annual mortgage interest payments</span>
+                </div>
+                <div class="form-group">
+                    <label for="landlord-expenses">Other Expenses (£)</label>
+                    <input type="number" id="landlord-expenses" value="8000" min="0" step="1000">
+                    <span class="helper-text">Repairs, insurance, agent fees, etc.</span>
+                </div>
+                <div class="form-group">
+                    <label for="landlord-furnished">Property Type</label>
+                    <select id="landlord-furnished">
+                        <option value="true">Furnished</option>
+                        <option value="false">Unfurnished</option>
+                    </select>
+                    <span class="helper-text">Furnished properties get additional reliefs</span>
+                </div>
+                <div class="form-group">
+                    <label for="landlord-properties">Number of Properties</label>
+                    <input type="number" id="landlord-properties" value="1" min="1" step="1">
+                    <span class="helper-text">Total rental properties owned</span>
+                </div>
+            </div>
+            <button class="calculate-btn" onclick="calculateLandlord()">Calculate & Optimize</button>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section" id="results">
+            <!-- Savings Highlight -->
+            <div class="savings-highlight" id="savings-highlight" style="display:none;">
+                <h2>💰 Potential Annual Tax Savings</h2>
+                <div class="savings-amount" id="savings-amount">£0</div>
+                <p>By implementing our recommendations</p>
+            </div>
+            
+            <!-- Results Grid -->
+            <div class="results-grid" id="results-grid">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="recommendations-section" id="recommendations">
+                <h3>📋 Tax-Saving Recommendations</h3>
+                <div id="recommendations-list">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <h4>⚠️ Important Disclaimer</h4>
+            <p>This calculator provides illustrative tax calculations and optimization strategies based on HMRC guidelines for the 2024/2025 tax year. The results are for informational purposes only and should not be considered as financial or tax advice. Tax situations can be complex and individual circumstances vary. Always consult with a qualified tax advisor or accountant for personalized advice and before making any financial decisions.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Tax Constants for 2024/2025
+        const TAX_CONSTANTS = {
+            PERSONAL_ALLOWANCE: 12570,
+            BASIC_RATE_THRESHOLD: 50270,
+            HIGHER_RATE_THRESHOLD: 125140,
+            BASIC_RATE: 0.20,
+            HIGHER_RATE: 0.40,
+            ADDITIONAL_RATE: 0.45,
+            NI_PRIMARY_THRESHOLD: 12570,
+            NI_UPPER_EARNINGS_LIMIT: 50270,
+            NI_RATE_STANDARD: 0.08,
+            NI_RATE_ABOVE_UEL: 0.02,
+            DIVIDEND_ALLOWANCE: 500,
+            DIVIDEND_BASIC_RATE: 0.0875,
+            DIVIDEND_HIGHER_RATE: 0.3375,
+            DIVIDEND_ADDITIONAL_RATE: 0.3935,
+            CORPORATION_TAX_SMALL: 0.19,
+            CORPORATION_TAX_MAIN: 0.25,
+            CORPORATION_TAX_LOWER_LIMIT: 50000,
+            CORPORATION_TAX_UPPER_LIMIT: 250000,
+            MARGINAL_RELIEF_FRACTION: 0.015,
+            CGT_ANNUAL_EXEMPTION: 3000,
+            CGT_BASIC_RATE: 0.10,
+            CGT_HIGHER_RATE: 0.20
+        };
+        
+        // User type selection
+        document.querySelectorAll('.user-type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const userType = this.dataset.type;
+                
+                // Update active states
+                document.querySelectorAll('.user-type-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show appropriate form
+                document.querySelectorAll('.input-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(userType + '-form').classList.add('active');
+                
+                // Hide results
+                document.getElementById('results').classList.remove('active');
+            });
+        });
+        
+        // Tax calculation functions (simplified - in production, these would call backend APIs)
+        
+        function calculateDirector() {
+            const salary = parseFloat(document.getElementById('director-salary').value) || 0;
+            const dividends = parseFloat(document.getElementById('director-dividends').value) || 0;
+            const profit = parseFloat(document.getElementById('director-profit').value) || 0;
+            const pension = parseFloat(document.getElementById('director-pension').value) || 0;
+            
+            // Simplified calculations (real implementation would use backend)
+            const currentPAYE = calculatePAYE(salary);
+            const dividendTax = calculateDividendTax(dividends, salary);
+            const corpTax = calculateCorporationTax(profit);
+            
+            const optimalSalary = TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            const optimalPAYE = calculatePAYE(optimalSalary);
+            const remainingProfit = profit - optimalSalary;
+            const optimalCorpTax = calculateCorporationTax(remainingProfit);
+            const profitAfterTax = remainingProfit - optimalCorpTax;
+            const optimalDividendTax = calculateDividendTax(profitAfterTax, optimalSalary);
+            
+            const currentTotal = currentPAYE.total + dividendTax + corpTax;
+            const optimalTotal = optimalPAYE.total + optimalDividendTax + optimalCorpTax;
+            const saving = currentTotal - optimalTotal;
+            
+            displayResults({
+                type: 'Company Director',
+                currentPosition: {
+                    'Salary': `£${salary.toLocaleString()}`,
+                    'Dividends': `£${dividends.toLocaleString()}`,
+                    'Income Tax & NI': `£${currentPAYE.total.toLocaleString()}`,
+                    'Dividend Tax': `£${dividendTax.toLocaleString()}`,
+                    'Corporation Tax': `£${corpTax.toLocaleString()}`,
+                    'Total Tax': `£${currentTotal.toLocaleString()}`
+                },
+                optimalPosition: {
+                    'Optimal Salary': `£${optimalSalary.toLocaleString()}`,
+                    'Optimal Dividends': `£${profitAfterTax.toLocaleString()}`,
+                    'Income Tax & NI': `£${optimalPAYE.total.toLocaleString()}`,
+                    'Dividend Tax': `£${optimalDividendTax.toLocaleString()}`,
+                    'Corporation Tax': `£${optimalCorpTax.toLocaleString()}`,
+                    'Total Tax': `£${optimalTotal.toLocaleString()}`
+                },
+                saving: saving,
+                recommendations: [
+                    {
+                        title: 'Optimal Salary Level',
+                        description: `Set salary at £${optimalSalary.toLocaleString()} (personal allowance) to minimize NI contributions while maintaining state pension benefits.`,
+                        saving: `£${(currentPAYE.ni - optimalPAYE.ni).toLocaleString()}`
+                    },
+                    {
+                        title: 'Dividend Strategy',
+                        description: `Extract remaining profits (£${profitAfterTax.toLocaleString()}) as dividends. Dividends have lower tax rates and no NI contributions.`,
+                        saving: 'Lower tax rate'
+                    },
+                    {
+                        title: 'Pension Contributions',
+                        description: 'Make employer pension contributions - corporation tax deductible with no NI charges. Up to £60,000 annual allowance.',
+                        saving: 'Up to 45% relief'
+                    },
+                    {
+                        title: 'Dividend Timing',
+                        description: `Split dividend payments across tax years to maximize the £${TAX_CONSTANTS.DIVIDEND_ALLOWANCE} dividend allowance each year.`,
+                        saving: `£${(TAX_CONSTANTS.DIVIDEND_ALLOWANCE * TAX_CONSTANTS.DIVIDEND_BASIC_RATE).toFixed(2)}`
+                    }
+                ]
+            });
+        }
+        
+        function calculateSoleTrader() {
+            const income = parseFloat(document.getElementById('trader-income').value) || 0;
+            const expenses = parseFloat(document.getElementById('trader-expenses').value) || 0;
+            const capital = parseFloat(document.getElementById('trader-capital').value) || 0;
+            const pension = parseFloat(document.getElementById('trader-pension').value) || 0;
+            
+            const profit = income - expenses - capital;
+            const taxCalc = calculatePAYE(profit - pension);
+            
+            displayResults({
+                type: 'Sole Trader',
+                currentPosition: {
+                    'Trading Income': `£${income.toLocaleString()}`,
+                    'Expenses': `£${expenses.toLocaleString()}`,
+                    'Capital Allowances': `£${capital.toLocaleString()}`,
+                    'Taxable Profit': `£${profit.toLocaleString()}`,
+                    'Income Tax & NI': `£${taxCalc.total.toLocaleString()}`,
+                    'Net Income': `£${(profit - taxCalc.total).toLocaleString()}`
+                },
+                optimalPosition: null,
+                saving: 0,
+                recommendations: [
+                    {
+                        title: 'Maximize Expense Claims',
+                        description: 'Ensure you claim all allowable expenses: home office, travel, equipment, professional fees, insurance, etc.',
+                        saving: 'Up to 45% relief'
+                    },
+                    {
+                        title: 'Annual Investment Allowance',
+                        description: 'Claim 100% first-year allowance on equipment purchases up to £1,000,000.',
+                        saving: 'Immediate relief'
+                    },
+                    {
+                        title: 'Pension Contributions',
+                        description: 'Personal pension contributions receive tax relief at your marginal rate (up to £60,000 annual allowance).',
+                        saving: '20-45% relief'
+                    },
+                    {
+                        title: 'Trading Allowance',
+                        description: 'If income under £1,000, use trading allowance instead of tracking expenses for simplified reporting.',
+                        saving: 'Simplified admin'
+                    }
+                ]
+            });
+        }
+        
+        function calculateCompanyOwner() {
+            const profit = parseFloat(document.getElementById('owner-profit').value) || 0;
+            const salary = parseFloat(document.getElementById('owner-salary').value) || 0;
+            const dividends = parseFloat(document.getElementById('owner-dividends').value) || 0;
+            const rd = parseFloat(document.getElementById('owner-rd').value) || 0;
+            const investment = parseFloat(document.getElementById('owner-investment').value) || 0;
+            
+            const corpTax = calculateCorporationTax(profit);
+            const rdRelief = rd * 1.30 * 0.19; // 130% enhancement at 19%
+            const investmentRelief = Math.min(investment, 1000000) * 0.19;
+            
+            displayResults({
+                type: 'Company Owner',
+                currentPosition: {
+                    'Company Profit': `£${profit.toLocaleString()}`,
+                    'Corporation Tax': `£${corpTax.toLocaleString()}`,
+                    'Profit After Tax': `£${(profit - corpTax).toLocaleString()}`,
+                    'Director Salary': `£${salary.toLocaleString()}`,
+                    'Dividends': `£${dividends.toLocaleString()}`
+                },
+                optimalPosition: {
+                    'R&D Relief': `£${rdRelief.toLocaleString()}`,
+                    'Investment Relief': `£${investmentRelief.toLocaleString()}`,
+                    'Total Relief': `£${(rdRelief + investmentRelief).toLocaleString()}`
+                },
+                saving: rdRelief + investmentRelief,
+                recommendations: [
+                    {
+                        title: 'R&D Tax Relief',
+                        description: 'Claim R&D tax relief for qualifying development activities. SME scheme offers 230% total deduction or 13% tax credit.',
+                        saving: rd > 0 ? `£${rdRelief.toLocaleString()}` : 'Up to 230% deduction'
+                    },
+                    {
+                        title: 'Annual Investment Allowance',
+                        description: 'Claim 100% first-year allowance on equipment and machinery up to £1,000,000.',
+                        saving: investment > 0 ? `£${investmentRelief.toLocaleString()}` : 'Up to £250k relief'
+                    },
+                    {
+                        title: 'Optimal Salary/Dividend Mix',
+                        description: 'Pay salary at personal allowance (£12,570), extract remaining profit as dividends for tax efficiency.',
+                        saving: 'Minimize NI'
+                    },
+                    {
+                        title: 'Employer Pension Contributions',
+                        description: 'Employer pension contributions are corporation tax deductible with no NI charges.',
+                        saving: '19-25% relief'
+                    }
+                ]
+            });
+        }
+        
+        function calculateLandlord() {
+            const rental = parseFloat(document.getElementById('landlord-rental').value) || 0;
+            const mortgage = parseFloat(document.getElementById('landlord-mortgage').value) || 0;
+            const expenses = parseFloat(document.getElementById('landlord-expenses').value) || 0;
+            const furnished = document.getElementById('landlord-furnished').value === 'true';
+            const properties = parseInt(document.getElementById('landlord-properties').value) || 1;
+            
+            const profit = rental - expenses;
+            const mortgageRelief = mortgage * 0.20;
+            const taxableIncome = Math.max(0, profit);
+            const taxCalc = calculatePAYE(taxableIncome);
+            const actualTax = Math.max(0, taxCalc.incomeTax - mortgageRelief) + taxCalc.ni;
+            
+            const corpTaxIfIncorporated = calculateCorporationTax(rental - expenses - mortgage);
+            const incorporationSaving = actualTax - corpTaxIfIncorporated;
+            
+            displayResults({
+                type: 'Landlord',
+                currentPosition: {
+                    'Rental Income': `£${rental.toLocaleString()}`,
+                    'Expenses': `£${expenses.toLocaleString()}`,
+                    'Mortgage Interest': `£${mortgage.toLocaleString()}`,
+                    'Taxable Income': `£${taxableIncome.toLocaleString()}`,
+                    'Tax (after mortgage relief)': `£${actualTax.toLocaleString()}`,
+                    'Net Income': `£${(rental - expenses - mortgage - actualTax).toLocaleString()}`
+                },
+                optimalPosition: {
+                    'Current Tax': `£${actualTax.toLocaleString()}`,
+                    'Corp Tax if Incorporated': `£${corpTaxIfIncorporated.toLocaleString()}`,
+                    'Potential Saving': `£${incorporationSaving.toLocaleString()}`,
+                    'Recommended': incorporationSaving > 1000 && properties >= 3 ? 'Yes' : 'No'
+                },
+                saving: incorporationSaving > 0 ? incorporationSaving : 0,
+                recommendations: [
+                    {
+                        title: furnished ? 'Replacement of Domestic Items Relief' : 'Consider Furnished Lettings',
+                        description: furnished ? 
+                            'Claim relief on replacing furniture, appliances, and kitchenware at full replacement cost.' :
+                            'Furnished properties qualify for replacement relief on furniture and fittings.',
+                        saving: furnished ? 'Tax deductible' : 'Additional deductions'
+                    },
+                    {
+                        title: 'Property Allowance',
+                        description: 'If rental income under £1,000, use property allowance for simplified reporting (no expenses tracking needed).',
+                        saving: '£1,000 allowance'
+                    },
+                    {
+                        title: 'Capital Allowances',
+                        description: 'Claim capital allowances on fixtures like heating systems, bathrooms, and built-in furniture.',
+                        saving: 'Tax relief'
+                    },
+                    {
+                        title: incorporationSaving > 1000 && properties >= 3 ? 'Consider Incorporation' : 'Track All Expenses',
+                        description: incorporationSaving > 1000 && properties >= 3 ?
+                            `With ${properties} properties, incorporation could save £${incorporationSaving.toLocaleString()} annually. However, consider stamp duty and CGT on transfer.` :
+                            'Keep detailed records of all allowable expenses: repairs, insurance, agent fees, travel, professional fees.',
+                        saving: incorporationSaving > 1000 && properties >= 3 ? `£${incorporationSaving.toLocaleString()}` : 'Maximize relief'
+                    }
+                ]
+            });
+        }
+        
+        // Helper calculation functions
+        function calculatePAYE(salary) {
+            const personalAllowance = TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            const taxable = Math.max(0, salary - personalAllowance);
+            
+            let tax = 0;
+            const basicBandLimit = TAX_CONSTANTS.BASIC_RATE_THRESHOLD - TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            const higherBandLimit = TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            
+            if (taxable <= basicBandLimit) {
+                tax = taxable * TAX_CONSTANTS.BASIC_RATE;
+            } else if (taxable <= higherBandLimit) {
+                tax = basicBandLimit * TAX_CONSTANTS.BASIC_RATE + (taxable - basicBandLimit) * TAX_CONSTANTS.HIGHER_RATE;
+            } else {
+                tax = basicBandLimit * TAX_CONSTANTS.BASIC_RATE + (higherBandLimit - basicBandLimit) * TAX_CONSTANTS.HIGHER_RATE + (taxable - higherBandLimit) * TAX_CONSTANTS.ADDITIONAL_RATE;
+            }
+            
+            let ni = 0;
+            if (salary > TAX_CONSTANTS.NI_PRIMARY_THRESHOLD) {
+                ni = Math.min(salary, TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) - TAX_CONSTANTS.NI_PRIMARY_THRESHOLD;
+                ni = ni * TAX_CONSTANTS.NI_RATE_STANDARD;
+                if (salary > TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) {
+                    ni += (salary - TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) * TAX_CONSTANTS.NI_RATE_ABOVE_UEL;
+                }
+            }
+            
+            return {
+                incomeTax: Math.round(tax),
+                ni: Math.round(ni),
+                total: Math.round(tax + ni)
+            };
+        }
+        
+        function calculateDividendTax(dividends, otherIncome) {
+            const allowance = TAX_CONSTANTS.DIVIDEND_ALLOWANCE;
+            const taxable = Math.max(0, dividends - allowance);
+            
+            if (taxable === 0) return 0;
+            
+            let tax = 0;
+            const basicRemaining = Math.max(0, TAX_CONSTANTS.BASIC_RATE_THRESHOLD - otherIncome);
+            
+            if (basicRemaining > 0) {
+                const basicDiv = Math.min(taxable, basicRemaining);
+                tax += basicDiv * TAX_CONSTANTS.DIVIDEND_BASIC_RATE;
+                
+                if (taxable > basicRemaining) {
+                    const higherDiv = Math.min(taxable - basicRemaining, TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - TAX_CONSTANTS.BASIC_RATE_THRESHOLD);
+                    tax += higherDiv * TAX_CONSTANTS.DIVIDEND_HIGHER_RATE;
+                    
+                    if (taxable > basicRemaining + higherDiv) {
+                        tax += (taxable - basicRemaining - higherDiv) * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
+                    }
+                }
+            } else {
+                const higherRemaining = Math.max(0, TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - otherIncome);
+                if (higherRemaining > 0) {
+                    const higherDiv = Math.min(taxable, higherRemaining);
+                    tax += higherDiv * TAX_CONSTANTS.DIVIDEND_HIGHER_RATE;
+                    
+                    if (taxable > higherDiv) {
+                        tax += (taxable - higherDiv) * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
+                    }
+                } else {
+                    tax = taxable * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
+                }
+            }
+            
+            return Math.round(tax);
+        }
+        
+        function calculateCorporationTax(profit) {
+            if (profit <= TAX_CONSTANTS.CORPORATION_TAX_LOWER_LIMIT) {
+                return Math.round(profit * TAX_CONSTANTS.CORPORATION_TAX_SMALL);
+            } else if (profit >= TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT) {
+                return Math.round(profit * TAX_CONSTANTS.CORPORATION_TAX_MAIN);
+            } else {
+                // Marginal relief
+                const mainRate = profit * TAX_CONSTANTS.CORPORATION_TAX_MAIN;
+                const marginalRelief = (TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT - profit) * TAX_CONSTANTS.MARGINAL_RELIEF_FRACTION;
+                return Math.round(mainRate - marginalRelief);
+            }
+        }
+        
+        function displayResults(data) {
+            const resultsSection = document.getElementById('results');
+            const resultsGrid = document.getElementById('results-grid');
+            const recommendationsList = document.getElementById('recommendations-list');
+            const savingsHighlight = document.getElementById('savings-highlight');
+            const savingsAmount = document.getElementById('savings-amount');
+            
+            resultsSection.classList.add('active');
+            
+            // Show savings if applicable
+            if (data.saving > 0) {
+                savingsHighlight.style.display = 'block';
+                savingsAmount.textContent = `£${Math.round(data.saving).toLocaleString()}`;
+            } else {
+                savingsHighlight.style.display = 'none';
+            }
+            
+            // Build results cards
+            resultsGrid.innerHTML = '';
+            
+            // Current position card
+            const currentCard = document.createElement('div');
+            currentCard.className = 'result-card';
+            currentCard.innerHTML = `
+                <h3>📊 Current Position</h3>
+                ${Object.entries(data.currentPosition).map(([key, value]) => `
+                    <div class="result-row">
+                        <span class="result-label">${key}</span>
+                        <span class="result-value">${value}</span>
+                    </div>
+                `).join('')}
+            `;
+            resultsGrid.appendChild(currentCard);
+            
+            // Optimal position card (if provided)
+            if (data.optimalPosition) {
+                const optimalCard = document.createElement('div');
+                optimalCard.className = 'result-card';
+                optimalCard.innerHTML = `
+                    <h3>✨ Optimized Position</h3>
+                    ${Object.entries(data.optimalPosition).map(([key, value]) => `
+                        <div class="result-row">
+                            <span class="result-label">${key}</span>
+                            <span class="result-value positive">${value}</span>
+                        </div>
+                    `).join('')}
+                `;
+                resultsGrid.appendChild(optimalCard);
+            }
+            
+            // Recommendations
+            recommendationsList.innerHTML = data.recommendations.map(rec => `
+                <div class="recommendation-item">
+                    <h4>💡 ${rec.title}</h4>
+                    <p>${rec.description}</p>
+                    <span class="recommendation-saving">💰 Saving: ${rec.saving}</span>
+                </div>
+            `).join('');
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
