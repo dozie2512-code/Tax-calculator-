@@ -4,7 +4,7 @@ Provides tailored tax-saving recommendations based on HMRC guidelines
 """
 
 from typing import Dict, Any, List
-from uk_tax_calculator import UKTaxCalculator, TaxReliefs
+from backend.uk_tax_calculator import UKTaxCalculator, TaxReliefs
 
 
 class TaxOptimizationEngine:
