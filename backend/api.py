@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sys
 import os
+import logging
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,8 +20,23 @@ import traceback
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend integration
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Initialize optimization engine
 optimizer = TaxOptimizationEngine()
+
+
+def handle_error(error, context="operation"):
+    """
+    Centralized error handling to avoid exposing internal details.
+    Logs full traceback server-side, returns generic message to client.
+    """
+    logger.error(f"Error in {context}: {traceback.format_exc()}")
+    return jsonify({
+        'error': 'An internal server error occurred. Please try again or contact support.'
+    }), 500
 
 
 @app.route('/api/health', methods=['GET'])
@@ -77,13 +93,7 @@ def optimize_director():
             'error': str(e)
         }), 400
     except Exception as e:
-        return jsonify({
-            'error': f'Internal server error: {str(e)}',
-            'traceback': traceback.format_exc()
-        }), 500
-
-
-@app.route('/api/optimize/sole-trader', methods=['POST'])
+        return handle_error(e, "director optimization")
 def optimize_sole_trader():
     """
     Optimize tax position for sole traders.
@@ -128,13 +138,7 @@ def optimize_sole_trader():
             'error': str(e)
         }), 400
     except Exception as e:
-        return jsonify({
-            'error': f'Internal server error: {str(e)}',
-            'traceback': traceback.format_exc()
-        }), 500
-
-
-@app.route('/api/optimize/company-owner', methods=['POST'])
+        return handle_error(e, "sole trader optimization")
 def optimize_company_owner():
     """
     Optimize tax position for company owners.
@@ -182,13 +186,7 @@ def optimize_company_owner():
             'error': str(e)
         }), 400
     except Exception as e:
-        return jsonify({
-            'error': f'Internal server error: {str(e)}',
-            'traceback': traceback.format_exc()
-        }), 500
-
-
-@app.route('/api/optimize/landlord', methods=['POST'])
+        return handle_error(e, "company owner optimization")
 def optimize_landlord():
     """
     Optimize tax position for landlords.
@@ -236,13 +234,7 @@ def optimize_landlord():
             'error': str(e)
         }), 400
     except Exception as e:
-        return jsonify({
-            'error': f'Internal server error: {str(e)}',
-            'traceback': traceback.format_exc()
-        }), 500
-
-
-@app.errorhandler(404)
+        return handle_error(e, "landlord optimization")
 def not_found(error):
     """Handle 404 errors"""
     return jsonify({
