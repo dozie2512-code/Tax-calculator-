@@ -5,95 +5,1044 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xero Accounting Integration & Tax Optimization</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
+    * {
       margin: 0;
       padding: 0;
-      background-color: #f9f9f9;
+      box-sizing: border-box;
     }
-    header {
-      background: #333;
-      color: #fff;
-      padding: 10px 20px;
-      text-align: center;
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
     }
-    .container {
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
+
+    /* Navigation Header */
+    .nav-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
-    label {
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-brand {
+      font-size: 24px;
       font-weight: bold;
+      color: #667eea;
     }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 15px 0;
-      border: 1px solid #ddd;
+
+    .nav-menu {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: #333;
+      text-decoration: none;
+      padding: 8px 15px;
       border-radius: 5px;
-    }
-    button {
-      background: #333;
-      color: #fff;
+      transition: all 0.3s;
       cursor: pointer;
     }
-    button:hover {
-      background: #555;
+
+    .nav-link:hover {
+      background: #667eea;
+      color: white;
     }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-login, .btn-logout {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-login {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-login:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-logout {
+      background: #dc3545;
+      color: white;
+      display: none;
+    }
+
+    .btn-logout:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* Dashboard Overview */
+    .dashboard-section {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    /* Xero Connection */
+    .xero-connection {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .xero-btn {
+      background: #13B5EA;
+      color: white;
+      padding: 15px 40px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .xero-btn:hover {
+      background: #0E9FCE;
+      transform: scale(1.05);
+    }
+
+    .connection-status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .status-connected {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    /* Invoice List */
+    .invoice-list, .expense-list {
+      margin-top: 20px;
+    }
+
+    .item-row {
+      background: #f8f9fa;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .item-details {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-paid {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-overdue {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Tax Optimization */
+    .tax-result {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .tax-metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .tax-metric:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      color: #666;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .metric-value.positive {
+      color: #28a745;
+    }
+
     .result, .error {
       margin-top: 20px;
-      padding: 10px;
-      background: #eef;
-      border-left: 5px solid #88f;
+      padding: 15px;
+      border-radius: 5px;
     }
+
+    .result {
+      background: #d4edda;
+      color: #155724;
+      border-left: 5px solid #28a745;
+    }
+
     .error {
-      background: #ffeef0;
-      border-left: 5px solid #f88;
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 5px solid #dc3545;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #666;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .nav-menu {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .item-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .item-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+
+    /* Hidden by default */
+    .hidden {
+      display: none;
+    }
+
+    /* Additional utility classes */
+    .xero-title {
+      margin-bottom: 15px;
+    }
+
+    .xero-description {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+    }
+
+    .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 3000;
+      min-width: 250px;
+    }
+
+    .user-display {
+      color: #333;
+      font-weight: 600;
+      padding: 8px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-muted {
+      color: #666;
+    }
+
+    .mt-10 {
+      margin-top: 10px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
+    }
+
+    .p-15 {
+      padding: 15px;
+    }
+
+    .bg-warning {
+      background: #fff3cd;
+      border-radius: 5px;
+    }
+
+    .pl-20 {
+      padding-left: 20px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Xero Tax Optimizer</h1>
-    <p>Optimize taxes based on HMRC rules!</p>
-  </header>
-  <div class="container">
-    <button id="connectXero">Connect to Xero</button>
-    <div id="connectedStatus"></div>
+  <!-- Navigation Header -->
+  <nav class="nav-header">
+    <div class="nav-container">
+      <div class="nav-brand">🧾 Xero Tax Optimizer</div>
+      <div class="nav-menu">
+        <a class="nav-link" onclick="showSection('dashboard')">Dashboard</a>
+        <a class="nav-link" onclick="showSection('invoices')">Invoices</a>
+        <a class="nav-link" onclick="showSection('expenses')">Expenses</a>
+        <a class="nav-link" onclick="showSection('tax')">Tax Optimization</a>
+      </div>
+      <div class="auth-buttons">
+        <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
+        <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
+        <span id="userDisplay" class="user-display" style="display: none;"></span>
+      </div>
+    </div>
+  </nav>
 
-    <h3>Fetch Optimized Tax Data</h3>
-    <button onclick="fetchTaxOptimization()">Fetch Tax Optimization</button>
-    <div id="resultContainer"></div>
+  <div class="container">
+    <!-- Xero Connection Section -->
+    <div class="xero-connection">
+      <h2 class="xero-title">Connect to Xero</h2>
+      <p class="xero-description">Seamlessly integrate your Xero account for real-time data synchronization</p>
+      <button class="xero-btn" onclick="connectToXero()">
+        <span>🔗</span> Connect to Xero
+      </button>
+      <div id="connectedStatus"></div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="dashboard-section">
+      <h2 class="section-title">📊 Dashboard Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Income</div>
+          <div class="stat-value" id="totalIncome">£45,320</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Expenses</div>
+          <div class="stat-value" id="totalExpenses">£12,450</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Net Profit</div>
+          <div class="stat-value" id="netProfit">£32,870</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Estimated Tax</div>
+          <div class="stat-value" id="estimatedTax">£6,574</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoices Section -->
+    <div id="invoicesSection" class="content-grid hidden">
+      <div class="card">
+        <h3 class="card-title">📄 Create Invoice</h3>
+        <form id="invoiceForm">
+          <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" id="clientName" placeholder="Enter client name" required>
+          </div>
+          <div class="form-group">
+            <label>Invoice Amount (£)</label>
+            <input type="number" id="invoiceAmount" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" id="dueDate" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="invoiceDescription" placeholder="Invoice description"></textarea>
+          </div>
+          <button type="submit" class="btn-success">Create Invoice</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📋 Invoice List</h3>
+        <div class="invoice-list" id="invoiceList">
+          <!-- Sample invoices will be added here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Expenses Section -->
+    <div id="expensesSection" class="content-grid hidden">
+      <div class="card">
+        <h3 class="card-title">💰 Track Expense</h3>
+        <form id="expenseForm">
+          <div class="form-group">
+            <label>Expense Description</label>
+            <input type="text" id="expenseDescription" placeholder="Enter expense description" required>
+          </div>
+          <div class="form-group">
+            <label>Amount (£)</label>
+            <input type="number" id="expenseAmount" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="expenseCategory" required>
+              <option value="">Select category</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Travel">Travel</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Software">Software</option>
+              <option value="Equipment">Equipment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="expenseDate" required>
+          </div>
+          <button type="submit" class="btn-success">Add Expense</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📊 Expense List</h3>
+        <div class="expense-list" id="expenseList">
+          <!-- Sample expenses will be added here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Optimization Section -->
+    <div id="taxSection" class="dashboard-section hidden">
+      <h2 class="section-title">💼 Tax Optimization</h2>
+      <p class="xero-description">Optimize your tax strategy based on UK HMRC rules and regulations</p>
+      
+      <button onclick="fetchTaxOptimization()" class="btn-success mt-20">
+        Calculate Tax Optimization
+      </button>
+
+      <div id="resultContainer"></div>
+
+      <div id="taxResults" class="tax-result hidden">
+        <h3 class="xero-title">Tax Analysis</h3>
+        <div class="tax-metric">
+          <span class="metric-label">Taxable Income</span>
+          <span class="metric-value" id="taxableIncome">£32,870</span>
+        </div>
+        <div class="tax-metric">
+          <span class="metric-label">Tax Rate</span>
+          <span class="metric-value" id="taxRate">20%</span>
+        </div>
+        <div class="tax-metric">
+          <span class="metric-label">Estimated Tax Due</span>
+          <span class="metric-value" id="taxDue">£6,574</span>
+        </div>
+        <div class="tax-metric">
+          <span class="metric-label">Potential Savings</span>
+          <span class="metric-value positive" id="taxSavings">£1,250</span>
+        </div>
+        <div class="mt-20 p-15 bg-warning">
+          <strong>💡 Optimization Tips:</strong>
+          <ul class="mt-10 pl-20">
+            <li>Consider increasing pension contributions</li>
+            <li>Review eligible business expenses</li>
+            <li>Explore capital allowances for equipment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Invoice Modal -->
+  <div id="editInvoiceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Invoice</h3>
+        <button class="modal-close" onclick="closeModal('editInvoiceModal')">&times;</button>
+      </div>
+      <form id="editInvoiceForm">
+        <input type="hidden" id="editInvoiceId">
+        <div class="form-group">
+          <label>Client Name</label>
+          <input type="text" id="editClientName" required>
+        </div>
+        <div class="form-group">
+          <label>Amount (£)</label>
+          <input type="number" id="editInvoiceAmount" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="editInvoiceStatus" required>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-success">Save Changes</button>
+      </form>
+    </div>
   </div>
 
   <script>
+    // Global state
+    let isLoggedIn = false;
+    let invoices = [];
+    let expenses = [];
+    let invoiceIdCounter = 1;
+    let expenseIdCounter = 1;
+
+    // Initialize app
+    function init() {
+      loadSampleData();
+      showSection('dashboard');
+      updateFinancialStats();
+    }
+
+    // Load sample data
+    function loadSampleData() {
+      invoices = [
+        { id: 1, clientName: 'ABC Ltd', amount: 5000, status: 'paid', dueDate: '2024-12-15', description: 'Web development services' },
+        { id: 2, clientName: 'XYZ Corp', amount: 3500, status: 'pending', dueDate: '2024-12-25', description: 'Consulting services' },
+        { id: 3, clientName: 'Tech Solutions', amount: 2800, status: 'overdue', dueDate: '2024-11-30', description: 'Software maintenance' }
+      ];
+      invoiceIdCounter = invoices.length + 1;
+
+      expenses = [
+        { id: 1, description: 'Office rent', amount: 1200, category: 'Utilities', date: '2024-12-01' },
+        { id: 2, description: 'Marketing campaign', amount: 850, category: 'Marketing', date: '2024-12-05' },
+        { id: 3, description: 'Software licenses', amount: 450, category: 'Software', date: '2024-12-10' }
+      ];
+      expenseIdCounter = expenses.length + 1;
+
+      renderInvoices();
+      renderExpenses();
+    }
+
+    // Authentication
+    function login() {
+      isLoggedIn = true;
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      document.getElementById('userDisplay').style.display = 'inline-block';
+      document.getElementById('userDisplay').textContent = '👤 John Doe';
+      showNotification('Successfully logged in!', 'success');
+    }
+
+    function logout() {
+      isLoggedIn = false;
+      document.getElementById('loginBtn').style.display = 'inline-block';
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('userDisplay').style.display = 'none';
+      showNotification('Successfully logged out!', 'success');
+    }
+
+    // Navigation
+    function showSection(section) {
+      document.getElementById('dashboardSection').classList.add('hidden');
+      document.getElementById('invoicesSection').classList.add('hidden');
+      document.getElementById('expensesSection').classList.add('hidden');
+      document.getElementById('taxSection').classList.add('hidden');
+
+      if (section === 'dashboard') {
+        document.getElementById('dashboardSection').classList.remove('hidden');
+      } else if (section === 'invoices') {
+        document.getElementById('invoicesSection').classList.remove('hidden');
+      } else if (section === 'expenses') {
+        document.getElementById('expensesSection').classList.remove('hidden');
+      } else if (section === 'tax') {
+        document.getElementById('taxSection').classList.remove('hidden');
+      }
+    }
+
+    // Xero Connection
     async function connectToXero() {
+      const statusDiv = document.getElementById('connectedStatus');
+      statusDiv.innerHTML = '<p style="color: #666;">Connecting to Xero...</p>';
+      
       try {
-        const response = await fetch('/api/connect-xero');
-        if (!response.ok) throw new Error('Failed to connect to Xero');
-        const data = await response.json();
-        document.getElementById('connectedStatus').innerText = 'Connected to Xero!';
-        console.log(data);
+        // Simulated API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Simulate success
+        statusDiv.innerHTML = '<div class="connection-status status-connected">✓ Successfully connected to Xero!</div>';
+        showNotification('Connected to Xero successfully!', 'success');
       } catch (error) {
-        console.error(error);
-        document.getElementById('connectedStatus').innerText = 'Error connecting to Xero.';
+        statusDiv.innerHTML = '<div class="connection-status status-error">✗ Failed to connect to Xero. Please try again.</div>';
+        showNotification('Failed to connect to Xero', 'error');
       }
     }
 
+    // Invoice Management
+    document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newInvoice = {
+        id: invoiceIdCounter++,
+        clientName: document.getElementById('clientName').value,
+        amount: parseFloat(document.getElementById('invoiceAmount').value),
+        status: 'pending',
+        dueDate: document.getElementById('dueDate').value,
+        description: document.getElementById('invoiceDescription').value
+      };
+
+      invoices.push(newInvoice);
+      renderInvoices();
+      updateFinancialStats();
+      this.reset();
+      showNotification('Invoice created successfully!', 'success');
+    });
+
+    function renderInvoices() {
+      const listDiv = document.getElementById('invoiceList');
+      if (invoices.length === 0) {
+        listDiv.innerHTML = '<p class="text-muted text-center">No invoices yet. Create your first invoice!</p>';
+        return;
+      }
+
+      listDiv.innerHTML = invoices.map(invoice => `
+        <div class="item-row">
+          <div class="item-info">
+            <div class="item-title">${invoice.clientName} - £${invoice.amount.toFixed(2)}</div>
+            <div class="item-details">
+              Due: ${invoice.dueDate} | 
+              <span class="status-badge badge-${invoice.status}">${invoice.status.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm btn-secondary" onclick="editInvoice(${invoice.id})">Edit</button>
+            <button class="btn-sm btn-delete" onclick="deleteInvoice(${invoice.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editInvoice(id) {
+      const invoice = invoices.find(inv => inv.id === id);
+      if (invoice) {
+        document.getElementById('editInvoiceId').value = invoice.id;
+        document.getElementById('editClientName').value = invoice.clientName;
+        document.getElementById('editInvoiceAmount').value = invoice.amount;
+        document.getElementById('editInvoiceStatus').value = invoice.status;
+        document.getElementById('editInvoiceModal').classList.add('active');
+      }
+    }
+
+    document.getElementById('editInvoiceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('editInvoiceId').value);
+      const invoice = invoices.find(inv => inv.id === id);
+      
+      if (invoice) {
+        invoice.clientName = document.getElementById('editClientName').value;
+        invoice.amount = parseFloat(document.getElementById('editInvoiceAmount').value);
+        invoice.status = document.getElementById('editInvoiceStatus').value;
+        
+        renderInvoices();
+        updateFinancialStats();
+        closeModal('editInvoiceModal');
+        showNotification('Invoice updated successfully!', 'success');
+      }
+    });
+
+    function deleteInvoice(id) {
+      if (confirm('Are you sure you want to delete this invoice?')) {
+        invoices = invoices.filter(inv => inv.id !== id);
+        renderInvoices();
+        updateFinancialStats();
+        showNotification('Invoice deleted successfully!', 'success');
+      }
+    }
+
+    // Expense Management
+    document.getElementById('expenseForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newExpense = {
+        id: expenseIdCounter++,
+        description: document.getElementById('expenseDescription').value,
+        amount: parseFloat(document.getElementById('expenseAmount').value),
+        category: document.getElementById('expenseCategory').value,
+        date: document.getElementById('expenseDate').value
+      };
+
+      expenses.push(newExpense);
+      renderExpenses();
+      updateFinancialStats();
+      this.reset();
+      showNotification('Expense added successfully!', 'success');
+    });
+
+    function renderExpenses() {
+      const listDiv = document.getElementById('expenseList');
+      if (expenses.length === 0) {
+        listDiv.innerHTML = '<p class="text-muted text-center">No expenses yet. Track your first expense!</p>';
+        return;
+      }
+
+      listDiv.innerHTML = expenses.map(expense => `
+        <div class="item-row">
+          <div class="item-info">
+            <div class="item-title">${expense.description} - £${expense.amount.toFixed(2)}</div>
+            <div class="item-details">${expense.category} | ${expense.date}</div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm btn-delete" onclick="deleteExpense(${expense.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteExpense(id) {
+      if (confirm('Are you sure you want to delete this expense?')) {
+        expenses = expenses.filter(exp => exp.id !== id);
+        renderExpenses();
+        updateFinancialStats();
+        showNotification('Expense deleted successfully!', 'success');
+      }
+    }
+
+    // Financial Stats Update
+    function updateFinancialStats() {
+      const totalIncome = invoices
+        .filter(inv => inv.status === 'paid')
+        .reduce((sum, inv) => sum + inv.amount, 0);
+      
+      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const netProfit = totalIncome - totalExpenses;
+      const estimatedTax = netProfit * 0.20; // 20% tax rate
+
+      document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
+      document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
+      document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
+      document.getElementById('estimatedTax').textContent = `£${estimatedTax.toFixed(2)}`;
+    }
+
+    // Tax Optimization
     async function fetchTaxOptimization() {
+      const resultContainer = document.getElementById('resultContainer');
+      resultContainer.innerHTML = '<p style="color: #666;">Calculating tax optimization...</p>';
+      
       try {
-        const response = await fetch('/api/optimize-tax');
-        if (!response.ok) throw new Error('Failed to fetch tax optimization');
-        const data = await response.json();
-        document.getElementById('resultContainer').innerHTML = `<div class="result"><strong>Results:</strong> ${JSON.stringify(data, null, 2)}</div>`;
+        // Simulated API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const totalIncome = invoices
+          .filter(inv => inv.status === 'paid')
+          .reduce((sum, inv) => sum + inv.amount, 0);
+        
+        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const taxableIncome = totalIncome - totalExpenses;
+        const taxRate = taxableIncome > 50000 ? 0.40 : 0.20;
+        const taxDue = taxableIncome * taxRate;
+        const potentialSavings = taxDue * 0.15; // 15% potential savings
+
+        // Update tax results
+        document.getElementById('taxableIncome').textContent = `£${taxableIncome.toFixed(2)}`;
+        document.getElementById('taxRate').textContent = `${(taxRate * 100).toFixed(0)}%`;
+        document.getElementById('taxDue').textContent = `£${taxDue.toFixed(2)}`;
+        document.getElementById('taxSavings').textContent = `£${potentialSavings.toFixed(2)}`;
+        
+        document.getElementById('taxResults').classList.remove('hidden');
+        resultContainer.innerHTML = '<div class="result"><strong>✓ Tax optimization calculated successfully!</strong></div>';
+        
       } catch (error) {
-        console.error(error);
-        document.getElementById("resultContainer").innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        resultContainer.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
       }
     }
 
-    document.getElementById('connectXero').addEventListener('click', connectToXero);
+    // Modal Management
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Notifications
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.className = (type === 'success' ? 'result' : 'error') + ' notification';
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Close modal on outside click
+    window.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
+    // Initialize app on load
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
