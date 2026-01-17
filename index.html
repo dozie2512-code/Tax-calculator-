@@ -487,6 +487,52 @@
     .hidden {
       display: none;
     }
+
+    /* Tax Rules Section Additional Styles */
+    .tax-rules-section {
+      margin-top: 30px;
+    }
+
+    .tax-rules-category {
+      margin-bottom: 25px;
+    }
+
+    .tax-rules-category h4 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .info-box {
+      padding: 15px;
+      background: #e7f3ff;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+    }
+
+    .info-box strong {
+      color: #333;
+    }
+
+    .info-box ul {
+      margin-top: 10px;
+      padding-left: 20px;
+      color: #333;
+    }
+
+    /* Enhanced form styling */
+    #dynamicTaxFields {
+      max-width: 100%;
+    }
+
+    #entityDescription {
+      border-left: 4px solid #667eea;
+    }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
@@ -499,6 +545,7 @@
         <a class="nav-link" onclick="showSection('invoices')">Invoices</a>
         <a class="nav-link" onclick="showSection('expenses')">Expenses</a>
         <a class="nav-link" onclick="showSection('tax')">Tax Optimization</a>
+        <a class="nav-link" onclick="scrollToTaxRules()">Tax Rules</a>
       </div>
       <div class="auth-buttons">
         <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
@@ -619,40 +666,204 @@
 
     <!-- Tax Optimization Section -->
     <div id="taxSection" class="dashboard-section hidden">
-      <h2 class="section-title">💼 Tax Optimization</h2>
-      <p style="color: #666; margin-bottom: 20px;">Optimize your tax strategy based on UK HMRC rules and regulations</p>
+      <h2 class="section-title">💼 Advanced Tax Optimization</h2>
+      <p style="color: #666; margin-bottom: 20px;">Optimize your tax strategy based on UK HMRC rules, reliefs, and allowances</p>
       
-      <button onclick="fetchTaxOptimization()" class="btn-success" style="margin-bottom: 20px;">
-        Calculate Tax Optimization
-      </button>
+      <!-- Entity Selection -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 class="card-title">📋 Entity Type Selection</h3>
+        <div class="form-group">
+          <label>Select Your Entity Type</label>
+          <select id="entityType" onchange="updateTaxCalculator()">
+            <option value="">-- Select Entity Type --</option>
+            <option value="sole_trader">Sole Trader / Self-Employed</option>
+            <option value="company">Limited Company</option>
+            <option value="landlord">Landlord / Property Owner</option>
+            <option value="employee">Employee (PAYE)</option>
+          </select>
+        </div>
+        <div id="entityDescription" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px; display: none;">
+          <strong id="entityDescTitle"></strong>
+          <p id="entityDescText" style="margin-top: 10px; color: #666;"></p>
+        </div>
+      </div>
+
+      <!-- Tax Calculator Form -->
+      <div class="card" style="margin-bottom: 20px;" id="taxCalculatorForm" style="display: none;">
+        <h3 class="card-title">🧮 Tax Calculator</h3>
+        <form id="advancedTaxForm">
+          <div id="dynamicTaxFields"></div>
+          <button type="submit" class="btn-success" style="margin-top: 15px;">Calculate Comprehensive Tax</button>
+        </form>
+      </div>
 
       <div id="resultContainer"></div>
 
+      <!-- Tax Results -->
       <div id="taxResults" class="tax-result" style="display: none;">
-        <h3 style="margin-bottom: 15px;">Tax Analysis</h3>
-        <div class="tax-metric">
-          <span class="metric-label">Taxable Income</span>
-          <span class="metric-value" id="taxableIncome">£32,870</span>
-        </div>
-        <div class="tax-metric">
-          <span class="metric-label">Tax Rate</span>
-          <span class="metric-value" id="taxRate">20%</span>
-        </div>
-        <div class="tax-metric">
-          <span class="metric-label">Estimated Tax Due</span>
-          <span class="metric-value" id="taxDue">£6,574</span>
-        </div>
-        <div class="tax-metric">
-          <span class="metric-label">Potential Savings</span>
-          <span class="metric-value positive" id="taxSavings">£1,250</span>
-        </div>
-        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+        <h3 style="margin-bottom: 15px;">Comprehensive Tax Analysis</h3>
+        <div id="taxBreakdown"></div>
+        <div id="optimizationTips" style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
           <strong>💡 Optimization Tips:</strong>
-          <ul style="margin-top: 10px; padding-left: 20px;">
-            <li>Consider increasing pension contributions</li>
-            <li>Review eligible business expenses</li>
-            <li>Explore capital allowances for equipment</li>
-          </ul>
+          <ul id="tipsList" style="margin-top: 10px; padding-left: 20px;"></ul>
+        </div>
+      </div>
+
+      <!-- Tax Rules & Information Section -->
+      <div class="card" style="margin-top: 30px;">
+        <h3 class="card-title">📚 UK HMRC Tax Rules & Information (2024/25)</h3>
+        <div id="taxRulesContent">
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">Income Tax Allowances & Rates</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Personal Allowance</span>
+              <span class="metric-value">£12,570</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Basic Rate (20%)</span>
+              <span class="metric-value">£12,571 - £50,270</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Higher Rate (40%)</span>
+              <span class="metric-value">£50,271 - £125,140</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Additional Rate (45%)</span>
+              <span class="metric-value">Over £125,140</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">National Insurance (NI) Contributions</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Class 1 (Employees) - 12%</span>
+              <span class="metric-value">£12,570 - £50,270</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Class 1 (Employees) - 2%</span>
+              <span class="metric-value">Over £50,270</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Class 2 (Self-Employed)</span>
+              <span class="metric-value">£3.45/week if profits over £6,725</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Class 4 (Self-Employed) - 9%</span>
+              <span class="metric-value">£12,570 - £50,270</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Class 4 (Self-Employed) - 2%</span>
+              <span class="metric-value">Over £50,270</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">Corporation Tax</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Small Profits Rate (19%)</span>
+              <span class="metric-value">Up to £50,000</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Marginal Rate</span>
+              <span class="metric-value">£50,001 - £250,000</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Main Rate (25%)</span>
+              <span class="metric-value">Over £250,000</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">Capital Gains Tax (CGT)</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Annual Exemption</span>
+              <span class="metric-value">£3,000 (2024/25)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Basic Rate Taxpayer</span>
+              <span class="metric-value">10% (18% property)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Higher/Additional Rate</span>
+              <span class="metric-value">20% (24% property)</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">VAT Rates</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Standard Rate</span>
+              <span class="metric-value">20%</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Reduced Rate</span>
+              <span class="metric-value">5% (e.g., domestic fuel, children's car seats)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Zero Rate</span>
+              <span class="metric-value">0% (e.g., most food, books, children's clothes)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">VAT Registration Threshold</span>
+              <span class="metric-value">£90,000 annual turnover</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">Withholding Tax (WHT)</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Interest Payments</span>
+              <span class="metric-value">20% (unless treaty relief applies)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Royalty Payments</span>
+              <span class="metric-value">20% (unless treaty relief applies)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Dividend Payments</span>
+              <span class="metric-value">Generally 0% (varies by treaty)</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">Key Allowances & Reliefs</h4>
+            <div class="tax-metric">
+              <span class="metric-label">Trading Allowance</span>
+              <span class="metric-value">£1,000 (self-employed/sole traders)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Property Allowance</span>
+              <span class="metric-value">£1,000 (landlords)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Dividend Allowance</span>
+              <span class="metric-value">£500 (2024/25)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Personal Savings Allowance</span>
+              <span class="metric-value">£1,000 (basic) / £500 (higher) / £0 (additional)</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Marriage Allowance</span>
+              <span class="metric-value">£1,260 transferable</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Pension Tax Relief</span>
+              <span class="metric-value">Up to £60,000 annual allowance</span>
+            </div>
+          </div>
+
+          <div style="padding: 15px; background: #e7f3ff; border-radius: 5px; border-left: 4px solid #667eea;">
+            <strong>ℹ️ Important Notes:</strong>
+            <ul style="margin-top: 10px; padding-left: 20px; color: #333;">
+              <li>Tax rates and allowances are for the 2024/25 tax year</li>
+              <li>Scottish Income Tax rates may differ</li>
+              <li>Welsh Income Tax rates may have variations</li>
+              <li>Always consult HMRC guidance or a tax professional for specific advice</li>
+              <li>Deadline for Self Assessment: 31 January following the tax year</li>
+              <li>Corporation Tax payment: 9 months and 1 day after accounting period end</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -922,37 +1133,637 @@
       document.getElementById('estimatedTax').textContent = `£${estimatedTax.toFixed(2)}`;
     }
 
-    // Tax Optimization
-    async function fetchTaxOptimization() {
+    // HMRC Tax Rules and Constants (2024/25)
+    const TAX_RULES = {
+      personalAllowance: 12570,
+      basicRateLimit: 50270,
+      higherRateLimit: 125140,
+      basicRate: 0.20,
+      higherRate: 0.40,
+      additionalRate: 0.45,
+      niClass1Rate: 0.12,
+      niClass1ReducedRate: 0.02,
+      niClass2Weekly: 3.45,
+      niClass2Threshold: 6725,
+      niClass4Rate: 0.09,
+      niClass4ReducedRate: 0.02,
+      corporationSmallRate: 0.19,
+      corporationMainRate: 0.25,
+      corporationSmallThreshold: 50000,
+      corporationMainThreshold: 250000,
+      cgtAnnualExemption: 3000,
+      cgtBasicRate: 0.10,
+      cgtHigherRate: 0.20,
+      cgtPropertyBasicRate: 0.18,
+      cgtPropertyHigherRate: 0.24,
+      vatStandardRate: 0.20,
+      vatReducedRate: 0.05,
+      vatThreshold: 90000,
+      whtRate: 0.20,
+      tradingAllowance: 1000,
+      propertyAllowance: 1000,
+      dividendAllowance: 500,
+      savingsAllowanceBasic: 1000,
+      savingsAllowanceHigher: 500,
+      marriageAllowance: 1260,
+      pensionAnnualAllowance: 60000
+    };
+
+    // Entity Descriptions
+    const ENTITY_DESCRIPTIONS = {
+      sole_trader: {
+        title: 'Sole Trader / Self-Employed',
+        text: 'As a sole trader, you pay Income Tax on your profits and Class 2 and Class 4 National Insurance. You can claim the Trading Allowance (£1,000) and various business expenses.'
+      },
+      company: {
+        title: 'Limited Company',
+        text: 'Limited companies pay Corporation Tax on profits. Directors can take salary and dividends, with different tax treatments. Consider dividend allowance and tax-efficient salary/dividend mix.'
+      },
+      landlord: {
+        title: 'Landlord / Property Owner',
+        text: 'Rental income is subject to Income Tax. You can claim the Property Allowance (£1,000) or deduct actual expenses. CGT applies when selling properties.'
+      },
+      employee: {
+        title: 'Employee (PAYE)',
+        text: 'Employees pay Income Tax and Class 1 National Insurance through PAYE. You benefit from Personal Allowance and may have additional income requiring Self Assessment.'
+      }
+    };
+
+    // Entity Type Selection Handler
+    function updateTaxCalculator() {
+      const entityType = document.getElementById('entityType').value;
+      const descDiv = document.getElementById('entityDescription');
+      const formDiv = document.getElementById('taxCalculatorForm');
+      const fieldsDiv = document.getElementById('dynamicTaxFields');
+      
+      if (!entityType) {
+        descDiv.style.display = 'none';
+        formDiv.style.display = 'none';
+        return;
+      }
+
+      // Show entity description
+      const desc = ENTITY_DESCRIPTIONS[entityType];
+      document.getElementById('entityDescTitle').textContent = desc.title;
+      document.getElementById('entityDescText').textContent = desc.text;
+      descDiv.style.display = 'block';
+      formDiv.style.display = 'block';
+
+      // Generate dynamic fields based on entity type
+      let fieldsHTML = '';
+      
+      if (entityType === 'sole_trader') {
+        fieldsHTML = `
+          <div class="form-group">
+            <label>Gross Income (£)</label>
+            <input type="number" id="grossIncome" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Allowable Expenses (£)</label>
+            <input type="number" id="allowableExpenses" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Use Trading Allowance instead of expenses? (£1,000)</label>
+            <select id="useTradingAllowance">
+              <option value="no">No - Use actual expenses</option>
+              <option value="yes">Yes - Claim £1,000 Trading Allowance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pension Contributions (£)</label>
+            <input type="number" id="pensionContributions" placeholder="0.00" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label>VAT Registered?</label>
+            <select id="vatRegistered">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group" id="vatSection" style="display:none;">
+            <label>VAT Collected (£)</label>
+            <input type="number" id="vatCollected" placeholder="0.00" step="0.01" value="0">
+          </div>
+        `;
+      } else if (entityType === 'company') {
+        fieldsHTML = `
+          <div class="form-group">
+            <label>Company Profit Before Tax (£)</label>
+            <input type="number" id="companyProfit" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Director's Salary (£)</label>
+            <input type="number" id="directorSalary" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Dividends Taken (£)</label>
+            <input type="number" id="dividends" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>VAT Registered?</label>
+            <select id="vatRegistered">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group" id="vatSection" style="display:none;">
+            <label>VAT Collected (£)</label>
+            <input type="number" id="vatCollected" placeholder="0.00" step="0.01" value="0">
+          </div>
+        `;
+      } else if (entityType === 'landlord') {
+        fieldsHTML = `
+          <div class="form-group">
+            <label>Rental Income (£)</label>
+            <input type="number" id="rentalIncome" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Property Expenses (£)</label>
+            <input type="number" id="propertyExpenses" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Use Property Allowance instead of expenses? (£1,000)</label>
+            <select id="usePropertyAllowance">
+              <option value="no">No - Use actual expenses</option>
+              <option value="yes">Yes - Claim £1,000 Property Allowance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Capital Gains from Property Sale (£)</label>
+            <input type="number" id="capitalGains" placeholder="0.00" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label>Other Income (£)</label>
+            <input type="number" id="otherIncome" placeholder="0.00" step="0.01" value="0">
+          </div>
+        `;
+      } else if (entityType === 'employee') {
+        fieldsHTML = `
+          <div class="form-group">
+            <label>Annual Gross Salary (£)</label>
+            <input type="number" id="grossSalary" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Bonus / Commission (£)</label>
+            <input type="number" id="bonus" placeholder="0.00" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label>Other Income (e.g., rental, dividends) (£)</label>
+            <input type="number" id="otherIncome" placeholder="0.00" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label>Pension Contributions (£)</label>
+            <input type="number" id="pensionContributions" placeholder="0.00" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label>Student Loan?</label>
+            <select id="studentLoan">
+              <option value="none">No Student Loan</option>
+              <option value="plan1">Plan 1</option>
+              <option value="plan2">Plan 2</option>
+              <option value="plan4">Plan 4</option>
+              <option value="postgrad">Postgraduate Loan</option>
+            </select>
+          </div>
+        `;
+      }
+
+      fieldsDiv.innerHTML = fieldsHTML;
+
+      // Add VAT section toggle listener
+      const vatSelect = document.getElementById('vatRegistered');
+      if (vatSelect) {
+        vatSelect.addEventListener('change', function() {
+          const vatSection = document.getElementById('vatSection');
+          vatSection.style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+      }
+    }
+
+    // Advanced Tax Form Submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const taxForm = document.getElementById('advancedTaxForm');
+      if (taxForm) {
+        taxForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          calculateAdvancedTax();
+        });
+      }
+    });
+
+    // Calculate Advanced Tax
+    async function calculateAdvancedTax() {
+      const entityType = document.getElementById('entityType').value;
       const resultContainer = document.getElementById('resultContainer');
-      resultContainer.innerHTML = '<p style="color: #666;">Calculating tax optimization...</p>';
+      
+      resultContainer.innerHTML = '<p style="color: #666;">Calculating comprehensive tax analysis...</p>';
       
       try {
-        // Simulated API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        const totalIncome = invoices
-          .filter(inv => inv.status === 'paid')
-          .reduce((sum, inv) => sum + inv.amount, 0);
+        let results = {};
         
-        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-        const taxableIncome = totalIncome - totalExpenses;
-        const taxRate = taxableIncome > 50000 ? 0.40 : 0.20;
-        const taxDue = taxableIncome * taxRate;
-        const potentialSavings = taxDue * 0.15; // 15% potential savings
+        if (entityType === 'sole_trader') {
+          results = calculateSoleTraderTax();
+        } else if (entityType === 'company') {
+          results = calculateCompanyTax();
+        } else if (entityType === 'landlord') {
+          results = calculateLandlordTax();
+        } else if (entityType === 'employee') {
+          results = calculateEmployeeTax();
+        }
 
-        // Update tax results
-        document.getElementById('taxableIncome').textContent = `£${taxableIncome.toFixed(2)}`;
-        document.getElementById('taxRate').textContent = `${(taxRate * 100).toFixed(0)}%`;
-        document.getElementById('taxDue').textContent = `£${taxDue.toFixed(2)}`;
-        document.getElementById('taxSavings').textContent = `£${potentialSavings.toFixed(2)}`;
-        
-        document.getElementById('taxResults').style.display = 'block';
-        resultContainer.innerHTML = '<div class="result"><strong>✓ Tax optimization calculated successfully!</strong></div>';
+        displayTaxResults(results);
+        resultContainer.innerHTML = '<div class="result"><strong>✓ Tax calculation completed successfully!</strong></div>';
         
       } catch (error) {
         resultContainer.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
       }
+    }
+
+    // Sole Trader Tax Calculation
+    function calculateSoleTraderTax() {
+      const grossIncome = parseFloat(document.getElementById('grossIncome').value) || 0;
+      const allowableExpenses = parseFloat(document.getElementById('allowableExpenses').value) || 0;
+      const useTradingAllowance = document.getElementById('useTradingAllowance').value === 'yes';
+      const pensionContributions = parseFloat(document.getElementById('pensionContributions').value) || 0;
+      const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
+      const vatCollected = vatRegistered ? (parseFloat(document.getElementById('vatCollected').value) || 0) : 0;
+
+      const expenses = useTradingAllowance ? Math.min(TAX_RULES.tradingAllowance, allowableExpenses) : allowableExpenses;
+      const profit = grossIncome - expenses;
+      const adjustedProfit = Math.max(0, profit - pensionContributions);
+
+      // Income Tax
+      const personalAllowance = adjustedProfit > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const taxableIncome = Math.max(0, adjustedProfit - personalAllowance);
+      
+      let incomeTax = 0;
+      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
+        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
+        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
+      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
+        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
+      } else {
+        incomeTax = taxableIncome * TAX_RULES.basicRate;
+      }
+
+      // National Insurance Class 2 and 4
+      const class2NI = profit > TAX_RULES.niClass2Threshold ? TAX_RULES.niClass2Weekly * 52 : 0;
+      
+      let class4NI = 0;
+      const class4Taxable = Math.max(0, profit - TAX_RULES.personalAllowance);
+      if (class4Taxable > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
+        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass4Rate;
+        const upperBand = (class4Taxable - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass4ReducedRate;
+        class4NI = lowerBand + upperBand;
+      } else {
+        class4NI = class4Taxable * TAX_RULES.niClass4Rate;
+      }
+
+      const totalNI = class2NI + class4NI;
+      const totalTax = incomeTax + totalNI;
+      const netIncome = profit - totalTax;
+
+      const tips = [
+        useTradingAllowance ? 'You\'re using the Trading Allowance - consider if actual expenses are higher' : 'Review all allowable business expenses',
+        pensionContributions < TAX_RULES.pensionAnnualAllowance ? 'Consider increasing pension contributions for tax relief' : 'Maximizing pension contributions',
+        !vatRegistered && grossIncome > TAX_RULES.vatThreshold * 0.8 ? 'Approaching VAT threshold - plan ahead' : '',
+        'Keep accurate records of all business income and expenses',
+        'Consider incorporation if profits consistently exceed £50,000'
+      ].filter(tip => tip);
+
+      return {
+        breakdown: [
+          { label: 'Gross Income', value: grossIncome },
+          { label: 'Less: Expenses', value: -expenses },
+          { label: 'Trading Profit', value: profit, highlight: true },
+          { label: 'Less: Pension Contributions', value: -pensionContributions },
+          { label: 'Adjusted Profit', value: adjustedProfit },
+          { label: 'Personal Allowance', value: personalAllowance },
+          { label: 'Taxable Income', value: taxableIncome, highlight: true },
+          { label: 'Income Tax', value: incomeTax, isTax: true },
+          { label: 'Class 2 NI', value: class2NI, isTax: true },
+          { label: 'Class 4 NI', value: class4NI, isTax: true },
+          { label: 'Total Tax & NI', value: totalTax, highlight: true, isTax: true },
+          { label: 'Net Income After Tax', value: netIncome, highlight: true, positive: true }
+        ],
+        vat: vatRegistered ? { collected: vatCollected, rate: TAX_RULES.vatStandardRate } : null,
+        tips: tips
+      };
+    }
+
+    // Company Tax Calculation
+    function calculateCompanyTax() {
+      const companyProfit = parseFloat(document.getElementById('companyProfit').value) || 0;
+      const directorSalary = parseFloat(document.getElementById('directorSalary').value) || 0;
+      const dividends = parseFloat(document.getElementById('dividends').value) || 0;
+      const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
+      const vatCollected = vatRegistered ? (parseFloat(document.getElementById('vatCollected').value) || 0) : 0;
+
+      // Corporation Tax
+      let corporationTax = 0;
+      if (companyProfit <= TAX_RULES.corporationSmallThreshold) {
+        corporationTax = companyProfit * TAX_RULES.corporationSmallRate;
+      } else if (companyProfit >= TAX_RULES.corporationMainThreshold) {
+        corporationTax = companyProfit * TAX_RULES.corporationMainRate;
+      } else {
+        // Marginal relief calculation
+        const marginalRate = TAX_RULES.corporationSmallRate + 
+          ((companyProfit - TAX_RULES.corporationSmallThreshold) / 
+          (TAX_RULES.corporationMainThreshold - TAX_RULES.corporationSmallThreshold)) * 
+          (TAX_RULES.corporationMainRate - TAX_RULES.corporationSmallRate);
+        corporationTax = companyProfit * marginalRate;
+      }
+
+      // Director's PAYE
+      const personalAllowance = directorSalary > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const taxableSalary = Math.max(0, directorSalary - personalAllowance);
+      
+      let salaryIncomeTax = 0;
+      if (taxableSalary > TAX_RULES.basicRateLimit - personalAllowance) {
+        const higherBand = taxableSalary - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        salaryIncomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
+      } else {
+        salaryIncomeTax = taxableSalary * TAX_RULES.basicRate;
+      }
+
+      // Employee NI (Class 1)
+      let employeeNI = 0;
+      const niableSalary = Math.max(0, directorSalary - TAX_RULES.personalAllowance);
+      if (niableSalary > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
+        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass1Rate;
+        const upperBand = (niableSalary - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass1ReducedRate;
+        employeeNI = lowerBand + upperBand;
+      } else {
+        employeeNI = niableSalary * TAX_RULES.niClass1Rate;
+      }
+
+      // Dividend Tax
+      const dividendAllowance = TAX_RULES.dividendAllowance;
+      const taxableDividends = Math.max(0, dividends - dividendAllowance);
+      
+      const totalIncome = directorSalary + dividends;
+      let dividendTax = 0;
+      
+      if (totalIncome > TAX_RULES.higherRateLimit) {
+        dividendTax = taxableDividends * 0.3375; // Higher rate dividend tax
+      } else if (totalIncome > TAX_RULES.basicRateLimit) {
+        const higherRateDividends = Math.max(0, totalIncome - TAX_RULES.higherRateLimit);
+        const basicRateDividends = taxableDividends - higherRateDividends;
+        dividendTax = (basicRateDividends * 0.0875) + (higherRateDividends * 0.3375);
+      } else {
+        dividendTax = taxableDividends * 0.0875; // Basic rate dividend tax
+      }
+
+      const totalPersonalTax = salaryIncomeTax + employeeNI + dividendTax;
+      const totalTax = corporationTax + totalPersonalTax;
+      const netIncome = (directorSalary + dividends) - totalPersonalTax;
+
+      const tips = [
+        'Optimal salary is around £12,570 (personal allowance) to minimize NI',
+        dividends > TAX_RULES.dividendAllowance ? 'Consider timing of dividend payments' : 'You have unused dividend allowance',
+        'Employer NI (13.8%) also applies to salary above £9,100',
+        'Consider pension contributions through the company for tax efficiency',
+        companyProfit > TAX_RULES.corporationMainThreshold ? 'High profit - explore profit extraction strategies' : ''
+      ].filter(tip => tip);
+
+      return {
+        breakdown: [
+          { label: 'Company Profit', value: companyProfit },
+          { label: 'Corporation Tax', value: corporationTax, isTax: true },
+          { label: 'Profit After Tax', value: companyProfit - corporationTax, highlight: true },
+          { label: 'Director\'s Salary', value: directorSalary },
+          { label: 'Income Tax on Salary', value: salaryIncomeTax, isTax: true },
+          { label: 'Employee NI', value: employeeNI, isTax: true },
+          { label: 'Dividends Paid', value: dividends },
+          { label: 'Dividend Tax', value: dividendTax, isTax: true },
+          { label: 'Total Tax (Corp + Personal)', value: totalTax, highlight: true, isTax: true },
+          { label: 'Net Personal Income', value: netIncome, highlight: true, positive: true }
+        ],
+        vat: vatRegistered ? { collected: vatCollected, rate: TAX_RULES.vatStandardRate } : null,
+        tips: tips
+      };
+    }
+
+    // Landlord Tax Calculation
+    function calculateLandlordTax() {
+      const rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
+      const propertyExpenses = parseFloat(document.getElementById('propertyExpenses').value) || 0;
+      const usePropertyAllowance = document.getElementById('usePropertyAllowance').value === 'yes';
+      const capitalGains = parseFloat(document.getElementById('capitalGains').value) || 0;
+      const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+
+      const expenses = usePropertyAllowance ? Math.min(TAX_RULES.propertyAllowance, propertyExpenses) : propertyExpenses;
+      const rentalProfit = Math.max(0, rentalIncome - expenses);
+      const totalIncome = rentalProfit + otherIncome;
+
+      // Income Tax on Rental Income
+      const personalAllowance = totalIncome > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const taxableIncome = Math.max(0, totalIncome - personalAllowance);
+      
+      let incomeTax = 0;
+      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
+        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
+        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
+      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
+        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
+      } else {
+        incomeTax = taxableIncome * TAX_RULES.basicRate;
+      }
+
+      // Capital Gains Tax
+      let cgt = 0;
+      if (capitalGains > TAX_RULES.cgtAnnualExemption) {
+        const taxableGains = capitalGains - TAX_RULES.cgtAnnualExemption;
+        const isHigherRate = totalIncome > TAX_RULES.basicRateLimit;
+        cgt = taxableGains * (isHigherRate ? TAX_RULES.cgtPropertyHigherRate : TAX_RULES.cgtPropertyBasicRate);
+      }
+
+      const totalTax = incomeTax + cgt;
+      const netIncome = totalIncome - incomeTax;
+
+      const tips = [
+        usePropertyAllowance ? 'You\'re using Property Allowance - check if actual expenses are higher' : 'Keep records of all property expenses',
+        capitalGains > 0 ? 'CGT annual exemption is £3,000 - consider timing of property sales' : '',
+        'Mortgage interest is no longer fully deductible - only 20% tax credit available',
+        'Consider property ownership structure (personal vs company) for tax efficiency',
+        'Keep records for at least 5 years after the tax year'
+      ].filter(tip => tip);
+
+      return {
+        breakdown: [
+          { label: 'Rental Income', value: rentalIncome },
+          { label: 'Less: Expenses', value: -expenses },
+          { label: 'Rental Profit', value: rentalProfit, highlight: true },
+          { label: 'Other Income', value: otherIncome },
+          { label: 'Total Income', value: totalIncome },
+          { label: 'Personal Allowance', value: personalAllowance },
+          { label: 'Taxable Income', value: taxableIncome, highlight: true },
+          { label: 'Income Tax', value: incomeTax, isTax: true },
+          { label: 'Capital Gains', value: capitalGains },
+          { label: 'CGT Annual Exemption', value: TAX_RULES.cgtAnnualExemption },
+          { label: 'Capital Gains Tax', value: cgt, isTax: true },
+          { label: 'Total Tax', value: totalTax, highlight: true, isTax: true },
+          { label: 'Net Income After Tax', value: netIncome, highlight: true, positive: true }
+        ],
+        vat: null,
+        tips: tips
+      };
+    }
+
+    // Employee Tax Calculation
+    function calculateEmployeeTax() {
+      const grossSalary = parseFloat(document.getElementById('grossSalary').value) || 0;
+      const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+      const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+      const pensionContributions = parseFloat(document.getElementById('pensionContributions').value) || 0;
+      const studentLoan = document.getElementById('studentLoan').value;
+
+      const totalGrossIncome = grossSalary + bonus + otherIncome;
+      const adjustedIncome = totalGrossIncome - pensionContributions;
+
+      // Income Tax
+      const personalAllowance = adjustedIncome > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const taxableIncome = Math.max(0, adjustedIncome - personalAllowance);
+      
+      let incomeTax = 0;
+      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
+        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
+        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
+      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
+        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
+        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
+        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
+      } else {
+        incomeTax = taxableIncome * TAX_RULES.basicRate;
+      }
+
+      // National Insurance (Class 1)
+      let nationalInsurance = 0;
+      const niableIncome = Math.max(0, totalGrossIncome - TAX_RULES.personalAllowance);
+      if (niableIncome > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
+        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass1Rate;
+        const upperBand = (niableIncome - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass1ReducedRate;
+        nationalInsurance = lowerBand + upperBand;
+      } else {
+        nationalInsurance = niableIncome * TAX_RULES.niClass1Rate;
+      }
+
+      // Student Loan Repayment
+      let studentLoanRepayment = 0;
+      const studentLoanThresholds = {
+        plan1: 22015,
+        plan2: 27295,
+        plan4: 27660,
+        postgrad: 21000
+      };
+      
+      if (studentLoan !== 'none') {
+        const threshold = studentLoanThresholds[studentLoan];
+        if (totalGrossIncome > threshold) {
+          studentLoanRepayment = (totalGrossIncome - threshold) * 0.09;
+        }
+      }
+
+      const totalDeductions = incomeTax + nationalInsurance + studentLoanRepayment + pensionContributions;
+      const netIncome = totalGrossIncome - totalDeductions;
+
+      const tips = [
+        pensionContributions < TAX_RULES.pensionAnnualAllowance ? 'Consider salary sacrifice pension contributions' : 'Maximizing pension contributions',
+        otherIncome > 0 ? 'You may need to complete a Self Assessment for additional income' : '',
+        bonus > 0 ? 'Bonuses can push you into a higher tax band - consider timing' : '',
+        totalGrossIncome > 100000 ? 'Personal allowance tapers above £100k - effective 60% tax rate' : '',
+        'Check if you\'re eligible for Marriage Allowance (transfer £1,260)'
+      ].filter(tip => tip);
+
+      return {
+        breakdown: [
+          { label: 'Gross Salary', value: grossSalary },
+          { label: 'Bonus/Commission', value: bonus },
+          { label: 'Other Income', value: otherIncome },
+          { label: 'Total Gross Income', value: totalGrossIncome, highlight: true },
+          { label: 'Pension Contributions', value: pensionContributions },
+          { label: 'Personal Allowance', value: personalAllowance },
+          { label: 'Taxable Income', value: taxableIncome, highlight: true },
+          { label: 'Income Tax (PAYE)', value: incomeTax, isTax: true },
+          { label: 'National Insurance', value: nationalInsurance, isTax: true },
+          { label: 'Student Loan Repayment', value: studentLoanRepayment, isTax: true },
+          { label: 'Total Deductions', value: totalDeductions, highlight: true, isTax: true },
+          { label: 'Net Take-Home Pay', value: netIncome, highlight: true, positive: true }
+        ],
+        vat: null,
+        tips: tips
+      };
+    }
+
+    // Display Tax Results
+    function displayTaxResults(results) {
+      const breakdownDiv = document.getElementById('taxBreakdown');
+      const tipsDiv = document.getElementById('tipsList');
+
+      // Display breakdown
+      let breakdownHTML = '';
+      results.breakdown.forEach(item => {
+        const valueClass = item.isTax ? 'metric-value' : (item.positive ? 'metric-value positive' : 'metric-value');
+        const rowStyle = item.highlight ? 'font-weight: bold; background: #f0f7ff;' : '';
+        breakdownHTML += `
+          <div class="tax-metric" style="${rowStyle}">
+            <span class="metric-label">${item.label}</span>
+            <span class="${valueClass}">£${Math.abs(item.value).toFixed(2)}</span>
+          </div>
+        `;
+      });
+
+      // Add VAT section if applicable
+      if (results.vat) {
+        breakdownHTML += `
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+            <h4 style="color: #667eea; margin-bottom: 10px;">VAT Summary</h4>
+            <div class="tax-metric">
+              <span class="metric-label">VAT Collected (${(results.vat.rate * 100).toFixed(0)}%)</span>
+              <span class="metric-value">£${results.vat.collected.toFixed(2)}</span>
+            </div>
+            <div class="tax-metric">
+              <span class="metric-label">Net VAT Due (after input VAT)</span>
+              <span class="metric-value">Calculate separately</span>
+            </div>
+          </div>
+        `;
+      }
+
+      breakdownDiv.innerHTML = breakdownHTML;
+
+      // Display tips
+      let tipsHTML = '';
+      results.tips.forEach(tip => {
+        tipsHTML += `<li>${tip}</li>`;
+      });
+      tipsDiv.innerHTML = tipsHTML;
+
+      document.getElementById('taxResults').style.display = 'block';
+    }
+
+    // Scroll to Tax Rules Section
+    function scrollToTaxRules() {
+      showSection('tax');
+      setTimeout(() => {
+        const taxRulesCard = document.querySelector('#taxSection .card:last-child');
+        if (taxRulesCard) {
+          taxRulesCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
 
     // Modal Management
