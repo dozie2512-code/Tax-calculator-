@@ -227,12 +227,17 @@ class UKTaxCalculator:
             band = "Main Rate"
         else:
             # Marginal relief (tapered rate between limits)
-            main_rate_tax = profit * self.CORPORATION_TAX_MAIN_RATE
-            marginal_relief_fraction = 0.015  # Standard fraction
-            marginal_relief = (upper_limit - profit) * marginal_relief_fraction * (profit / profit)
-            corporation_tax = main_rate_tax - marginal_relief
-            effective_rate = (corporation_tax / profit * 100) if profit > 0 else 0
-            band = "Marginal Relief"
+            if profit > 0:
+                main_rate_tax = profit * self.CORPORATION_TAX_MAIN_RATE
+                marginal_relief_fraction = 0.015  # Standard fraction
+                marginal_relief = (upper_limit - profit) * marginal_relief_fraction
+                corporation_tax = main_rate_tax - marginal_relief
+                effective_rate = (corporation_tax / profit * 100)
+                band = "Marginal Relief"
+            else:
+                corporation_tax = 0
+                effective_rate = 0
+                band = "No Tax"
         
         return {
             'taxable_profit': profit,

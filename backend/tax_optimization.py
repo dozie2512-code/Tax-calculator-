@@ -157,7 +157,8 @@ class TaxOptimizationEngine:
         profit_with_expenses = taxable_profit
         profit_with_allowance = trading_income - self.reliefs.TRADING_ALLOWANCE
         
-        use_allowance = profit_with_allowance < profit_with_expenses and trading_income <= 1000
+        # Use trading allowance only if income is under £1,000 OR if it results in lower taxable profit
+        use_allowance = (trading_income <= 1000) or (profit_with_allowance < profit_with_expenses and allowable_expenses + capital_allowances == 0)
         
         final_taxable_profit = profit_with_allowance if use_allowance else profit_with_expenses
         

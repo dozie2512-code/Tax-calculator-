@@ -519,6 +519,31 @@
     </div>
     
     <script>
+        // Tax Constants for 2024/2025
+        const TAX_CONSTANTS = {
+            PERSONAL_ALLOWANCE: 12570,
+            BASIC_RATE_THRESHOLD: 50270,
+            HIGHER_RATE_THRESHOLD: 125140,
+            BASIC_RATE: 0.20,
+            HIGHER_RATE: 0.40,
+            ADDITIONAL_RATE: 0.45,
+            NI_PRIMARY_THRESHOLD: 12570,
+            NI_UPPER_EARNINGS_LIMIT: 50270,
+            NI_RATE_STANDARD: 0.08,
+            NI_RATE_ABOVE_UEL: 0.02,
+            DIVIDEND_ALLOWANCE: 500,
+            DIVIDEND_BASIC_RATE: 0.0875,
+            DIVIDEND_HIGHER_RATE: 0.3375,
+            DIVIDEND_ADDITIONAL_RATE: 0.3935,
+            CORPORATION_TAX_SMALL: 0.19,
+            CORPORATION_TAX_MAIN: 0.25,
+            CORPORATION_TAX_LOWER_LIMIT: 50000,
+            CORPORATION_TAX_UPPER_LIMIT: 250000,
+            CGT_ANNUAL_EXEMPTION: 3000,
+            CGT_BASIC_RATE: 0.10,
+            CGT_HIGHER_RATE: 0.20
+        };
+        
         // User type selection
         document.querySelectorAll('.user-type-card').forEach(card => {
             card.addEventListener('click', function() {
@@ -552,7 +577,7 @@
             const dividendTax = calculateDividendTax(dividends, salary);
             const corpTax = calculateCorporationTax(profit);
             
-            const optimalSalary = 12570; // Personal allowance
+            const optimalSalary = TAX_CONSTANTS.PERSONAL_ALLOWANCE;
             const optimalPAYE = calculatePAYE(optimalSalary);
             const remainingProfit = profit - optimalSalary;
             const optimalCorpTax = calculateCorporationTax(remainingProfit);
@@ -600,8 +625,8 @@
                     },
                     {
                         title: 'Dividend Timing',
-                        description: 'Split dividend payments across tax years to maximize the £500 dividend allowance each year.',
-                        saving: `£${(500 * 0.0875).toFixed(2)}`
+                        description: `Split dividend payments across tax years to maximize the £${TAX_CONSTANTS.DIVIDEND_ALLOWANCE} dividend allowance each year.`,
+                        saving: `£${(TAX_CONSTANTS.DIVIDEND_ALLOWANCE * TAX_CONSTANTS.DIVIDEND_BASIC_RATE).toFixed(2)}`
                     }
                 ]
             });
@@ -768,24 +793,27 @@
         
         // Helper calculation functions
         function calculatePAYE(salary) {
-            const personalAllowance = 12570;
+            const personalAllowance = TAX_CONSTANTS.PERSONAL_ALLOWANCE;
             const taxable = Math.max(0, salary - personalAllowance);
             
             let tax = 0;
-            if (taxable <= 37700) {
-                tax = taxable * 0.20;
-            } else if (taxable <= 112570) {
-                tax = 37700 * 0.20 + (taxable - 37700) * 0.40;
+            const basicBandLimit = TAX_CONSTANTS.BASIC_RATE_THRESHOLD - TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            const higherBandLimit = TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+            
+            if (taxable <= basicBandLimit) {
+                tax = taxable * TAX_CONSTANTS.BASIC_RATE;
+            } else if (taxable <= higherBandLimit) {
+                tax = basicBandLimit * TAX_CONSTANTS.BASIC_RATE + (taxable - basicBandLimit) * TAX_CONSTANTS.HIGHER_RATE;
             } else {
-                tax = 37700 * 0.20 + 74870 * 0.40 + (taxable - 112570) * 0.45;
+                tax = basicBandLimit * TAX_CONSTANTS.BASIC_RATE + (higherBandLimit - basicBandLimit) * TAX_CONSTANTS.HIGHER_RATE + (taxable - higherBandLimit) * TAX_CONSTANTS.ADDITIONAL_RATE;
             }
             
             let ni = 0;
-            if (salary > 12570) {
-                ni = Math.min(salary, 50270) - 12570;
-                ni = ni * 0.08;
-                if (salary > 50270) {
-                    ni += (salary - 50270) * 0.02;
+            if (salary > TAX_CONSTANTS.NI_PRIMARY_THRESHOLD) {
+                ni = Math.min(salary, TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) - TAX_CONSTANTS.NI_PRIMARY_THRESHOLD;
+                ni = ni * TAX_CONSTANTS.NI_RATE_STANDARD;
+                if (salary > TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) {
+                    ni += (salary - TAX_CONSTANTS.NI_UPPER_EARNINGS_LIMIT) * TAX_CONSTANTS.NI_RATE_ABOVE_UEL;
                 }
             }
             
@@ -797,37 +825,37 @@
         }
         
         function calculateDividendTax(dividends, otherIncome) {
-            const allowance = 500;
+            const allowance = TAX_CONSTANTS.DIVIDEND_ALLOWANCE;
             const taxable = Math.max(0, dividends - allowance);
             
             if (taxable === 0) return 0;
             
             let tax = 0;
-            const basicRemaining = Math.max(0, 50270 - otherIncome);
+            const basicRemaining = Math.max(0, TAX_CONSTANTS.BASIC_RATE_THRESHOLD - otherIncome);
             
             if (basicRemaining > 0) {
                 const basicDiv = Math.min(taxable, basicRemaining);
-                tax += basicDiv * 0.0875;
+                tax += basicDiv * TAX_CONSTANTS.DIVIDEND_BASIC_RATE;
                 
                 if (taxable > basicRemaining) {
-                    const higherDiv = Math.min(taxable - basicRemaining, 125140 - 50270);
-                    tax += higherDiv * 0.3375;
+                    const higherDiv = Math.min(taxable - basicRemaining, TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - TAX_CONSTANTS.BASIC_RATE_THRESHOLD);
+                    tax += higherDiv * TAX_CONSTANTS.DIVIDEND_HIGHER_RATE;
                     
                     if (taxable > basicRemaining + higherDiv) {
-                        tax += (taxable - basicRemaining - higherDiv) * 0.3935;
+                        tax += (taxable - basicRemaining - higherDiv) * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
                     }
                 }
             } else {
-                const higherRemaining = Math.max(0, 125140 - otherIncome);
+                const higherRemaining = Math.max(0, TAX_CONSTANTS.HIGHER_RATE_THRESHOLD - otherIncome);
                 if (higherRemaining > 0) {
                     const higherDiv = Math.min(taxable, higherRemaining);
-                    tax += higherDiv * 0.3375;
+                    tax += higherDiv * TAX_CONSTANTS.DIVIDEND_HIGHER_RATE;
                     
                     if (taxable > higherDiv) {
-                        tax += (taxable - higherDiv) * 0.3935;
+                        tax += (taxable - higherDiv) * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
                     }
                 } else {
-                    tax = taxable * 0.3935;
+                    tax = taxable * TAX_CONSTANTS.DIVIDEND_ADDITIONAL_RATE;
                 }
             }
             
@@ -835,14 +863,14 @@
         }
         
         function calculateCorporationTax(profit) {
-            if (profit <= 50000) {
-                return Math.round(profit * 0.19);
-            } else if (profit >= 250000) {
-                return Math.round(profit * 0.25);
+            if (profit <= TAX_CONSTANTS.CORPORATION_TAX_LOWER_LIMIT) {
+                return Math.round(profit * TAX_CONSTANTS.CORPORATION_TAX_SMALL);
+            } else if (profit >= TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT) {
+                return Math.round(profit * TAX_CONSTANTS.CORPORATION_TAX_MAIN);
             } else {
                 // Marginal relief
-                const mainRate = profit * 0.25;
-                const marginalRelief = (250000 - profit) * 0.015;
+                const mainRate = profit * TAX_CONSTANTS.CORPORATION_TAX_MAIN;
+                const marginalRelief = (TAX_CONSTANTS.CORPORATION_TAX_UPPER_LIMIT - profit) * 0.015;
                 return Math.round(mainRate - marginalRelief);
             }
         }

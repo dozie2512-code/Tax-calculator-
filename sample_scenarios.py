@@ -290,9 +290,9 @@ def scenario_6_capital_gains():
     
     print("\nTax Planning Strategies:")
     print("1. Split sales across tax years to use exemption twice")
-    print(f"   → Save up to £{calculator.CGT_ANNUAL_EXEMPTION * 0.20:,.2f} per year")
+    print(f"   → Save up to £{calculator.CGT_ANNUAL_EXEMPTION * calculator.CGT_HIGHER_RATE:,.2f} per year")
     print("2. Transfer assets to spouse to use their exemption")
-    print(f"   → Save up to £{calculator.CGT_ANNUAL_EXEMPTION * 0.20:,.2f}")
+    print(f"   → Save up to £{calculator.CGT_ANNUAL_EXEMPTION * calculator.CGT_HIGHER_RATE:,.2f}")
     print("3. Time sales when income is lower (use basic rate band)")
     print("4. Consider Business Asset Disposal Relief for qualifying business")
     print("   → 10% rate on up to £1,000,000 lifetime allowance")
