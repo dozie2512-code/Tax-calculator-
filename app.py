@@ -343,4 +343,8 @@ def print_routes():
 
 if __name__ == '__main__':
     print_routes()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Note: Debug mode should be disabled in production
+    # Set debug=False or use a production WSGI server like Gunicorn
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=5000, debug=debug_mode)
