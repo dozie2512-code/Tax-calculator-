@@ -263,18 +263,25 @@ class TaxOptimizationEngine:
             self._validate_positive_amount(capital_allowances, 'capital_allowances')
         except ValueError as e:
             raise ValueError(f"Invalid input for sole trader optimization: {e}")
-        # Calculate taxable profit
-        taxable_profit = trading_income - allowable_expenses - capital_allowances
+        # Calculate taxable profit - ensure it's not negative
+        taxable_profit = max(0, trading_income - allowable_expenses - capital_allowances)
         
         # Apply trading allowance if beneficial
         trading_allowance = self.reliefs.calculate_trading_allowance(trading_income)
         
         # Compare: expenses vs trading allowance
         profit_with_expenses = taxable_profit
-        profit_with_allowance = trading_income - self.reliefs.TRADING_ALLOWANCE
+        profit_with_allowance = max(0, trading_income - self.reliefs.TRADING_ALLOWANCE)
         
-        # Use trading allowance only if income is under the limit OR if it results in lower taxable profit
-        use_allowance = (trading_income <= self.reliefs.TRADING_ALLOWANCE) or (profit_with_allowance < profit_with_expenses and allowable_expenses + capital_allowances == 0)
+        # Determine which method to use:
+        # Use trading allowance if:
+        # 1. Income is under the allowance limit, OR
+        # 2. No expenses claimed AND allowance provides better result
+        income_below_allowance = trading_income <= self.reliefs.TRADING_ALLOWANCE
+        no_expenses_claimed = (allowable_expenses + capital_allowances == 0)
+        allowance_is_better = profit_with_allowance < profit_with_expenses
+        
+        use_allowance = income_below_allowance or (no_expenses_claimed and allowance_is_better)
         
         final_taxable_profit = profit_with_allowance if use_allowance else profit_with_expenses
         
@@ -320,8 +327,8 @@ class TaxOptimizationEngine:
                 'saving': f'Up to 45% tax relief (£{self.reliefs.PENSION_ANNUAL_ALLOWANCE:,} annual allowance)'
             })
         
-        # Trading allowance
-        if not use_allowance and trading_income <= 1000:
+        # Trading allowance recommendation
+        if not use_allowance and trading_income <= TaxConstants.TRADING_ALLOWANCE:
             recommendations.append({
                 'strategy': 'Trading Allowance',
                 'description': f'Consider using £{self.reliefs.TRADING_ALLOWANCE:,} trading allowance instead of expenses',
@@ -335,14 +342,12 @@ class TaxOptimizationEngine:
             'saving': 'Utilize their personal allowance and lower tax bands'
         })
         
-        # Class 2 NI voluntary contributions - use constant for personal allowance
+        # Class 2 NI voluntary contributions - use constant for rates
         if final_taxable_profit < TaxConstants.PERSONAL_ALLOWANCE:
-            # Class 2 NI weekly rate (approximate)
-            class_2_weekly_rate = 3.45
-            class_2_annual_cost = class_2_weekly_rate * 52
+            class_2_annual_cost = TaxConstants.CLASS_2_NI_WEEKLY_RATE * 52
             recommendations.append({
                 'strategy': 'Class 2 NI Contributions',
-                'description': f'Make voluntary Class 2 NI contributions (£{class_2_weekly_rate}/week) to protect state pension',
+                'description': f'Make voluntary Class 2 NI contributions (£{TaxConstants.CLASS_2_NI_WEEKLY_RATE}/week) to protect state pension',
                 'saving': f'Pension protection for £{class_2_annual_cost:.2f}/year'
             })
         

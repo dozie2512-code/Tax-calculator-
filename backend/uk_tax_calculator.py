@@ -60,6 +60,10 @@ class TaxConstants:
     # Capital Allowances
     ANNUAL_INVESTMENT_ALLOWANCE = 1_000_000
     FIRST_YEAR_ALLOWANCE_RATE = 1.00  # 100%
+    
+    # National Insurance Class 2 (Self-Employed)
+    CLASS_2_NI_WEEKLY_RATE = 3.45
+    CLASS_2_NI_SMALL_PROFITS_THRESHOLD = 6_725
 
 
 class UKTaxCalculator:

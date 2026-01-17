@@ -6,7 +6,6 @@ module for different user types with proper error handling.
 """
 
 from backend.tax_optimization_engine import TaxOptimizationEngine
-import json
 
 
 def print_director_example():
