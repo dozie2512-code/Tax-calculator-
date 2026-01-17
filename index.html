@@ -1,344 +1,180 @@
-"""
-Flask REST API for UK Tax Optimization
-
-Provides RESTful endpoints for tax optimization calculations for:
-- Company Directors
-- Sole Traders
-- Company Owners
-- Landlords
-"""
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import sys
-import os
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from backend.tax_optimization_engine import TaxOptimizationEngine
-import traceback
-
-app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend access
-
-# Initialize the optimization engine
-optimizer = TaxOptimizationEngine()
-
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """Health check endpoint."""
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Tax Optimization API is running',
-        'version': '1.0.0'
-    }), 200
-
-
-@app.route('/api/optimize/director', methods=['POST'])
-def optimize_director():
-    """
-    Optimize tax position for a company director.
-    
-    Expected JSON body:
-    {
-        "salary": 30000.00,
-        "dividends": 20000.00,
-        "company_profit": 60000.00,
-        "pension_contribution": 5000.00
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Tax Optimization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
     }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['salary', 'dividends', 'company_profit']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['salary', 'dividends', 'company_profit', 'pension_contribution']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Set default for optional fields
-        if 'pension_contribution' not in data:
-            data['pension_contribution'] = 0
-        
-        # Perform optimization
-        result = optimizer.optimize_director(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_director: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/sole-trader', methods=['POST'])
-def optimize_sole_trader():
-    """
-    Optimize tax position for a sole trader.
-    
-    Expected JSON body:
-    {
-        "trading_income": 50000.00,
-        "allowable_expenses": 8000.00,
-        "pension_contribution": 3000.00,
-        "capital_allowances": 2000.00
+    header {
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      text-align: center;
     }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['trading_income']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['trading_income', 'allowable_expenses', 'pension_contribution', 'capital_allowances']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Set defaults for optional fields
-        if 'allowable_expenses' not in data:
-            data['allowable_expenses'] = 0
-        if 'pension_contribution' not in data:
-            data['pension_contribution'] = 0
-        if 'capital_allowances' not in data:
-            data['capital_allowances'] = 0
-        
-        # Perform optimization
-        result = optimizer.optimize_sole_trader(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_sole_trader: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/company-owner', methods=['POST'])
-def optimize_company_owner():
-    """
-    Optimize tax position for a company owner.
-    
-    Expected JSON body:
-    {
-        "company_profit": 100000.00,
-        "salary": 30000.00,
-        "dividends": 40000.00,
-        "r_and_d_expenditure": 15000.00,
-        "capital_investment": 20000.00
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
     }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['company_profit', 'salary', 'dividends']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['company_profit', 'salary', 'dividends', 'r_and_d_expenditure', 'capital_investment']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Set defaults for optional fields
-        if 'r_and_d_expenditure' not in data:
-            data['r_and_d_expenditure'] = 0
-        if 'capital_investment' not in data:
-            data['capital_investment'] = 0
-        
-        # Perform optimization
-        result = optimizer.optimize_company_owner(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_company_owner: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
-
-
-@app.route('/api/optimize/landlord', methods=['POST'])
-def optimize_landlord():
-    """
-    Optimize tax position for a landlord.
-    
-    Expected JSON body:
-    {
-        "rental_income": 30000.00,
-        "mortgage_interest": 8000.00,
-        "other_expenses": 5000.00,
-        "is_furnished": true,
-        "number_of_properties": 2
+    label {
+      font-weight: bold;
     }
-    """
-    try:
-        data = request.get_json()
-        
-        # Validate required fields
-        required_fields = ['rental_income']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({
-                    'error': f'Missing required field: {field}'
-                }), 400
-        
-        # Validate data types and ranges
-        for field in ['rental_income', 'mortgage_interest', 'other_expenses']:
-            if field in data:
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({
-                            'error': f'{field} must be non-negative'
-                        }), 400
-                    data[field] = value
-                except (ValueError, TypeError):
-                    return jsonify({
-                        'error': f'{field} must be a valid number'
-                    }), 400
-        
-        # Validate boolean and integer fields
-        if 'is_furnished' in data and not isinstance(data['is_furnished'], bool):
-            return jsonify({
-                'error': 'is_furnished must be a boolean'
-            }), 400
-        
-        if 'number_of_properties' in data:
-            try:
-                value = int(data['number_of_properties'])
-                if value < 1:
-                    return jsonify({
-                        'error': 'number_of_properties must be at least 1'
-                    }), 400
-                data['number_of_properties'] = value
-            except (ValueError, TypeError):
-                return jsonify({
-                    'error': 'number_of_properties must be a valid integer'
-                }), 400
-        
-        # Set defaults for optional fields
-        if 'mortgage_interest' not in data:
-            data['mortgage_interest'] = 0
-        if 'other_expenses' not in data:
-            data['other_expenses'] = 0
-        if 'is_furnished' not in data:
-            data['is_furnished'] = False
-        if 'number_of_properties' not in data:
-            data['number_of_properties'] = 1
-        
-        # Perform optimization
-        result = optimizer.optimize_landlord(data)
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"Error in optimize_landlord: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
-        }), 500
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #eef;
+      border-left: 5px solid #88f;
+    }
+    .error {
+      margin-top: 20px;
+      padding: 10px;
+      background: #ffeef0;
+      border-left: 5px solid #f88;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UK Tax Optimization</h1>
+    <p>Optimize your taxes with ease!</p>
+  </header>
+  <div class="container">
+    <h2>Select Your Role</h2>
+    <select id="roleSelect" onchange="loadRoleForm()">
+      <option value="">-- Select a Role --</option>
+      <option value="director">Company Director</option>
+      <option value="soleTrader">Sole Trader</option>
+      <option value="companyOwner">Company Owner</option>
+      <option value="landlord">Landlord</option>
+    </select>
+    <div id="formContainer"></div>
+    <div id="resultContainer"></div>
+  </div>
 
+  <script>
+    const apiEndpoints = {
+      director: '/api/optimize/director',
+      soleTrader: '/api/optimize/sole-trader',
+      companyOwner: '/api/optimize/company-owner',
+      landlord: '/api/optimize/landlord'
+    };
 
-@app.errorhandler(404)
-def not_found(error):
-    """Handle 404 errors."""
-    return jsonify({
-        'error': 'Endpoint not found',
-        'message': 'The requested endpoint does not exist'
-    }), 404
+    function loadRoleForm() {
+      const role = document.getElementById("roleSelect").value;
+      const formContainer = document.getElementById("formContainer");
+      formContainer.innerHTML = ""; // Clear previous form
+      document.getElementById("resultContainer").innerHTML = ""; // Clear results
 
+      let formHtml = "";
+      
+      if (role === "director") {
+        formHtml = `
+          <h3>Company Director Tax Optimization</h3>
+          <label for="salary">Salary:</label>
+          <input type="number" id="salary" placeholder="Enter salary" step="0.01">
+          <label for="dividends">Dividends:</label>
+          <input type="number" id="dividends" placeholder="Enter dividends" step="0.01">
+          <label for="companyProfit">Company Profit:</label>
+          <input type="number" id="companyProfit" placeholder="Enter company profit" step="0.01">
+          <label for="pensionContribution">Pension Contribution (optional):</label>
+          <input type="number" id="pensionContribution" placeholder="Optional" step="0.01">
+          <button onclick="submitData('director')">Optimize</button>
+        `;
+      } else if (role === "soleTrader") {
+        formHtml = `
+          <h3>Sole Trader Tax Optimization</h3>
+          <label for="tradingIncome">Trading Income:</label>
+          <input type="number" id="tradingIncome" placeholder="Enter trading income" step="0.01">
+          <label for="allowableExpenses">Allowable Expenses (optional):</label>
+          <input type="number" id="allowableExpenses" placeholder="Optional" step="0.01">
+          <label for="pensionContribution">Pension Contribution (optional):</label>
+          <input type="number" id="pensionContribution" placeholder="Optional" step="0.01">
+          <label for="capitalAllowances">Capital Allowances (optional):</label>
+          <input type="number" id="capitalAllowances" placeholder="Optional" step="0.01">
+          <button onclick="submitData('soleTrader')">Optimize</button>
+        `;
+      } else if (role === "companyOwner") {
+        formHtml = `
+          <h3>Company Owner Tax Optimization</h3>
+          <label for="companyProfit">Company Profit:</label>
+          <input type="number" id="companyProfit" placeholder="Enter company profit" step="0.01">
+          <label for="salary">Salary:</label>
+          <input type="number" id="salary" placeholder="Enter salary" step="0.01">
+          <label for="dividends">Dividends:</label>
+          <input type="number" id="dividends" placeholder="Enter dividends" step="0.01">
+          <label for="rndExpenditure">R&D Expenditure (optional):</label>
+          <input type="number" id="rndExpenditure" placeholder="Optional" step="0.01">
+          <label for="capitalInvestment">Capital Investment (optional):</label>
+          <input type="number" id="capitalInvestment" placeholder="Optional" step="0.01">
+          <button onclick="submitData('companyOwner')">Optimize</button>
+        `;
+      } else if (role === "landlord") {
+        formHtml = `
+          <h3>Landlord Tax Optimization</h3>
+          <label for="rentalIncome">Rental Income:</label>
+          <input type="number" id="rentalIncome" placeholder="Enter rental income" step="0.01">
+          <label for="mortgageInterest">Mortgage Interest (optional):</label>
+          <input type="number" id="mortgageInterest" placeholder="Optional" step="0.01">
+          <label for="otherExpenses">Other Expenses (optional):</label>
+          <input type="number" id="otherExpenses" placeholder="Optional" step="0.01">
+          <label for="isFurnished">Is Property Furnished?</label>
+          <select id="isFurnished">
+            <option value="true">Yes</option>
+            <option value="false" selected>No</option>
+          </select>
+          <label for="numberOfProperties">Number of Properties (optional):</label>
+          <input type="number" id="numberOfProperties" placeholder="Optional" step="1" min="1">
+          <button onclick="submitData('landlord')">Optimize</button>
+        `;
+      }
+      formContainer.innerHTML = formHtml;
+    }
 
-@app.errorhandler(405)
-def method_not_allowed(error):
-    """Handle 405 errors."""
-    return jsonify({
-        'error': 'Method not allowed',
-        'message': 'The HTTP method is not allowed for this endpoint'
-    }), 405
+    function submitData(role) {
+      const endpoint = apiEndpoints[role];
+      const inputs = [...document.querySelectorAll('#formContainer input, #formContainer select')];
+      const body = inputs.reduce((obj, input) => {
+        if (input.value !== "") obj[input.id] = input.type === "number" ? parseFloat(input.value) : input.value === "true";
+        return obj;
+      }, {});
 
-
-@app.errorhandler(500)
-def internal_error(error):
-    """Handle 500 errors."""
-    return jsonify({
-        'error': 'Internal server error',
-        'message': 'An unexpected error occurred'
-    }), 500
-
-
-def print_routes():
-    """Print available API routes."""
-    print("\n" + "=" * 60)
-    print("Starting Tax Optimization API...")
-    print("=" * 60)
-    print("\nAvailable endpoints:")
-    print("  - POST /api/optimize/director")
-    print("  - POST /api/optimize/sole-trader")
-    print("  - POST /api/optimize/company-owner")
-    print("  - POST /api/optimize/landlord")
-    print("  - GET  /api/health")
-    print("\nServer running on: http://localhost:5000")
-    print("=" * 60 + "\n")
-
-
-if __name__ == '__main__':
-    print_routes()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result);
+          document.getElementById("resultContainer").innerHTML = `<div class="result"><strong>Result:</strong> ${JSON.stringify(result, null, 2)}</div>`;
+        })
+        .catch(error => {
+          console.error(error);
+          document.getElementById("resultContainer").innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
+        });
+    }
+  </script>
+</body>
+</html>
