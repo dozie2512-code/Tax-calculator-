@@ -204,7 +204,10 @@ class UKTaxCalculator:
             # Additional rate dividends
             if total_income - self.DIVIDEND_ALLOWANCE > higher_rate_limit:
                 additional_band_start = max(0, higher_rate_limit - other_income)
-                additional_rate_dividends = taxable_dividends - additional_band_start - (basic_rate_div_tax / self.DIVIDEND_BASIC_RATE if basic_rate_div_tax > 0 else 0) - (higher_rate_div_tax / self.DIVIDEND_HIGHER_RATE if higher_rate_div_tax > 0 else 0)
+                # Calculate dividends already taxed at basic and higher rates
+                basic_rate_dividends_amt = (basic_rate_div_tax / self.DIVIDEND_BASIC_RATE if basic_rate_div_tax > 0 else 0)
+                higher_rate_dividends_amt = (higher_rate_div_tax / self.DIVIDEND_HIGHER_RATE if higher_rate_div_tax > 0 else 0)
+                additional_rate_dividends = taxable_dividends - additional_band_start - basic_rate_dividends_amt - higher_rate_dividends_amt
                 if additional_rate_dividends > 0:
                     additional_rate_div_tax = additional_rate_dividends * self.DIVIDEND_ADDITIONAL_RATE
                     dividend_tax += additional_rate_div_tax

@@ -443,4 +443,4 @@ For questions or issues:
 
 **Built with**: Python 3, Flask, TailwindCSS, JavaScript (ES6)
 
-**Last Updated**: January 2026
+**Last Updated**: January 2025
