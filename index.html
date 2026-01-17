@@ -1881,8 +1881,8 @@
 
     function generateMockSyncData() {
       // Generate mock synchronized data based on current financial stats
-      const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace('£', '').replace(',', '')) || 45320;
-      const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace('£', '').replace(',', '')) || 12450;
+      const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/[£,]/g, '')) || 45320;
+      const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace(/[£,]/g, '')) || 12450;
       
       return {
         synchronization_date: new Date().toISOString(),
