@@ -47,9 +47,25 @@ class XeroAPIClient:
             Dict containing authentication status and details
         """
         try:
-            # In production, implement actual OAuth2 flow here
-            # For now, simulate successful authentication
+            # PRODUCTION NOTE: Implement actual OAuth2 flow here
+            # This simulated implementation is for development/testing only
+            # 
+            # For production, implement:
+            # 1. OAuth2 authorization code flow
+            # 2. Secure token storage (encrypted at rest)
+            # 3. Token refresh mechanism
+            # 4. Proper error handling for expired/invalid tokens
+            # 5. PKCE (Proof Key for Code Exchange) for security
+            #
+            # Example production flow:
+            # - Redirect to Xero authorization URL
+            # - Handle callback with authorization code
+            # - Exchange code for access token
+            # - Store token securely with expiry
+            # - Implement automatic refresh before expiry
+            
             if self.client_id and self.client_secret:
+                # Simulated for development - replace with real OAuth2
                 self.access_token = "simulated_access_token"
                 self.token_expiry = datetime.now() + timedelta(hours=1)
                 self.connected = True

@@ -34,7 +34,16 @@ class TaxCalculatorAPIHandler(BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
     
     def _set_cors_headers(self):
-        """Set CORS headers to allow frontend access"""
+        """Set CORS headers to allow frontend access
+        
+        SECURITY NOTE: For production, replace '*' with specific allowed origins
+        Example for production:
+            allowed_origins = ['https://yourdomain.com', 'https://app.yourdomain.com']
+            origin = self.headers.get('Origin')
+            if origin in allowed_origins:
+                self.send_header('Access-Control-Allow-Origin', origin)
+        """
+        # DEVELOPMENT ONLY: Wildcard CORS is a security risk in production
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')

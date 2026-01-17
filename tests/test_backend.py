@@ -6,8 +6,7 @@ Tests cover:
 - Tax optimization logic
 - HMRC rules calculations
 
-Run: python -m pytest test_backend.py -v
-or: python test_backend.py
+Run: python tests/test_backend.py
 """
 
 import unittest
