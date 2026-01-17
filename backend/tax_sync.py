@@ -12,6 +12,12 @@ from collections import defaultdict
 from utils import read_csv_file, safe_float, format_currency
 
 
+# Configuration Constants
+TRADING_ALLOWANCE_THRESHOLD = 10000  # Use trading allowance if income below this
+PROPERTY_ALLOWANCE_THRESHOLD = 5000  # Use property allowance if rental income below this
+DIRECTOR_KEYWORDS = ['director', 'director salary', 'director remuneration']
+
+
 class TaxDataSynchronizer:
     """
     Synchronizes financial postings data into tax computation slots.
@@ -184,7 +190,7 @@ class TaxDataSynchronizer:
         
         # Trading allowance option
         trading_allowance = 1000
-        use_trading_allowance = gross_income < 10000
+        use_trading_allowance = gross_income < TRADING_ALLOWANCE_THRESHOLD
         
         self.tax_data['sole_trader'] = {
             'gross_income': gross_income,
@@ -214,7 +220,7 @@ class TaxDataSynchronizer:
         # Director's remuneration
         director_salary = sum(
             safe_float(tx.get('debit', 0)) for tx in categorized['payroll']
-            if 'director' in tx.get('description', '').lower()
+            if any(keyword in tx.get('description', '').lower() for keyword in DIRECTOR_KEYWORDS)
         )
         
         dividends = sum(
@@ -260,7 +266,7 @@ class TaxDataSynchronizer:
         
         # Property allowance
         property_allowance = 1000
-        use_property_allowance = rental_income < 5000
+        use_property_allowance = rental_income < PROPERTY_ALLOWANCE_THRESHOLD
         
         # Capital gains from property sales
         capital_gains = 0  # Would need specific property sale transactions

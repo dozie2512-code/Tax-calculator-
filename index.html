@@ -1832,6 +1832,7 @@
 
     // Tax Data Synchronization Functions
     let syncedTaxData = null;
+    const SYNC_DELAY_MS = 1500; // Delay for simulated API call
 
     async function syncTaxData() {
       const statusDiv = document.getElementById('syncStatus');
@@ -1840,7 +1841,7 @@
       
       try {
         // Simulate API call to backend synchronization
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, SYNC_DELAY_MS));
         
         // In a real implementation, this would call the backend tax_sync.py module
         // For now, we'll simulate with mock data
