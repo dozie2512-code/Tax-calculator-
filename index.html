@@ -689,7 +689,7 @@
       </div>
 
       <!-- Tax Calculator Form -->
-      <div class="card" style="margin-bottom: 20px;" id="taxCalculatorForm" style="display: none;">
+      <div class="card" style="margin-bottom: 20px; display: none;" id="taxCalculatorForm">
         <h3 class="card-title">🧮 Tax Calculator</h3>
         <form id="advancedTaxForm">
           <div id="dynamicTaxFields"></div>
@@ -1136,6 +1136,7 @@
     // HMRC Tax Rules and Constants (2024/25)
     const TAX_RULES = {
       personalAllowance: 12570,
+      personalAllowanceTaperThreshold: 100000,
       basicRateLimit: 50270,
       higherRateLimit: 125140,
       basicRate: 0.20,
@@ -1163,11 +1164,36 @@
       tradingAllowance: 1000,
       propertyAllowance: 1000,
       dividendAllowance: 500,
+      dividendBasicRate: 0.0875,
+      dividendHigherRate: 0.3375,
+      dividendAdditionalRate: 0.3938,
       savingsAllowanceBasic: 1000,
       savingsAllowanceHigher: 500,
       marriageAllowance: 1260,
-      pensionAnnualAllowance: 60000
+      pensionAnnualAllowance: 60000,
+      studentLoanPlan1Threshold: 22015,
+      studentLoanPlan2Threshold: 27295,
+      studentLoanPlan4Threshold: 27660,
+      studentLoanPostgradThreshold: 21000,
+      studentLoanPlan1Rate: 0.09,
+      studentLoanPlan2Rate: 0.09,
+      studentLoanPlan4Rate: 0.09,
+      studentLoanPostgradRate: 0.06
     };
+
+    // Helper function to calculate personal allowance with tapering
+    function calculatePersonalAllowance(adjustedIncome) {
+      if (adjustedIncome <= TAX_RULES.personalAllowanceTaperThreshold) {
+        return TAX_RULES.personalAllowance;
+      }
+      
+      // Taper: reduce by £1 for every £2 over £100,000
+      const excessIncome = adjustedIncome - TAX_RULES.personalAllowanceTaperThreshold;
+      const reduction = Math.floor(excessIncome / 2);
+      const allowance = Math.max(0, TAX_RULES.personalAllowance - reduction);
+      
+      return allowance;
+    }
 
     // Entity Descriptions
     const ENTITY_DESCRIPTIONS = {
@@ -1390,12 +1416,12 @@
       const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
       const vatCollected = vatRegistered ? (parseFloat(document.getElementById('vatCollected').value) || 0) : 0;
 
-      const expenses = useTradingAllowance ? Math.min(TAX_RULES.tradingAllowance, allowableExpenses) : allowableExpenses;
+      const expenses = useTradingAllowance ? TAX_RULES.tradingAllowance : allowableExpenses;
       const profit = grossIncome - expenses;
       const adjustedProfit = Math.max(0, profit - pensionContributions);
 
       // Income Tax
-      const personalAllowance = adjustedProfit > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const personalAllowance = calculatePersonalAllowance(adjustedProfit);
       const taxableIncome = Math.max(0, adjustedProfit - personalAllowance);
       
       let incomeTax = 0;
@@ -1481,7 +1507,8 @@
       }
 
       // Director's PAYE
-      const personalAllowance = directorSalary > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const totalIncome = directorSalary + dividends;
+      const personalAllowance = calculatePersonalAllowance(totalIncome);
       const taxableSalary = Math.max(0, directorSalary - personalAllowance);
       
       let salaryIncomeTax = 0;
@@ -1508,17 +1535,37 @@
       const dividendAllowance = TAX_RULES.dividendAllowance;
       const taxableDividends = Math.max(0, dividends - dividendAllowance);
       
-      const totalIncome = directorSalary + dividends;
       let dividendTax = 0;
       
       if (totalIncome > TAX_RULES.higherRateLimit) {
-        dividendTax = taxableDividends * 0.3375; // Higher rate dividend tax
+        // All dividends taxed at additional rate
+        dividendTax = taxableDividends * TAX_RULES.dividendAdditionalRate;
       } else if (totalIncome > TAX_RULES.basicRateLimit) {
-        const higherRateDividends = Math.max(0, totalIncome - TAX_RULES.higherRateLimit);
-        const basicRateDividends = taxableDividends - higherRateDividends;
-        dividendTax = (basicRateDividends * 0.0875) + (higherRateDividends * 0.3375);
+        // Some dividends in higher rate, possibly some in additional rate
+        const incomeInHigherBand = totalIncome - TAX_RULES.basicRateLimit;
+        if (incomeInHigherBand >= taxableDividends) {
+          // All dividends in higher rate band
+          dividendTax = taxableDividends * TAX_RULES.dividendHigherRate;
+        } else {
+          // Split between higher and additional rate
+          const higherRateDividends = incomeInHigherBand;
+          const additionalRateDividends = taxableDividends - higherRateDividends;
+          dividendTax = (higherRateDividends * TAX_RULES.dividendHigherRate) + 
+                       (additionalRateDividends * TAX_RULES.dividendAdditionalRate);
+        }
       } else {
-        dividendTax = taxableDividends * 0.0875; // Basic rate dividend tax
+        // Dividends in basic rate, possibly some in higher rate
+        const incomeInBasicBand = TAX_RULES.basicRateLimit - (totalIncome - taxableDividends);
+        if (incomeInBasicBand >= taxableDividends) {
+          // All dividends in basic rate
+          dividendTax = taxableDividends * TAX_RULES.dividendBasicRate;
+        } else {
+          // Split between basic and higher rate
+          const basicRateDividends = Math.max(0, incomeInBasicBand);
+          const higherRateDividends = taxableDividends - basicRateDividends;
+          dividendTax = (basicRateDividends * TAX_RULES.dividendBasicRate) + 
+                       (higherRateDividends * TAX_RULES.dividendHigherRate);
+        }
       }
 
       const totalPersonalTax = salaryIncomeTax + employeeNI + dividendTax;
@@ -1559,12 +1606,12 @@
       const capitalGains = parseFloat(document.getElementById('capitalGains').value) || 0;
       const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
 
-      const expenses = usePropertyAllowance ? Math.min(TAX_RULES.propertyAllowance, propertyExpenses) : propertyExpenses;
+      const expenses = usePropertyAllowance ? TAX_RULES.propertyAllowance : propertyExpenses;
       const rentalProfit = Math.max(0, rentalIncome - expenses);
       const totalIncome = rentalProfit + otherIncome;
 
       // Income Tax on Rental Income
-      const personalAllowance = totalIncome > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const personalAllowance = calculatePersonalAllowance(totalIncome);
       const taxableIncome = Math.max(0, totalIncome - personalAllowance);
       
       let incomeTax = 0;
@@ -1633,7 +1680,7 @@
       const adjustedIncome = totalGrossIncome - pensionContributions;
 
       // Income Tax
-      const personalAllowance = adjustedIncome > TAX_RULES.higherRateLimit ? 0 : TAX_RULES.personalAllowance;
+      const personalAllowance = calculatePersonalAllowance(adjustedIncome);
       const taxableIncome = Math.max(0, adjustedIncome - personalAllowance);
       
       let incomeTax = 0;
@@ -1664,16 +1711,24 @@
       // Student Loan Repayment
       let studentLoanRepayment = 0;
       const studentLoanThresholds = {
-        plan1: 22015,
-        plan2: 27295,
-        plan4: 27660,
-        postgrad: 21000
+        plan1: TAX_RULES.studentLoanPlan1Threshold,
+        plan2: TAX_RULES.studentLoanPlan2Threshold,
+        plan4: TAX_RULES.studentLoanPlan4Threshold,
+        postgrad: TAX_RULES.studentLoanPostgradThreshold
+      };
+      
+      const studentLoanRates = {
+        plan1: TAX_RULES.studentLoanPlan1Rate,
+        plan2: TAX_RULES.studentLoanPlan2Rate,
+        plan4: TAX_RULES.studentLoanPlan4Rate,
+        postgrad: TAX_RULES.studentLoanPostgradRate
       };
       
       if (studentLoan !== 'none') {
         const threshold = studentLoanThresholds[studentLoan];
+        const rate = studentLoanRates[studentLoan];
         if (totalGrossIncome > threshold) {
-          studentLoanRepayment = (totalGrossIncome - threshold) * 0.09;
+          studentLoanRepayment = (totalGrossIncome - threshold) * rate;
         }
       }
 
