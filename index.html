@@ -487,6 +487,67 @@
     .hidden {
       display: none;
     }
+
+    /* Additional utility classes */
+    .xero-title {
+      margin-bottom: 15px;
+    }
+
+    .xero-description {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+    }
+
+    .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 3000;
+      min-width: 250px;
+    }
+
+    .user-display {
+      color: #333;
+      font-weight: 600;
+      padding: 8px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-muted {
+      color: #666;
+    }
+
+    .mt-10 {
+      margin-top: 10px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
+    }
+
+    .p-15 {
+      padding: 15px;
+    }
+
+    .bg-warning {
+      background: #fff3cd;
+      border-radius: 5px;
+    }
+
+    .pl-20 {
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -503,7 +564,7 @@
       <div class="auth-buttons">
         <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
         <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
-        <span id="userDisplay" style="display: none; color: #333; font-weight: 600; padding: 8px;"></span>
+        <span id="userDisplay" class="user-display" style="display: none;"></span>
       </div>
     </div>
   </nav>
@@ -511,8 +572,8 @@
   <div class="container">
     <!-- Xero Connection Section -->
     <div class="xero-connection">
-      <h2 style="margin-bottom: 15px;">Connect to Xero</h2>
-      <p style="color: #666; margin-bottom: 20px;">Seamlessly integrate your Xero account for real-time data synchronization</p>
+      <h2 class="xero-title">Connect to Xero</h2>
+      <p class="xero-description">Seamlessly integrate your Xero account for real-time data synchronization</p>
       <button class="xero-btn" onclick="connectToXero()">
         <span>🔗</span> Connect to Xero
       </button>
@@ -620,16 +681,16 @@
     <!-- Tax Optimization Section -->
     <div id="taxSection" class="dashboard-section hidden">
       <h2 class="section-title">💼 Tax Optimization</h2>
-      <p style="color: #666; margin-bottom: 20px;">Optimize your tax strategy based on UK HMRC rules and regulations</p>
+      <p class="xero-description">Optimize your tax strategy based on UK HMRC rules and regulations</p>
       
-      <button onclick="fetchTaxOptimization()" class="btn-success" style="margin-bottom: 20px;">
+      <button onclick="fetchTaxOptimization()" class="btn-success mt-20">
         Calculate Tax Optimization
       </button>
 
       <div id="resultContainer"></div>
 
-      <div id="taxResults" class="tax-result" style="display: none;">
-        <h3 style="margin-bottom: 15px;">Tax Analysis</h3>
+      <div id="taxResults" class="tax-result hidden">
+        <h3 class="xero-title">Tax Analysis</h3>
         <div class="tax-metric">
           <span class="metric-label">Taxable Income</span>
           <span class="metric-value" id="taxableIncome">£32,870</span>
@@ -646,9 +707,9 @@
           <span class="metric-label">Potential Savings</span>
           <span class="metric-value positive" id="taxSavings">£1,250</span>
         </div>
-        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+        <div class="mt-20 p-15 bg-warning">
           <strong>💡 Optimization Tips:</strong>
-          <ul style="margin-top: 10px; padding-left: 20px;">
+          <ul class="mt-10 pl-20">
             <li>Consider increasing pension contributions</li>
             <li>Review eligible business expenses</li>
             <li>Explore capital allowances for equipment</li>
@@ -800,7 +861,7 @@
     function renderInvoices() {
       const listDiv = document.getElementById('invoiceList');
       if (invoices.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No invoices yet. Create your first invoice!</p>';
+        listDiv.innerHTML = '<p class="text-muted text-center">No invoices yet. Create your first invoice!</p>';
         return;
       }
 
@@ -815,7 +876,7 @@
           </div>
           <div class="item-actions">
             <button class="btn-sm btn-secondary" onclick="editInvoice(${invoice.id})">Edit</button>
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteInvoice(${invoice.id})">Delete</button>
+            <button class="btn-sm btn-delete" onclick="deleteInvoice(${invoice.id})">Delete</button>
           </div>
         </div>
       `).join('');
@@ -880,7 +941,7 @@
     function renderExpenses() {
       const listDiv = document.getElementById('expenseList');
       if (expenses.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No expenses yet. Track your first expense!</p>';
+        listDiv.innerHTML = '<p class="text-muted text-center">No expenses yet. Track your first expense!</p>';
         return;
       }
 
@@ -891,7 +952,7 @@
             <div class="item-details">${expense.category} | ${expense.date}</div>
           </div>
           <div class="item-actions">
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteExpense(${expense.id})">Delete</button>
+            <button class="btn-sm btn-delete" onclick="deleteExpense(${expense.id})">Delete</button>
           </div>
         </div>
       `).join('');
@@ -947,7 +1008,7 @@
         document.getElementById('taxDue').textContent = `£${taxDue.toFixed(2)}`;
         document.getElementById('taxSavings').textContent = `£${potentialSavings.toFixed(2)}`;
         
-        document.getElementById('taxResults').style.display = 'block';
+        document.getElementById('taxResults').classList.remove('hidden');
         resultContainer.innerHTML = '<div class="result"><strong>✓ Tax optimization calculated successfully!</strong></div>';
         
       } catch (error) {
@@ -963,13 +1024,8 @@
     // Notifications
     function showNotification(message, type) {
       const notification = document.createElement('div');
-      notification.className = type === 'success' ? 'result' : 'error';
+      notification.className = (type === 'success' ? 'result' : 'error') + ' notification';
       notification.textContent = message;
-      notification.style.position = 'fixed';
-      notification.style.top = '80px';
-      notification.style.right = '20px';
-      notification.style.zIndex = '3000';
-      notification.style.minWidth = '250px';
       
       document.body.appendChild(notification);
       
