@@ -37,13 +37,14 @@ class TaxOptimizationEngine:
     # National Insurance Class 2 & 4 (for sole traders)
     NI_CLASS2_RATE = 163.80  # Annual flat rate for 2023/24
     NI_CLASS2_THRESHOLD = 6725  # Small profits threshold
-    NI_CLASS4_RATE = 0.75  # Approximate rate as proportion of Class 1
+    NI_CLASS4_LOWER_RATE = 0.09  # 9% on profits £12,570-£50,270
+    NI_CLASS4_UPPER_RATE = 0.02  # 2% on profits above £50,270
     
     CORPORATION_TAX_RATE = 0.19
     
     # R&D and Investment Allowances
-    RD_TAX_CREDIT_RATE = 2.30  # 230% deduction for R&D
-    RD_TAX_CREDIT_DISPLAY = 230  # Display value
+    RD_ADDITIONAL_RELIEF = 0.30  # 30% additional relief (total 130% deduction)
+    RD_TAX_CREDIT_DISPLAY = 130  # Display value
     ANNUAL_INVESTMENT_ALLOWANCE = 1000000  # £1M AIA limit
     
     def __init__(self):
@@ -110,6 +111,20 @@ class TaxOptimizationEngine:
         else:
             ni = (self.NI_UPPER_LIMIT - self.NI_LOWER_LIMIT) * self.NI_RATE_PRIMARY
             ni += (income - self.NI_UPPER_LIMIT) * self.NI_RATE_ADDITIONAL
+        
+        return round(ni, 2)
+    
+    def calculate_class4_ni(self, profit):
+        """Calculate National Insurance Class 4 contributions for sole traders."""
+        if profit <= self.NI_LOWER_LIMIT:
+            return 0
+        
+        ni = 0
+        if profit <= self.NI_UPPER_LIMIT:
+            ni = (profit - self.NI_LOWER_LIMIT) * self.NI_CLASS4_LOWER_RATE
+        else:
+            ni = (self.NI_UPPER_LIMIT - self.NI_LOWER_LIMIT) * self.NI_CLASS4_LOWER_RATE
+            ni += (profit - self.NI_UPPER_LIMIT) * self.NI_CLASS4_UPPER_RATE
         
         return round(ni, 2)
     
@@ -193,7 +208,7 @@ class TaxOptimizationEngine:
         # Calculate taxes
         income_tax = self.calculate_income_tax(taxable_profit)
         ni_class2 = self.NI_CLASS2_RATE if taxable_profit > self.NI_CLASS2_THRESHOLD else 0
-        ni_class4 = self.calculate_national_insurance(taxable_profit) * self.NI_CLASS4_RATE
+        ni_class4 = self.calculate_class4_ni(taxable_profit)
         
         total_tax = income_tax + ni_class2 + ni_class4
         net_income = taxable_profit - total_tax
@@ -245,8 +260,8 @@ class TaxOptimizationEngine:
         rd_expenditure = data.get('r_and_d_expenditure', 0)
         capital_investment = data.get('capital_investment', 0)
         
-        # Calculate R&D tax relief (130% deduction)
-        rd_relief = rd_expenditure * 0.30
+        # Calculate R&D tax relief (130% deduction = 100% cost + 30% additional relief)
+        rd_relief = rd_expenditure * self.RD_ADDITIONAL_RELIEF
         adjusted_profit = company_profit - rd_relief - capital_investment
         
         # Calculate taxes

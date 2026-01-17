@@ -10,11 +10,7 @@ Provides RESTful endpoints for tax optimization calculations for:
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import sys
 import os
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.tax_optimization_engine import TaxOptimizationEngine
 import traceback
