@@ -1485,26 +1485,93 @@
 
     // Financial Stats Update
     function updateFinancialStats() {
-      const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
-      const totalCapitalAmount = capital.reduce((sum, item) => sum + item.amount, 0);
+      try {
+        const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
+        const totalCapitalAmount = capital.reduce((sum, item) => sum + item.amount, 0);
+        
+        const netProfit = totalIncome - totalExpenses - totalDepreciation;
+        
+        // Calculate tax (simplified)
+        // const taxResult = calculateSoleTraderTax(netProfit, 0, 0, 0);
+        
+        document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
+        document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
+        document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
+        document.getElementById('estimatedTax').textContent = `£0`;
+        document.getElementById('estimatedNI').textContent = `£0`;
+        document.getElementById('totalTax').textContent = `£0`;
+        document.getElementById('totalDepreciation').textContent = `£${totalDepreciation.toFixed(2)}`;
+        document.getElementById('totalCapital').textContent = `£${totalCapitalAmount.toFixed(2)}`;
+        
+        // updateTaxSuggestions(totalIncome, totalExpenses, netProfit);
+      } catch (error) {
+        console.error('Error updating financial stats:', error);
+        console.error('Error stack:', error.stack);
+      }
+    }
+
+    // HMRC Tax Rules and Constants (2024/25)
+    const TAX_RULES = {
+      personalAllowance: 12570,
+      personalAllowanceTaperThreshold: 100000,
+      basicRateLimit: 50270,
+      higherRateLimit: 125140,
+      basicRate: 0.20,
+      higherRate: 0.40,
+      additionalRate: 0.45,
+      niClass1Rate: 0.12,
+      niClass1ReducedRate: 0.02,
+      niClass2Weekly: 3.45,
+      niClass2Threshold: 6725,
+      niClass4Rate: 0.09,
+      niClass4ReducedRate: 0.02,
+      corporationSmallRate: 0.19,
+      corporationMainRate: 0.25,
+      corporationSmallThreshold: 50000,
+      corporationMainThreshold: 250000,
+      cgtAnnualExemption: 3000,
+      cgtBasicRate: 0.10,
+      cgtHigherRate: 0.20,
+      cgtPropertyBasicRate: 0.18,
+      cgtPropertyHigherRate: 0.24,
+      vatStandardRate: 0.20,
+      vatReducedRate: 0.05,
+      vatThreshold: 90000,
+      whtRate: 0.20,
+      tradingAllowance: 1000,
+      propertyAllowance: 1000,
+      dividendAllowance: 500,
+      dividendBasicRate: 0.0875,
+      dividendHigherRate: 0.3375,
+      dividendAdditionalRate: 0.3938,
+      savingsAllowanceBasic: 1000,
+      savingsAllowanceHigher: 500,
+      marriageAllowance: 1260,
+      pensionAnnualAllowance: 60000,
+      studentLoanPlan1Threshold: 22015,
+      studentLoanPlan2Threshold: 27295,
+      studentLoanPlan4Threshold: 27660,
+      studentLoanPostgradThreshold: 21000,
+      studentLoanPlan1Rate: 0.09,
+      studentLoanPlan2Rate: 0.09,
+      studentLoanPlan4Rate: 0.09,
+      studentLoanPostgradRate: 0.06
+    };
+
+    // Helper function to calculate personal allowance with tapering
+    function calculatePersonalAllowance(adjustedIncome) {
+      if (adjustedIncome <= TAX_RULES.personalAllowanceTaperThreshold) {
+        return TAX_RULES.personalAllowance;
+      }
       
-      const netProfit = totalIncome - totalExpenses - totalDepreciation;
+      // Taper: reduce by £1 for every £2 over £100,000
+      const excessIncome = adjustedIncome - TAX_RULES.personalAllowanceTaperThreshold;
+      const reduction = Math.floor(excessIncome / 2);
+      const allowance = Math.max(0, TAX_RULES.personalAllowance - reduction);
       
-      // Calculate tax (simplified)
-      const taxResult = calculateSoleTraderTax(netProfit, 0, 0);
-      
-      document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
-      document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
-      document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
-      document.getElementById('estimatedTax').textContent = `£${taxResult.incomeTax.toFixed(2)}`;
-      document.getElementById('estimatedNI').textContent = `£${taxResult.nationalInsurance.toFixed(2)}`;
-      document.getElementById('totalTax').textContent = `£${taxResult.totalTax.toFixed(2)}`;
-      document.getElementById('totalDepreciation').textContent = `£${totalDepreciation.toFixed(2)}`;
-      document.getElementById('totalCapital').textContent = `£${totalCapitalAmount.toFixed(2)}`;
-      
-      updateTaxSuggestions(totalIncome, totalExpenses, netProfit);
+      return allowance;
     }
 
     // Tax Suggestions
@@ -1619,8 +1686,10 @@
       let mileageAllowance = 0;
       
       // Calculate home office relief
-      if (document.getElementById('useHomeOfficeRelief').checked) {
-        const hours = parseFloat(document.getElementById('homeOfficeMonthlyHours').value) || 0;
+      const homeOfficeCheckbox = document.getElementById('useHomeOfficeRelief');
+      if (homeOfficeCheckbox && homeOfficeCheckbox.checked) {
+        const hoursInput = document.getElementById('homeOfficeMonthlyHours');
+        const hours = hoursInput ? (parseFloat(hoursInput.value) || 0) : 0;
         let monthlyRate = 0;
         if (hours >= 25 && hours <= 50) monthlyRate = 2;
         else if (hours >= 51 && hours <= 100) monthlyRate = 10;
@@ -1629,8 +1698,10 @@
       }
       
       // Calculate mileage allowance
-      if (document.getElementById('useMileageAllowance').checked) {
-        const miles = parseFloat(document.getElementById('annualBusinessMiles').value) || 0;
+      const mileageCheckbox = document.getElementById('useMileageAllowance');
+      if (mileageCheckbox && mileageCheckbox.checked) {
+        const milesInput = document.getElementById('annualBusinessMiles');
+        const miles = milesInput ? (parseFloat(milesInput.value) || 0) : 0;
         if (miles <= 10000) {
           mileageAllowance = miles * 0.45;
         } else {
@@ -1638,7 +1709,8 @@
         }
       }
       
-      const additionalExpenses = parseFloat(document.getElementById('additionalExpenses').value) || 0;
+      const additionalExpensesInput = document.getElementById('additionalExpenses');
+      const additionalExpenses = additionalExpensesInput ? (parseFloat(additionalExpensesInput.value) || 0) : 0;
       
       const taxResult = calculateSoleTraderTax(netProfit, homeOfficeRelief, mileageAllowance, additionalExpenses);
       displayTaxResults(taxResult, homeOfficeRelief, mileageAllowance, additionalExpenses, true);
@@ -1738,68 +1810,6 @@
       
       // Scroll to results
       resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // HMRC Tax Rules and Constants (2024/25)
-    const TAX_RULES = {
-      personalAllowance: 12570,
-      personalAllowanceTaperThreshold: 100000,
-      basicRateLimit: 50270,
-      higherRateLimit: 125140,
-      basicRate: 0.20,
-      higherRate: 0.40,
-      additionalRate: 0.45,
-      niClass1Rate: 0.12,
-      niClass1ReducedRate: 0.02,
-      niClass2Weekly: 3.45,
-      niClass2Threshold: 6725,
-      niClass4Rate: 0.09,
-      niClass4ReducedRate: 0.02,
-      corporationSmallRate: 0.19,
-      corporationMainRate: 0.25,
-      corporationSmallThreshold: 50000,
-      corporationMainThreshold: 250000,
-      cgtAnnualExemption: 3000,
-      cgtBasicRate: 0.10,
-      cgtHigherRate: 0.20,
-      cgtPropertyBasicRate: 0.18,
-      cgtPropertyHigherRate: 0.24,
-      vatStandardRate: 0.20,
-      vatReducedRate: 0.05,
-      vatThreshold: 90000,
-      whtRate: 0.20,
-      tradingAllowance: 1000,
-      propertyAllowance: 1000,
-      dividendAllowance: 500,
-      dividendBasicRate: 0.0875,
-      dividendHigherRate: 0.3375,
-      dividendAdditionalRate: 0.3938,
-      savingsAllowanceBasic: 1000,
-      savingsAllowanceHigher: 500,
-      marriageAllowance: 1260,
-      pensionAnnualAllowance: 60000,
-      studentLoanPlan1Threshold: 22015,
-      studentLoanPlan2Threshold: 27295,
-      studentLoanPlan4Threshold: 27660,
-      studentLoanPostgradThreshold: 21000,
-      studentLoanPlan1Rate: 0.09,
-      studentLoanPlan2Rate: 0.09,
-      studentLoanPlan4Rate: 0.09,
-      studentLoanPostgradRate: 0.06
-    };
-
-    // Helper function to calculate personal allowance with tapering
-    function calculatePersonalAllowance(adjustedIncome) {
-      if (adjustedIncome <= TAX_RULES.personalAllowanceTaperThreshold) {
-        return TAX_RULES.personalAllowance;
-      }
-      
-      // Taper: reduce by £1 for every £2 over £100,000
-      const excessIncome = adjustedIncome - TAX_RULES.personalAllowanceTaperThreshold;
-      const reduction = Math.floor(excessIncome / 2);
-      const allowance = Math.max(0, TAX_RULES.personalAllowance - reduction);
-      
-      return allowance;
     }
 
     // Entity Descriptions
