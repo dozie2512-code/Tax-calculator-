@@ -1615,19 +1615,22 @@
       // Calculate income tax
       let incomeTax = 0;
       if (taxableIncome > 0) {
-        if (taxableIncome <= (TAX_RULES.basicRateLimit - personalAllowance)) {
+        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
+        const higherRateBand = TAX_RULES.higherRateLimit - TAX_RULES.personalAllowance; // £112,570
+        
+        if (taxableIncome <= basicRateBand) {
           // Basic rate only
           incomeTax = taxableIncome * TAX_RULES.basicRate;
-        } else if (taxableIncome <= (TAX_RULES.higherRateLimit - personalAllowance)) {
+        } else if (taxableIncome <= higherRateBand) {
           // Basic + Higher rate
-          const basicAmount = TAX_RULES.basicRateLimit - personalAllowance;
-          const higherAmount = taxableIncome - basicAmount;
+          const basicAmount = basicRateBand;
+          const higherAmount = taxableIncome - basicRateBand;
           incomeTax = (basicAmount * TAX_RULES.basicRate) + (higherAmount * TAX_RULES.higherRate);
         } else {
           // Basic + Higher + Additional rate
-          const basicAmount = TAX_RULES.basicRateLimit - personalAllowance;
-          const higherAmount = TAX_RULES.higherRateLimit - TAX_RULES.basicRateLimit;
-          const additionalAmount = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
+          const basicAmount = basicRateBand;
+          const higherAmount = higherRateBand - basicRateBand;
+          const additionalAmount = taxableIncome - higherRateBand;
           incomeTax = (basicAmount * TAX_RULES.basicRate) + 
                       (higherAmount * TAX_RULES.higherRate) + 
                       (additionalAmount * TAX_RULES.additionalRate);
@@ -1643,13 +1646,15 @@
       }
       
       // Class 4 NI (9% on profits between £12,570 and £50,270, 2% thereafter)
-      if (adjustedProfit > personalAllowance) {
-        const niableProfit = adjustedProfit - personalAllowance;
-        if (niableProfit <= (TAX_RULES.basicRateLimit - personalAllowance)) {
+      if (adjustedProfit > TAX_RULES.personalAllowance) {
+        const niableProfit = adjustedProfit - TAX_RULES.personalAllowance;
+        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
+        
+        if (niableProfit <= basicRateBand) {
           nationalInsurance += niableProfit * TAX_RULES.niClass4Rate;
         } else {
-          const class4Basic = (TAX_RULES.basicRateLimit - personalAllowance) * TAX_RULES.niClass4Rate;
-          const class4Higher = (niableProfit - (TAX_RULES.basicRateLimit - personalAllowance)) * TAX_RULES.niClass4ReducedRate;
+          const class4Basic = basicRateBand * TAX_RULES.niClass4Rate;
+          const class4Higher = (niableProfit - basicRateBand) * TAX_RULES.niClass4ReducedRate;
           nationalInsurance += class4Basic + class4Higher;
         }
       }
