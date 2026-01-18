@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accounting Software</title>
+  <title>Accounting Software with Tax Optimizer</title>
 
   <!-- Add Bootstrap for responsive design -->
   <link
@@ -58,6 +58,11 @@
       align-items: center;
       margin-bottom: 20px;
     }
+
+    .badge-pill {
+      border-radius: 50px;
+      padding: 5px 10px;
+    }
   </style>
 </head>
 <body>
@@ -68,6 +73,7 @@
     <a href="#dashboard">Dashboard</a>
     <a href="#invoicing">Invoicing</a>
     <a href="#tax">Tax</a>
+    <a href="#tax-optimizer">Tax Optimizer</a>
     <a href="#clients">Clients</a>
     <a href="#settings">Settings</a>
   </nav>
@@ -109,7 +115,6 @@
     <!-- Invoicing -->
     <section id="invoicing">
       <h3>Invoicing</h3>
-      <!-- Table for Invoices -->
       <table class="table table-striped">
         <thead>
           <tr>
@@ -133,7 +138,6 @@
               <button class="btn btn-sm btn-danger">Delete</button>
             </td>
           </tr>
-          <!-- Add more rows as needed -->
         </tbody>
       </table>
     </section>
@@ -145,6 +149,41 @@
         <h4>Tax Summary</h4>
         <p>Tax Due: £2,500.00</p>
         <button class="btn btn-primary">Submit Tax Return</button>
+      </div>
+    </section>
+
+    <!-- Tax Optimizer -->
+    <section id="tax-optimizer" style="margin-top: 50px;">
+      <h3>Tax Optimizer</h3>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <h4>HMRC Allowable Expenses</h4>
+            <p>Track and maximize allowable expenses.</p>
+            <button class="btn btn-secondary">View Expenses</button>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <h4>Capital Allowances</h4>
+            <p>Optimize tax based on capital expenditure.</p>
+            <button class="btn btn-secondary">Calculate</button>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <h4>Reliefs and Allowances</h4>
+            <p>Check HMRC rules on personal allowances.</p>
+            <button class="btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <h4>Landlord Tax Deductions</h4>
+            <p>Optimize tax for rental income and properties.</p>
+            <button class="btn btn-secondary">View Options</button>
+          </div>
+        </div>
       </div>
     </section>
 
