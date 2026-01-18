@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xero Accounting Integration & Tax Optimization</title>
+  <meta name="description" content="Comprehensive tax calculator and financial tracker for UK sole traders - Track income, expenses, depreciation, capital, and optimize tax with HMRC allowances">
+  <meta name="keywords" content="sole trader, tax calculator, UK tax, HMRC, income tracking, expense tracking, depreciation, capital allowances, home office relief, mileage allowance">
+  <title>Sole Trader Tax Calculator & Financial Tracker - UK HMRC</title>
   <style>
     * {
       margin: 0;
@@ -539,12 +541,14 @@
   <!-- Navigation Header -->
   <nav class="nav-header">
     <div class="nav-container">
-      <div class="nav-brand">🧾 Xero Tax Optimizer</div>
+      <div class="nav-brand">💼 Sole Trader Tax Calculator</div>
       <div class="nav-menu">
         <a class="nav-link" onclick="showSection('dashboard')">Dashboard</a>
-        <a class="nav-link" onclick="showSection('invoices')">Invoices</a>
+        <a class="nav-link" onclick="showSection('income')">Income</a>
         <a class="nav-link" onclick="showSection('expenses')">Expenses</a>
-        <a class="nav-link" onclick="showSection('tax')">Tax Optimization</a>
+        <a class="nav-link" onclick="showSection('depreciation')">Depreciation</a>
+        <a class="nav-link" onclick="showSection('capital')">Capital</a>
+        <a class="nav-link" onclick="showSection('tax')">Tax Estimator</a>
         <a class="nav-link" onclick="scrollToTaxRules()">Tax Rules</a>
       </div>
       <div class="auth-buttons">
@@ -556,14 +560,10 @@
   </nav>
 
   <div class="container">
-    <!-- Xero Connection Section -->
+    <!-- Welcome Section -->
     <div class="xero-connection">
-      <h2 style="margin-bottom: 15px;">Connect to Xero</h2>
-      <p style="color: #666; margin-bottom: 20px;">Seamlessly integrate your Xero account for real-time data synchronization</p>
-      <button class="xero-btn" onclick="connectToXero()">
-        <span>🔗</span> Connect to Xero
-      </button>
-      <div id="connectedStatus"></div>
+      <h2 style="margin-bottom: 15px;">💼 Welcome to Sole Trader Tax Calculator</h2>
+      <p style="color: #666; margin-bottom: 20px;">Comprehensive financial tracking and tax optimization for UK sole traders - Track income, expenses, depreciation, capital, and optimize your tax with all HMRC allowances including home office and mileage relief.</p>
     </div>
 
     <!-- Dashboard Section -->
@@ -572,52 +572,90 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">Total Income</div>
-          <div class="stat-value" id="totalIncome">£45,320</div>
+          <div class="stat-value" id="totalIncome">£0</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Total Expenses</div>
-          <div class="stat-value" id="totalExpenses">£12,450</div>
+          <div class="stat-value" id="totalExpenses">£0</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Net Profit</div>
-          <div class="stat-value" id="netProfit">£32,870</div>
+          <div class="stat-value" id="netProfit">£0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Estimated Tax</div>
-          <div class="stat-value" id="estimatedTax">£6,574</div>
+          <div class="stat-label">Estimated Income Tax</div>
+          <div class="stat-value" id="estimatedTax">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">National Insurance</div>
+          <div class="stat-value" id="estimatedNI">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Tax Liability</div>
+          <div class="stat-value" id="totalTax">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Depreciation</div>
+          <div class="stat-value" id="totalDepreciation">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Capital</div>
+          <div class="stat-value" id="totalCapital">£0</div>
+        </div>
+      </div>
+      
+      <!-- Tax Saving Suggestions -->
+      <div class="card" style="margin-top: 20px;">
+        <h3 class="card-title">💡 Tax Saving Suggestions</h3>
+        <div id="taxSuggestions">
+          <p style="color: #666;">Add income and expenses to see personalized tax-saving suggestions.</p>
         </div>
       </div>
     </div>
 
-    <!-- Invoices Section -->
-    <div id="invoicesSection" class="content-grid hidden">
+    <!-- Income Section -->
+    <div id="incomeSection" class="content-grid hidden">
       <div class="card">
-        <h3 class="card-title">📄 Create Invoice</h3>
-        <form id="invoiceForm">
+        <h3 class="card-title">💰 Add Income Source</h3>
+        <form id="incomeForm">
           <div class="form-group">
-            <label>Client Name</label>
-            <input type="text" id="clientName" placeholder="Enter client name" required>
+            <label>Income Source</label>
+            <input type="text" id="incomeSource" placeholder="E.g., Freelance work, Consulting, Sales" required>
           </div>
           <div class="form-group">
-            <label>Invoice Amount (£)</label>
-            <input type="number" id="invoiceAmount" placeholder="0.00" step="0.01" required>
+            <label>Amount (£)</label>
+            <input type="number" id="incomeAmount" placeholder="0.00" step="0.01" required>
           </div>
           <div class="form-group">
-            <label>Due Date</label>
-            <input type="date" id="dueDate" required>
+            <label>Date Received</label>
+            <input type="date" id="incomeDate" required>
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="invoiceDescription" placeholder="Invoice description"></textarea>
+            <label>Category</label>
+            <select id="incomeCategory" required>
+              <option value="">Select category</option>
+              <option value="Services">Services</option>
+              <option value="Products">Products</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Commission">Commission</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
-          <button type="submit" class="btn-success">Create Invoice</button>
+          <div class="form-group">
+            <label>Notes (Optional)</label>
+            <textarea id="incomeNotes" placeholder="Additional details"></textarea>
+          </div>
+          <button type="submit" class="btn-success">Add Income</button>
         </form>
       </div>
 
       <div class="card">
-        <h3 class="card-title">📋 Invoice List</h3>
-        <div class="invoice-list" id="invoiceList">
-          <!-- Sample invoices will be added here -->
+        <h3 class="card-title">📋 Income Breakdown</h3>
+        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+          <strong>Total Income: <span id="incomeTotal" style="color: #28a745;">£0.00</span></strong>
+        </div>
+        <div class="expense-list" id="incomeList">
+          <!-- Income items will be added here -->
         </div>
       </div>
     </div>
@@ -645,6 +683,11 @@
               <option value="Utilities">Utilities</option>
               <option value="Software">Software</option>
               <option value="Equipment">Equipment</option>
+              <option value="Home Office">Home Office</option>
+              <option value="Car Mileage">Car Mileage</option>
+              <option value="Professional Fees">Professional Fees</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Training">Training</option>
               <option value="Other">Other</option>
             </select>
           </div>
@@ -652,78 +695,223 @@
             <label>Date</label>
             <input type="date" id="expenseDate" required>
           </div>
+          
+          <!-- Special fields for specific categories -->
+          <div id="mileageFields" style="display: none;">
+            <div class="form-group">
+              <label>Miles Travelled</label>
+              <input type="number" id="milesTravelled" placeholder="0" step="1">
+            </div>
+            <div class="form-group">
+              <label>Rate (£/mile)</label>
+              <select id="mileageRate">
+                <option value="0.45">45p (first 10,000 miles)</option>
+                <option value="0.25">25p (over 10,000 miles)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="homeOfficeFields" style="display: none;">
+            <div class="form-group">
+              <label>Hours Worked from Home</label>
+              <input type="number" id="homeOfficeHours" placeholder="0" step="1">
+            </div>
+            <div class="form-group">
+              <label>Simplified Rate</label>
+              <select id="homeOfficeRate">
+                <option value="2">£2/month (25-50 hours)</option>
+                <option value="10">£10/month (51-100 hours)</option>
+                <option value="18">£18/month (101+ hours)</option>
+              </select>
+            </div>
+          </div>
+          
           <button type="submit" class="btn-success">Add Expense</button>
         </form>
       </div>
 
       <div class="card">
         <h3 class="card-title">📊 Expense List</h3>
+        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+          <strong>Total Expenses: <span id="expenseTotal" style="color: #dc3545;">£0.00</span></strong>
+        </div>
         <div class="expense-list" id="expenseList">
           <!-- Sample expenses will be added here -->
         </div>
       </div>
     </div>
 
-    <!-- Tax Optimization Section -->
-    <div id="taxSection" class="dashboard-section hidden">
-      <h2 class="section-title">💼 Advanced Tax Optimization</h2>
-      <p style="color: #666; margin-bottom: 20px;">Optimize your tax strategy based on UK HMRC rules, reliefs, and allowances</p>
-      
-      <!-- Entity Selection -->
-      <div class="card" style="margin-bottom: 20px;">
-        <h3 class="card-title">📋 Entity Type Selection</h3>
-        <div class="form-group">
-          <label>Select Your Entity Type</label>
-          <select id="entityType" onchange="updateTaxCalculator()">
-            <option value="">-- Select Entity Type --</option>
-            <option value="sole_trader">Sole Trader / Self-Employed</option>
-            <option value="company">Limited Company</option>
-            <option value="landlord">Landlord / Property Owner</option>
-            <option value="employee">Employee (PAYE)</option>
-          </select>
-        </div>
-        <div id="entityDescription" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px; display: none;">
-          <strong id="entityDescTitle"></strong>
-          <p id="entityDescText" style="margin-top: 10px; color: #666;"></p>
-        </div>
-      </div>
-
-      <!-- Data Synchronization Card -->
-      <div class="card" style="margin-bottom: 20px; display: none;" id="dataSyncCard">
-        <h3 class="card-title">🔄 Synchronize Data from Postings</h3>
-        <p style="color: #666; margin-bottom: 15px;">
-          Automatically sync financial data from your postings to optimize tax computations with reliefs, allowances, and capital allowances.
-        </p>
-        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-          <button type="button" class="btn-success" onclick="syncTaxData()">
-            🔄 Sync Data from Postings
-          </button>
-          <button type="button" class="btn-secondary" onclick="loadSyncedData()">
-            📥 Load Synced Data
-          </button>
-        </div>
-        <div id="syncStatus" style="display: none;"></div>
-      </div>
-
-      <!-- Tax Calculator Form -->
-      <div class="card" style="margin-bottom: 20px; display: none;" id="taxCalculatorForm">
-        <h3 class="card-title">🧮 Tax Calculator</h3>
-        <form id="advancedTaxForm">
-          <div id="dynamicTaxFields"></div>
-          <button type="submit" class="btn-success" style="margin-top: 15px;">Calculate Comprehensive Tax</button>
+    <!-- Depreciation Section -->
+    <div id="depreciationSection" class="content-grid hidden">
+      <div class="card">
+        <h3 class="card-title">📉 Add Capital Asset for Depreciation</h3>
+        <form id="depreciationForm">
+          <div class="form-group">
+            <label>Asset Name</label>
+            <input type="text" id="assetName" placeholder="E.g., Computer, Vehicle, Machinery" required>
+          </div>
+          <div class="form-group">
+            <label>Purchase Price (£)</label>
+            <input type="number" id="assetCost" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Purchase Date</label>
+            <input type="date" id="assetDate" required>
+          </div>
+          <div class="form-group">
+            <label>Depreciation Method</label>
+            <select id="depreciationMethod" required>
+              <option value="">Select method</option>
+              <option value="AIA">Annual Investment Allowance (AIA) - 100%</option>
+              <option value="WDA">Writing Down Allowance (WDA) - 18%</option>
+              <option value="SBA">Structures & Buildings Allowance - 3%</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="assetCategory" required>
+              <option value="">Select category</option>
+              <option value="Equipment">Equipment</option>
+              <option value="Vehicles">Vehicles</option>
+              <option value="Computers">Computers</option>
+              <option value="Machinery">Machinery</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Buildings">Buildings</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes (Optional)</label>
+            <textarea id="assetNotes" placeholder="Additional details"></textarea>
+          </div>
+          <button type="submit" class="btn-success">Add Asset</button>
         </form>
       </div>
 
-      <div id="resultContainer"></div>
+      <div class="card">
+        <h3 class="card-title">📊 Depreciation Summary</h3>
+        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+          <strong>Total Assets Value: <span id="assetsTotal" style="color: #667eea;">£0.00</span></strong><br>
+          <strong>Current Year Depreciation: <span id="depreciationTotal" style="color: #dc3545;">£0.00</span></strong>
+        </div>
+        <div class="expense-list" id="depreciationList">
+          <!-- Depreciation items will be added here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Capital Section -->
+    <div id="capitalSection" class="content-grid hidden">
+      <div class="card">
+        <h3 class="card-title">💎 Add Capital / Investment</h3>
+        <form id="capitalForm">
+          <div class="form-group">
+            <label>Capital Item</label>
+            <input type="text" id="capitalName" placeholder="E.g., Owner's Capital, Investment, Retained Profit" required>
+          </div>
+          <div class="form-group">
+            <label>Amount (£)</label>
+            <input type="number" id="capitalAmount" placeholder="0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="capitalDate" required>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="capitalType" required>
+              <option value="">Select type</option>
+              <option value="Owner Capital">Owner's Capital</option>
+              <option value="Investment">Investment</option>
+              <option value="Retained Profit">Retained Profit</option>
+              <option value="Loan">Loan</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes (Optional)</label>
+            <textarea id="capitalNotes" placeholder="Additional details"></textarea>
+          </div>
+          <button type="submit" class="btn-success">Add Capital</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📋 Capital Summary</h3>
+        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+          <strong>Total Capital: <span id="capitalTotal" style="color: #28a745;">£0.00</span></strong>
+        </div>
+        <div class="expense-list" id="capitalList">
+          <!-- Capital items will be added here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Optimization Section -->
+    <div id="taxSection" class="dashboard-section hidden">
+      <h2 class="section-title">💼 Sole Trader Tax Estimator & Optimizer</h2>
+      <p style="color: #666; margin-bottom: 20px;">Calculate your tax liability and discover optimization opportunities with HMRC reliefs and allowances</p>
+      
+      <!-- Quick Tax Calculation -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 class="card-title">🧮 Quick Tax Calculation</h3>
+        <button type="button" class="btn-success" onclick="calculateTaxFromData()" style="width: 100%;">
+          Calculate Tax from Current Data
+        </button>
+      </div>
+
+      <!-- Tax Relief & Allowances -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 class="card-title">💡 Tax Reliefs & Allowances</h3>
+        <form id="taxReliefForm">
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="useHomeOfficeRelief"> Use Home Office Relief
+            </label>
+            <p style="font-size: 12px; color: #666; margin-left: 20px;">
+              Simplified flat rate: £2-£18/month depending on hours worked
+            </p>
+          </div>
+          
+          <div id="homeOfficeReliefDetails" style="display: none; margin-left: 20px;">
+            <div class="form-group">
+              <label>Monthly Hours Worked from Home</label>
+              <input type="number" id="homeOfficeMonthlyHours" placeholder="100" step="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="useMileageAllowance"> Use Mileage Allowance Relief
+            </label>
+            <p style="font-size: 12px; color: #666; margin-left: 20px;">
+              45p per mile (first 10,000), 25p per mile (thereafter)
+            </p>
+          </div>
+          
+          <div id="mileageAllowanceDetails" style="display: none; margin-left: 20px;">
+            <div class="form-group">
+              <label>Annual Business Miles</label>
+              <input type="number" id="annualBusinessMiles" placeholder="5000" step="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Additional Allowable Expenses (£)</label>
+            <input type="number" id="additionalExpenses" placeholder="0.00" step="0.01" value="0">
+            <p style="font-size: 12px; color: #666;">E.g., Professional subscriptions, training costs</p>
+          </div>
+          
+          <button type="button" class="btn-success" onclick="calculateOptimizedTax()" style="margin-top: 15px;">
+            Calculate Optimized Tax
+          </button>
+        </form>
+      </div>
 
       <!-- Tax Results -->
-      <div id="taxResults" class="tax-result" style="display: none;">
-        <h3 style="margin-bottom: 15px;">Comprehensive Tax Analysis</h3>
+      <div id="taxResults" class="card" style="display: none;">
+        <h3 class="card-title">📊 Tax Calculation Results</h3>
         <div id="taxBreakdown"></div>
-        <div id="optimizationTips" style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
-          <strong>💡 Optimization Tips:</strong>
-          <ul id="tipsList" style="margin-top: 10px; padding-left: 20px;"></ul>
-        </div>
       </div>
 
       <!-- Tax Rules & Information Section -->
@@ -886,69 +1074,218 @@
     </div>
   </div>
 
-  <!-- Edit Invoice Modal -->
-  <div id="editInvoiceModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Invoice</h3>
-        <button class="modal-close" onclick="closeModal('editInvoiceModal')">&times;</button>
-      </div>
-      <form id="editInvoiceForm">
-        <input type="hidden" id="editInvoiceId">
-        <div class="form-group">
-          <label>Client Name</label>
-          <input type="text" id="editClientName" required>
-        </div>
-        <div class="form-group">
-          <label>Amount (£)</label>
-          <input type="number" id="editInvoiceAmount" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="editInvoiceStatus" required>
-            <option value="pending">Pending</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-success">Save Changes</button>
-      </form>
-    </div>
-  </div>
-
   <script>
     // Global state
     let isLoggedIn = false;
-    let invoices = [];
+    let income = [];
     let expenses = [];
-    let invoiceIdCounter = 1;
+    let depreciation = [];
+    let capital = [];
+    let incomeIdCounter = 1;
     let expenseIdCounter = 1;
+    let depreciationIdCounter = 1;
+    let capitalIdCounter = 1;
 
     // Initialize app
     function init() {
       loadSampleData();
       showSection('dashboard');
       updateFinancialStats();
+      setupEventListeners();
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      // Category change listeners for expenses
+      const expenseCategoryEl = document.getElementById('expenseCategory');
+      if (expenseCategoryEl) {
+        expenseCategoryEl.addEventListener('change', function() {
+          const mileageFields = document.getElementById('mileageFields');
+          const homeOfficeFields = document.getElementById('homeOfficeFields');
+          
+          if (this.value === 'Car Mileage') {
+            mileageFields.style.display = 'block';
+            homeOfficeFields.style.display = 'none';
+          } else if (this.value === 'Home Office') {
+            homeOfficeFields.style.display = 'block';
+            mileageFields.style.display = 'none';
+          } else {
+            mileageFields.style.display = 'none';
+            homeOfficeFields.style.display = 'none';
+          }
+        });
+      }
+      
+      // Tax relief checkboxes
+      const homeOfficeReliefCb = document.getElementById('useHomeOfficeRelief');
+      if (homeOfficeReliefCb) {
+        homeOfficeReliefCb.addEventListener('change', function() {
+          document.getElementById('homeOfficeReliefDetails').style.display = 
+            this.checked ? 'block' : 'none';
+        });
+      }
+      
+      const mileageAllowanceCb = document.getElementById('useMileageAllowance');
+      if (mileageAllowanceCb) {
+        mileageAllowanceCb.addEventListener('change', function() {
+          document.getElementById('mileageAllowanceDetails').style.display = 
+            this.checked ? 'block' : 'none';
+        });
+      }
+      
+      // Income form
+      const incomeForm = document.getElementById('incomeForm');
+      if (incomeForm) {
+        incomeForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const newIncome = {
+            id: incomeIdCounter++,
+            source: document.getElementById('incomeSource').value,
+            amount: parseFloat(document.getElementById('incomeAmount').value),
+            category: document.getElementById('incomeCategory').value,
+            date: document.getElementById('incomeDate').value,
+            notes: document.getElementById('incomeNotes').value
+          };
+
+          income.push(newIncome);
+          renderIncome();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Income added successfully!', 'success');
+        });
+      }
+      
+      // Expense form
+      const expenseForm = document.getElementById('expenseForm');
+      if (expenseForm) {
+        expenseForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          let amount = parseFloat(document.getElementById('expenseAmount').value);
+          const category = document.getElementById('expenseCategory').value;
+          
+          // Calculate mileage amount if applicable
+          if (category === 'Car Mileage') {
+            const miles = parseFloat(document.getElementById('milesTravelled').value) || 0;
+            const rate = parseFloat(document.getElementById('mileageRate').value);
+            amount = miles * rate;
+          }
+          
+          // Calculate home office amount if applicable
+          if (category === 'Home Office') {
+            const hours = parseFloat(document.getElementById('homeOfficeHours').value) || 0;
+            const rate = parseFloat(document.getElementById('homeOfficeRate').value);
+            amount = rate; // Monthly rate
+          }
+          
+          const newExpense = {
+            id: expenseIdCounter++,
+            description: document.getElementById('expenseDescription').value,
+            amount: amount,
+            category: category,
+            date: document.getElementById('expenseDate').value
+          };
+
+          expenses.push(newExpense);
+          renderExpenses();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Expense added successfully!', 'success');
+        });
+      }
+      
+      // Depreciation form
+      const depreciationForm = document.getElementById('depreciationForm');
+      if (depreciationForm) {
+        depreciationForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const cost = parseFloat(document.getElementById('assetCost').value);
+          const method = document.getElementById('depreciationMethod').value;
+          let depreciationAmount = 0;
+          
+          // Calculate depreciation based on method
+          if (method === 'AIA') {
+            depreciationAmount = cost; // 100% in first year
+          } else if (method === 'WDA') {
+            depreciationAmount = cost * 0.18; // 18% per year
+          } else if (method === 'SBA') {
+            depreciationAmount = cost * 0.03; // 3% per year
+          }
+          
+          const newAsset = {
+            id: depreciationIdCounter++,
+            name: document.getElementById('assetName').value,
+            cost: cost,
+            date: document.getElementById('assetDate').value,
+            method: method,
+            category: document.getElementById('assetCategory').value,
+            depreciation: depreciationAmount,
+            notes: document.getElementById('assetNotes').value
+          };
+
+          depreciation.push(newAsset);
+          renderDepreciation();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Asset added successfully!', 'success');
+        });
+      }
+      
+      // Capital form
+      const capitalForm = document.getElementById('capitalForm');
+      if (capitalForm) {
+        capitalForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const newCapital = {
+            id: capitalIdCounter++,
+            name: document.getElementById('capitalName').value,
+            amount: parseFloat(document.getElementById('capitalAmount').value),
+            type: document.getElementById('capitalType').value,
+            date: document.getElementById('capitalDate').value,
+            notes: document.getElementById('capitalNotes').value
+          };
+
+          capital.push(newCapital);
+          renderCapital();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Capital entry added successfully!', 'success');
+        });
+      }
     }
 
     // Load sample data
     function loadSampleData() {
-      invoices = [
-        { id: 1, clientName: 'ABC Ltd', amount: 5000, status: 'paid', dueDate: '2024-12-15', description: 'Web development services' },
-        { id: 2, clientName: 'XYZ Corp', amount: 3500, status: 'pending', dueDate: '2024-12-25', description: 'Consulting services' },
-        { id: 3, clientName: 'Tech Solutions', amount: 2800, status: 'overdue', dueDate: '2024-11-30', description: 'Software maintenance' }
+      income = [
+        { id: 1, source: 'Freelance web development', amount: 15000, category: 'Services', date: '2024-12-15', notes: 'Project for ABC Ltd' },
+        { id: 2, source: 'Consulting services', amount: 8500, category: 'Consulting', date: '2024-12-20', notes: 'Monthly retainer' }
       ];
-      invoiceIdCounter = invoices.length + 1;
+      incomeIdCounter = income.length + 1;
 
       expenses = [
-        { id: 1, description: 'Office rent', amount: 1200, category: 'Utilities', date: '2024-12-01' },
+        { id: 1, description: 'Office supplies', amount: 250, category: 'Office Supplies', date: '2024-12-01' },
         { id: 2, description: 'Marketing campaign', amount: 850, category: 'Marketing', date: '2024-12-05' },
         { id: 3, description: 'Software licenses', amount: 450, category: 'Software', date: '2024-12-10' }
       ];
       expenseIdCounter = expenses.length + 1;
+      
+      depreciation = [
+        { id: 1, name: 'Laptop', cost: 1200, date: '2024-01-15', method: 'AIA', category: 'Computers', depreciation: 1200, notes: 'Main work computer' }
+      ];
+      depreciationIdCounter = depreciation.length + 1;
+      
+      capital = [
+        { id: 1, name: 'Owner\'s Capital', amount: 10000, type: 'Owner Capital', date: '2024-01-01', notes: 'Initial investment' }
+      ];
+      capitalIdCounter = capital.length + 1;
 
-      renderInvoices();
+      renderIncome();
       renderExpenses();
+      renderDepreciation();
+      renderCapital();
     }
 
     // Authentication
@@ -972,141 +1309,73 @@
     // Navigation
     function showSection(section) {
       document.getElementById('dashboardSection').classList.add('hidden');
-      document.getElementById('invoicesSection').classList.add('hidden');
+      document.getElementById('incomeSection').classList.add('hidden');
       document.getElementById('expensesSection').classList.add('hidden');
+      document.getElementById('depreciationSection').classList.add('hidden');
+      document.getElementById('capitalSection').classList.add('hidden');
       document.getElementById('taxSection').classList.add('hidden');
 
       if (section === 'dashboard') {
         document.getElementById('dashboardSection').classList.remove('hidden');
-      } else if (section === 'invoices') {
-        document.getElementById('invoicesSection').classList.remove('hidden');
+      } else if (section === 'income') {
+        document.getElementById('incomeSection').classList.remove('hidden');
       } else if (section === 'expenses') {
         document.getElementById('expensesSection').classList.remove('hidden');
+      } else if (section === 'depreciation') {
+        document.getElementById('depreciationSection').classList.remove('hidden');
+      } else if (section === 'capital') {
+        document.getElementById('capitalSection').classList.remove('hidden');
       } else if (section === 'tax') {
         document.getElementById('taxSection').classList.remove('hidden');
       }
     }
 
-    // Xero Connection
-    async function connectToXero() {
-      const statusDiv = document.getElementById('connectedStatus');
-      statusDiv.innerHTML = '<p style="color: #666;">Connecting to Xero...</p>';
+    // Income Management - Render and Delete functions
+    function renderIncome() {
+      const listDiv = document.getElementById('incomeList');
+      const totalDiv = document.getElementById('incomeTotal');
       
-      try {
-        // Simulated API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Simulate success
-        statusDiv.innerHTML = '<div class="connection-status status-connected">✓ Successfully connected to Xero!</div>';
-        showNotification('Connected to Xero successfully!', 'success');
-      } catch (error) {
-        statusDiv.innerHTML = '<div class="connection-status status-error">✗ Failed to connect to Xero. Please try again.</div>';
-        showNotification('Failed to connect to Xero', 'error');
-      }
-    }
-
-    // Invoice Management
-    document.getElementById('invoiceForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+      const total = income.reduce((sum, item) => sum + item.amount, 0);
+      totalDiv.textContent = `£${total.toFixed(2)}`;
       
-      const newInvoice = {
-        id: invoiceIdCounter++,
-        clientName: document.getElementById('clientName').value,
-        amount: parseFloat(document.getElementById('invoiceAmount').value),
-        status: 'pending',
-        dueDate: document.getElementById('dueDate').value,
-        description: document.getElementById('invoiceDescription').value
-      };
-
-      invoices.push(newInvoice);
-      renderInvoices();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Invoice created successfully!', 'success');
-    });
-
-    function renderInvoices() {
-      const listDiv = document.getElementById('invoiceList');
-      if (invoices.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No invoices yet. Create your first invoice!</p>';
+      if (income.length === 0) {
+        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No income entries yet. Add your first income source!</p>';
         return;
       }
 
-      listDiv.innerHTML = invoices.map(invoice => `
+      listDiv.innerHTML = income.map(item => `
         <div class="item-row">
           <div class="item-info">
-            <div class="item-title">${invoice.clientName} - £${invoice.amount.toFixed(2)}</div>
+            <div class="item-title">${item.source} - £${item.amount.toFixed(2)}</div>
             <div class="item-details">
-              Due: ${invoice.dueDate} | 
-              <span class="status-badge badge-${invoice.status}">${invoice.status.toUpperCase()}</span>
+              Date: ${item.date} | Category: ${item.category}
+              ${item.notes ? '<br>' + item.notes : ''}
             </div>
           </div>
           <div class="item-actions">
-            <button class="btn-sm btn-secondary" onclick="editInvoice(${invoice.id})">Edit</button>
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteInvoice(${invoice.id})">Delete</button>
+            <button class="btn-sm" style="background: #dc3545;" onclick="deleteIncome(${item.id})">Delete</button>
           </div>
         </div>
       `).join('');
     }
 
-    function editInvoice(id) {
-      const invoice = invoices.find(inv => inv.id === id);
-      if (invoice) {
-        document.getElementById('editInvoiceId').value = invoice.id;
-        document.getElementById('editClientName').value = invoice.clientName;
-        document.getElementById('editInvoiceAmount').value = invoice.amount;
-        document.getElementById('editInvoiceStatus').value = invoice.status;
-        document.getElementById('editInvoiceModal').classList.add('active');
+    function deleteIncome(id) {
+      if (confirm('Are you sure you want to delete this income entry?')) {
+        income = income.filter(item => item.id !== id);
+        renderIncome();
+        updateFinancialStats();
+        showNotification('Income deleted successfully!', 'success');
       }
     }
 
-    document.getElementById('editInvoiceForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const id = parseInt(document.getElementById('editInvoiceId').value);
-      const invoice = invoices.find(inv => inv.id === id);
-      
-      if (invoice) {
-        invoice.clientName = document.getElementById('editClientName').value;
-        invoice.amount = parseFloat(document.getElementById('editInvoiceAmount').value);
-        invoice.status = document.getElementById('editInvoiceStatus').value;
-        
-        renderInvoices();
-        updateFinancialStats();
-        closeModal('editInvoiceModal');
-        showNotification('Invoice updated successfully!', 'success');
-      }
-    });
-
-    function deleteInvoice(id) {
-      if (confirm('Are you sure you want to delete this invoice?')) {
-        invoices = invoices.filter(inv => inv.id !== id);
-        renderInvoices();
-        updateFinancialStats();
-        showNotification('Invoice deleted successfully!', 'success');
-      }
-    }
-
-    // Expense Management
-    document.getElementById('expenseForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const newExpense = {
-        id: expenseIdCounter++,
-        description: document.getElementById('expenseDescription').value,
-        amount: parseFloat(document.getElementById('expenseAmount').value),
-        category: document.getElementById('expenseCategory').value,
-        date: document.getElementById('expenseDate').value
-      };
-
-      expenses.push(newExpense);
-      renderExpenses();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Expense added successfully!', 'success');
-    });
-
+    // Expense Management - Render and Delete functions
     function renderExpenses() {
       const listDiv = document.getElementById('expenseList');
+      const totalDiv = document.getElementById('expenseTotal');
+      
+      const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      totalDiv.textContent = `£${total.toFixed(2)}`;
+      
       if (expenses.length === 0) {
         listDiv.innerHTML = '<p style="color: #666; text-align: center;">No expenses yet. Track your first expense!</p>';
         return;
@@ -1134,20 +1403,113 @@
       }
     }
 
+    // Depreciation Management - Render and Delete functions
+    function renderDepreciation() {
+      const listDiv = document.getElementById('depreciationList');
+      const assetsTotalDiv = document.getElementById('assetsTotal');
+      const depreciationTotalDiv = document.getElementById('depreciationTotal');
+      
+      const assetsTotal = depreciation.reduce((sum, item) => sum + item.cost, 0);
+      const depreciationTotal = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
+      
+      assetsTotalDiv.textContent = `£${assetsTotal.toFixed(2)}`;
+      depreciationTotalDiv.textContent = `£${depreciationTotal.toFixed(2)}`;
+      
+      if (depreciation.length === 0) {
+        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No capital assets yet. Add your first asset!</p>';
+        return;
+      }
+
+      listDiv.innerHTML = depreciation.map(item => `
+        <div class="item-row">
+          <div class="item-info">
+            <div class="item-title">${item.name} - £${item.cost.toFixed(2)}</div>
+            <div class="item-details">
+              ${item.category} | ${item.method} | Depreciation: £${item.depreciation.toFixed(2)}
+              ${item.notes ? '<br>' + item.notes : ''}
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm" style="background: #dc3545;" onclick="deleteDepreciation(${item.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteDepreciation(id) {
+      if (confirm('Are you sure you want to delete this asset?')) {
+        depreciation = depreciation.filter(item => item.id !== id);
+        renderDepreciation();
+        updateFinancialStats();
+        showNotification('Asset deleted successfully!', 'success');
+      }
+    }
+
+    // Capital Management - Render and Delete functions
+    function renderCapital() {
+      const listDiv = document.getElementById('capitalList');
+      const totalDiv = document.getElementById('capitalTotal');
+      
+      const total = capital.reduce((sum, item) => sum + item.amount, 0);
+      totalDiv.textContent = `£${total.toFixed(2)}`;
+      
+      if (capital.length === 0) {
+        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No capital entries yet. Add your first capital item!</p>';
+        return;
+      }
+
+      listDiv.innerHTML = capital.map(item => `
+        <div class="item-row">
+          <div class="item-info">
+            <div class="item-title">${item.name} - £${item.amount.toFixed(2)}</div>
+            <div class="item-details">
+              ${item.type} | ${item.date}
+              ${item.notes ? '<br>' + item.notes : ''}
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm" style="background: #dc3545;" onclick="deleteCapital(${item.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteCapital(id) {
+      if (confirm('Are you sure you want to delete this capital entry?')) {
+        capital = capital.filter(item => item.id !== id);
+        renderCapital();
+        updateFinancialStats();
+        showNotification('Capital entry deleted successfully!', 'success');
+      }
+    }
+
     // Financial Stats Update
     function updateFinancialStats() {
-      const totalIncome = invoices
-        .filter(inv => inv.status === 'paid')
-        .reduce((sum, inv) => sum + inv.amount, 0);
-      
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const netProfit = totalIncome - totalExpenses;
-      const estimatedTax = netProfit * 0.20; // 20% tax rate
-
-      document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
-      document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
-      document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
-      document.getElementById('estimatedTax').textContent = `£${estimatedTax.toFixed(2)}`;
+      try {
+        const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
+        const totalCapitalAmount = capital.reduce((sum, item) => sum + item.amount, 0);
+        
+        const netProfit = totalIncome - totalExpenses - totalDepreciation;
+        
+        // Calculate tax (simplified)
+        // const taxResult = calculateSoleTraderTax(netProfit, 0, 0, 0);
+        
+        document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
+        document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
+        document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
+        document.getElementById('estimatedTax').textContent = `£0`;
+        document.getElementById('estimatedNI').textContent = `£0`;
+        document.getElementById('totalTax').textContent = `£0`;
+        document.getElementById('totalDepreciation').textContent = `£${totalDepreciation.toFixed(2)}`;
+        document.getElementById('totalCapital').textContent = `£${totalCapitalAmount.toFixed(2)}`;
+        
+        // updateTaxSuggestions(totalIncome, totalExpenses, netProfit);
+      } catch (error) {
+        console.error('Error updating financial stats:', error);
+        console.error('Error stack:', error.stack);
+      }
     }
 
     // HMRC Tax Rules and Constants (2024/25)
@@ -1210,6 +1572,249 @@
       const allowance = Math.max(0, TAX_RULES.personalAllowance - reduction);
       
       return allowance;
+    }
+
+    // Tax Suggestions
+    function updateTaxSuggestions(totalIncome, totalExpenses, netProfit) {
+      const suggestionsDiv = document.getElementById('taxSuggestions');
+      const suggestions = [];
+      
+      if (netProfit > 12570) {
+        suggestions.push('💡 Consider maximizing your allowable expenses to reduce taxable profit');
+      }
+      
+      if (totalExpenses < totalIncome * 0.2) {
+        suggestions.push('💡 Review if you\'re claiming all allowable business expenses');
+      }
+      
+      suggestions.push('💡 Use the simplified home office rate (£2-£18/month) if you work from home');
+      suggestions.push('💡 Claim mileage allowance for business trips (45p first 10,000 miles, 25p thereafter)');
+      
+      if (netProfit > 50270) {
+        suggestions.push('💡 Consider pension contributions to reduce higher rate tax');
+      }
+      
+      if (depreciation.length === 0) {
+        suggestions.push('💡 Add capital assets to claim Annual Investment Allowance (AIA) up to £1,000,000');
+      }
+      
+      suggestionsDiv.innerHTML = '<ul style="padding-left: 20px;">' + 
+        suggestions.map(s => `<li style="margin: 10px 0; color: #333;">${s}</li>`).join('') + 
+        '</ul>';
+    }
+
+    // Calculate Sole Trader Tax
+    function calculateSoleTraderTax(profit, homeOfficeRelief = 0, mileageAllowance = 0, additionalExpenses = 0) {
+      // Adjust profit with reliefs
+      const adjustedProfit = Math.max(0, profit - homeOfficeRelief - mileageAllowance - additionalExpenses);
+      
+      // Personal allowance
+      const personalAllowance = calculatePersonalAllowance(adjustedProfit);
+      const taxableIncome = Math.max(0, adjustedProfit - personalAllowance);
+      
+      // Calculate income tax
+      let incomeTax = 0;
+      if (taxableIncome > 0) {
+        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
+        const higherRateBand = TAX_RULES.higherRateLimit - TAX_RULES.personalAllowance; // £112,570
+        
+        if (taxableIncome <= basicRateBand) {
+          // Basic rate only
+          incomeTax = taxableIncome * TAX_RULES.basicRate;
+        } else if (taxableIncome <= higherRateBand) {
+          // Basic + Higher rate
+          const basicAmount = basicRateBand;
+          const higherAmount = taxableIncome - basicRateBand;
+          incomeTax = (basicAmount * TAX_RULES.basicRate) + (higherAmount * TAX_RULES.higherRate);
+        } else {
+          // Basic + Higher + Additional rate
+          const basicAmount = basicRateBand;
+          const higherAmount = higherRateBand - basicRateBand;
+          const additionalAmount = taxableIncome - higherRateBand;
+          incomeTax = (basicAmount * TAX_RULES.basicRate) + 
+                      (higherAmount * TAX_RULES.higherRate) + 
+                      (additionalAmount * TAX_RULES.additionalRate);
+        }
+      }
+      
+      // Calculate National Insurance
+      let nationalInsurance = 0;
+      
+      // Class 2 NI (flat weekly rate if profit > £6,725)
+      if (adjustedProfit > TAX_RULES.niClass2Threshold) {
+        nationalInsurance += TAX_RULES.niClass2Weekly * 52; // £179.40 per year
+      }
+      
+      // Class 4 NI (9% on profits between £12,570 and £50,270, 2% thereafter)
+      if (adjustedProfit > TAX_RULES.personalAllowance) {
+        const niableProfit = adjustedProfit - TAX_RULES.personalAllowance;
+        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
+        
+        if (niableProfit <= basicRateBand) {
+          nationalInsurance += niableProfit * TAX_RULES.niClass4Rate;
+        } else {
+          const class4Basic = basicRateBand * TAX_RULES.niClass4Rate;
+          const class4Higher = (niableProfit - basicRateBand) * TAX_RULES.niClass4ReducedRate;
+          nationalInsurance += class4Basic + class4Higher;
+        }
+      }
+      
+      return {
+        adjustedProfit,
+        personalAllowance,
+        taxableIncome,
+        incomeTax,
+        nationalInsurance,
+        totalTax: incomeTax + nationalInsurance
+      };
+    }
+
+    // Calculate tax from current data
+    function calculateTaxFromData() {
+      const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
+      const netProfit = totalIncome - totalExpenses - totalDepreciation;
+      
+      const taxResult = calculateSoleTraderTax(netProfit, 0, 0, 0);
+      displayTaxResults(taxResult, 0, 0, 0, false);
+    }
+
+    // Calculate optimized tax with reliefs
+    function calculateOptimizedTax() {
+      const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
+      const netProfit = totalIncome - totalExpenses - totalDepreciation;
+      
+      let homeOfficeRelief = 0;
+      let mileageAllowance = 0;
+      
+      // Calculate home office relief
+      const homeOfficeCheckbox = document.getElementById('useHomeOfficeRelief');
+      if (homeOfficeCheckbox && homeOfficeCheckbox.checked) {
+        const hoursInput = document.getElementById('homeOfficeMonthlyHours');
+        const hours = hoursInput ? (parseFloat(hoursInput.value) || 0) : 0;
+        let monthlyRate = 0;
+        if (hours >= 25 && hours <= 50) monthlyRate = 2;
+        else if (hours >= 51 && hours <= 100) monthlyRate = 10;
+        else if (hours > 100) monthlyRate = 18;
+        homeOfficeRelief = monthlyRate * 12; // Annual
+      }
+      
+      // Calculate mileage allowance
+      const mileageCheckbox = document.getElementById('useMileageAllowance');
+      if (mileageCheckbox && mileageCheckbox.checked) {
+        const milesInput = document.getElementById('annualBusinessMiles');
+        const miles = milesInput ? (parseFloat(milesInput.value) || 0) : 0;
+        if (miles <= 10000) {
+          mileageAllowance = miles * 0.45;
+        } else {
+          mileageAllowance = (10000 * 0.45) + ((miles - 10000) * 0.25);
+        }
+      }
+      
+      const additionalExpensesInput = document.getElementById('additionalExpenses');
+      const additionalExpenses = additionalExpensesInput ? (parseFloat(additionalExpensesInput.value) || 0) : 0;
+      
+      const taxResult = calculateSoleTraderTax(netProfit, homeOfficeRelief, mileageAllowance, additionalExpenses);
+      displayTaxResults(taxResult, homeOfficeRelief, mileageAllowance, additionalExpenses, true);
+    }
+
+    // Display tax results
+    function displayTaxResults(taxResult, homeOfficeRelief, mileageAllowance, additionalExpenses, showOptimization) {
+      const resultsDiv = document.getElementById('taxResults');
+      const breakdownDiv = document.getElementById('taxBreakdown');
+      
+      let html = `
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+          <h4 style="color: #667eea; margin-bottom: 15px;">Income & Expenses Summary</h4>
+          <div class="tax-metric">
+            <span class="metric-label">Total Income</span>
+            <span class="metric-value">£${income.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Total Expenses</span>
+            <span class="metric-value">£${expenses.reduce((sum, exp) => sum + exp.amount, 0).toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Depreciation Allowances</span>
+            <span class="metric-value">£${depreciation.reduce((sum, item) => sum + item.depreciation, 0).toFixed(2)}</span>
+          </div>
+      `;
+      
+      if (showOptimization) {
+        html += `
+          <div class="tax-metric">
+            <span class="metric-label">Home Office Relief</span>
+            <span class="metric-value">£${homeOfficeRelief.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Mileage Allowance</span>
+            <span class="metric-value">£${mileageAllowance.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Additional Expenses</span>
+            <span class="metric-value">£${additionalExpenses.toFixed(2)}</span>
+          </div>
+        `;
+      }
+      
+      html += `
+          <div class="tax-metric" style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px;">
+            <span class="metric-label"><strong>Adjusted Profit</strong></span>
+            <span class="metric-value"><strong>£${taxResult.adjustedProfit.toFixed(2)}</strong></span>
+          </div>
+        </div>
+        
+        <div style="background: #fff; padding: 20px; border-radius: 10px; border: 2px solid #667eea;">
+          <h4 style="color: #667eea; margin-bottom: 15px;">Tax Calculation</h4>
+          <div class="tax-metric">
+            <span class="metric-label">Personal Allowance</span>
+            <span class="metric-value">£${taxResult.personalAllowance.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Taxable Income</span>
+            <span class="metric-value">£${taxResult.taxableIncome.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">Income Tax</span>
+            <span class="metric-value" style="color: #dc3545;">£${taxResult.incomeTax.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric">
+            <span class="metric-label">National Insurance (Class 2 & 4)</span>
+            <span class="metric-value" style="color: #dc3545;">£${taxResult.nationalInsurance.toFixed(2)}</span>
+          </div>
+          <div class="tax-metric" style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; font-size: 18px;">
+            <span class="metric-label"><strong>Total Tax Liability</strong></span>
+            <span class="metric-value" style="color: #dc3545;"><strong>£${taxResult.totalTax.toFixed(2)}</strong></span>
+          </div>
+          <div class="tax-metric" style="background: #e7f3ff; padding: 10px; border-radius: 5px; margin-top: 10px;">
+            <span class="metric-label"><strong>Net Income After Tax</strong></span>
+            <span class="metric-value" style="color: #28a745;"><strong>£${(taxResult.adjustedProfit - taxResult.totalTax).toFixed(2)}</strong></span>
+          </div>
+        </div>
+      `;
+      
+      if (showOptimization && (homeOfficeRelief > 0 || mileageAllowance > 0 || additionalExpenses > 0)) {
+        const basicResult = calculateSoleTraderTax(income.reduce((sum, item) => sum + item.amount, 0) - expenses.reduce((sum, exp) => sum + exp.amount, 0) - depreciation.reduce((sum, item) => sum + item.depreciation, 0), 0, 0, 0);
+        const savings = basicResult.totalTax - taxResult.totalTax;
+        
+        html += `
+          <div style="background: #d4edda; padding: 20px; border-radius: 10px; margin-top: 20px; border: 2px solid #28a745;">
+            <h4 style="color: #155724; margin-bottom: 10px;">💰 Tax Savings with Optimization</h4>
+            <p style="color: #155724; font-size: 18px; margin: 0;">
+              <strong>You save £${savings.toFixed(2)}</strong> with the applied reliefs and allowances!
+            </p>
+          </div>
+        `;
+      }
+      
+      breakdownDiv.innerHTML = html;
+      resultsDiv.style.display = 'block';
+      
+      // Scroll to results
+      resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     // Entity Descriptions
