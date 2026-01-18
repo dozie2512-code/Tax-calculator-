@@ -1132,6 +1132,129 @@
             this.checked ? 'block' : 'none';
         });
       }
+      
+      // Income form
+      const incomeForm = document.getElementById('incomeForm');
+      if (incomeForm) {
+        incomeForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const newIncome = {
+            id: incomeIdCounter++,
+            source: document.getElementById('incomeSource').value,
+            amount: parseFloat(document.getElementById('incomeAmount').value),
+            category: document.getElementById('incomeCategory').value,
+            date: document.getElementById('incomeDate').value,
+            notes: document.getElementById('incomeNotes').value
+          };
+
+          income.push(newIncome);
+          renderIncome();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Income added successfully!', 'success');
+        });
+      }
+      
+      // Expense form
+      const expenseForm = document.getElementById('expenseForm');
+      if (expenseForm) {
+        expenseForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          let amount = parseFloat(document.getElementById('expenseAmount').value);
+          const category = document.getElementById('expenseCategory').value;
+          
+          // Calculate mileage amount if applicable
+          if (category === 'Car Mileage') {
+            const miles = parseFloat(document.getElementById('milesTravelled').value) || 0;
+            const rate = parseFloat(document.getElementById('mileageRate').value);
+            amount = miles * rate;
+          }
+          
+          // Calculate home office amount if applicable
+          if (category === 'Home Office') {
+            const hours = parseFloat(document.getElementById('homeOfficeHours').value) || 0;
+            const rate = parseFloat(document.getElementById('homeOfficeRate').value);
+            amount = rate; // Monthly rate
+          }
+          
+          const newExpense = {
+            id: expenseIdCounter++,
+            description: document.getElementById('expenseDescription').value,
+            amount: amount,
+            category: category,
+            date: document.getElementById('expenseDate').value
+          };
+
+          expenses.push(newExpense);
+          renderExpenses();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Expense added successfully!', 'success');
+        });
+      }
+      
+      // Depreciation form
+      const depreciationForm = document.getElementById('depreciationForm');
+      if (depreciationForm) {
+        depreciationForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const cost = parseFloat(document.getElementById('assetCost').value);
+          const method = document.getElementById('depreciationMethod').value;
+          let depreciationAmount = 0;
+          
+          // Calculate depreciation based on method
+          if (method === 'AIA') {
+            depreciationAmount = cost; // 100% in first year
+          } else if (method === 'WDA') {
+            depreciationAmount = cost * 0.18; // 18% per year
+          } else if (method === 'SBA') {
+            depreciationAmount = cost * 0.03; // 3% per year
+          }
+          
+          const newAsset = {
+            id: depreciationIdCounter++,
+            name: document.getElementById('assetName').value,
+            cost: cost,
+            date: document.getElementById('assetDate').value,
+            method: method,
+            category: document.getElementById('assetCategory').value,
+            depreciation: depreciationAmount,
+            notes: document.getElementById('assetNotes').value
+          };
+
+          depreciation.push(newAsset);
+          renderDepreciation();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Asset added successfully!', 'success');
+        });
+      }
+      
+      // Capital form
+      const capitalForm = document.getElementById('capitalForm');
+      if (capitalForm) {
+        capitalForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const newCapital = {
+            id: capitalIdCounter++,
+            name: document.getElementById('capitalName').value,
+            amount: parseFloat(document.getElementById('capitalAmount').value),
+            type: document.getElementById('capitalType').value,
+            date: document.getElementById('capitalDate').value,
+            notes: document.getElementById('capitalNotes').value
+          };
+
+          capital.push(newCapital);
+          renderCapital();
+          updateFinancialStats();
+          this.reset();
+          showNotification('Capital entry added successfully!', 'success');
+        });
+      }
     }
 
     // Load sample data
@@ -1207,26 +1330,7 @@
       }
     }
 
-    // Income Management
-    document.getElementById('incomeForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const newIncome = {
-        id: incomeIdCounter++,
-        source: document.getElementById('incomeSource').value,
-        amount: parseFloat(document.getElementById('incomeAmount').value),
-        category: document.getElementById('incomeCategory').value,
-        date: document.getElementById('incomeDate').value,
-        notes: document.getElementById('incomeNotes').value
-      };
-
-      income.push(newIncome);
-      renderIncome();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Income added successfully!', 'success');
-    });
-
+    // Income Management - Render and Delete functions
     function renderIncome() {
       const listDiv = document.getElementById('incomeList');
       const totalDiv = document.getElementById('incomeTotal');
@@ -1264,42 +1368,7 @@
       }
     }
 
-    // Expense Management
-    document.getElementById('expenseForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      let amount = parseFloat(document.getElementById('expenseAmount').value);
-      const category = document.getElementById('expenseCategory').value;
-      
-      // Calculate mileage amount if applicable
-      if (category === 'Car Mileage') {
-        const miles = parseFloat(document.getElementById('milesTravelled').value) || 0;
-        const rate = parseFloat(document.getElementById('mileageRate').value);
-        amount = miles * rate;
-      }
-      
-      // Calculate home office amount if applicable
-      if (category === 'Home Office') {
-        const hours = parseFloat(document.getElementById('homeOfficeHours').value) || 0;
-        const rate = parseFloat(document.getElementById('homeOfficeRate').value);
-        amount = rate; // Monthly rate
-      }
-      
-      const newExpense = {
-        id: expenseIdCounter++,
-        description: document.getElementById('expenseDescription').value,
-        amount: amount,
-        category: category,
-        date: document.getElementById('expenseDate').value
-      };
-
-      expenses.push(newExpense);
-      renderExpenses();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Expense added successfully!', 'success');
-    });
-
+    // Expense Management - Render and Delete functions
     function renderExpenses() {
       const listDiv = document.getElementById('expenseList');
       const totalDiv = document.getElementById('expenseTotal');
@@ -1334,41 +1403,7 @@
       }
     }
 
-    // Depreciation Management
-    document.getElementById('depreciationForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const cost = parseFloat(document.getElementById('assetCost').value);
-      const method = document.getElementById('depreciationMethod').value;
-      let depreciationAmount = 0;
-      
-      // Calculate depreciation based on method
-      if (method === 'AIA') {
-        depreciationAmount = cost; // 100% in first year
-      } else if (method === 'WDA') {
-        depreciationAmount = cost * 0.18; // 18% per year
-      } else if (method === 'SBA') {
-        depreciationAmount = cost * 0.03; // 3% per year
-      }
-      
-      const newAsset = {
-        id: depreciationIdCounter++,
-        name: document.getElementById('assetName').value,
-        cost: cost,
-        date: document.getElementById('assetDate').value,
-        method: method,
-        category: document.getElementById('assetCategory').value,
-        depreciation: depreciationAmount,
-        notes: document.getElementById('assetNotes').value
-      };
-
-      depreciation.push(newAsset);
-      renderDepreciation();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Asset added successfully!', 'success');
-    });
-
+    // Depreciation Management - Render and Delete functions
     function renderDepreciation() {
       const listDiv = document.getElementById('depreciationList');
       const assetsTotalDiv = document.getElementById('assetsTotal');
@@ -1410,26 +1445,7 @@
       }
     }
 
-    // Capital Management
-    document.getElementById('capitalForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const newCapital = {
-        id: capitalIdCounter++,
-        name: document.getElementById('capitalName').value,
-        amount: parseFloat(document.getElementById('capitalAmount').value),
-        type: document.getElementById('capitalType').value,
-        date: document.getElementById('capitalDate').value,
-        notes: document.getElementById('capitalNotes').value
-      };
-
-      capital.push(newCapital);
-      renderCapital();
-      updateFinancialStats();
-      this.reset();
-      showNotification('Capital entry added successfully!', 'success');
-    });
-
+    // Capital Management - Render and Delete functions
     function renderCapital() {
       const listDiv = document.getElementById('capitalList');
       const totalDiv = document.getElementById('capitalTotal');
@@ -1518,18 +1534,6 @@
       suggestionsDiv.innerHTML = '<ul style="padding-left: 20px;">' + 
         suggestions.map(s => `<li style="margin: 10px 0; color: #333;">${s}</li>`).join('') + 
         '</ul>';
-    }
-
-        .reduce((sum, inv) => sum + inv.amount, 0);
-      
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const netProfit = totalIncome - totalExpenses;
-      const estimatedTax = netProfit * 0.20; // 20% tax rate
-
-      document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
-      document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
-      document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
-      document.getElementById('estimatedTax').textContent = `£${estimatedTax.toFixed(2)}`;
     }
 
     // Calculate Sole Trader Tax
