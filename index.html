@@ -14,34 +14,34 @@ public class UKTaxAccountingApp {
     static class TaxConfig {
 
         // Income Tax
-        double PERSONAL_ALLOWANCE = 12_570;
-        double BASIC_RATE_LIMIT = 50_270;
-        double BASIC_RATE = 0.20;
-        double HIGHER_RATE = 0.40;
-        double ADDITIONAL_RATE = 0.45;
+        final double PERSONAL_ALLOWANCE = 12_570;
+        final double BASIC_RATE_LIMIT = 50_270;
+        final double BASIC_RATE = 0.20;
+        final double HIGHER_RATE = 0.40;
+        final double ADDITIONAL_RATE = 0.45;
 
         // Corporation Tax
-        double CORPORATION_TAX_RATE = 0.25;
+        final double CORPORATION_TAX_RATE = 0.25;
 
         // Dividends
-        double DIVIDEND_ALLOWANCE = 1_000;
-        double DIVIDEND_BASIC_RATE = 0.0875;
+        final double DIVIDEND_ALLOWANCE = 1_000;
+        final double DIVIDEND_BASIC_RATE = 0.0875;
 
         // National Insurance (simplified)
-        double EMPLOYEE_NI_RATE = 0.12;
-        double EMPLOYER_NI_RATE = 0.138;
+        final double EMPLOYEE_NI_RATE = 0.12;
+        final double EMPLOYER_NI_RATE = 0.138;
 
         // VAT
-        double VAT_RATE = 0.20;
+        final double VAT_RATE = 0.20;
 
         // Pension relief
-        double PENSION_RELIEF_RATE = 0.20;
+        final double PENSION_RELIEF_RATE = 0.20;
     }
 
     /* ===================== FINANCIAL PROFILE ===================== */
 
     static class FinancialProfile {
-        EntityType entityType;
+        final EntityType entityType;
 
         double grossIncome;
         double allowableExpenses;
@@ -56,6 +56,9 @@ public class UKTaxAccountingApp {
         double dividends;
 
         FinancialProfile(EntityType entityType) {
+            if (entityType == null) {
+                throw new IllegalArgumentException("Entity type cannot be null.");
+            }
             this.entityType = entityType;
         }
     }
@@ -67,48 +70,52 @@ public class UKTaxAccountingApp {
         private final TaxConfig cfg;
 
         TaxCalculator(TaxConfig cfg) {
-            this.cfg = cfg;
+            this.cfg = cfg; // Assume config is validated externally
         }
 
-        double calculateTotalTax(FinancialProfile p) {
-            return switch (p.entityType) {
-                case COMPANY -> companyTax(p);
-                case DIRECTOR -> directorTax(p);
-                case SOLE_TRADER -> soleTraderTax(p);
-                case LANDLORD -> landlordTax(p);
+        double calculateTotalTax(FinancialProfile profile) {
+            if (profile == null) {
+                throw new IllegalArgumentException("FinancialProfile cannot be null.");
+            }
+
+            return switch (profile.entityType) {
+                case COMPANY -> companyTax(profile);
+                case DIRECTOR -> directorTax(profile);
+                case SOLE_TRADER -> soleTraderTax(profile);
+                case LANDLORD -> landlordTax(profile);
             };
         }
 
         /* ---------- ENTITY LOGIC ---------- */
 
-        private double companyTax(FinancialProfile p) {
+        private double companyTax(FinancialProfile profile) {
             double profit =
-                    p.grossIncome
-                  - p.allowableExpenses
-                  - p.salary;
+                    profile.grossIncome
+                  - profile.allowableExpenses
+                  - profile.salary;
 
             double corpTax = Math.max(0, profit * cfg.CORPORATION_TAX_RATE);
-            return corpTax + vatDue(p);
+            return corpTax + vatDue(profile);
         }
 
-        private double directorTax(FinancialProfile p) {
-            double incomeTax = incomeTax(p.salary);
-            double ni = p.salary * cfg.EMPLOYEE_NI_RATE;
-            double dividendTax = dividendTax(p.dividends);
+        private double directorTax(FinancialProfile profile) {
+            double incomeTax = incomeTax(profile.salary);
+            double ni = profile.salary * cfg.EMPLOYEE_NI_RATE;
+            double dividendTax = dividendTax(profile.dividends);
             return incomeTax + ni + dividendTax;
         }
 
-        private double soleTraderTax(FinancialProfile p) {
+        private double soleTraderTax(FinancialProfile profile) {
             double taxable =
-                    p.grossIncome
-                  - p.allowableExpenses
-                  - p.pensionContributions;
+                    profile.grossIncome
+                  - profile.allowableExpenses
+                  - profile.pensionContributions;
 
             return incomeTax(taxable) + taxable * cfg.EMPLOYEE_NI_RATE;
         }
 
-        private double landlordTax(FinancialProfile p) {
-            double rentalProfit = p.grossIncome - p.allowableExpenses;
+        private double landlordTax(FinancialProfile profile) {
+            double rentalProfit = profile.grossIncome - profile.allowableExpenses;
             return incomeTax(rentalProfit);
         }
 
@@ -134,8 +141,8 @@ public class UKTaxAccountingApp {
             return taxable * cfg.DIVIDEND_BASIC_RATE;
         }
 
-        private double vatDue(FinancialProfile p) {
-            double vat = (p.vatSales - p.vatPurchases) * cfg.VAT_RATE;
+        private double vatDue(FinancialProfile profile) {
+            double vat = (profile.vatSales - profile.vatPurchases) * cfg.VAT_RATE;
             return Math.max(0, vat);
         }
     }
@@ -155,7 +162,7 @@ public class UKTaxAccountingApp {
             FinancialProfile best = null;
 
             for (double salary = 9_000; salary <= 12_570; salary += 500) {
-                FinancialProfile test = clone(base);
+                FinancialProfile test = cloneFinancialProfile(base);
                 test.salary = salary;
                 test.dividends = base.grossIncome - salary;
 
@@ -168,33 +175,32 @@ public class UKTaxAccountingApp {
             return best;
         }
 
-        private FinancialProfile clone(FinancialProfile p) {
-            FinancialProfile c = new FinancialProfile(p.entityType);
-            c.grossIncome = p.grossIncome;
-            c.allowableExpenses = p.allowableExpenses;
-            c.pensionContributions = p.pensionContributions;
-            c.vatSales = p.vatSales;
-            c.vatPurchases = p.vatPurchases;
-            return c;
+        private FinancialProfile cloneFinancialProfile(FinancialProfile profile) {
+            FinancialProfile clonedProfile = new FinancialProfile(profile.entityType);
+            clonedProfile.grossIncome = profile.grossIncome;
+            clonedProfile.allowableExpenses = profile.allowableExpenses;
+            clonedProfile.pensionContributions = profile.pensionContributions;
+            clonedProfile.vatSales = profile.vatSales;
+            clonedProfile.vatPurchases = profile.vatPurchases;
+            return clonedProfile;
         }
     }
 
     /* ===================== DEMO ===================== */
 
     public static void main(String[] args) {
-
         TaxConfig config = new TaxConfig();
         TaxCalculator calculator = new TaxCalculator(config);
         TaxOptimizer optimizer = new TaxOptimizer(calculator);
 
-        FinancialProfile director = new FinancialProfile(EntityType.DIRECTOR);
-        director.grossIncome = 80_000;
-        director.allowableExpenses = 5_000;
+        FinancialProfile directorProfile = new FinancialProfile(EntityType.DIRECTOR);
+        directorProfile.grossIncome = 80_000;
+        directorProfile.allowableExpenses = 5_000;
 
-        FinancialProfile optimal = optimizer.optimiseDirector(director);
+        FinancialProfile optimalProfile = optimizer.optimiseDirector(directorProfile);
 
-        System.out.println("Optimised Salary: " + optimal.salary);
-        System.out.println("Optimised Dividends: " + optimal.dividends);
-        System.out.println("Total Tax: " + calculator.calculateTotalTax(optimal));
+        System.out.println("Optimised Salary: " + optimalProfile.salary);
+        System.out.println("Optimised Dividends: " + optimalProfile.dividends);
+        System.out.println("Total Tax: " + calculator.calculateTotalTax(optimalProfile));
     }
 }
