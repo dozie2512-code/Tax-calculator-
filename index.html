@@ -583,7 +583,7 @@
                 taxDue: taxDue,
                 totalAllowances: totalAllowances,
                 allowancesList: allowancesList,
-                taxableIncome: income - totalAllowances - expenses
+                taxableIncome: Math.max(0, income - totalAllowances - expenses)
             };
         }
 
@@ -611,13 +611,14 @@
             // Validate allowances combination
             let validationWarnings = [];
             
-            // Trading and Property allowances cannot be used together with actual expenses in those categories
+            // Trading and Property allowances are alternatives to claiming actual expenses in those categories
+            // Provide informational notice if expenses exist
             if (allowancesConfig.tradingAllowance && totalExpenses > 0) {
-                validationWarnings.push('Note: Trading Allowance is an alternative to claiming actual expenses.');
+                validationWarnings.push('Note: Trading Allowance (£1,000) is an alternative to claiming actual trading/self-employment expenses. If your trading expenses exceed £1,000, you may be better off claiming actual expenses instead.');
             }
             
             if (allowancesConfig.propertyAllowance && totalExpenses > 0) {
-                validationWarnings.push('Note: Property Allowance is an alternative to claiming actual expenses.');
+                validationWarnings.push('Note: Property Allowance (£1,000) is an alternative to claiming actual property expenses. If your property expenses exceed £1,000, you may be better off claiming actual expenses instead.');
             }
 
             // Show validation warnings if any
