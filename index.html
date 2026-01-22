@@ -1,90 +1,145 @@
-import java.util.List;
-import java.util.Scanner;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #0056b3;
+        }
+        form > div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background: #0056b3;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background: #003f7f;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UK Tax Calculator</h1>
+        <form id="taxForm">
+            <div>
+                <label for="income">Annual Income (£):</label>
+                <input type="number" id="income" name="income" required>
+            </div>
+            <div>
+                <label for="expenses">Annual Expenses (£):</label>
+                <input type="number" id="expenses" name="expenses" required>
+            </div>
+            <div>
+                <label for="allowances">Include all claimable allowances?</label>
+                <select id="allowances" name="allowances" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <input type="submit" value="Calculate">
+        </form>
+        <div class="results" id="results" style="display: none;">
+            <h2>Tax Summary</h2>
+            <p id="resultIncome"></p>
+            <p id="resultExpenses"></p>
+            <p id="resultTax"></p>
+            <p id="resultSavings"></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('taxForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-public class TaxApplication {
+            const income = parseFloat(document.getElementById('income').value);
+            const expenses = parseFloat(document.getElementById('expenses').value);
+            const allowances = document.getElementById('allowances').value === 'yes';
 
-    private static final double BASIC_TAX_RATE = 0.20;  // 20%
-    private static final double HIGHER_TAX_RATE = 0.40; // 40%
-    private static final double ADDITIONAL_TAX_RATE = 0.45; // 45%
+            function calculateTax(income, expenses, allowances) {
+                const BASIC_TAX_RATE = 0.20;  // 20%
+                const HIGHER_TAX_RATE = 0.40; // 40%
+                const ADDITIONAL_TAX_RATE = 0.45; // 45%
 
-    private static final double HIGHER_TAX_THRESHOLD = 50_270; // Higher rate
-    private static final double ADDITIONAL_TAX_THRESHOLD = 125_140; // Additional rate
+                const HIGHER_TAX_THRESHOLD = 50270; // Higher rate
+                const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate
 
-    public static double calculateTax(double income, double expenses, List<UKTaxAllowances.TaxAllowance> applicableAllowances) {
-        double taxableIncome = income;
+                let taxableIncome = income;
+                const allowancesValue = allowances ? 12570 : 0;
 
-        // Apply all allowances (deduct from taxable income)
-        for (UKTaxAllowances.TaxAllowance allowance : applicableAllowances) {
-            if (allowance.annualLimit() > 0 && !allowance.requiresClaim()) {
-                taxableIncome -= allowance.annualLimit();
+                taxableIncome -= allowancesValue;
+                taxableIncome -= expenses;
+                taxableIncome = Math.max(0, taxableIncome);
+
+                let taxDue = 0;
+
+                if (taxableIncome > ADDITIONAL_TAX_THRESHOLD) {
+                    taxDue += (taxableIncome - ADDITIONAL_TAX_THRESHOLD) * ADDITIONAL_TAX_RATE;
+                    taxableIncome = ADDITIONAL_TAX_THRESHOLD;
+                }
+
+                if (taxableIncome > HIGHER_TAX_THRESHOLD) {
+                    taxDue += (taxableIncome - HIGHER_TAX_THRESHOLD) * HIGHER_TAX_RATE;
+                    taxableIncome = HIGHER_TAX_THRESHOLD;
+                }
+
+                if (taxableIncome > 12570) {
+                    taxDue += (taxableIncome - 12570) * BASIC_TAX_RATE;
+                }
+
+                return taxDue;
             }
-        }
 
-        // Deduct user-provided expenses
-        taxableIncome -= expenses;
+            const taxDue = calculateTax(income, expenses, allowances);
+            const potentialSavings = allowances ? 12570 : 0;
 
-        // Ensure taxable income is not negative
-        taxableIncome = Math.max(0, taxableIncome);
-
-        // Calculate tax based on UK rates
-        double taxDue = 0.0;
-
-        if (taxableIncome > ADDITIONAL_TAX_THRESHOLD) {
-            taxDue += (taxableIncome - ADDITIONAL_TAX_THRESHOLD) * ADDITIONAL_TAX_RATE;
-            taxableIncome = ADDITIONAL_TAX_THRESHOLD;
-        }
-
-        if (taxableIncome > HIGHER_TAX_THRESHOLD) {
-            taxDue += (taxableIncome - HIGHER_TAX_THRESHOLD) * HIGHER_TAX_RATE;
-            taxableIncome = HIGHER_TAX_THRESHOLD;
-        }
-
-        if (taxableIncome > 12_570) { // Personal Allowance threshold
-            taxDue += (taxableIncome - 12_570) * BASIC_TAX_RATE;
-        }
-
-        return taxDue;
-    }
-
-    public static double calculatePotentialSavings(List<UKTaxAllowances.TaxAllowance> claimableAllowances) {
-        return claimableAllowances.stream()
-                .filter(a -> a.annualLimit() > 0)
-                .mapToDouble(UKTaxAllowances.TaxAllowance::annualLimit)
-                .sum();
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("=== UK Tax Calculator ===");
-        System.out.print("Enter your annual income (£): ");
-        double income = scanner.nextDouble();
-
-        System.out.print("Enter your annual expenses (£): ");
-        double expenses = scanner.nextDouble();
-
-        System.out.println("\nApplied Allowances:");
-        UKTaxAllowances.groupByCategory().forEach((category, allowances) -> {
-            System.out.println("- " + category);
-            allowances.forEach(allowance -> System.out.printf("  > %s: £%,.2f\n", allowance.name(), allowance.annualLimit()));
+            document.getElementById('resultIncome').textContent = `Income: £${income.toFixed(2)}`;
+            document.getElementById('resultExpenses').textContent = `Expenses: £${expenses.toFixed(2)}`;
+            document.getElementById('resultTax').textContent = `Tax Due: £${taxDue.toFixed(2)}`;
+            document.getElementById('resultSavings').textContent = `Potential Savings: £${potentialSavings.toFixed(2)}`;
+            
+            document.getElementById('results').style.display = 'block';
         });
-
-        // Select required allowances
-        System.out.print("\nWould you like to include all claimable allowances? (yes/no): ");
-        boolean includeClaims = scanner.next().equalsIgnoreCase("yes");
-
-        List<UKTaxAllowances.TaxAllowance> claimableAllowances = includeClaims ? UKTaxAllowances.claimRequired() : List.of();
-
-        // Perform calculations
-        double taxDue = calculateTax(income, expenses, UKTaxAllowances.ALL);
-        double potentialSavings = calculatePotentialSavings(claimableAllowances);
-
-        // Output results
-        System.out.println("\n====== Tax Summary ======");
-        System.out.printf("Income: £%,.2f\n", income);
-        System.out.printf("Expenses: £%,.2f\n", expenses);
-        System.out.printf("Income Tax Due: £%,.2f\n", taxDue);
-        System.out.printf("Potential Savings: £%,.2f\n", potentialSavings);
-        System.out.println("=========================");
-    }
-}
+    </script>
+</body>
+</html>
