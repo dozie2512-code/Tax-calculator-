@@ -51,6 +51,15 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #fff;
+            cursor: pointer;
+        }
         input[type="submit"], button {
             background: #0056b3;
             color: #fff;
@@ -234,10 +243,58 @@
             <h2>Tax Calculator</h2>
             <form id="taxForm">
                 <div>
-                    <label for="allowances">Include all claimable allowances?</label>
+                    <label for="allowances">Include Personal Allowance (£12,570)?</label>
                     <select id="allowances" name="allowances" required>
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="blindPersonsAllowance">
+                        Blind Person's Allowance (£3,130)
+                        <span style="color: #666; font-size: 0.9em; font-weight: normal;">
+                            - Additional tax-free allowance if registered blind
+                        </span>
+                    </label>
+                    <select id="blindPersonsAllowance" name="blindPersonsAllowance">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="marriageAllowance">
+                        Marriage/Civil Partnership Allowance (£1,260 transfer)
+                        <span style="color: #666; font-size: 0.9em; font-weight: normal;">
+                            - Transfer £1,260 to spouse/partner (saves up to £252 in tax)
+                        </span>
+                    </label>
+                    <select id="marriageAllowance" name="marriageAllowance">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="tradingAllowance">
+                        Trading Allowance (£1,000)
+                        <span style="color: #666; font-size: 0.9em; font-weight: normal;">
+                            - Tax-free allowance for trading/self-employment income
+                        </span>
+                    </label>
+                    <select id="tradingAllowance" name="tradingAllowance">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="propertyAllowance">
+                        Property Allowance (£1,000)
+                        <span style="color: #666; font-size: 0.9em; font-weight: normal;">
+                            - Tax-free allowance for property income
+                        </span>
+                    </label>
+                    <select id="propertyAllowance" name="propertyAllowance">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
                     </select>
                 </div>
                 <input type="submit" value="Calculate Tax">
@@ -246,14 +303,20 @@
                 <h3>Tax Summary</h3>
                 <p id="resultIncome"></p>
                 <p id="resultExpenses"></p>
+                <p id="resultAllowances"></p>
+                <p id="resultTaxableIncome"></p>
                 <p id="resultTax"></p>
-                <p id="resultSavings"></p>
             </div>
         </div>
     </div>
     <script>
-        // Constants
+        // Constants for 2025/26 Tax Year
         const PERSONAL_ALLOWANCE = 12570; // UK Personal allowance threshold
+        const BLIND_PERSONS_ALLOWANCE = 3130; // Blind Person's Allowance 2025/26
+        const MARRIAGE_ALLOWANCE_TRANSFER = 1260; // Marriage/Civil Partnership Allowance transfer amount
+        const MARRIAGE_ALLOWANCE_SAVINGS = 252; // Maximum tax savings from Marriage Allowance (20% of £1,260)
+        const TRADING_ALLOWANCE = 1000; // Trading Allowance 2025/26
+        const PROPERTY_ALLOWANCE = 1000; // Property Allowance 2025/26
 
         // Data storage
         let incomeEntries = [];
@@ -456,7 +519,7 @@
         }
 
         // Tax calculation function
-        function calculateTax(income, expenses, allowances) {
+        function calculateTax(income, expenses, allowancesConfig) {
             const BASIC_TAX_RATE = 0.20;  // 20%
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
@@ -464,12 +527,37 @@
             const HIGHER_TAX_THRESHOLD = 50270; // Higher rate threshold
             const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate threshold
 
-            // Calculate taxable income after allowances and expenses
-            let taxableIncome = income;
-            const allowancesValue = allowances ? PERSONAL_ALLOWANCE : 0;
+            // Calculate total allowances based on selected options
+            let totalAllowances = 0;
+            const allowancesList = [];
 
-            taxableIncome -= allowancesValue;
-            taxableIncome -= expenses;
+            if (allowancesConfig.personalAllowance) {
+                totalAllowances += PERSONAL_ALLOWANCE;
+                allowancesList.push(`Personal Allowance: £${PERSONAL_ALLOWANCE.toFixed(2)}`);
+            }
+
+            if (allowancesConfig.blindPersonsAllowance) {
+                totalAllowances += BLIND_PERSONS_ALLOWANCE;
+                allowancesList.push(`Blind Person's Allowance: £${BLIND_PERSONS_ALLOWANCE.toFixed(2)}`);
+            }
+
+            if (allowancesConfig.marriageAllowance) {
+                totalAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
+                allowancesList.push(`Marriage Allowance: £${MARRIAGE_ALLOWANCE_TRANSFER.toFixed(2)}`);
+            }
+
+            if (allowancesConfig.tradingAllowance) {
+                totalAllowances += TRADING_ALLOWANCE;
+                allowancesList.push(`Trading Allowance: £${TRADING_ALLOWANCE.toFixed(2)}`);
+            }
+
+            if (allowancesConfig.propertyAllowance) {
+                totalAllowances += PROPERTY_ALLOWANCE;
+                allowancesList.push(`Property Allowance: £${PROPERTY_ALLOWANCE.toFixed(2)}`);
+            }
+
+            // Calculate taxable income after allowances and expenses
+            let taxableIncome = income - totalAllowances - expenses;
             taxableIncome = Math.max(0, taxableIncome);
 
             let taxDue = 0;
@@ -491,7 +579,12 @@
                 taxDue += taxableIncome * BASIC_TAX_RATE;
             }
 
-            return taxDue;
+            return {
+                taxDue: taxDue,
+                totalAllowances: totalAllowances,
+                allowancesList: allowancesList,
+                taxableIncome: income - totalAllowances - expenses
+            };
         }
 
         // Tax form submission
@@ -506,14 +599,46 @@
                 alert('No income or expense entries found. Tax calculation will use £0 values.');
             }
 
-            const allowances = document.getElementById('allowances').value === 'yes';
-            const taxDue = calculateTax(totalIncome, totalExpenses, allowances);
-            const potentialSavings = allowances ? PERSONAL_ALLOWANCE : 0;
+            // Get allowance selections
+            const allowancesConfig = {
+                personalAllowance: document.getElementById('allowances').value === 'yes',
+                blindPersonsAllowance: document.getElementById('blindPersonsAllowance').value === 'yes',
+                marriageAllowance: document.getElementById('marriageAllowance').value === 'yes',
+                tradingAllowance: document.getElementById('tradingAllowance').value === 'yes',
+                propertyAllowance: document.getElementById('propertyAllowance').value === 'yes'
+            };
 
-            document.getElementById('resultIncome').textContent = `Income: £${totalIncome.toFixed(2)}`;
+            // Validate allowances combination
+            let validationWarnings = [];
+            
+            // Trading and Property allowances cannot be used together with actual expenses in those categories
+            if (allowancesConfig.tradingAllowance && totalExpenses > 0) {
+                validationWarnings.push('Note: Trading Allowance is an alternative to claiming actual expenses.');
+            }
+            
+            if (allowancesConfig.propertyAllowance && totalExpenses > 0) {
+                validationWarnings.push('Note: Property Allowance is an alternative to claiming actual expenses.');
+            }
+
+            // Show validation warnings if any
+            if (validationWarnings.length > 0) {
+                alert(validationWarnings.join('\n'));
+            }
+
+            const result = calculateTax(totalIncome, totalExpenses, allowancesConfig);
+
+            document.getElementById('resultIncome').textContent = `Gross Income: £${totalIncome.toFixed(2)}`;
             document.getElementById('resultExpenses').textContent = `Expenses: £${totalExpenses.toFixed(2)}`;
-            document.getElementById('resultTax').textContent = `Tax Due: £${taxDue.toFixed(2)}`;
-            document.getElementById('resultSavings').textContent = `Potential Savings: £${potentialSavings.toFixed(2)}`;
+            
+            // Display allowances breakdown
+            let allowancesText = `Total Allowances: £${result.totalAllowances.toFixed(2)}`;
+            if (result.allowancesList.length > 0) {
+                allowancesText += '\n  • ' + result.allowancesList.join('\n  • ');
+            }
+            document.getElementById('resultAllowances').innerHTML = allowancesText.replace(/\n/g, '<br>');
+            
+            document.getElementById('resultTaxableIncome').textContent = `Taxable Income: £${Math.max(0, result.taxableIncome).toFixed(2)}`;
+            document.getElementById('resultTax').textContent = `Tax Due: £${result.taxDue.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
         });
