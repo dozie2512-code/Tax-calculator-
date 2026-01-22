@@ -257,6 +257,13 @@
         let expenseEntries = [];
         let entryIdCounter = 0;
 
+        // Helper function to escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Add income entry
         function addIncome() {
             const description = document.getElementById('incomeDescription').value.trim();
@@ -366,7 +373,7 @@
             incomeEntries.forEach(entry => {
                 html += `
                     <tr>
-                        <td>${entry.description}</td>
+                        <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
                         <td>
                             <button class="edit-btn" onclick="editEntry(${entry.id}, 'income')">Edit</button>
@@ -392,7 +399,7 @@
             expenseEntries.forEach(entry => {
                 html += `
                     <tr>
-                        <td>${entry.description}</td>
+                        <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
                         <td>
                             <button class="edit-btn" onclick="editEntry(${entry.id}, 'expense')">Edit</button>
@@ -429,11 +436,10 @@
             let html = '<table><thead><tr><th>Type</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
             allEntries.forEach(entry => {
                 const typeLabel = entry.type === 'income' ? 'Income' : 'Expense';
-                const typeClass = entry.type === 'income' ? 'income' : 'expense';
                 html += `
                     <tr>
                         <td><strong>${typeLabel}</strong></td>
-                        <td>${entry.description}</td>
+                        <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
                         <td>
                             <button class="edit-btn" onclick="editEntry(${entry.id}, '${entry.type}')">Edit</button>
@@ -452,11 +458,12 @@
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
 
+            const PERSONAL_ALLOWANCE = 12570; // Personal allowance threshold
             const HIGHER_TAX_THRESHOLD = 50270; // Higher rate
             const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate
 
             let taxableIncome = income;
-            const allowancesValue = allowances ? 12570 : 0;
+            const allowancesValue = allowances ? PERSONAL_ALLOWANCE : 0;
 
             taxableIncome -= allowancesValue;
             taxableIncome -= expenses;
@@ -474,8 +481,8 @@
                 taxableIncome = HIGHER_TAX_THRESHOLD;
             }
 
-            if (taxableIncome > 12570) {
-                taxDue += (taxableIncome - 12570) * BASIC_TAX_RATE;
+            if (taxableIncome > PERSONAL_ALLOWANCE) {
+                taxDue += (taxableIncome - PERSONAL_ALLOWANCE) * BASIC_TAX_RATE;
             }
 
             return taxDue;
@@ -493,9 +500,10 @@
                 alert('Please add income and expense entries before calculating tax, or the calculation will be based on £0.');
             }
 
+            const PERSONAL_ALLOWANCE = 12570; // Personal allowance threshold
             const allowances = document.getElementById('allowances').value === 'yes';
             const taxDue = calculateTax(totalIncome, totalExpenses, allowances);
-            const potentialSavings = allowances ? 12570 : 0;
+            const potentialSavings = allowances ? PERSONAL_ALLOWANCE : 0;
 
             document.getElementById('resultIncome').textContent = `Income: £${totalIncome.toFixed(2)}`;
             document.getElementById('resultExpenses').textContent = `Expenses: £${totalExpenses.toFixed(2)}`;
