@@ -165,6 +165,36 @@
             color: #666;
             font-style: italic;
         }
+        .entity-info-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #e7f3ff;
+            border-left: 4px solid #0056b3;
+            display: none;
+        }
+        .entity-info-box.visible {
+            display: block;
+        }
+        .entity-info-box h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        .entity-info-list {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .entity-info-section {
+            margin-top: 10px;
+        }
+        .entity-description {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        .allowance-field {
+            /* Fields that can be shown/hidden based on entity type */
+        }
     </style>
 </head>
 <body>
@@ -252,10 +282,10 @@
                     <option value="Landlords">Landlords</option>
                 </select>
             </div>
-            <div id="entityInfo" style="margin-top: 20px; padding: 15px; border-radius: 4px; background: #e7f3ff; border-left: 4px solid #0056b3; display: none;">
-                <h3 style="margin-top: 0; color: #0056b3;">Tax Information</h3>
+            <div id="entityInfo" class="entity-info-box">
+                <h3>Tax Information</h3>
                 <div id="applicableTaxes"></div>
-                <div id="applicableAllowances" style="margin-top: 10px;"></div>
+                <div id="applicableAllowances" class="entity-info-section"></div>
             </div>
         </div>
 
@@ -263,14 +293,14 @@
         <div class="section">
             <h2>Tax Calculator</h2>
             <form id="taxForm">
-                <div>
+                <div class="allowance-field" data-allowance="personalAllowance">
                     <label for="allowances">Include Personal Allowance (£12,570)?</label>
                     <select id="allowances" name="allowances" required>
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
                     </select>
                 </div>
-                <div>
+                <div class="allowance-field" data-allowance="blindPersonsAllowance">
                     <label for="blindPersonsAllowance">
                         Blind Person's Allowance (£3,130)
                         <span style="color: #666; font-size: 0.9em; font-weight: normal;">
@@ -282,7 +312,7 @@
                         <option value="yes">Yes</option>
                     </select>
                 </div>
-                <div>
+                <div class="allowance-field" data-allowance="marriageAllowance">
                     <label for="marriageAllowance">
                         Marriage/Civil Partnership Allowance (£1,260 transfer)
                         <span style="color: #666; font-size: 0.9em; font-weight: normal;">
@@ -294,7 +324,7 @@
                         <option value="yes">Yes</option>
                     </select>
                 </div>
-                <div>
+                <div class="allowance-field" data-allowance="tradingAllowance">
                     <label for="tradingAllowance">
                         Trading Allowance (£1,000)
                         <span style="color: #666; font-size: 0.9em; font-weight: normal;">
@@ -306,7 +336,7 @@
                         <option value="yes">Yes</option>
                     </select>
                 </div>
-                <div>
+                <div class="allowance-field" data-allowance="propertyAllowance">
                     <label for="propertyAllowance">
                         Property Allowance (£1,000)
                         <span style="color: #666; font-size: 0.9em; font-weight: normal;">
@@ -653,26 +683,26 @@
             const applicableAllowancesDiv = document.getElementById('applicableAllowances');
             
             if (!entityType) {
-                entityInfoDiv.style.display = 'none';
+                entityInfoDiv.classList.remove('visible');
                 updateAllowanceFieldsVisibility();
                 return;
             }
             
             const entity = TAX_ENTITIES[entityType];
-            entityInfoDiv.style.display = 'block';
+            entityInfoDiv.classList.add('visible');
             
             // Display applicable taxes
-            let taxesHtml = '<p><strong>Applicable Taxes:</strong></p><ul style="margin: 5px 0; padding-left: 20px;">';
+            let taxesHtml = '<p><strong>Applicable Taxes:</strong></p><ul class="entity-info-list">';
             entity.taxes.forEach(tax => {
                 taxesHtml += `<li>${tax}</li>`;
             });
             taxesHtml += '</ul>';
-            taxesHtml += `<p style="margin-top: 10px; font-style: italic; color: #666;">${entity.description}</p>`;
+            taxesHtml += `<p class="entity-description">${entity.description}</p>`;
             applicableTaxesDiv.innerHTML = taxesHtml;
             
             // Display applicable allowances
             if (entity.allowances.length > 0) {
-                let allowancesHtml = '<p><strong>Applicable Allowances:</strong></p><ul style="margin: 5px 0; padding-left: 20px;">';
+                let allowancesHtml = '<p><strong>Applicable Allowances:</strong></p><ul class="entity-info-list">';
                 entity.allowances.forEach(allowanceId => {
                     const allowanceName = getAllowanceName(allowanceId);
                     allowancesHtml += `<li>${allowanceName}</li>`;
@@ -680,7 +710,7 @@
                 allowancesHtml += '</ul>';
                 applicableAllowancesDiv.innerHTML = allowancesHtml;
             } else {
-                applicableAllowancesDiv.innerHTML = '<p style="font-style: italic; color: #666;">No personal allowances applicable for companies. Corporation tax rules apply.</p>';
+                applicableAllowancesDiv.innerHTML = '<p class="entity-description">No personal allowances applicable for companies. Corporation tax rules apply.</p>';
             }
             
             // Update allowance fields visibility based on entity
@@ -701,39 +731,31 @@
         
         // Update allowance fields visibility based on selected entity
         function updateAllowanceFieldsVisibility() {
+            // Get all allowance field divs
+            const allowanceFields = document.querySelectorAll('.allowance-field');
+            
             if (!selectedEntity) {
                 // Show all fields if no entity selected
-                document.querySelectorAll('[id$="Allowance"]').forEach(field => {
-                    field.closest('div').style.display = 'block';
+                allowanceFields.forEach(field => {
+                    field.style.display = 'block';
                 });
-                document.getElementById('allowances').closest('div').style.display = 'block';
                 return;
             }
             
             const entity = TAX_ENTITIES[selectedEntity];
             const allowedAllowances = entity.allowances;
             
-            // Map form field IDs to allowance keys
-            const fieldMapping = {
-                'allowances': 'personalAllowance',
-                'tradingAllowance': 'tradingAllowance',
-                'propertyAllowance': 'propertyAllowance',
-                'blindPersonsAllowance': 'blindPersonsAllowance',
-                'marriageAllowance': 'marriageAllowance'
-            };
-            
             // Show/hide fields based on entity
-            Object.keys(fieldMapping).forEach(fieldId => {
-                const allowanceKey = fieldMapping[fieldId];
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    const fieldDiv = field.closest('div');
-                    if (allowedAllowances.includes(allowanceKey)) {
-                        fieldDiv.style.display = 'block';
-                    } else {
-                        fieldDiv.style.display = 'none';
-                        // Reset hidden field to 'no'
-                        field.value = 'no';
+            allowanceFields.forEach(field => {
+                const allowanceKey = field.getAttribute('data-allowance');
+                if (allowedAllowances.includes(allowanceKey)) {
+                    field.style.display = 'block';
+                } else {
+                    field.style.display = 'none';
+                    // Reset hidden field to 'no'
+                    const select = field.querySelector('select');
+                    if (select) {
+                        select.value = 'no';
                     }
                 }
             });
