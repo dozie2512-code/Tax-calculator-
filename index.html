@@ -2,205 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accounting Software with Tax Optimizer</title>
-
-  <!-- Add Bootstrap for responsive design -->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha3/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
-  <link rel="stylesheet" href="styles.css">
-
+  <title>UK Tax Calculator</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-    }
-
-    .side-nav {
-      width: 200px;
-      height: 100vh;
-      background-color: #2c3e50;
-      color: white;
-      padding-top: 20px;
-      position: fixed;
-    }
-
-    .side-nav a {
-      color: white;
-      display: block;
-      padding: 12px 16px;
-      text-decoration: none;
-    }
-
-    .side-nav a:hover {
-      background-color: #34495e;
-      text-decoration: none;
-    }
-
-    .main {
-      margin-left: 200px;
-      padding: 20px;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .badge-pill {
-      border-radius: 50px;
-      padding: 5px 10px;
-    }
+    body { font-family: Arial; max-width: 700px; margin: 40px auto; }
+    label { display: block; margin-top: 12px; }
+    input { width: 100%; padding: 6px; }
+    button { margin-top: 20px; padding: 10px; }
+    .result { margin-top: 20px; background: #f4f4f4; padding: 15px; }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <nav class="side-nav">
-    <h3 class="text-center">My Accounts</h3>
-    <a href="#dashboard">Dashboard</a>
-    <a href="#invoicing">Invoicing</a>
-    <a href="#tax">Tax</a>
-    <a href="#tax-optimizer">Tax Optimizer</a>
-    <a href="#clients">Clients</a>
-    <a href="#settings">Settings</a>
-  </nav>
+<h2>UK Income Tax Calculator (HMRC)</h2>
 
-  <!-- Main Content -->
-  <div class="main">
-    <!-- Dashboard -->
-    <header class="dashboard-header">
-      <h2>Dashboard</h2>
-      <button class="btn btn-primary">+ Add Transaction</button>
-    </header>
+<label>Annual Gross Income (£)</label>
+<input type="number" id="income" value="60000">
 
-    <section id="dashboard">
-      <div class="row">
-        <!-- Summary Tiles -->
-        <div class="col-md-4 mb-3">
-          <div class="card">
-            <h4>Total Revenue</h4>
-            <p>£12,500.00</p>
-          </div>
-        </div>
+<label>Allowable Expenses (£)</label>
+<input type="number" id="expenses" value="2000">
 
-        <div class="col-md-4 mb-3">
-          <div class="card">
-            <h4>Total Expenses</h4>
-            <p>£4,200.00</p>
-          </div>
-        </div>
+<label>Pension Contributions (£)</label>
+<input type="number" id="pension" value="5000">
 
-        <div class="col-md-4 mb-3">
-          <div class="card">
-            <h4>Net Profit</h4>
-            <p>£8,300.00</p>
-          </div>
-        </div>
-      </div>
-    </section>
+<label>Gift Aid Donations (£)</label>
+<input type="number" id="giftaid" value="1000">
 
-    <!-- Invoicing -->
-    <section id="invoicing">
-      <h3>Invoicing</h3>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Client</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>ACME Corp.</td>
-            <td>2026-01-15</td>
-            <td>£1,200.00</td>
-            <td><span class="badge bg-success">Paid</span></td>
-            <td>
-              <button class="btn btn-sm btn-secondary">View</button>
-              <button class="btn btn-sm btn-danger">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+<button onclick="calculateTax()">Calculate Tax</button>
 
-    <!-- Tax -->
-    <section id="tax" style="margin-top: 50px;">
-      <h3>Tax</h3>
-      <div class="card">
-        <h4>Tax Summary</h4>
-        <p>Tax Due: £2,500.00</p>
-        <button class="btn btn-primary">Submit Tax Return</button>
-      </div>
-    </section>
+<div class="result" id="output"></div>
 
-    <!-- Tax Optimizer -->
-    <section id="tax-optimizer" style="margin-top: 50px;">
-      <h3>Tax Optimizer</h3>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <h4>HMRC Allowable Expenses</h4>
-            <p>Track and maximize allowable expenses.</p>
-            <button class="btn btn-secondary">View Expenses</button>
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <h4>Capital Allowances</h4>
-            <p>Optimize tax based on capital expenditure.</p>
-            <button class="btn btn-secondary">Calculate</button>
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <h4>Reliefs and Allowances</h4>
-            <p>Check HMRC rules on personal allowances.</p>
-            <button class="btn btn-secondary">Learn More</button>
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <h4>Landlord Tax Deductions</h4>
-            <p>Optimize tax for rental income and properties.</p>
-            <button class="btn btn-secondary">View Options</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Clients -->
-    <section id="clients" style="margin-top: 50px;">
-      <h3>Clients</h3>
-      <div class="card">
-        <h4>Total Clients: 10</h4>
-        <a href="#" class="btn btn-primary">Add New Client</a>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha3/js/bootstrap.bundle.min.js">
-  </script>
+<script src="tax.js"></script>
 </body>
 </html>
