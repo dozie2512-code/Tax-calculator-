@@ -252,6 +252,9 @@
         </div>
     </div>
     <script>
+        // Constants
+        const PERSONAL_ALLOWANCE = 12570; // UK Personal allowance threshold
+
         // Data storage
         let incomeEntries = [];
         let expenseEntries = [];
@@ -458,7 +461,6 @@
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
 
-            const PERSONAL_ALLOWANCE = 12570; // Personal allowance threshold
             const HIGHER_TAX_THRESHOLD = 50270; // Higher rate
             const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate
 
@@ -497,10 +499,9 @@
             const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
 
             if (totalIncome === 0 && totalExpenses === 0) {
-                alert('Please add income and expense entries before calculating tax, or the calculation will be based on £0.');
+                alert('No income or expense entries found. Tax calculation will use £0 values.');
             }
 
-            const PERSONAL_ALLOWANCE = 12570; // Personal allowance threshold
             const allowances = document.getElementById('allowances').value === 'yes';
             const taxDue = calculateTax(totalIncome, totalExpenses, allowances);
             const potentialSavings = allowances ? PERSONAL_ALLOWANCE : 0;
