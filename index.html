@@ -461,9 +461,10 @@
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
 
-            const HIGHER_TAX_THRESHOLD = 50270; // Higher rate
-            const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate
+            const HIGHER_TAX_THRESHOLD = 50270; // Higher rate threshold
+            const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate threshold
 
+            // Calculate taxable income after allowances and expenses
             let taxableIncome = income;
             const allowancesValue = allowances ? PERSONAL_ALLOWANCE : 0;
 
@@ -473,18 +474,21 @@
 
             let taxDue = 0;
 
+            // Additional rate (45%) on income above £125,140
             if (taxableIncome > ADDITIONAL_TAX_THRESHOLD) {
                 taxDue += (taxableIncome - ADDITIONAL_TAX_THRESHOLD) * ADDITIONAL_TAX_RATE;
                 taxableIncome = ADDITIONAL_TAX_THRESHOLD;
             }
 
+            // Higher rate (40%) on income between £50,270 and £125,140
             if (taxableIncome > HIGHER_TAX_THRESHOLD) {
                 taxDue += (taxableIncome - HIGHER_TAX_THRESHOLD) * HIGHER_TAX_RATE;
                 taxableIncome = HIGHER_TAX_THRESHOLD;
             }
 
-            if (taxableIncome > PERSONAL_ALLOWANCE) {
-                taxDue += (taxableIncome - PERSONAL_ALLOWANCE) * BASIC_TAX_RATE;
+            // Basic rate (20%) on remaining taxable income
+            if (taxableIncome > 0) {
+                taxDue += taxableIncome * BASIC_TAX_RATE;
             }
 
             return taxDue;
