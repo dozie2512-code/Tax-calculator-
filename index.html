@@ -238,6 +238,27 @@
             </div>
         </div>
 
+        <!-- Settings Section -->
+        <div class="section">
+            <h2>Settings</h2>
+            <div>
+                <label for="taxEntity">Select Your Tax Entity:</label>
+                <select id="taxEntity" name="taxEntity">
+                    <option value="">-- Select Entity Type --</option>
+                    <option value="SoleTrader">Sole Trader</option>
+                    <option value="Director">Director</option>
+                    <option value="Employee">Employee</option>
+                    <option value="Company">Company</option>
+                    <option value="Landlords">Landlords</option>
+                </select>
+            </div>
+            <div id="entityInfo" style="margin-top: 20px; padding: 15px; border-radius: 4px; background: #e7f3ff; border-left: 4px solid #0056b3; display: none;">
+                <h3 style="margin-top: 0; color: #0056b3;">Tax Information</h3>
+                <div id="applicableTaxes"></div>
+                <div id="applicableAllowances" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+
         <!-- Tax Calculator Section -->
         <div class="section">
             <h2>Tax Calculator</h2>
@@ -318,10 +339,45 @@
         const TRADING_ALLOWANCE = 1000; // Trading Allowance 2025/26
         const PROPERTY_ALLOWANCE = 1000; // Property Allowance 2025/26
 
+        // Tax entity configuration
+        const TAX_ENTITIES = {
+            SoleTrader: {
+                name: 'Sole Trader',
+                taxes: ['Income Tax', 'VAT', 'Capital Gains Tax (CGT)'],
+                allowances: ['personalAllowance', 'tradingAllowance', 'blindPersonsAllowance', 'marriageAllowance'],
+                description: 'Self-employed individuals trading in their own name'
+            },
+            Director: {
+                name: 'Director',
+                taxes: ['Income Tax', 'PAYE', 'National Insurance', 'VAT', 'Capital Gains Tax (CGT)'],
+                allowances: ['personalAllowance', 'blindPersonsAllowance', 'marriageAllowance'],
+                description: 'Company directors receiving salary and dividends'
+            },
+            Employee: {
+                name: 'Employee',
+                taxes: ['Income Tax', 'PAYE', 'National Insurance'],
+                allowances: ['personalAllowance', 'blindPersonsAllowance', 'marriageAllowance'],
+                description: 'Individuals employed under PAYE'
+            },
+            Company: {
+                name: 'Company',
+                taxes: ['Company Tax (Corporation Tax)', 'VAT'],
+                allowances: [],
+                description: 'Limited companies subject to corporation tax'
+            },
+            Landlords: {
+                name: 'Landlords',
+                taxes: ['Income Tax', 'Capital Gains Tax (CGT)'],
+                allowances: ['personalAllowance', 'propertyAllowance', 'blindPersonsAllowance', 'marriageAllowance'],
+                description: 'Property owners receiving rental income'
+            }
+        };
+
         // Data storage
         let incomeEntries = [];
         let expenseEntries = [];
         let entryIdCounter = 0;
+        let selectedEntity = null;
 
         // Helper function to escape HTML to prevent XSS
         function escapeHtml(text) {
@@ -585,6 +641,102 @@
                 allowancesList: allowancesList,
                 taxableIncome: Math.max(0, income - totalAllowances - expenses)
             };
+        }
+
+        // Tax entity selection handler
+        document.getElementById('taxEntity').addEventListener('change', function(event) {
+            const entityType = event.target.value;
+            selectedEntity = entityType;
+            
+            const entityInfoDiv = document.getElementById('entityInfo');
+            const applicableTaxesDiv = document.getElementById('applicableTaxes');
+            const applicableAllowancesDiv = document.getElementById('applicableAllowances');
+            
+            if (!entityType) {
+                entityInfoDiv.style.display = 'none';
+                updateAllowanceFieldsVisibility();
+                return;
+            }
+            
+            const entity = TAX_ENTITIES[entityType];
+            entityInfoDiv.style.display = 'block';
+            
+            // Display applicable taxes
+            let taxesHtml = '<p><strong>Applicable Taxes:</strong></p><ul style="margin: 5px 0; padding-left: 20px;">';
+            entity.taxes.forEach(tax => {
+                taxesHtml += `<li>${tax}</li>`;
+            });
+            taxesHtml += '</ul>';
+            taxesHtml += `<p style="margin-top: 10px; font-style: italic; color: #666;">${entity.description}</p>`;
+            applicableTaxesDiv.innerHTML = taxesHtml;
+            
+            // Display applicable allowances
+            if (entity.allowances.length > 0) {
+                let allowancesHtml = '<p><strong>Applicable Allowances:</strong></p><ul style="margin: 5px 0; padding-left: 20px;">';
+                entity.allowances.forEach(allowanceId => {
+                    const allowanceName = getAllowanceName(allowanceId);
+                    allowancesHtml += `<li>${allowanceName}</li>`;
+                });
+                allowancesHtml += '</ul>';
+                applicableAllowancesDiv.innerHTML = allowancesHtml;
+            } else {
+                applicableAllowancesDiv.innerHTML = '<p style="font-style: italic; color: #666;">No personal allowances applicable for companies. Corporation tax rules apply.</p>';
+            }
+            
+            // Update allowance fields visibility based on entity
+            updateAllowanceFieldsVisibility();
+        });
+        
+        // Helper function to get human-readable allowance names
+        function getAllowanceName(allowanceId) {
+            const names = {
+                'personalAllowance': 'Personal Allowance (£12,570)',
+                'tradingAllowance': 'Trading Allowance (£1,000)',
+                'propertyAllowance': 'Property Allowance (£1,000)',
+                'blindPersonsAllowance': 'Blind Person\'s Allowance (£3,130)',
+                'marriageAllowance': 'Marriage/Civil Partnership Allowance (£1,260)'
+            };
+            return names[allowanceId] || allowanceId;
+        }
+        
+        // Update allowance fields visibility based on selected entity
+        function updateAllowanceFieldsVisibility() {
+            if (!selectedEntity) {
+                // Show all fields if no entity selected
+                document.querySelectorAll('[id$="Allowance"]').forEach(field => {
+                    field.closest('div').style.display = 'block';
+                });
+                document.getElementById('allowances').closest('div').style.display = 'block';
+                return;
+            }
+            
+            const entity = TAX_ENTITIES[selectedEntity];
+            const allowedAllowances = entity.allowances;
+            
+            // Map form field IDs to allowance keys
+            const fieldMapping = {
+                'allowances': 'personalAllowance',
+                'tradingAllowance': 'tradingAllowance',
+                'propertyAllowance': 'propertyAllowance',
+                'blindPersonsAllowance': 'blindPersonsAllowance',
+                'marriageAllowance': 'marriageAllowance'
+            };
+            
+            // Show/hide fields based on entity
+            Object.keys(fieldMapping).forEach(fieldId => {
+                const allowanceKey = fieldMapping[fieldId];
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    const fieldDiv = field.closest('div');
+                    if (allowedAllowances.includes(allowanceKey)) {
+                        fieldDiv.style.display = 'block';
+                    } else {
+                        fieldDiv.style.display = 'none';
+                        // Reset hidden field to 'no'
+                        field.value = 'no';
+                    }
+                }
+            });
         }
 
         // Tax form submission
