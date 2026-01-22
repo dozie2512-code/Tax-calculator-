@@ -243,6 +243,17 @@
             <h2>Tax Calculator</h2>
             <form id="taxForm">
                 <div>
+                    <label for="category">Select Tax Category:</label>
+                    <select id="category" name="category" required onchange="updateTaxFields()">
+                        <option value="">-- Select a category --</option>
+                        <option value="SoleTrader">Sole Trader</option>
+                        <option value="Director">Director</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Company">Company</option>
+                        <option value="Landlords">Landlords</option>
+                    </select>
+                </div>
+                <div>
                     <label for="allowances">Include Personal Allowance (£12,570)?</label>
                     <select id="allowances" name="allowances" required>
                         <option value="yes">Yes</option>
@@ -297,15 +308,83 @@
                         <option value="yes">Yes</option>
                     </select>
                 </div>
+                
+                <!-- Category-Specific Tax Fields -->
+                <div id="categorySpecificFields" style="display: none;">
+                    <!-- VAT Section -->
+                    <div id="vatSection" style="display: none; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px;">
+                        <h3 style="margin-top: 0; color: #0056b3;">VAT Calculation</h3>
+                        <div>
+                            <label for="vatRegistered">VAT Registered?</label>
+                            <select id="vatRegistered" name="vatRegistered" onchange="toggleVATFields()">
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
+                        </div>
+                        <div id="vatFields" style="display: none; margin-top: 10px;">
+                            <div style="margin-bottom: 10px;">
+                                <label for="vatRate">VAT Rate:</label>
+                                <select id="vatRate" name="vatRate">
+                                    <option value="0.20">Standard (20%)</option>
+                                    <option value="0.05">Reduced (5%)</option>
+                                    <option value="0.00">Zero (0%)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PAYE Section -->
+                    <div id="payeSection" style="display: none; margin-top: 20px; padding: 15px; background: #f8e8f8; border-radius: 5px;">
+                        <h3 style="margin-top: 0; color: #0056b3;">PAYE (Pay As You Earn)</h3>
+                        <p style="margin: 0; color: #666; font-size: 0.95em;">
+                            PAYE includes Income Tax and National Insurance deducted from salary
+                        </p>
+                    </div>
+                    
+                    <!-- Company Tax Section -->
+                    <div id="companyTaxSection" style="display: none; margin-top: 20px; padding: 15px; background: #f8f8e8; border-radius: 5px;">
+                        <h3 style="margin-top: 0; color: #0056b3;">Corporation Tax</h3>
+                        <div>
+                            <label for="companyTaxRate">Company Size:</label>
+                            <select id="companyTaxRate" name="companyTaxRate">
+                                <option value="0.19">Small Profits Rate (19%)</option>
+                                <option value="0.25">Main Rate (25%)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- CGT Section -->
+                    <div id="cgtSection" style="display: none; margin-top: 20px; padding: 15px; background: #e8f8e8; border-radius: 5px;">
+                        <h3 style="margin-top: 0; color: #0056b3;">Capital Gains Tax (CGT)</h3>
+                        <div>
+                            <label for="capitalGains">Capital Gains Amount (£):</label>
+                            <input type="number" id="capitalGains" name="capitalGains" placeholder="0.00" step="0.01" value="0">
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label for="cgtType">Asset Type:</label>
+                            <select id="cgtType" name="cgtType">
+                                <option value="property">Property (18%/28%)</option>
+                                <option value="other">Other Assets (10%/20%)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
                 <input type="submit" value="Calculate Tax">
             </form>
             <div class="results" id="results" style="display: none;">
                 <h3>Tax Summary</h3>
+                <p id="resultCategory"></p>
                 <p id="resultIncome"></p>
                 <p id="resultExpenses"></p>
                 <p id="resultAllowances"></p>
                 <p id="resultTaxableIncome"></p>
                 <p id="resultTax"></p>
+                <div id="resultVAT" style="display: none; margin-top: 15px; padding: 10px; background: #e8f4f8; border-radius: 5px;"></div>
+                <div id="resultPAYE" style="display: none; margin-top: 15px; padding: 10px; background: #f8e8f8; border-radius: 5px;"></div>
+                <div id="resultCompanyTax" style="display: none; margin-top: 15px; padding: 10px; background: #f8f8e8; border-radius: 5px;"></div>
+                <div id="resultCGT" style="display: none; margin-top: 15px; padding: 10px; background: #e8f8e8; border-radius: 5px;"></div>
+                <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
             </div>
         </div>
     </div>
@@ -317,6 +396,113 @@
         const MARRIAGE_ALLOWANCE_SAVINGS = 252; // Maximum tax savings from Marriage Allowance (20% of £1,260)
         const TRADING_ALLOWANCE = 1000; // Trading Allowance 2025/26
         const PROPERTY_ALLOWANCE = 1000; // Property Allowance 2025/26
+        const CGT_ANNUAL_EXEMPT_AMOUNT = 3000; // CGT Annual Exempt Amount 2025/26
+
+        // Category configuration mapping
+        const CATEGORY_CONFIG = {
+            SoleTrader: {
+                name: 'Sole Trader',
+                taxes: ['incomeTax', 'vat'],
+                allowances: ['personal', 'trading'],
+                description: 'Self-employed individual trading on their own'
+            },
+            Director: {
+                name: 'Director',
+                taxes: ['incomeTax', 'paye', 'companyTax'],
+                allowances: ['personal'],
+                description: 'Company director with PAYE income'
+            },
+            Employee: {
+                name: 'Employee',
+                taxes: ['incomeTax', 'paye'],
+                allowances: ['personal'],
+                description: 'Employed individual with PAYE'
+            },
+            Company: {
+                name: 'Company',
+                taxes: ['companyTax', 'vat'],
+                allowances: [],
+                description: 'Limited company or corporation'
+            },
+            Landlords: {
+                name: 'Landlords',
+                taxes: ['incomeTax', 'cgt'],
+                allowances: ['personal', 'property'],
+                description: 'Property rental income and capital gains'
+            }
+        };
+
+        // Update tax fields based on selected category
+        function updateTaxFields() {
+            const category = document.getElementById('category').value;
+            const categoryFields = document.getElementById('categorySpecificFields');
+            const vatSection = document.getElementById('vatSection');
+            const payeSection = document.getElementById('payeSection');
+            const companyTaxSection = document.getElementById('companyTaxSection');
+            const cgtSection = document.getElementById('cgtSection');
+
+            // Hide all category-specific sections initially
+            categoryFields.style.display = 'none';
+            vatSection.style.display = 'none';
+            payeSection.style.display = 'none';
+            companyTaxSection.style.display = 'none';
+            cgtSection.style.display = 'none';
+
+            if (!category) return;
+
+            // Show category-specific fields
+            categoryFields.style.display = 'block';
+            const config = CATEGORY_CONFIG[category];
+            
+            if (config.taxes.includes('vat')) {
+                vatSection.style.display = 'block';
+            }
+            if (config.taxes.includes('paye')) {
+                payeSection.style.display = 'block';
+            }
+            if (config.taxes.includes('companyTax')) {
+                companyTaxSection.style.display = 'block';
+            }
+            if (config.taxes.includes('cgt')) {
+                cgtSection.style.display = 'block';
+            }
+
+            // Update allowance field visibility
+            updateAllowanceFieldsForCategory(category);
+        }
+
+        // Update allowance fields based on category
+        function updateAllowanceFieldsForCategory(category) {
+            const config = CATEGORY_CONFIG[category];
+            const tradingAllowanceDiv = document.getElementById('tradingAllowance').parentElement;
+            const propertyAllowanceDiv = document.getElementById('propertyAllowance').parentElement;
+            const personalAllowanceDiv = document.getElementById('allowances').parentElement;
+
+            // Show/hide allowances based on category
+            if (category === 'Company') {
+                personalAllowanceDiv.style.display = 'none';
+            } else {
+                personalAllowanceDiv.style.display = 'block';
+            }
+
+            if (config.allowances.includes('trading')) {
+                tradingAllowanceDiv.style.display = 'block';
+            } else {
+                tradingAllowanceDiv.style.display = 'none';
+            }
+
+            if (config.allowances.includes('property')) {
+                propertyAllowanceDiv.style.display = 'block';
+            } else {
+                propertyAllowanceDiv.style.display = 'none';
+            }
+        }
+
+        // Toggle VAT fields
+        function toggleVATFields() {
+            const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
+            document.getElementById('vatFields').style.display = vatRegistered ? 'block' : 'none';
+        }
 
         // Data storage
         let incomeEntries = [];
@@ -519,7 +705,7 @@
         }
 
         // Tax calculation function
-        function calculateTax(income, expenses, allowancesConfig) {
+        function calculateTax(income, expenses, allowancesConfig, category, taxConfig) {
             const BASIC_TAX_RATE = 0.20;  // 20%
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
@@ -527,69 +713,125 @@
             const HIGHER_TAX_THRESHOLD = 50270; // Higher rate threshold
             const ADDITIONAL_TAX_THRESHOLD = 125140; // Additional rate threshold
 
-            // Calculate total allowances based on selected options
-            let totalAllowances = 0;
-            const allowancesList = [];
+            const result = {
+                incomeTax: 0,
+                vat: 0,
+                paye: 0,
+                companyTax: 0,
+                cgt: 0,
+                totalTax: 0,
+                totalAllowances: 0,
+                allowancesList: [],
+                taxableIncome: 0
+            };
 
-            if (allowancesConfig.personalAllowance) {
-                totalAllowances += PERSONAL_ALLOWANCE;
-                allowancesList.push(`Personal Allowance: £${PERSONAL_ALLOWANCE.toFixed(2)}`);
-            }
+            // Calculate allowances (not applicable for Company category)
+            if (category !== 'Company') {
+                if (allowancesConfig.personalAllowance) {
+                    result.totalAllowances += PERSONAL_ALLOWANCE;
+                    result.allowancesList.push(`Personal Allowance: £${PERSONAL_ALLOWANCE.toFixed(2)}`);
+                }
 
-            if (allowancesConfig.blindPersonsAllowance) {
-                totalAllowances += BLIND_PERSONS_ALLOWANCE;
-                allowancesList.push(`Blind Person's Allowance: £${BLIND_PERSONS_ALLOWANCE.toFixed(2)}`);
-            }
+                if (allowancesConfig.blindPersonsAllowance) {
+                    result.totalAllowances += BLIND_PERSONS_ALLOWANCE;
+                    result.allowancesList.push(`Blind Person's Allowance: £${BLIND_PERSONS_ALLOWANCE.toFixed(2)}`);
+                }
 
-            if (allowancesConfig.marriageAllowance) {
-                totalAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
-                allowancesList.push(`Marriage Allowance: £${MARRIAGE_ALLOWANCE_TRANSFER.toFixed(2)}`);
-            }
+                if (allowancesConfig.marriageAllowance) {
+                    result.totalAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
+                    result.allowancesList.push(`Marriage Allowance: £${MARRIAGE_ALLOWANCE_TRANSFER.toFixed(2)}`);
+                }
 
-            if (allowancesConfig.tradingAllowance) {
-                totalAllowances += TRADING_ALLOWANCE;
-                allowancesList.push(`Trading Allowance: £${TRADING_ALLOWANCE.toFixed(2)}`);
-            }
+                if (allowancesConfig.tradingAllowance) {
+                    result.totalAllowances += TRADING_ALLOWANCE;
+                    result.allowancesList.push(`Trading Allowance: £${TRADING_ALLOWANCE.toFixed(2)}`);
+                }
 
-            if (allowancesConfig.propertyAllowance) {
-                totalAllowances += PROPERTY_ALLOWANCE;
-                allowancesList.push(`Property Allowance: £${PROPERTY_ALLOWANCE.toFixed(2)}`);
+                if (allowancesConfig.propertyAllowance) {
+                    result.totalAllowances += PROPERTY_ALLOWANCE;
+                    result.allowancesList.push(`Property Allowance: £${PROPERTY_ALLOWANCE.toFixed(2)}`);
+                }
             }
 
             // Calculate taxable income after allowances and expenses
-            let taxableIncome = income - totalAllowances - expenses;
+            let taxableIncome = income - result.totalAllowances - expenses;
             taxableIncome = Math.max(0, taxableIncome);
+            result.taxableIncome = taxableIncome;
 
-            let taxDue = 0;
+            // Calculate income tax (for individuals)
+            if (category !== 'Company') {
+                let remainingIncome = taxableIncome;
+                
+                // Additional rate (45%) on income above £125,140
+                if (remainingIncome > ADDITIONAL_TAX_THRESHOLD) {
+                    result.incomeTax += (remainingIncome - ADDITIONAL_TAX_THRESHOLD) * ADDITIONAL_TAX_RATE;
+                    remainingIncome = ADDITIONAL_TAX_THRESHOLD;
+                }
 
-            // Additional rate (45%) on income above £125,140
-            if (taxableIncome > ADDITIONAL_TAX_THRESHOLD) {
-                taxDue += (taxableIncome - ADDITIONAL_TAX_THRESHOLD) * ADDITIONAL_TAX_RATE;
-                taxableIncome = ADDITIONAL_TAX_THRESHOLD;
+                // Higher rate (40%) on income between £50,270 and £125,140
+                if (remainingIncome > HIGHER_TAX_THRESHOLD) {
+                    result.incomeTax += (remainingIncome - HIGHER_TAX_THRESHOLD) * HIGHER_TAX_RATE;
+                    remainingIncome = HIGHER_TAX_THRESHOLD;
+                }
+
+                // Basic rate (20%) on remaining taxable income
+                if (remainingIncome > 0) {
+                    result.incomeTax += remainingIncome * BASIC_TAX_RATE;
+                }
             }
 
-            // Higher rate (40%) on income between £50,270 and £125,140
-            if (taxableIncome > HIGHER_TAX_THRESHOLD) {
-                taxDue += (taxableIncome - HIGHER_TAX_THRESHOLD) * HIGHER_TAX_RATE;
-                taxableIncome = HIGHER_TAX_THRESHOLD;
+            // Calculate PAYE (simplified - includes NI)
+            if (taxConfig.includePAYE) {
+                const NI_RATE = 0.12; // National Insurance for employees
+                const NI_THRESHOLD = 12570;
+                if (income > NI_THRESHOLD) {
+                    result.paye = (income - NI_THRESHOLD) * NI_RATE;
+                }
             }
 
-            // Basic rate (20%) on remaining taxable income
-            if (taxableIncome > 0) {
-                taxDue += taxableIncome * BASIC_TAX_RATE;
+            // Calculate VAT
+            if (taxConfig.vatRegistered && taxConfig.vatRate) {
+                result.vat = income * taxConfig.vatRate;
             }
 
-            return {
-                taxDue: taxDue,
-                totalAllowances: totalAllowances,
-                allowancesList: allowancesList,
-                taxableIncome: Math.max(0, income - totalAllowances - expenses)
-            };
+            // Calculate Company Tax
+            if (category === 'Company') {
+                const profit = income - expenses;
+                result.companyTax = Math.max(0, profit) * (taxConfig.companyTaxRate || 0.19);
+            }
+
+            // Calculate CGT
+            if (taxConfig.capitalGains && taxConfig.capitalGains > 0) {
+                const taxableGains = Math.max(0, taxConfig.capitalGains - CGT_ANNUAL_EXEMPT_AMOUNT);
+                let cgtRate = 0.10; // Basic rate for other assets
+                
+                if (taxConfig.cgtType === 'property') {
+                    // Property CGT rates
+                    cgtRate = taxableIncome > HIGHER_TAX_THRESHOLD ? 0.28 : 0.18;
+                } else {
+                    // Other assets CGT rates
+                    cgtRate = taxableIncome > HIGHER_TAX_THRESHOLD ? 0.20 : 0.10;
+                }
+                
+                result.cgt = taxableGains * cgtRate;
+            }
+
+            // Calculate total tax
+            result.totalTax = result.incomeTax + result.vat + result.paye + result.companyTax + result.cgt;
+
+            return result;
         }
 
         // Tax form submission
         document.getElementById('taxForm').addEventListener('submit', function(event) {
             event.preventDefault();
+
+            // Validate category selection
+            const category = document.getElementById('category').value;
+            if (!category) {
+                alert('Please select a tax category first.');
+                return;
+            }
 
             // Use ledger data if available, otherwise show message
             const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
@@ -606,6 +848,22 @@
                 marriageAllowance: document.getElementById('marriageAllowance').value === 'yes',
                 tradingAllowance: document.getElementById('tradingAllowance').value === 'yes',
                 propertyAllowance: document.getElementById('propertyAllowance').value === 'yes'
+            };
+
+            // Get tax-specific configuration
+            const taxConfig = {
+                includePAYE: CATEGORY_CONFIG[category].taxes.includes('paye'),
+                vatRegistered: document.getElementById('vatRegistered') ? 
+                    document.getElementById('vatRegistered').value === 'yes' : false,
+                vatRate: document.getElementById('vatRegistered') && 
+                    document.getElementById('vatRegistered').value === 'yes' ? 
+                    parseFloat(document.getElementById('vatRate').value) : 0,
+                companyTaxRate: document.getElementById('companyTaxRate') ? 
+                    parseFloat(document.getElementById('companyTaxRate').value) : 0,
+                capitalGains: document.getElementById('capitalGains') ? 
+                    parseFloat(document.getElementById('capitalGains').value) || 0 : 0,
+                cgtType: document.getElementById('cgtType') ? 
+                    document.getElementById('cgtType').value : 'other'
             };
 
             // Validate allowances combination
@@ -626,8 +884,10 @@
                 alert(validationWarnings.join('\n'));
             }
 
-            const result = calculateTax(totalIncome, totalExpenses, allowancesConfig);
+            const result = calculateTax(totalIncome, totalExpenses, allowancesConfig, category, taxConfig);
 
+            // Display basic information
+            document.getElementById('resultCategory').innerHTML = `<strong>Tax Category:</strong> ${CATEGORY_CONFIG[category].name}`;
             document.getElementById('resultIncome').textContent = `Gross Income: £${totalIncome.toFixed(2)}`;
             document.getElementById('resultExpenses').textContent = `Expenses: £${totalExpenses.toFixed(2)}`;
             
@@ -639,7 +899,55 @@
             document.getElementById('resultAllowances').innerHTML = allowancesText.replace(/\n/g, '<br>');
             
             document.getElementById('resultTaxableIncome').textContent = `Taxable Income: £${Math.max(0, result.taxableIncome).toFixed(2)}`;
-            document.getElementById('resultTax').textContent = `Tax Due: £${result.taxDue.toFixed(2)}`;
+            
+            // Display Income Tax
+            if (category !== 'Company') {
+                document.getElementById('resultTax').innerHTML = `<strong>Income Tax Due:</strong> £${result.incomeTax.toFixed(2)}`;
+            } else {
+                document.getElementById('resultTax').innerHTML = '';
+            }
+
+            // Display category-specific taxes
+            const resultVAT = document.getElementById('resultVAT');
+            const resultPAYE = document.getElementById('resultPAYE');
+            const resultCompanyTax = document.getElementById('resultCompanyTax');
+            const resultCGT = document.getElementById('resultCGT');
+
+            // Hide all initially
+            resultVAT.style.display = 'none';
+            resultPAYE.style.display = 'none';
+            resultCompanyTax.style.display = 'none';
+            resultCGT.style.display = 'none';
+
+            // Show relevant tax sections
+            if (result.vat > 0) {
+                resultVAT.style.display = 'block';
+                resultVAT.innerHTML = `<strong>VAT Due:</strong> £${result.vat.toFixed(2)}<br>
+                    <small>VAT Rate: ${(taxConfig.vatRate * 100).toFixed(0)}% on £${totalIncome.toFixed(2)}</small>`;
+            }
+
+            if (result.paye > 0) {
+                resultPAYE.style.display = 'block';
+                resultPAYE.innerHTML = `<strong>National Insurance (PAYE):</strong> £${result.paye.toFixed(2)}<br>
+                    <small>Employee NI at 12% on income above £${12570}</small>`;
+            }
+
+            if (result.companyTax > 0) {
+                resultCompanyTax.style.display = 'block';
+                const taxRate = (taxConfig.companyTaxRate * 100).toFixed(0);
+                resultCompanyTax.innerHTML = `<strong>Corporation Tax Due:</strong> £${result.companyTax.toFixed(2)}<br>
+                    <small>Corporation Tax at ${taxRate}% on profit of £${(totalIncome - totalExpenses).toFixed(2)}</small>`;
+            }
+
+            if (result.cgt > 0) {
+                resultCGT.style.display = 'block';
+                const taxableGains = Math.max(0, taxConfig.capitalGains - CGT_ANNUAL_EXEMPT_AMOUNT);
+                resultCGT.innerHTML = `<strong>Capital Gains Tax Due:</strong> £${result.cgt.toFixed(2)}<br>
+                    <small>On taxable gains of £${taxableGains.toFixed(2)} (after £${CGT_ANNUAL_EXEMPT_AMOUNT} exemption)</small>`;
+            }
+
+            // Display total tax
+            document.getElementById('resultTotalTax').innerHTML = `<strong>Total Tax Due:</strong> £${result.totalTax.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
         });
