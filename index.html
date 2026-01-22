@@ -1,158 +1,244 @@
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Allowance Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/**
- * Single-file consolidated UK Tax Allowances model
- * Suitable for calculators, APIs, rule engines, or UI layers
- */
-public final class UKTaxAllowances {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
 
-    private UKTaxAllowances() {}
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    /* =========================
-       Allowance Category Enum
-       ========================= */
-    public enum AllowanceCategory {
-        PERSONAL,
-        EMPLOYMENT,
-        PENSION,
-        SAVINGS_INVESTMENT,
-        PROPERTY,
-        BUSINESS,
-        FAMILY,
-        CHARITY,
-        NATIONAL_INSURANCE,
-        ADVANCED_INVESTMENT,
-        INTERNATIONAL
-    }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    /* =========================
-       Tax Allowance Model
-       ========================= */
-    public record TaxAllowance(
-            String code,
-            String name,
-            String description,
-            AllowanceCategory category,
-            double annualLimit,   // -1 = variable / uncapped
-            boolean requiresClaim
-    ) {}
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
 
-    /* =========================
-       Consolidated Allowances
-       ========================= */
-    public static final List<TaxAllowance> ALL = List.of(
+        /* Navigation Bar */
+        nav {
+            background-color: #5568d3;
+            padding: 0;
+        }
 
-        // PERSONAL
-        new TaxAllowance("PA", "Personal Allowance",
-                "Tax-free income threshold",
-                AllowanceCategory.PERSONAL, 12_570, false),
+        nav ul {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-        new TaxAllowance("MA", "Marriage Allowance",
-                "Transfer unused allowance to spouse or civil partner",
-                AllowanceCategory.PERSONAL, 1_260, true),
+        nav li {
+            margin-right: 2rem;
+        }
 
-        new TaxAllowance("BPA", "Blind Person’s Allowance",
-                "Additional allowance for visually impaired taxpayers",
-                AllowanceCategory.PERSONAL, 2_870, true),
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 1rem 0;
+            display: block;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
 
-        // EMPLOYMENT
-        new TaxAllowance("WFH", "Working From Home Allowance",
-                "Flat-rate or actual home-working expenses",
-                AllowanceCategory.EMPLOYMENT, 312, true),
+        nav a:hover {
+            opacity: 0.8;
+        }
 
-        new TaxAllowance("MAR", "Mileage Allowance Relief",
-                "Relief where employer pays below HMRC mileage rates",
-                AllowanceCategory.EMPLOYMENT, -1, true),
+        /* Main Section */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 20px;
+        }
 
-        // PENSION
-        new TaxAllowance("PEN", "Pension Contribution Relief",
-                "Tax relief on pension contributions",
-                AllowanceCategory.PENSION, 60_000, false),
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
 
-        // SAVINGS & INVESTMENT
-        new TaxAllowance("ISA", "ISA Allowance",
-                "Tax-free savings, dividends, and capital gains",
-                AllowanceCategory.SAVINGS_INVESTMENT, 20_000, false),
+        .welcome-section h2 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
 
-        new TaxAllowance("DIV", "Dividend Allowance",
-                "Tax-free dividend income",
-                AllowanceCategory.SAVINGS_INVESTMENT, 500, false),
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-        new TaxAllowance("CGT", "Capital Gains Allowance",
-                "Annual capital gains exemption",
-                AllowanceCategory.SAVINGS_INVESTMENT, 3_000, false),
+        /* Category Listing */
+        .categories-section {
+            margin-top: 3rem;
+        }
 
-        // PROPERTY
-        new TaxAllowance("PIA", "Property Income Allowance",
-                "Tax-free rental income",
-                AllowanceCategory.PROPERTY, 1_000, false),
+        .categories-section h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
 
-        new TaxAllowance("RAR", "Rent-a-Room Relief",
-                "Tax-free income from letting a room in your home",
-                AllowanceCategory.PROPERTY, 7_500, false),
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
 
-        // BUSINESS
-        new TaxAllowance("TRA", "Trading Allowance",
-                "Tax-free trading income",
-                AllowanceCategory.BUSINESS, 1_000, false),
+        .category-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
 
-        new TaxAllowance("AIA", "Annual Investment Allowance",
-                "100% deduction for qualifying business equipment",
-                AllowanceCategory.BUSINESS, 1_000_000, false),
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
 
-        // FAMILY
-        new TaxAllowance("TFC", "Tax-Free Childcare",
-                "Government childcare top-up",
-                AllowanceCategory.FAMILY, 2_000, true),
+        .category-card h3 {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
 
-        // CHARITY
-        new TaxAllowance("GA", "Gift Aid Relief",
-                "Extends basic rate band for charitable donations",
-                AllowanceCategory.CHARITY, -1, true),
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
 
-        // NATIONAL INSURANCE
-        new TaxAllowance("EA", "Employment Allowance",
-                "Employer National Insurance reduction",
-                AllowanceCategory.NATIONAL_INSURANCE, 5_000, true),
+        /* Footer Section */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
 
-        // ADVANCED INVESTMENT
-        new TaxAllowance("EIS", "Enterprise Investment Scheme",
-                "30% income tax relief on qualifying investments",
-                AllowanceCategory.ADVANCED_INVESTMENT, -1, true),
+        footer p {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="header-content">
+            <h1>UK Tax Allowance Tool</h1>
+        </div>
+    </header>
 
-        new TaxAllowance("SEIS", "Seed Enterprise Investment Scheme",
-                "50% income tax relief on early-stage investments",
-                AllowanceCategory.ADVANCED_INVESTMENT, -1, true)
-    );
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#allowances">Allowances</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
 
-    /* =========================
-       Example Utility Methods
-       ========================= */
+    <!-- Main Section -->
+    <main>
+        <section class="welcome-section" id="home">
+            <h2>Welcome to UK Tax Allowance Tool</h2>
+            <p>This tool helps you calculate and manage your UK tax allowances easily.</p>
+        </section>
 
-    public static List<TaxAllowance> byCategory(AllowanceCategory category) {
-        return ALL.stream()
-                .filter(a -> a.category() == category)
-                .toList();
-    }
+        <!-- Category Listing -->
+        <section class="categories-section" id="allowances">
+            <h2>Allowance Categories</h2>
+            <div class="categories-grid">
+                <a href="#personal" class="category-card">
+                    <div class="category-icon">👤</div>
+                    <h3>Personal</h3>
+                </a>
 
-    public static Map<AllowanceCategory, List<TaxAllowance>> groupByCategory() {
-        return ALL.stream()
-                .collect(Collectors.groupingBy(TaxAllowance::category));
-    }
+                <a href="#employment" class="category-card">
+                    <div class="category-icon">💼</div>
+                    <h3>Employment</h3>
+                </a>
 
-    public static List<TaxAllowance> claimRequired() {
-        return ALL.stream()
-                .filter(TaxAllowance::requiresClaim)
-                .toList();
-    }
+                <a href="#pension" class="category-card">
+                    <div class="category-icon">🏦</div>
+                    <h3>Pension</h3>
+                </a>
 
-    /* =========================
-       Example Main (optional)
-       ========================= */
-    public static void main(String[] args) {
-        byCategory(AllowanceCategory.PERSONAL)
-                .forEach(a -> System.out.println(a.name()));
-    }
-}
+                <a href="#savings-investment" class="category-card">
+                    <div class="category-icon">💰</div>
+                    <h3>Savings &amp; Investment</h3>
+                </a>
+
+                <a href="#property" class="category-card">
+                    <div class="category-icon">🏠</div>
+                    <h3>Property</h3>
+                </a>
+
+                <a href="#business" class="category-card">
+                    <div class="category-icon">🏢</div>
+                    <h3>Business</h3>
+                </a>
+
+                <a href="#family" class="category-card">
+                    <div class="category-icon">👨‍👩‍👧‍👦</div>
+                    <h3>Family</h3>
+                </a>
+
+                <a href="#charity" class="category-card">
+                    <div class="category-icon">🎁</div>
+                    <h3>Charity</h3>
+                </a>
+
+                <a href="#national-insurance" class="category-card">
+                    <div class="category-icon">🏛️</div>
+                    <h3>National Insurance</h3>
+                </a>
+
+                <a href="#advanced-investment" class="category-card">
+                    <div class="category-icon">📈</div>
+                    <h3>Advanced Investment</h3>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2026 UK Tax Allowance Tool. All rights reserved.</p>
+    </footer>
+</body>
+</html>
