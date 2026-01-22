@@ -456,21 +456,31 @@
         // Update tax calculator section based on entity
         function updateTaxCalculatorForEntity() {
             const config = ENTITY_CONFIGS[currentEntityCategory];
-            const taxForm = document.getElementById('taxForm');
             
             // Show/hide allowance options based on entity type
-            const allowancesDiv = document.getElementById('allowances').parentElement;
-            const blindAllowanceDiv = document.getElementById('blindPersonsAllowance').parentElement;
-            const marriageAllowanceDiv = document.getElementById('marriageAllowance').parentElement;
-            const tradingAllowanceDiv = document.getElementById('tradingAllowance').parentElement;
-            const propertyAllowanceDiv = document.getElementById('propertyAllowance').parentElement;
+            const allowancesEl = document.getElementById('allowances');
+            const blindAllowanceEl = document.getElementById('blindPersonsAllowance');
+            const marriageAllowanceEl = document.getElementById('marriageAllowance');
+            const tradingAllowanceEl = document.getElementById('tradingAllowance');
+            const propertyAllowanceEl = document.getElementById('propertyAllowance');
             
-            // Show/hide based on entity config
-            allowancesDiv.style.display = config.allowances.personalAllowance ? 'block' : 'none';
-            blindAllowanceDiv.style.display = config.allowances.blindPersonsAllowance ? 'block' : 'none';
-            marriageAllowanceDiv.style.display = config.allowances.marriageAllowance ? 'block' : 'none';
-            tradingAllowanceDiv.style.display = config.allowances.tradingAllowance ? 'block' : 'none';
-            propertyAllowanceDiv.style.display = config.allowances.propertyAllowance ? 'block' : 'none';
+            // Null checks for safety
+            if (!allowancesEl || !blindAllowanceEl || !marriageAllowanceEl || !tradingAllowanceEl || !propertyAllowanceEl) {
+                return;
+            }
+            
+            const allowancesDiv = allowancesEl.parentElement;
+            const blindAllowanceDiv = blindAllowanceEl.parentElement;
+            const marriageAllowanceDiv = marriageAllowanceEl.parentElement;
+            const tradingAllowanceDiv = tradingAllowanceEl.parentElement;
+            const propertyAllowanceDiv = propertyAllowanceEl.parentElement;
+            
+            // Show/hide based on entity config with null safety
+            if (allowancesDiv) allowancesDiv.style.display = config.allowances.personalAllowance ? 'block' : 'none';
+            if (blindAllowanceDiv) blindAllowanceDiv.style.display = config.allowances.blindPersonsAllowance ? 'block' : 'none';
+            if (marriageAllowanceDiv) marriageAllowanceDiv.style.display = config.allowances.marriageAllowance ? 'block' : 'none';
+            if (tradingAllowanceDiv) tradingAllowanceDiv.style.display = config.allowances.tradingAllowance ? 'block' : 'none';
+            if (propertyAllowanceDiv) propertyAllowanceDiv.style.display = config.allowances.propertyAllowance ? 'block' : 'none';
         }
 
         // Add income entry
@@ -789,8 +799,10 @@
                 // Main rate
                 corporationTax = profit * MAIN_RATE;
             } else {
-                // Marginal relief applies
-                // Simplified calculation - in reality marginal relief is more complex
+                // Marginal relief applies between £50,000 and £250,000
+                // Simplified: Uses linear interpolation between rates
+                // Actual UK marginal relief calculation: Tax = (Profit × MainRate) - ((UpperLimit - Profit) × (UpperLimit - LowerLimit) / Profit × MarginalReliefFraction)
+                // This simplified version gradually increases the effective rate from 19% to 25%
                 const marginalFraction = (profit - LOWER_LIMIT) / (UPPER_LIMIT - LOWER_LIMIT);
                 const effectiveRate = SMALL_COMPANIES_RATE + (marginalFraction * (MAIN_RATE - SMALL_COMPANIES_RATE));
                 corporationTax = profit * effectiveRate;
