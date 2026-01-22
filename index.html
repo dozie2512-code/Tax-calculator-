@@ -935,7 +935,7 @@
             if (result.paye > 0) {
                 resultPAYE.style.display = 'block';
                 resultPAYE.innerHTML = `<strong>National Insurance (PAYE):</strong> £${result.paye.toFixed(2)}<br>
-                    <small>Employee NI at 12% on income above £${12570}</small>`;
+                    <small>Employee NI at ${(NI_RATE * 100).toFixed(0)}% on income above £${NI_PRIMARY_THRESHOLD}</small>`;
             }
 
             if (result.companyTax > 0) {
