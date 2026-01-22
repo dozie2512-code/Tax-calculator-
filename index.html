@@ -171,6 +171,24 @@
     <div class="container">
         <h1>UK Tax Calculator & Accounting Manager</h1>
 
+        <!-- Settings Section -->
+        <div class="section">
+            <h2>Settings</h2>
+            <div>
+                <label for="entityCategory">Select Your Entity Category:</label>
+                <select id="entityCategory" name="entityCategory" onchange="updateEntitySettings()">
+                    <option value="SoleTrader">Sole Trader</option>
+                    <option value="Director">Director</option>
+                    <option value="Employee">Employee</option>
+                    <option value="Company">Company</option>
+                    <option value="Landlords">Landlords</option>
+                </select>
+            </div>
+            <div id="entityInfo" style="margin-top: 15px;">
+                <!-- Entity information will be populated here -->
+            </div>
+        </div>
+
         <!-- Income Tracking Section -->
         <div class="section">
             <h2>Income Tracking</h2>
@@ -318,16 +336,151 @@
         const TRADING_ALLOWANCE = 1000; // Trading Allowance 2025/26
         const PROPERTY_ALLOWANCE = 1000; // Property Allowance 2025/26
 
+        // Entity Categories Configuration
+        const ENTITY_CONFIGS = {
+            SoleTrader: {
+                name: 'Sole Trader',
+                taxTypes: ['Income Tax', 'VAT', 'CGT'],
+                allowances: {
+                    personalAllowance: { amount: 12570, description: 'Personal Allowance' },
+                    tradingAllowance: { amount: 1000, description: 'Trading Allowance' },
+                    blindPersonsAllowance: { amount: 3130, description: 'Blind Person\'s Allowance (optional)' },
+                    marriageAllowance: { amount: 1260, description: 'Marriage Allowance Transfer (optional)' }
+                },
+                description: 'Self-employed individual running their own business'
+            },
+            Director: {
+                name: 'Director',
+                taxTypes: ['Income Tax', 'PAYE', 'CGT'],
+                allowances: {
+                    personalAllowance: { amount: 12570, description: 'Personal Allowance' },
+                    blindPersonsAllowance: { amount: 3130, description: 'Blind Person\'s Allowance (optional)' },
+                    marriageAllowance: { amount: 1260, description: 'Marriage Allowance Transfer (optional)' }
+                },
+                description: 'Company director receiving salary and/or dividends'
+            },
+            Employee: {
+                name: 'Employee',
+                taxTypes: ['Income Tax', 'PAYE'],
+                allowances: {
+                    personalAllowance: { amount: 12570, description: 'Personal Allowance' },
+                    blindPersonsAllowance: { amount: 3130, description: 'Blind Person\'s Allowance (optional)' },
+                    marriageAllowance: { amount: 1260, description: 'Marriage Allowance Transfer (optional)' }
+                },
+                description: 'Employee with income from employment'
+            },
+            Company: {
+                name: 'Company',
+                taxTypes: ['Company Tax', 'VAT'],
+                allowances: {
+                    smallCompaniesRate: { amount: 0, description: 'Small Companies Rate: 19% (profits up to £50,000)' },
+                    mainRate: { amount: 0, description: 'Main Rate: 25% (profits over £250,000)' },
+                    marginalRelief: { amount: 0, description: 'Marginal Relief (profits between £50,000-£250,000)' }
+                },
+                description: 'Limited company subject to Corporation Tax'
+            },
+            Landlords: {
+                name: 'Landlords',
+                taxTypes: ['Income Tax', 'CGT'],
+                allowances: {
+                    personalAllowance: { amount: 12570, description: 'Personal Allowance' },
+                    propertyAllowance: { amount: 1000, description: 'Property Allowance' },
+                    blindPersonsAllowance: { amount: 3130, description: 'Blind Person\'s Allowance (optional)' },
+                    marriageAllowance: { amount: 1260, description: 'Marriage Allowance Transfer (optional)' }
+                },
+                description: 'Individual with rental property income'
+            }
+        };
+
         // Data storage
         let incomeEntries = [];
         let expenseEntries = [];
         let entryIdCounter = 0;
+        let currentEntityCategory = 'SoleTrader'; // Default entity
 
         // Helper function to escape HTML to prevent XSS
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Update entity settings display
+        function updateEntitySettings() {
+            currentEntityCategory = document.getElementById('entityCategory').value;
+            const config = ENTITY_CONFIGS[currentEntityCategory];
+            
+            let html = `
+                <div style="padding: 15px; background: #f0f8ff; border-radius: 5px; border-left: 4px solid #0056b3;">
+                    <h3 style="margin-top: 0; color: #0056b3;">${config.name}</h3>
+                    <p style="color: #666; margin: 10px 0;">${config.description}</p>
+                    
+                    <div style="margin-top: 15px;">
+                        <h4 style="color: #0056b3; margin-bottom: 10px;">Applicable Tax Types:</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            `;
+            
+            config.taxTypes.forEach(taxType => {
+                html += `<span style="background: #0056b3; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">${taxType}</span>`;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <h4 style="color: #0056b3; margin-bottom: 10px;">Available Allowances:</h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #333;">
+            `;
+            
+            Object.values(config.allowances).forEach(allowance => {
+                const amountStr = allowance.amount > 0 ? `£${allowance.amount.toLocaleString()}` : '';
+                html += `<li style="margin-bottom: 5px;">${allowance.description}${amountStr ? ': ' + amountStr : ''}</li>`;
+            });
+            
+            html += `
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('entityInfo').innerHTML = html;
+            
+            // Update tax calculator section visibility
+            updateTaxCalculatorForEntity();
+            
+            // Update summary display
+            updateSummary();
+        }
+
+        // Update tax calculator section based on entity
+        function updateTaxCalculatorForEntity() {
+            const config = ENTITY_CONFIGS[currentEntityCategory];
+            
+            // Show/hide allowance options based on entity type
+            const allowancesEl = document.getElementById('allowances');
+            const blindAllowanceEl = document.getElementById('blindPersonsAllowance');
+            const marriageAllowanceEl = document.getElementById('marriageAllowance');
+            const tradingAllowanceEl = document.getElementById('tradingAllowance');
+            const propertyAllowanceEl = document.getElementById('propertyAllowance');
+            
+            // Null checks for safety
+            if (!allowancesEl || !blindAllowanceEl || !marriageAllowanceEl || !tradingAllowanceEl || !propertyAllowanceEl) {
+                return;
+            }
+            
+            const allowancesDiv = allowancesEl.parentElement;
+            const blindAllowanceDiv = blindAllowanceEl.parentElement;
+            const marriageAllowanceDiv = marriageAllowanceEl.parentElement;
+            const tradingAllowanceDiv = tradingAllowanceEl.parentElement;
+            const propertyAllowanceDiv = propertyAllowanceEl.parentElement;
+            
+            // Show/hide based on entity config with null safety
+            if (allowancesDiv) allowancesDiv.style.display = config.allowances.personalAllowance ? 'block' : 'none';
+            if (blindAllowanceDiv) blindAllowanceDiv.style.display = config.allowances.blindPersonsAllowance ? 'block' : 'none';
+            if (marriageAllowanceDiv) marriageAllowanceDiv.style.display = config.allowances.marriageAllowance ? 'block' : 'none';
+            if (tradingAllowanceDiv) tradingAllowanceDiv.style.display = config.allowances.tradingAllowance ? 'block' : 'none';
+            if (propertyAllowanceDiv) propertyAllowanceDiv.style.display = config.allowances.propertyAllowance ? 'block' : 'none';
         }
 
         // Add income entry
@@ -487,6 +640,34 @@
             document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
             document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
             document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
+            
+            // Add entity category to summary if not already there
+            updateEntityInSummary();
+        }
+
+        // Update entity information in summary
+        function updateEntityInSummary() {
+            const config = ENTITY_CONFIGS[currentEntityCategory];
+            let entitySummaryDiv = document.getElementById('entitySummaryCard');
+            
+            if (!entitySummaryDiv) {
+                // Create the entity summary card if it doesn't exist
+                const summaryGrid = document.querySelector('.summary-grid');
+                entitySummaryDiv = document.createElement('div');
+                entitySummaryDiv.id = 'entitySummaryCard';
+                entitySummaryDiv.className = 'summary-card';
+                entitySummaryDiv.style.background = '#e7f3ff';
+                entitySummaryDiv.style.border = '2px solid #0056b3';
+                summaryGrid.insertBefore(entitySummaryDiv, summaryGrid.firstChild);
+            }
+            
+            entitySummaryDiv.innerHTML = `
+                <h4>Entity Category</h4>
+                <div class="amount" style="font-size: 1.3em;">${config.name}</div>
+                <div style="font-size: 0.8em; margin-top: 10px; color: #666;">
+                    ${config.taxTypes.join(', ')}
+                </div>
+            `;
         }
 
         // Update ledger display
@@ -520,6 +701,14 @@
 
         // Tax calculation function
         function calculateTax(income, expenses, allowancesConfig) {
+            const config = ENTITY_CONFIGS[currentEntityCategory];
+            
+            // Company tax calculation (different from individual)
+            if (currentEntityCategory === 'Company') {
+                return calculateCompanyTax(income, expenses);
+            }
+            
+            // Individual/personal tax calculation
             const BASIC_TAX_RATE = 0.20;  // 20%
             const HIGHER_TAX_RATE = 0.40; // 40%
             const ADDITIONAL_TAX_RATE = 0.45; // 45%
@@ -531,27 +720,27 @@
             let totalAllowances = 0;
             const allowancesList = [];
 
-            if (allowancesConfig.personalAllowance) {
+            if (allowancesConfig.personalAllowance && config.allowances.personalAllowance) {
                 totalAllowances += PERSONAL_ALLOWANCE;
                 allowancesList.push(`Personal Allowance: £${PERSONAL_ALLOWANCE.toFixed(2)}`);
             }
 
-            if (allowancesConfig.blindPersonsAllowance) {
+            if (allowancesConfig.blindPersonsAllowance && config.allowances.blindPersonsAllowance) {
                 totalAllowances += BLIND_PERSONS_ALLOWANCE;
                 allowancesList.push(`Blind Person's Allowance: £${BLIND_PERSONS_ALLOWANCE.toFixed(2)}`);
             }
 
-            if (allowancesConfig.marriageAllowance) {
+            if (allowancesConfig.marriageAllowance && config.allowances.marriageAllowance) {
                 totalAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
                 allowancesList.push(`Marriage Allowance: £${MARRIAGE_ALLOWANCE_TRANSFER.toFixed(2)}`);
             }
 
-            if (allowancesConfig.tradingAllowance) {
+            if (allowancesConfig.tradingAllowance && config.allowances.tradingAllowance) {
                 totalAllowances += TRADING_ALLOWANCE;
                 allowancesList.push(`Trading Allowance: £${TRADING_ALLOWANCE.toFixed(2)}`);
             }
 
-            if (allowancesConfig.propertyAllowance) {
+            if (allowancesConfig.propertyAllowance && config.allowances.propertyAllowance) {
                 totalAllowances += PROPERTY_ALLOWANCE;
                 allowancesList.push(`Property Allowance: £${PROPERTY_ALLOWANCE.toFixed(2)}`);
             }
@@ -583,7 +772,53 @@
                 taxDue: taxDue,
                 totalAllowances: totalAllowances,
                 allowancesList: allowancesList,
-                taxableIncome: Math.max(0, income - totalAllowances - expenses)
+                taxableIncome: Math.max(0, income - totalAllowances - expenses),
+                entityCategory: config.name,
+                taxTypes: config.taxTypes.join(', ')
+            };
+        }
+
+        // Company tax calculation
+        function calculateCompanyTax(income, expenses) {
+            const profit = income - expenses;
+            let corporationTax = 0;
+            const config = ENTITY_CONFIGS.Company;
+            
+            // Corporation Tax rates 2025/26
+            const SMALL_COMPANIES_RATE = 0.19; // 19% for profits up to £50,000
+            const MAIN_RATE = 0.25; // 25% for profits over £250,000
+            const LOWER_LIMIT = 50000;
+            const UPPER_LIMIT = 250000;
+            
+            if (profit <= 0) {
+                corporationTax = 0;
+            } else if (profit <= LOWER_LIMIT) {
+                // Small companies rate
+                corporationTax = profit * SMALL_COMPANIES_RATE;
+            } else if (profit >= UPPER_LIMIT) {
+                // Main rate
+                corporationTax = profit * MAIN_RATE;
+            } else {
+                // Marginal relief applies between £50,000 and £250,000
+                // Simplified: Uses linear interpolation between rates
+                // Actual UK marginal relief calculation: Tax = (Profit × MainRate) - ((UpperLimit - Profit) × (UpperLimit - LowerLimit) / Profit × MarginalReliefFraction)
+                // This simplified version gradually increases the effective rate from 19% to 25%
+                const marginalFraction = (profit - LOWER_LIMIT) / (UPPER_LIMIT - LOWER_LIMIT);
+                const effectiveRate = SMALL_COMPANIES_RATE + (marginalFraction * (MAIN_RATE - SMALL_COMPANIES_RATE));
+                corporationTax = profit * effectiveRate;
+            }
+            
+            return {
+                taxDue: corporationTax,
+                totalAllowances: 0,
+                allowancesList: [
+                    `Small Companies Rate (19%): Profits up to £${LOWER_LIMIT.toLocaleString()}`,
+                    `Main Rate (25%): Profits over £${UPPER_LIMIT.toLocaleString()}`,
+                    `Marginal Relief: Profits between £${LOWER_LIMIT.toLocaleString()} - £${UPPER_LIMIT.toLocaleString()}`
+                ],
+                taxableIncome: profit,
+                entityCategory: config.name,
+                taxTypes: config.taxTypes.join(', ')
             };
         }
 
@@ -628,24 +863,42 @@
 
             const result = calculateTax(totalIncome, totalExpenses, allowancesConfig);
 
+            // Display entity category and applicable taxes
+            let resultsHeader = `<h3>Tax Summary - ${result.entityCategory}</h3>`;
+            resultsHeader += `<p style="color: #666; font-style: italic;">Applicable Tax Types: ${result.taxTypes}</p>`;
+            
+            document.getElementById('results').innerHTML = resultsHeader + `
+                <p id="resultIncome"></p>
+                <p id="resultExpenses"></p>
+                <p id="resultAllowances"></p>
+                <p id="resultTaxableIncome"></p>
+                <p id="resultTax"></p>
+            `;
+
             document.getElementById('resultIncome').textContent = `Gross Income: £${totalIncome.toFixed(2)}`;
             document.getElementById('resultExpenses').textContent = `Expenses: £${totalExpenses.toFixed(2)}`;
             
             // Display allowances breakdown
-            let allowancesText = `Total Allowances: £${result.totalAllowances.toFixed(2)}`;
+            let allowancesText = currentEntityCategory === 'Company' 
+                ? `Corporation Tax Information:` 
+                : `Total Allowances: £${result.totalAllowances.toFixed(2)}`;
             if (result.allowancesList.length > 0) {
                 allowancesText += '\n  • ' + result.allowancesList.join('\n  • ');
             }
             document.getElementById('resultAllowances').innerHTML = allowancesText.replace(/\n/g, '<br>');
             
-            document.getElementById('resultTaxableIncome').textContent = `Taxable Income: £${Math.max(0, result.taxableIncome).toFixed(2)}`;
-            document.getElementById('resultTax').textContent = `Tax Due: £${result.taxDue.toFixed(2)}`;
+            const taxLabel = currentEntityCategory === 'Company' ? 'Taxable Profit' : 'Taxable Income';
+            document.getElementById('resultTaxableIncome').textContent = `${taxLabel}: £${Math.max(0, result.taxableIncome).toFixed(2)}`;
+            
+            const taxTypeLabel = currentEntityCategory === 'Company' ? 'Corporation Tax Due' : 'Tax Due';
+            document.getElementById('resultTax').textContent = `${taxTypeLabel}: £${result.taxDue.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
         });
 
         // Initialize displays
         updateDisplays();
+        updateEntitySettings();
     </script>
 </body>
     </html>
