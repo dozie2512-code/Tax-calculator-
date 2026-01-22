@@ -397,6 +397,10 @@
         const TRADING_ALLOWANCE = 1000; // Trading Allowance 2025/26
         const PROPERTY_ALLOWANCE = 1000; // Property Allowance 2025/26
         const CGT_ANNUAL_EXEMPT_AMOUNT = 3000; // CGT Annual Exempt Amount 2025/26
+        const NI_PRIMARY_THRESHOLD = 12570; // National Insurance Primary Threshold 2025/26
+        const NI_RATE = 0.12; // National Insurance rate for employees
+        const SMALL_COMPANY_TAX_RATE = 0.19; // Small Profits Rate for Corporation Tax
+        const MAIN_COMPANY_TAX_RATE = 0.25; // Main Rate for Corporation Tax
 
         // Category configuration mapping
         const CATEGORY_CONFIG = {
@@ -473,6 +477,8 @@
 
         // Update allowance fields based on category
         function updateAllowanceFieldsForCategory(category) {
+            if (!CATEGORY_CONFIG[category]) return; // Safety check
+            
             const config = CATEGORY_CONFIG[category];
             const tradingAllowanceDiv = document.getElementById('tradingAllowance').parentElement;
             const propertyAllowanceDiv = document.getElementById('propertyAllowance').parentElement;
@@ -782,10 +788,8 @@
 
             // Calculate PAYE (simplified - includes NI)
             if (taxConfig.includePAYE) {
-                const NI_RATE = 0.12; // National Insurance for employees
-                const NI_THRESHOLD = 12570;
-                if (income > NI_THRESHOLD) {
-                    result.paye = (income - NI_THRESHOLD) * NI_RATE;
+                if (income > NI_PRIMARY_THRESHOLD) {
+                    result.paye = (income - NI_PRIMARY_THRESHOLD) * NI_RATE;
                 }
             }
 
@@ -797,7 +801,7 @@
             // Calculate Company Tax
             if (category === 'Company') {
                 const profit = income - expenses;
-                result.companyTax = Math.max(0, profit) * (taxConfig.companyTaxRate || 0.19);
+                result.companyTax = Math.max(0, profit) * (taxConfig.companyTaxRate || SMALL_COMPANY_TAX_RATE);
             }
 
             // Calculate CGT
@@ -851,15 +855,17 @@
             };
 
             // Get tax-specific configuration
+            const vatRegisteredElement = document.getElementById('vatRegistered');
+            const vatRateElement = document.getElementById('vatRate');
+            const vatRegistered = vatRegisteredElement ? vatRegisteredElement.value === 'yes' : false;
+            const vatRate = vatRegistered && vatRateElement ? parseFloat(vatRateElement.value) : 0;
+            
             const taxConfig = {
                 includePAYE: CATEGORY_CONFIG[category].taxes.includes('paye'),
-                vatRegistered: document.getElementById('vatRegistered') ? 
-                    document.getElementById('vatRegistered').value === 'yes' : false,
-                vatRate: document.getElementById('vatRegistered') && 
-                    document.getElementById('vatRegistered').value === 'yes' ? 
-                    parseFloat(document.getElementById('vatRate').value) : 0,
+                vatRegistered: vatRegistered,
+                vatRate: vatRate,
                 companyTaxRate: document.getElementById('companyTaxRate') ? 
-                    parseFloat(document.getElementById('companyTaxRate').value) : 0,
+                    parseFloat(document.getElementById('companyTaxRate').value) : SMALL_COMPANY_TAX_RATE,
                 capitalGains: document.getElementById('capitalGains') ? 
                     parseFloat(document.getElementById('capitalGains').value) || 0 : 0,
                 cgtType: document.getElementById('cgtType') ? 
