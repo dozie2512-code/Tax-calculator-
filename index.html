@@ -665,15 +665,16 @@
         function migrateOldData(oldData) {
             const newData = initializeDataStructure();
             
-            // If old data exists (array format), migrate to 2025/26
+            // If old data exists in array format, it's from a pre-1.0 version
+            // This format predates the current implementation and cannot be reliably migrated
+            // Initialize with empty structure instead
             if (Array.isArray(oldData)) {
-                // This is very old data, just initialize empty
                 return newData;
             }
             
-            // If data exists without version, assume it's current year data
+            // If data exists without version, assume it's from version 1.0 (current year only)
+            // Migrate this data to the 2025/26 tax year in the new multi-year structure
             if (oldData && !oldData.version) {
-                // Try to extract income and expenses if they exist
                 if (oldData.income || oldData.expenses) {
                     newData.taxYears['2025/26'].income = oldData.income || [];
                     newData.taxYears['2025/26'].expenses = oldData.expenses || [];
@@ -710,8 +711,8 @@
             // Load new year data
             loadYearData(currentYear);
             
-            // Update displays
-            updateDisplays();
+            // Refresh all displays (income list, expense list, summary, and ledger)
+            refreshAllDisplays();
         }
 
         // Clear current year data
@@ -725,7 +726,7 @@
             entryIdCounter = 0;
             
             saveToLocalStorage();
-            updateDisplays();
+            refreshAllDisplays();
             
             alert(`All data for ${currentYear} has been cleared.`);
         }
@@ -768,7 +769,7 @@
                         currentYear = importedData.currentYear || '2025/26';
                         document.getElementById('yearSelector').value = currentYear;
                         loadYearData(currentYear);
-                        updateDisplays();
+                        refreshAllDisplays();
                         alert('Data imported successfully!');
                     }
                 } catch (error) {
@@ -792,7 +793,7 @@
                 // First time initialization
                 saveToLocalStorage();
             }
-            updateDisplays();
+            refreshAllDisplays();
         }
 
         // Helper function to escape HTML to prevent XSS
@@ -824,7 +825,7 @@
             document.getElementById('incomeAmount').value = '';
             
             saveToLocalStorage();
-            updateDisplays();
+            refreshAllDisplays();
         }
 
         // Add expense entry
@@ -849,7 +850,7 @@
             document.getElementById('expenseAmount').value = '';
             
             saveToLocalStorage();
-            updateDisplays();
+            refreshAllDisplays();
         }
 
         // Delete entry
@@ -861,7 +862,7 @@
                     expenseEntries = expenseEntries.filter(entry => entry.id !== id);
                 }
                 saveToLocalStorage();
-                updateDisplays();
+                refreshAllDisplays();
             }
         }
 
@@ -891,11 +892,11 @@
             entry.description = newDescription.trim();
             entry.amount = parsedAmount;
             saveToLocalStorage();
-            updateDisplays();
+            refreshAllDisplays();
         }
 
-        // Update all displays
-        function updateDisplays() {
+        // Refresh all displays (income list, expense list, summary, and ledger)
+        function refreshAllDisplays() {
             updateIncomeList();
             updateExpenseList();
             updateSummary();

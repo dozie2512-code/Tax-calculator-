@@ -173,14 +173,14 @@ Test in the following browsers:
 
 ## Known Limitations
 
-1. localStorage has a ~5-10MB limit per domain
+1. localStorage typically has a 5MB limit per domain in most browsers (Chrome, Firefox, Edge), though Safari allows up to 10MB
 2. Private/Incognito mode may have restricted localStorage
 3. localStorage is domain-specific (not synced across devices)
 4. Data is stored in plain text (not encrypted)
 
 ## Files Modified
 
-- `/home/runner/work/Tax-calculator-/Tax-calculator-/index.html` - Single file implementation
+- `index.html` - Single file implementation
 
 ## Summary of Changes
 
