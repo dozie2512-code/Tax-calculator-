@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 8 - HMRC Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #005ea5;
+            border-bottom: 2px solid #005ea5;
+            padding-bottom: 10px;
+        }
+        .pass {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .fail {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #ccc;
+            background: #f8f9fa;
+        }
+        .test-item.pass {
+            border-left-color: #28a745;
+        }
+        .test-item.fail {
+            border-left-color: #dc3545;
+        }
+        button {
+            background: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #003f7f;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #005ea5;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏛️ Phase 8 - HMRC Integration Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <p>This page tests all Phase 8 features. Follow the steps below:</p>
+        <ol>
+            <li><strong>Open the main calculator</strong> in the iframe below</li>
+            <li><strong>Add some income/expense entries</strong> (e.g., £50,000 income, £15,000 expenses)</li>
+            <li><strong>Fill in advanced tax settings</strong> (dividends, savings interest, student loan)</li>
+            <li><strong>Click "Calculate Tax"</strong></li>
+            <li><strong>Check HMRC Compliance section appears</strong> below Advanced Tax Planning</li>
+            <li><strong>Verify the following features:</strong></li>
+        </ol>
+        
+        <h3>✅ Feature Checklist</h3>
+        <div id="featureChecklist">
+            <div class="test-item">
+                <input type="checkbox" id="check1">
+                <label for="check1">HMRC Tax Computation displays after Calculate Tax</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check2">
+                <label for="check2">Computation shows Income, Allowances, Tax Calculation sections</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check3">
+                <label for="check3">Effective Tax Rate displayed at bottom</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check4">
+                <label for="check4">Self Assessment Pre-Fill section expandable</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check5">
+                <label for="check5">SA103S boxes show turnover, expenses, net profit</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check6">
+                <label for="check6">VAT Return section with quarter selector</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check7">
+                <label for="check7">VAT Return shows all 9 boxes correctly</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check8">
+                <label for="check8">Copy VAT values button works</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check9">
+                <label for="check9">Tax Deadlines section shows Self Assessment dates</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check10">
+                <label for="check10">Deadline status indicators (✓ ⚠ ○) display correctly</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check11">
+                <label for="check11">Days until deadline calculated correctly</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check12">
+                <label for="check12">Penalty Calculator accepts tax amount and dates</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check13">
+                <label for="check13">Penalty calculation shows filing penalties correctly</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check14">
+                <label for="check14">Interest calculation (7.5% annual rate) works</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check15">
+                <label for="check15">Audit Trail section displays recent entries</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check16">
+                <label for="check16">Adding income/expense creates audit log entry</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check17">
+                <label for="check17">Editing entry creates audit log entry</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check18">
+                <label for="check18">Deleting entry creates audit log entry</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check19">
+                <label for="check19">Export audit trail button works</label>
+            </div>
+            <div class="test-item">
+                <input type="checkbox" id="check20">
+                <label for="check20">All HMRC sections styled with blue theme (#005ea5)</label>
+            </div>
+        </div>
+        
+        <button onclick="checkProgress()">Check Test Progress</button>
+        <button onclick="resetChecks()">Reset Checklist</button>
+        <div id="testResults" style="margin-top: 20px;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Test Scenarios</h2>
+        
+        <h3>Scenario 1: Basic Self-Employed</h3>
+        <ul>
+            <li>Add £50,000 income (Trading)</li>
+            <li>Add £15,000 expenses</li>
+            <li>Calculate Tax</li>
+            <li>Verify HMRC computation shows £35,000 net profit</li>
+            <li>Check SA103S boxes match the values</li>
+        </ul>
+
+        <h3>Scenario 2: VAT Registered Business</h3>
+        <ul>
+            <li>Add multiple income entries across different quarters</li>
+            <li>Add expense entries</li>
+            <li>Open VAT Return section</li>
+            <li>Select Q1 and 20% VAT rate</li>
+            <li>Verify Box 1 (VAT on sales) and Box 4 (VAT on purchases) calculate correctly</li>
+            <li>Verify Box 5 (Net VAT) = Box 1 - Box 4</li>
+        </ul>
+
+        <h3>Scenario 3: Late Payment Penalties</h3>
+        <ul>
+            <li>Open Penalty Calculator</li>
+            <li>Enter £5,000 tax due</li>
+            <li>Due date: 31 Jan 2026</li>
+            <li>Paid date: 15 Mar 2026 (44 days late)</li>
+            <li>Verify penalty = £100 (fixed penalty for 1-90 days)</li>
+            <li>Verify interest calculated at 7.5% annual rate</li>
+        </ul>
+
+        <h3>Scenario 4: Audit Trail</h3>
+        <ul>
+            <li>Add a new income entry</li>
+            <li>Check audit trail shows "Added income" entry with timestamp</li>
+            <li>Edit the entry</li>
+            <li>Check audit trail shows "Edited income" with before/after values</li>
+            <li>Delete the entry</li>
+            <li>Check audit trail shows "Deleted income" entry</li>
+            <li>Export audit trail to CSV</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Calculator Application</h2>
+        <iframe src="index.html" id="calculatorFrame"></iframe>
+    </div>
+
+    <script>
+        function checkProgress() {
+            const total = 20;
+            let checked = 0;
+            
+            for (let i = 1; i <= total; i++) {
+                if (document.getElementById('check' + i).checked) {
+                    checked++;
+                }
+            }
+            
+            const percentage = (checked / total * 100).toFixed(0);
+            const resultsDiv = document.getElementById('testResults');
+            
+            let html = `<div style="padding: 20px; background: ${checked === total ? '#d4edda' : '#fff3cd'}; border-radius: 5px;">`;
+            html += `<h3>Test Progress: ${checked}/${total} (${percentage}%)</h3>`;
+            
+            if (checked === total) {
+                html += `<p class="pass">✅ All Phase 8 features tested successfully!</p>`;
+            } else {
+                html += `<p style="color: #856404;">⚠️ ${total - checked} features remaining to test</p>`;
+            }
+            
+            html += `</div>`;
+            resultsDiv.innerHTML = html;
+        }
+        
+        function resetChecks() {
+            for (let i = 1; i <= 20; i++) {
+                document.getElementById('check' + i).checked = false;
+            }
+            document.getElementById('testResults').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

@@ -2967,6 +2967,10 @@ Box 9: £${Math.round(vat.box9)}`;
             // Load advanced tax settings for current year
             loadAdvancedTaxSettings();
             refreshAllDisplays();
+            
+            // Phase 8: Initialize HMRC sections
+            updateTaxDeadlines();
+            displayAuditTrail();
         }
 
         // Helper function to escape HTML to prevent XSS
@@ -4681,10 +4685,10 @@ Box 9: £${Math.round(vat.box9)}`;
                     }
                 }
             });
+            
+            // Initialize app after DOM is ready
+            initializeApp();
         });
-
-        // Initialize app on page load
-        initializeApp();
     </script>
 </body>
 </html>
