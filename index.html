@@ -470,6 +470,111 @@
                 border-top: 2px solid #000;
             }
         }
+        /* Phase 6: Business Metrics Dashboard Styles */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .kpi-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            background: #fff;
+            border: 2px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .kpi-card.good {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .kpi-card.warning {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+        .kpi-card.danger {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        .kpi-card.neutral {
+            border-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        .kpi-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .kpi-trend {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+        .kpi-trend.up {
+            color: #28a745;
+        }
+        .kpi-trend.down {
+            color: #dc3545;
+        }
+        .kpi-sublabel {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .metrics-table th,
+        .metrics-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .metrics-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        .metrics-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .forecast-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        .forecast-danger {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #721c24;
+        }
+        .no-data-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -554,6 +659,92 @@
                     <div class="amount" id="netProfit">£0.00</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Phase 6: Business Metrics Dashboard -->
+        <div class="section" id="businessMetrics">
+            <h2>📊 Business Metrics Dashboard</h2>
+            <p>Real-time business intelligence for current tax year</p>
+            
+            <!-- KPI Cards Grid -->
+            <div class="kpi-grid" id="kpiGrid">
+                <div class="kpi-card neutral" id="grossProfitMarginCard" title="Gross Profit Margin = (Income - Expenses) / Income × 100%">
+                    <div class="kpi-label">Gross Profit Margin</div>
+                    <div class="kpi-value" id="grossProfitMargin">0%</div>
+                    <div class="kpi-sublabel">Target: &gt;20%</div>
+                </div>
+
+                <div class="kpi-card neutral" id="netProfitMarginCard" title="Net Profit Margin = Net Profit / Income × 100%">
+                    <div class="kpi-label">Net Profit Margin</div>
+                    <div class="kpi-value" id="netProfitMargin">0%</div>
+                    <div class="kpi-sublabel">After-tax profitability</div>
+                </div>
+
+                <div class="kpi-card neutral" id="avgMonthlyRevenueCard" title="Average revenue per month with entries">
+                    <div class="kpi-label">Avg Monthly Revenue</div>
+                    <div class="kpi-value" id="avgMonthlyRevenue">£0.00</div>
+                    <div class="kpi-sublabel" id="revenueTrend"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="avgMonthlyExpensesCard" title="Average expenses per month with entries">
+                    <div class="kpi-label">Avg Monthly Expenses</div>
+                    <div class="kpi-value" id="avgMonthlyExpenses">£0.00</div>
+                    <div class="kpi-sublabel" id="expenseTrend"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="monthOverMonthCard" title="Comparison of current month vs last month">
+                    <div class="kpi-label">Current vs Last Month</div>
+                    <div class="kpi-value" id="monthOverMonth">--</div>
+                    <div class="kpi-sublabel" id="momDetail"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="burnRateCard" title="Monthly expense rate (cash consumption)">
+                    <div class="kpi-label">Burn Rate</div>
+                    <div class="kpi-value" id="burnRate">£0.00/mo</div>
+                    <div class="kpi-sublabel">Monthly cash burn</div>
+                </div>
+
+                <div class="kpi-card neutral" id="runwayCard" title="Months until cash runs out at current burn rate">
+                    <div class="kpi-label">Runway</div>
+                    <div class="kpi-value" id="runway">∞</div>
+                    <div class="kpi-sublabel">Months remaining</div>
+                </div>
+
+                <div class="kpi-card neutral" id="breakEvenCard" title="Monthly revenue needed to break even">
+                    <div class="kpi-label">Break-Even Point</div>
+                    <div class="kpi-value" id="breakEven">£0.00/mo</div>
+                    <div class="kpi-sublabel" id="breakEvenStatus"></div>
+                </div>
+            </div>
+            
+            <!-- Detailed Analytics (Collapsible) -->
+            <details>
+                <summary>💰 Cash Flow Forecast</summary>
+                <div id="cashFlowForecast">
+                    <p class="no-data-message">Add income and expense data to see cash flow projections.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>📉 Expense Analysis</summary>
+                <div id="expenseAnalysis">
+                    <p class="no-data-message">Add expense data to see detailed analysis.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>📈 Revenue Analysis</summary>
+                <div id="revenueAnalysis">
+                    <p class="no-data-message">Add income data to see revenue trends.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>💎 Profitability Metrics</summary>
+                <div id="profitabilityMetrics">
+                    <p class="no-data-message">Add data to see profitability analysis.</p>
+                </div>
+            </details>
         </div>
 
         <!-- Ledger Display Section -->
@@ -2047,12 +2238,13 @@
             refreshAllDisplays();
         }
 
-        // Refresh all displays (income list, expense list, summary, and ledger)
+        // Refresh all displays (income list, expense list, summary, ledger, and business metrics)
         function refreshAllDisplays() {
             updateIncomeList();
             updateExpenseList();
             updateSummary();
             updateLedger();
+            updateBusinessMetricsDashboard();
         }
 
         // Update income list
@@ -2158,6 +2350,577 @@
             });
             html += '</tbody></table>';
             container.innerHTML = html;
+        }
+
+        // ============ Phase 6: Business Metrics Dashboard Functions ============
+
+        // Helper function to group entries by month
+        function groupByMonth(entries) {
+            const monthlyTotals = {};
+            entries.forEach(entry => {
+                if (entry.date) {
+                    const month = entry.date.substring(0, 7); // YYYY-MM
+                    monthlyTotals[month] = (monthlyTotals[month] || 0) + entry.amount;
+                }
+            });
+            return monthlyTotals;
+        }
+
+        // Calculate average monthly value
+        function calculateAvgMonthly(entries) {
+            if (entries.length === 0) return 0;
+            
+            const monthlyTotals = groupByMonth(entries);
+            const months = Object.keys(monthlyTotals).length;
+            if (months === 0) return 0;
+            
+            const total = Object.values(monthlyTotals).reduce((sum, val) => sum + val, 0);
+            return total / months;
+        }
+
+        // Calculate sum for a specific month
+        function sumForMonth(entries, monthStr) {
+            return entries
+                .filter(entry => entry.date && entry.date.startsWith(monthStr))
+                .reduce((sum, entry) => sum + entry.amount, 0);
+        }
+
+        // Calculate percentage change
+        function calculatePercentChange(oldValue, newValue) {
+            if (oldValue === 0) {
+                return newValue > 0 ? 100 : 0;
+            }
+            return ((newValue - oldValue) / oldValue) * 100;
+        }
+
+        // Calculate Gross Profit Margin
+        function calculateGrossProfitMargin(totalIncome, totalExpenses) {
+            if (totalIncome === 0) return 0;
+            return ((totalIncome - totalExpenses) / totalIncome) * 100;
+        }
+
+        // Calculate Net Profit Margin
+        function calculateNetProfitMargin(netProfit, totalIncome) {
+            if (totalIncome === 0) return 0;
+            return (netProfit / totalIncome) * 100;
+        }
+
+        // Calculate month-over-month comparison
+        function calculateMonthOverMonth() {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+            const lastMonthStr = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
+            
+            const currentIncome = sumForMonth(incomeEntries, currentMonth);
+            const lastIncome = sumForMonth(incomeEntries, lastMonthStr);
+            const currentExpenses = sumForMonth(expenseEntries, currentMonth);
+            const lastExpenses = sumForMonth(expenseEntries, lastMonthStr);
+            
+            return {
+                incomeChange: calculatePercentChange(lastIncome, currentIncome),
+                expenseChange: calculatePercentChange(lastExpenses, currentExpenses),
+                currentIncome: currentIncome,
+                lastIncome: lastIncome,
+                currentExpenses: currentExpenses,
+                lastExpenses: lastExpenses
+            };
+        }
+
+        // Calculate burn rate
+        function calculateBurnRate() {
+            return calculateAvgMonthly(expenseEntries);
+        }
+
+        // Calculate runway
+        function calculateRunway(netProfit, burnRate) {
+            if (burnRate === 0) return Infinity;
+            if (netProfit <= 0) return 0;
+            return netProfit / burnRate;
+        }
+
+        // Forecast cash flow for next N months
+        function forecastCashFlow(months = 3) {
+            const avgMonthlyIncome = calculateAvgMonthly(incomeEntries);
+            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const currentCash = totalIncome - totalExpenses;
+            
+            const forecast = [];
+            let runningCash = currentCash;
+            
+            for (let i = 1; i <= months; i++) {
+                runningCash += avgMonthlyIncome - avgMonthlyExpenses;
+                forecast.push({
+                    month: i,
+                    projectedIncome: avgMonthlyIncome,
+                    projectedExpenses: avgMonthlyExpenses,
+                    projectedCash: runningCash
+                });
+            }
+            
+            return {
+                forecast: forecast,
+                currentCash: currentCash,
+                avgIncome: avgMonthlyIncome,
+                avgExpenses: avgMonthlyExpenses
+            };
+        }
+
+        // Analyze expenses
+        function analyzeExpenses() {
+            if (expenseEntries.length === 0) return { topExpenses: [], monthlyTrend: {} };
+            
+            // Group by description prefix (category proxy)
+            const byCategory = {};
+            expenseEntries.forEach(exp => {
+                const category = exp.description.split(/[\s,-]/)[0]; // Simple categorization
+                byCategory[category] = (byCategory[category] || 0) + exp.amount;
+            });
+            
+            // Get top 5
+            const topExpenses = Object.entries(byCategory)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([category, amount]) => ({ category, amount }));
+            
+            // Monthly trend
+            const monthlyTrend = groupByMonth(expenseEntries);
+            
+            return { topExpenses, monthlyTrend };
+        }
+
+        // Analyze revenue
+        function analyzeRevenue() {
+            if (incomeEntries.length === 0) return { 
+                monthlyRevenue: {}, 
+                bestMonth: null, 
+                bestAmount: 0, 
+                avgRevenue: 0,
+                growthRate: 0 
+            };
+            
+            const monthlyRevenue = groupByMonth(incomeEntries);
+            
+            // Find best month
+            let bestMonth = null;
+            let bestAmount = 0;
+            Object.entries(monthlyRevenue).forEach(([month, amount]) => {
+                if (amount > bestAmount) {
+                    bestAmount = amount;
+                    bestMonth = month;
+                }
+            });
+            
+            const avgRevenue = Object.values(monthlyRevenue).reduce((sum, val) => sum + val, 0) / Object.keys(monthlyRevenue).length;
+            
+            // Calculate growth rate (first month vs last month)
+            const months = Object.keys(monthlyRevenue).sort();
+            let growthRate = 0;
+            if (months.length >= 2) {
+                const firstMonth = monthlyRevenue[months[0]];
+                const lastMonth = monthlyRevenue[months[months.length - 1]];
+                growthRate = calculatePercentChange(firstMonth, lastMonth);
+            }
+            
+            return {
+                monthlyRevenue,
+                bestMonth,
+                bestAmount,
+                avgRevenue,
+                growthRate
+            };
+        }
+
+        // Calculate profitability metrics
+        function calculateProfitabilityMetrics() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Group by month for profit per month
+            const incomeByMonth = groupByMonth(incomeEntries);
+            const expensesByMonth = groupByMonth(expenseEntries);
+            
+            const profitByMonth = {};
+            const allMonths = new Set([...Object.keys(incomeByMonth), ...Object.keys(expensesByMonth)]);
+            
+            allMonths.forEach(month => {
+                const income = incomeByMonth[month] || 0;
+                const expenses = expensesByMonth[month] || 0;
+                profitByMonth[month] = income - expenses;
+            });
+            
+            const avgMonthlyProfit = Object.values(profitByMonth).length > 0 
+                ? Object.values(profitByMonth).reduce((sum, val) => sum + val, 0) / Object.values(profitByMonth).length 
+                : 0;
+            
+            return {
+                totalProfit: netProfit,
+                profitByMonth,
+                avgMonthlyProfit
+            };
+        }
+
+        // Update KPI card color
+        function updateKPICardColor(cardId, value, goodThreshold, warningThreshold, reverse = false) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            
+            card.classList.remove('good', 'warning', 'danger', 'neutral');
+            
+            if (reverse) {
+                // For metrics where lower is better (like burn rate)
+                if (value <= warningThreshold) {
+                    card.classList.add('good');
+                } else if (value <= goodThreshold) {
+                    card.classList.add('warning');
+                } else {
+                    card.classList.add('danger');
+                }
+            } else {
+                // For metrics where higher is better
+                if (value >= goodThreshold) {
+                    card.classList.add('good');
+                } else if (value >= warningThreshold) {
+                    card.classList.add('warning');
+                } else if (value < 0) {
+                    card.classList.add('danger');
+                } else {
+                    card.classList.add('neutral');
+                }
+            }
+        }
+
+        // Update Cash Flow Forecast section
+        function updateCashFlowForecast() {
+            const container = document.getElementById('cashFlowForecast');
+            
+            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add income and expense data to see cash flow projections.</p>';
+                return;
+            }
+            
+            const cashFlow = forecastCashFlow(3);
+            
+            let html = `
+                <p><strong>Current Cash Position:</strong> £${cashFlow.currentCash.toFixed(2)}</p>
+                <p><strong>Average Monthly Income:</strong> £${cashFlow.avgIncome.toFixed(2)}</p>
+                <p><strong>Average Monthly Expenses:</strong> £${cashFlow.avgExpenses.toFixed(2)}</p>
+                
+                <h4>3-Month Forecast</h4>
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Projected Income</th>
+                            <th>Projected Expenses</th>
+                            <th>Projected Cash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            cashFlow.forecast.forEach(f => {
+                const cashClass = f.projectedCash < 0 ? 'style="color: #dc3545; font-weight: bold;"' : '';
+                html += `
+                    <tr>
+                        <td>Month +${f.month}</td>
+                        <td>£${f.projectedIncome.toFixed(2)}</td>
+                        <td>£${f.projectedExpenses.toFixed(2)}</td>
+                        <td ${cashClass}>£${f.projectedCash.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            
+            // Add warnings
+            const willGoNegative = cashFlow.forecast.some(f => f.projectedCash < 0);
+            if (willGoNegative) {
+                html += '<div class="forecast-danger"><strong>⚠️ Warning:</strong> Cash flow projected to go negative within 3 months!</div>';
+            } else if (cashFlow.forecast[2].projectedCash < cashFlow.currentCash * 0.5) {
+                html += '<div class="forecast-warning"><strong>⚠️ Caution:</strong> Cash reserves declining. Monitor closely.</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Expense Analysis section
+        function updateExpenseAnalysis() {
+            const container = document.getElementById('expenseAnalysis');
+            
+            if (expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add expense data to see detailed analysis.</p>';
+                return;
+            }
+            
+            const analysis = analyzeExpenses();
+            
+            let html = '<h4>Top 5 Expense Categories</h4>';
+            
+            if (analysis.topExpenses.length > 0) {
+                html += '<table class="metrics-table"><thead><tr><th>Category</th><th>Total Amount</th><th>% of Total</th></tr></thead><tbody>';
+                
+                const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+                analysis.topExpenses.forEach(exp => {
+                    const percentage = (exp.amount / totalExpenses * 100).toFixed(1);
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(exp.category)}</td>
+                            <td>£${exp.amount.toFixed(2)}</td>
+                            <td>${percentage}%</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Monthly trend
+            const months = Object.keys(analysis.monthlyTrend).sort();
+            if (months.length >= 2) {
+                html += '<h4>Monthly Expense Trend</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Expenses</th><th>Change</th></tr></thead><tbody>';
+                
+                months.forEach((month, index) => {
+                    const amount = analysis.monthlyTrend[month];
+                    let changeHtml = '--';
+                    
+                    if (index > 0) {
+                        const prevAmount = analysis.monthlyTrend[months[index - 1]];
+                        const change = calculatePercentChange(prevAmount, amount);
+                        const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→';
+                        const color = change > 0 ? '#dc3545' : change < 0 ? '#28a745' : '#666';
+                        changeHtml = `<span style="color: ${color}">${arrow} ${Math.abs(change).toFixed(1)}%</span>`;
+                    }
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td>£${amount.toFixed(2)}</td>
+                            <td>${changeHtml}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                
+                // Suggestions
+                if (months.length >= 2) {
+                    const recentMonth = analysis.monthlyTrend[months[months.length - 1]];
+                    const previousMonth = analysis.monthlyTrend[months[months.length - 2]];
+                    const change = calculatePercentChange(previousMonth, recentMonth);
+                    
+                    if (change > 10) {
+                        html += '<div class="forecast-warning"><strong>💡 Insight:</strong> Expenses increased by ' + change.toFixed(1) + '% last month. Review for optimization opportunities.</div>';
+                    }
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Revenue Analysis section
+        function updateRevenueAnalysis() {
+            const container = document.getElementById('revenueAnalysis');
+            
+            if (incomeEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add income data to see revenue trends.</p>';
+                return;
+            }
+            
+            const analysis = analyzeRevenue();
+            
+            let html = `
+                <p><strong>Average Monthly Revenue:</strong> £${analysis.avgRevenue.toFixed(2)}</p>
+                <p><strong>Best Performing Month:</strong> ${analysis.bestMonth || 'N/A'} (£${analysis.bestAmount.toFixed(2)})</p>
+            `;
+            
+            if (analysis.growthRate !== 0) {
+                const growthColor = analysis.growthRate > 0 ? '#28a745' : '#dc3545';
+                const growthArrow = analysis.growthRate > 0 ? '↑' : '↓';
+                html += `<p><strong>Overall Growth Rate:</strong> <span style="color: ${growthColor}; font-weight: bold;">${growthArrow} ${Math.abs(analysis.growthRate).toFixed(1)}%</span></p>`;
+            }
+            
+            // Monthly revenue table
+            const months = Object.keys(analysis.monthlyRevenue).sort();
+            if (months.length > 0) {
+                html += '<h4>Monthly Revenue Breakdown</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Revenue</th><th>vs Average</th></tr></thead><tbody>';
+                
+                months.forEach(month => {
+                    const amount = analysis.monthlyRevenue[month];
+                    const vsAvg = ((amount - analysis.avgRevenue) / analysis.avgRevenue * 100).toFixed(1);
+                    const vsAvgColor = vsAvg > 0 ? '#28a745' : vsAvg < 0 ? '#dc3545' : '#666';
+                    const arrow = vsAvg > 0 ? '↑' : vsAvg < 0 ? '↓' : '→';
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td>£${amount.toFixed(2)}</td>
+                            <td><span style="color: ${vsAvgColor}">${arrow} ${Math.abs(vsAvg)}%</span></td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Seasonality detection
+            if (months.length >= 12) {
+                html += '<div class="info-text"><strong>📊 Note:</strong> With 12+ months of data, seasonality patterns may emerge. High performers: ' + analysis.bestMonth + '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Profitability Metrics section
+        function updateProfitabilityMetrics() {
+            const container = document.getElementById('profitabilityMetrics');
+            
+            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add data to see profitability analysis.</p>';
+                return;
+            }
+            
+            const metrics = calculateProfitabilityMetrics();
+            
+            let html = `
+                <p><strong>Total Profit (Current Year):</strong> £${metrics.totalProfit.toFixed(2)}</p>
+                <p><strong>Average Monthly Profit:</strong> £${metrics.avgMonthlyProfit.toFixed(2)}</p>
+            `;
+            
+            // Monthly profit breakdown
+            const months = Object.keys(metrics.profitByMonth).sort();
+            if (months.length > 0) {
+                html += '<h4>Monthly Profitability</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody>';
+                
+                months.forEach(month => {
+                    const profit = metrics.profitByMonth[month];
+                    const profitColor = profit >= 0 ? '#28a745' : '#dc3545';
+                    const status = profit >= 0 ? '✓ Profitable' : '✗ Loss';
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td style="color: ${profitColor}; font-weight: bold;">£${profit.toFixed(2)}</td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Calculate profitable months percentage
+            const profitableMonths = Object.values(metrics.profitByMonth).filter(p => p > 0).length;
+            const totalMonths = Object.values(metrics.profitByMonth).length;
+            if (totalMonths > 0) {
+                const profitablePercent = (profitableMonths / totalMonths * 100).toFixed(0);
+                html += `<p><strong>Profitable Months:</strong> ${profitableMonths} of ${totalMonths} (${profitablePercent}%)</p>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Main function to update Business Metrics Dashboard
+        function updateBusinessMetricsDashboard() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Calculate all metrics
+            const grossProfitMargin = calculateGrossProfitMargin(totalIncome, totalExpenses);
+            const netProfitMargin = calculateNetProfitMargin(netProfit, totalIncome);
+            const avgMonthlyRevenue = calculateAvgMonthly(incomeEntries);
+            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
+            const burnRate = calculateBurnRate();
+            const runway = calculateRunway(netProfit, burnRate);
+            const breakEvenPoint = avgMonthlyExpenses;
+            const monthOverMonth = calculateMonthOverMonth();
+            
+            // Update KPI values
+            document.getElementById('grossProfitMargin').textContent = grossProfitMargin.toFixed(1) + '%';
+            document.getElementById('netProfitMargin').textContent = netProfitMargin.toFixed(1) + '%';
+            document.getElementById('avgMonthlyRevenue').textContent = '£' + avgMonthlyRevenue.toFixed(2);
+            document.getElementById('avgMonthlyExpenses').textContent = '£' + avgMonthlyExpenses.toFixed(2);
+            document.getElementById('burnRate').textContent = '£' + burnRate.toFixed(2) + '/mo';
+            document.getElementById('breakEven').textContent = '£' + breakEvenPoint.toFixed(2) + '/mo';
+            
+            // Update runway
+            if (runway === Infinity || netProfit <= 0) {
+                document.getElementById('runway').textContent = netProfit > 0 ? '∞' : '0';
+            } else {
+                document.getElementById('runway').textContent = runway.toFixed(1) + ' mo';
+            }
+            
+            // Update month-over-month
+            if (monthOverMonth.currentIncome === 0 && monthOverMonth.lastIncome === 0) {
+                document.getElementById('monthOverMonth').textContent = '--';
+                document.getElementById('momDetail').textContent = 'No data yet';
+            } else {
+                const incomeArrow = monthOverMonth.incomeChange > 0 ? '↑' : monthOverMonth.incomeChange < 0 ? '↓' : '→';
+                document.getElementById('monthOverMonth').textContent = incomeArrow + ' ' + Math.abs(monthOverMonth.incomeChange).toFixed(1) + '%';
+                document.getElementById('momDetail').textContent = 'Revenue change';
+            }
+            
+            // Update card colors
+            updateKPICardColor('grossProfitMarginCard', grossProfitMargin, 20, 10);
+            updateKPICardColor('netProfitMarginCard', netProfitMargin, 15, 5);
+            
+            if (runway !== Infinity && runway > 0) {
+                updateKPICardColor('runwayCard', runway, 12, 6);
+            } else if (netProfit <= 0) {
+                const card = document.getElementById('runwayCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            } else {
+                const card = document.getElementById('runwayCard');
+                card.classList.remove('danger', 'warning');
+                card.classList.add('good');
+            }
+            
+            // Update break-even status
+            if (avgMonthlyRevenue >= breakEvenPoint) {
+                document.getElementById('breakEvenStatus').textContent = '✓ Above break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('danger', 'warning', 'neutral');
+                card.classList.add('good');
+            } else if (avgMonthlyRevenue >= breakEvenPoint * 0.8) {
+                document.getElementById('breakEvenStatus').textContent = '⚠ Near break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('good', 'danger', 'neutral');
+                card.classList.add('warning');
+            } else {
+                document.getElementById('breakEvenStatus').textContent = '✗ Below break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            }
+            
+            // Update month-over-month card color
+            if (monthOverMonth.incomeChange > 0) {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('danger', 'warning', 'neutral');
+                card.classList.add('good');
+            } else if (monthOverMonth.incomeChange < -10) {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            } else {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('good', 'danger');
+                card.classList.add('neutral');
+            }
+            
+            // Update detailed sections
+            updateCashFlowForecast();
+            updateExpenseAnalysis();
+            updateRevenueAnalysis();
+            updateProfitabilityMetrics();
         }
 
         // ============ Phase 2: Advanced Tax Calculation Functions ============
