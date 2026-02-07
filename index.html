@@ -575,6 +575,146 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+        /* Phase 8: HMRC Integration Styles */
+        .hmrc-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4f8;
+            border-radius: 8px;
+            border: 2px solid #005ea5;
+        }
+        .hmrc-container h2 {
+            margin-top: 0;
+            color: #005ea5;
+            border-bottom: 2px solid #005ea5;
+        }
+        .hmrc-computation {
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #005ea5;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+        .hmrc-computation h3 {
+            color: #005ea5;
+            margin-top: 0;
+            text-align: center;
+            border-bottom: 2px solid #005ea5;
+            padding-bottom: 10px;
+        }
+        .hmrc-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .hmrc-line.total {
+            font-weight: bold;
+            border-top: 2px solid #005ea5;
+            border-bottom: 2px solid #005ea5;
+            margin: 10px 0;
+            padding: 10px 0;
+        }
+        .hmrc-line.section-header {
+            font-weight: bold;
+            color: #005ea5;
+            text-transform: uppercase;
+            margin-top: 15px;
+            border-bottom: 2px solid #005ea5;
+        }
+        .hmrc-line.indented {
+            padding-left: 20px;
+        }
+        .hmrc-underline {
+            border-bottom: 2px solid #333;
+            margin: 5px 0;
+        }
+        .sa-box {
+            display: inline-block;
+            background: #fff;
+            border: 2px solid #005ea5;
+            padding: 10px;
+            margin: 5px;
+            min-width: 200px;
+            border-radius: 5px;
+        }
+        .sa-box-label {
+            font-weight: bold;
+            color: #005ea5;
+            font-size: 0.9em;
+        }
+        .sa-box-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .vat-return {
+            background: #fff;
+            padding: 15px;
+            border: 2px solid #005ea5;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .vat-box {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+        }
+        .vat-box.total {
+            font-weight: bold;
+            background: #e8f4f8;
+            border: 2px solid #005ea5;
+            margin: 5px 0;
+        }
+        .deadline-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ccc;
+            background: #fff;
+            border-radius: 5px;
+        }
+        .deadline-item.completed {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .deadline-item.urgent {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .deadline-item.upcoming {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .penalty-calculator {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .audit-entry {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-left: 3px solid #0056b3;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .quarter-selector {
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .quarter-selector button {
+            margin-right: 5px;
+            padding: 8px 15px;
+        }
+        .quarter-selector button.active {
+            background: #005ea5;
+        }
     </style>
 </head>
 <body>
@@ -1048,6 +1188,107 @@
             </details>
         </div>
 
+        <!-- Phase 8: HMRC Compliance & Reporting -->
+        <div class="hmrc-container">
+            <h2>🏛️ HMRC Compliance & Reporting</h2>
+            <p style="color: #666; margin-bottom: 20px;">Official HMRC-style tax computations and Making Tax Digital (MTD) ready reports.</p>
+            
+            <!-- HMRC Tax Computation Summary -->
+            <div id="taxComputationSummary" style="display:none;">
+                <div class="hmrc-computation" id="hmrcComputationContent"></div>
+            </div>
+
+            <!-- Self Assessment Pre-Fill -->
+            <details>
+                <summary>📋 Self Assessment Pre-Fill Data</summary>
+                <div>
+                    <p style="color: #666;">Data formatted for SA100 Self Assessment tax return forms. Copy these values directly into your online tax return.</p>
+                    <div id="saPreFillContent"></div>
+                </div>
+            </details>
+
+            <!-- VAT Return (MTD Compatible) -->
+            <details>
+                <summary>💷 VAT Return (Making Tax Digital)</summary>
+                <div>
+                    <p style="color: #666;">9-box VAT return ready for MTD submission. Select quarter and VAT rate to calculate.</p>
+                    
+                    <div style="margin: 15px 0;">
+                        <label for="vatQuarter">Select Quarter:</label>
+                        <select id="vatQuarter" onchange="updateVATReturn()">
+                            <option value="Q1">Q1 (6 Apr - 5 Jul)</option>
+                            <option value="Q2">Q2 (6 Jul - 5 Oct)</option>
+                            <option value="Q3">Q3 (6 Oct - 5 Jan)</option>
+                            <option value="Q4">Q4 (6 Jan - 5 Apr)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin: 15px 0;">
+                        <label for="vatRate">VAT Rate:</label>
+                        <select id="vatRate" onchange="updateVATReturn()">
+                            <option value="0.20">Standard Rate (20%)</option>
+                            <option value="0.05">Reduced Rate (5%)</option>
+                            <option value="0">Zero Rate (0%)</option>
+                        </select>
+                    </div>
+
+                    <div id="vatReturnContent"></div>
+                    
+                    <button type="button" onclick="copyVATReturnData()" style="margin-top: 10px;">📋 Copy Values for MTD Submission</button>
+                </div>
+            </details>
+
+            <!-- Tax Deadlines Dashboard -->
+            <details>
+                <summary>📅 Tax Deadlines & Calendar</summary>
+                <div>
+                    <p style="color: #666;">Upcoming HMRC tax deadlines for current tax year with days remaining.</p>
+                    <div id="taxDeadlinesContent"></div>
+                </div>
+            </details>
+
+            <!-- Late Payment Penalty Calculator -->
+            <details>
+                <summary>⚠️ Late Payment Penalty Calculator</summary>
+                <div>
+                    <p style="color: #666;">Calculate penalties and interest for late tax payments.</p>
+                    
+                    <div class="penalty-calculator">
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyTaxDue">Tax Due (£):</label>
+                            <input type="number" id="penaltyTaxDue" placeholder="0.00" step="0.01" value="0">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyDueDate">Due Date:</label>
+                            <input type="date" id="penaltyDueDate" value="2026-01-31">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyPaidDate">Paid Date:</label>
+                            <input type="date" id="penaltyPaidDate">
+                        </div>
+                        
+                        <button type="button" onclick="calculatePenalties()">Calculate Penalties</button>
+                        
+                        <div id="penaltyResults" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Audit Trail -->
+            <details>
+                <summary>📜 Digital Record Audit Trail</summary>
+                <div>
+                    <p style="color: #666;">Complete audit log of all changes for HMRC digital record keeping requirements.</p>
+                    <button type="button" onclick="refreshAuditTrail()">🔄 Refresh</button>
+                    <button type="button" onclick="exportAuditTrail()">📥 Export Audit Log</button>
+                    <button type="button" onclick="clearAuditTrail()" class="danger-btn">🗑️ Clear Old Entries</button>
+                    <div id="auditTrailContent" style="margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </details>
+        </div>
+
         <!-- Data Management Section -->
         <div class="data-management-container">
             <h2>Data Management</h2>
@@ -1203,6 +1444,44 @@
                 description: 'Property rental income and capital gains'
             }
         };
+
+        // Phase 8: HMRC Integration Constants
+        
+        // Current Tax Year (for deadline calculations)
+        const CURRENT_TAX_YEAR = '2025/26';
+        
+        // Tax Deadlines 2025/26
+        const TAX_DEADLINES = {
+            selfAssessment: {
+                paper: new Date('2025-10-31'),
+                online: new Date('2026-01-31'),
+                payment: new Date('2026-01-31')
+            },
+            paymentsOnAccount: {
+                first: new Date('2026-01-31'),
+                second: new Date('2026-07-31')
+            },
+            vatQuarters: {
+                Q1: { start: new Date('2025-04-06'), end: new Date('2025-07-05'), due: new Date('2025-08-07') },
+                Q2: { start: new Date('2025-07-06'), end: new Date('2025-10-05'), due: new Date('2025-11-07') },
+                Q3: { start: new Date('2025-10-06'), end: new Date('2026-01-05'), due: new Date('2026-02-07') },
+                Q4: { start: new Date('2026-01-06'), end: new Date('2026-04-05'), due: new Date('2026-05-07') }
+            }
+        };
+
+        // Late Filing Penalties
+        const LATE_FILING_PENALTIES = {
+            day1: 100,
+            month3Daily: 10,
+            month3Max: 900,
+            month6: 300,
+            month6Percent: 0.05,
+            month12: 300,
+            month12Percent: 0.05
+        };
+
+        // Late Payment Interest Rate (Bank of England base rate + 2.5%)
+        const LATE_PAYMENT_INTEREST_RATE = 0.075; // 7.5% annually
 
         // Update tax fields based on selected category
         function updateTaxFields() {
@@ -1435,12 +1714,19 @@
                 return;
             }
             
+            // Phase 8: Record entries count for audit log
+            const incomeCount = incomeEntries.length;
+            const expenseCount = expenseEntries.length;
+            
             incomeEntries = [];
             expenseEntries = [];
             entryIdCounter = 0;
             
             saveToLocalStorage();
             refreshAllDisplays();
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Cleared data', `Deleted ${incomeCount} income and ${expenseCount} expense entries for ${currentYear}`);
             
             alert(`All data for ${currentYear} has been cleared.`);
         }
@@ -1459,6 +1745,9 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Export', `Data exported to JSON backup file`);
             
             alert('Data exported successfully!');
         }
@@ -1484,6 +1773,10 @@
                         document.getElementById('yearSelector').value = currentYear;
                         loadYearData(currentYear);
                         refreshAllDisplays();
+                        
+                        // Phase 8: Add audit trail entry
+                        addAuditEntry('Import', `Data imported from JSON backup file (${file.name})`);
+                        
                         alert('Data imported successfully!');
                     }
                 } catch (error) {
@@ -2107,6 +2400,559 @@
 
         // ============ End Phase 3 Functions ============
 
+        // ============ Phase 8: HMRC Integration Functions ============
+
+        // Generate HMRC Tax Computation Summary
+        function generateHMRCTaxComputation(taxResult, salary) {
+            const advTax = taxResult.advancedTax || {};
+            const studentLoan = advTax.studentLoan || { repayment: 0 };
+            const dividendTax = advTax.dividends || { dividendTax: 0, taxableDividends: 0 };
+            const savingsTax = advTax.savings || { savingsTax: 0, taxableSavings: 0 };
+            
+            // Get income sources
+            const tradingIncome = salary || 0;
+            const dividendIncome = parseFloat(document.getElementById('dividendIncome').value) || 0;
+            const savingsInterest = parseFloat(document.getElementById('savingsInterest').value) || 0;
+            const propertyIncome = 0; // Could be added from income entries
+            
+            // Calculate total income
+            const totalIncome = tradingIncome + dividendIncome + savingsInterest + propertyIncome;
+            
+            // Allowances
+            const personalAllowance = PERSONAL_ALLOWANCE;
+            const tradingAllowance = tradingIncome > 0 ? TRADING_ALLOWANCE : 0;
+            const totalAllowances = personalAllowance + tradingAllowance;
+            
+            // Taxable income
+            const taxableIncome = Math.max(0, totalIncome - totalAllowances);
+            
+            // Calculate effective tax rate
+            const totalTaxDeductions = taxResult.totalTax;
+            const effectiveRate = totalIncome > 0 ? (totalTaxDeductions / totalIncome * 100) : 0;
+            
+            let html = `
+                <h3>HMRC TAX COMPUTATION ${CURRENT_TAX_YEAR}</h3>
+                
+                <div class="hmrc-line section-header"><span>INCOME</span><span></span></div>
+                <div class="hmrc-line"><span>Trading Income</span><span>£${tradingIncome.toFixed(2)}</span></div>
+                ${propertyIncome > 0 ? `<div class="hmrc-line"><span>Property Income</span><span>£${propertyIncome.toFixed(2)}</span></div>` : ''}
+                ${dividendIncome > 0 ? `<div class="hmrc-line"><span>Dividend Income</span><span>£${dividendIncome.toFixed(2)}</span></div>` : ''}
+                ${savingsInterest > 0 ? `<div class="hmrc-line"><span>Savings Interest</span><span>£${savingsInterest.toFixed(2)}</span></div>` : ''}
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total"><span>Total Income</span><span>£${totalIncome.toFixed(2)}</span></div>
+                
+                <div class="hmrc-line section-header" style="margin-top: 20px;"><span>ALLOWANCES</span><span></span></div>
+                <div class="hmrc-line"><span>Personal Allowance</span><span>(£${personalAllowance.toFixed(2)})</span></div>
+                ${tradingAllowance > 0 ? `<div class="hmrc-line"><span>Trading Allowance</span><span>(£${tradingAllowance.toFixed(2)})</span></div>` : ''}
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total"><span>Total Allowances</span><span>(£${totalAllowances.toFixed(2)})</span></div>
+                
+                <div class="hmrc-line total" style="margin-top: 20px; font-size: 1.1em;"><span>TAXABLE INCOME</span><span>£${taxableIncome.toFixed(2)}</span></div>
+                
+                <div class="hmrc-line section-header" style="margin-top: 20px;"><span>TAX CALCULATION</span><span></span></div>
+                <div class="hmrc-line"><span style="font-weight: bold;">Income Tax:</span><span></span></div>
+            `;
+            
+            // Add tax bands
+            if (taxResult.incomeTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Total Income Tax</span><span>£${taxResult.incomeTax.toFixed(2)}</span></div>`;
+            }
+            if (dividendTax.dividendTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Dividend Tax</span><span>£${dividendTax.dividendTax.toFixed(2)}</span></div>`;
+            }
+            if (savingsTax.savingsTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Savings Tax</span><span>£${savingsTax.savingsTax.toFixed(2)}</span></div>`;
+            }
+            
+            const totalIncomeTax = taxResult.incomeTax + (dividendTax.dividendTax || 0) + (savingsTax.savingsTax || 0);
+            html += `<div class="hmrc-underline"></div>`;
+            html += `<div class="hmrc-line total"><span>Total Income Tax</span><span>£${totalIncomeTax.toFixed(2)}</span></div>`;
+            
+            html += `
+                <div class="hmrc-line" style="margin-top: 10px;"><span>National Insurance</span><span>£${taxResult.nationalInsurance.toFixed(2)}</span></div>
+            `;
+            
+            if (studentLoan.repayment > 0) {
+                html += `<div class="hmrc-line"><span>Student Loan Repayment</span><span>£${studentLoan.repayment.toFixed(2)}</span></div>`;
+            }
+            
+            html += `
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total" style="font-size: 1.1em;"><span>TOTAL TAX & DEDUCTIONS</span><span>£${totalTaxDeductions.toFixed(2)}</span></div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border: 2px solid #005ea5; border-radius: 5px; text-align: center;">
+                    <strong style="font-size: 1.2em;">Effective Tax Rate: ${effectiveRate.toFixed(1)}%</strong>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Generate Self Assessment Pre-Fill Data
+        function generateSelfAssessmentPreFill() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const dividendIncome = parseFloat(document.getElementById('dividendIncome').value) || 0;
+            const savingsInterest = parseFloat(document.getElementById('savingsInterest').value) || 0;
+            
+            // Get income and expense totals
+            const yearData = taxYears[currentYear] || { income: [], expenses: [] };
+            const totalIncome = yearData.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpenses = yearData.expenses.reduce((sum, item) => sum + item.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            let html = `
+                <div style="background: #fff; padding: 20px; border: 2px solid #005ea5; border-radius: 5px; margin-top: 15px;">
+                    <h3 style="color: #005ea5; margin-top: 0;">SA103S - Self-Employment (Short)</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.1: Turnover (gross income)</div>
+                        <div class="sa-box-value">£${totalIncome.toFixed(2)}</div>
+                    </div>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.2: Allowable business expenses</div>
+                        <div class="sa-box-value">£${totalExpenses.toFixed(2)}</div>
+                    </div>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.3: Net profit</div>
+                        <div class="sa-box-value">£${netProfit.toFixed(2)}</div>
+                    </div>
+            `;
+            
+            if (dividendIncome > 0) {
+                html += `
+                    <h3 style="color: #005ea5; margin-top: 30px;">SA100 - Dividends</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 4: Dividends from UK companies</div>
+                        <div class="sa-box-value">£${dividendIncome.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            
+            if (savingsInterest > 0) {
+                html += `
+                    <h3 style="color: #005ea5; margin-top: 30px;">SA100 - Interest</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 1: Taxed UK interest</div>
+                        <div class="sa-box-value">£${savingsInterest.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                    <div style="margin-top: 20px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
+                        <strong>Note:</strong> These values are prepared for your Self Assessment tax return. 
+                        Always verify with your accountant before submission.
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Get transactions for a specific quarter
+        function getQuarterTransactions(quarter) {
+            const yearData = taxYears[currentYear] || { income: [], expenses: [] };
+            const quarterDates = TAX_DEADLINES.vatQuarters[quarter];
+            
+            const filterByQuarter = (item) => {
+                const itemDate = new Date(item.date);
+                return itemDate >= quarterDates.start && itemDate <= quarterDates.end;
+            };
+            
+            return {
+                income: yearData.income.filter(filterByQuarter),
+                expenses: yearData.expenses.filter(filterByQuarter)
+            };
+        }
+
+        // Calculate VAT Return
+        function calculateVATReturn(quarter, vatRate) {
+            const transactions = getQuarterTransactions(quarter);
+            
+            const totalSales = transactions.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalPurchases = transactions.expenses.reduce((sum, item) => sum + item.amount, 0);
+            
+            // Calculate VAT
+            const vatOnSales = totalSales * vatRate;
+            const vatOnPurchases = totalPurchases * vatRate;
+            const netVAT = vatOnSales - vatOnPurchases;
+            
+            return {
+                box1: vatOnSales,          // VAT due on sales
+                box2: 0,                   // VAT due on acquisitions
+                box3: vatOnSales,          // Total VAT due (1+2)
+                box4: vatOnPurchases,      // VAT reclaimed
+                box5: netVAT,              // Net VAT to pay/reclaim
+                box6: totalSales,          // Total sales ex VAT
+                box7: totalPurchases,      // Total purchases ex VAT
+                box8: 0,                   // Total supplies (EU)
+                box9: 0                    // Total acquisitions (EU)
+            };
+        }
+
+        // Update VAT Return Display
+        function updateVATReturn() {
+            const quarter = document.getElementById('vatQuarter').value;
+            const vatRate = parseFloat(document.getElementById('vatRate').value);
+            
+            const vat = calculateVATReturn(quarter, vatRate);
+            const quarterInfo = TAX_DEADLINES.vatQuarters[quarter];
+            
+            let html = `
+                <div class="vat-return">
+                    <h3 style="color: #005ea5; margin-top: 0;">VAT Return for ${quarter} (${quarterInfo.start.toLocaleDateString('en-GB')} - ${quarterInfo.end.toLocaleDateString('en-GB')})</h3>
+                    <p style="color: #666; font-size: 0.9em;">Due Date: ${quarterInfo.due.toLocaleDateString('en-GB')}</p>
+                    
+                    <div class="vat-box"><span><strong>Box 1:</strong> VAT due on sales and other outputs</span><span>£${vat.box1.toFixed(2)}</span></div>
+                    <div class="vat-box"><span><strong>Box 2:</strong> VAT due on acquisitions from other EC Member States</span><span>£${vat.box2.toFixed(2)}</span></div>
+                    <div class="vat-box total"><span><strong>Box 3:</strong> Total VAT due (Box 1 + Box 2)</span><span>£${vat.box3.toFixed(2)}</span></div>
+                    <div class="vat-box"><span><strong>Box 4:</strong> VAT reclaimed on purchases and other inputs</span><span>£${vat.box4.toFixed(2)}</span></div>
+                    <div class="vat-box total"><span><strong>Box 5:</strong> Net VAT to pay to HMRC or reclaim</span><span>${vat.box5 >= 0 ? '£' + vat.box5.toFixed(2) : '-£' + Math.abs(vat.box5).toFixed(2)}</span></div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 6:</strong> Total value of sales (ex VAT)</span><span>£${Math.round(vat.box6)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 7:</strong> Total value of purchases (ex VAT)</span><span>£${Math.round(vat.box7)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 8:</strong> Total value of supplies (EU)</span><span>£${Math.round(vat.box8)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 9:</strong> Total value of acquisitions (EU)</span><span>£${Math.round(vat.box9)}</span></div>
+                    </div>
+                    
+                    <div style="padding: 10px; background: #e8f4f8; border: 1px solid #005ea5; border-radius: 5px;">
+                        <strong>MTD Submission Ready:</strong> These values are formatted for Making Tax Digital submission.
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('vatReturnContent').innerHTML = html;
+        }
+
+        // Copy VAT Return Data
+        function copyVATReturnData() {
+            const quarter = document.getElementById('vatQuarter').value;
+            const vatRate = parseFloat(document.getElementById('vatRate').value);
+            const vat = calculateVATReturn(quarter, vatRate);
+            
+            const text = `VAT Return ${quarter}
+Box 1: £${vat.box1.toFixed(2)}
+Box 2: £${vat.box2.toFixed(2)}
+Box 3: £${vat.box3.toFixed(2)}
+Box 4: £${vat.box4.toFixed(2)}
+Box 5: £${vat.box5.toFixed(2)}
+Box 6: £${Math.round(vat.box6)}
+Box 7: £${Math.round(vat.box7)}
+Box 8: £${Math.round(vat.box8)}
+Box 9: £${Math.round(vat.box9)}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('VAT return data copied to clipboard!');
+            }).catch(() => {
+                alert('Unable to copy to clipboard. Please copy manually.');
+            });
+        }
+
+        // Calculate days until deadline
+        function calculateDaysUntilDeadline(deadline) {
+            const now = new Date();
+            const diff = deadline - now;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
+        }
+
+        // Update Tax Deadlines Display
+        function updateTaxDeadlines() {
+            const now = new Date();
+            
+            let html = '<div style="background: #fff; padding: 15px; border-radius: 5px;">';
+            
+            // Self Assessment
+            html += '<h3 style="color: #005ea5; margin-top: 0;">📝 Self Assessment</h3>';
+            
+            const saPaperDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.paper);
+            const saOnlineDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.online);
+            const saPaymentDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.payment);
+            
+            html += generateDeadlineItem('Paper return deadline', TAX_DEADLINES.selfAssessment.paper, saPaperDays);
+            html += generateDeadlineItem('Online return deadline', TAX_DEADLINES.selfAssessment.online, saOnlineDays);
+            html += generateDeadlineItem('Payment deadline', TAX_DEADLINES.selfAssessment.payment, saPaymentDays);
+            
+            // VAT Returns
+            html += '<h3 style="color: #005ea5; margin-top: 20px;">💷 VAT Returns</h3>';
+            
+            Object.keys(TAX_DEADLINES.vatQuarters).forEach(quarter => {
+                const q = TAX_DEADLINES.vatQuarters[quarter];
+                const days = calculateDaysUntilDeadline(q.due);
+                html += generateDeadlineItem(
+                    `${quarter} (${q.start.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})} - ${q.end.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})})`,
+                    q.due,
+                    days
+                );
+            });
+            
+            // Payments on Account
+            html += '<h3 style="color: #005ea5; margin-top: 20px;">💰 Payments on Account</h3>';
+            
+            const poa1Days = calculateDaysUntilDeadline(TAX_DEADLINES.paymentsOnAccount.first);
+            const poa2Days = calculateDaysUntilDeadline(TAX_DEADLINES.paymentsOnAccount.second);
+            
+            html += generateDeadlineItem('First payment', TAX_DEADLINES.paymentsOnAccount.first, poa1Days);
+            html += generateDeadlineItem('Second payment', TAX_DEADLINES.paymentsOnAccount.second, poa2Days);
+            
+            html += '</div>';
+            
+            document.getElementById('taxDeadlinesContent').innerHTML = html;
+        }
+
+        // Generate deadline item HTML
+        function generateDeadlineItem(label, date, daysUntil) {
+            let statusClass = 'deadline-item';
+            let statusIcon = '○';
+            let statusText = `${daysUntil} days`;
+            
+            if (daysUntil < 0) {
+                statusClass += ' completed';
+                statusIcon = '✓';
+                statusText = 'Past';
+            } else if (daysUntil <= 30) {
+                statusClass += ' urgent';
+                statusIcon = '⚠';
+                statusText = `Due in ${daysUntil} days`;
+            } else {
+                statusClass += ' upcoming';
+                statusIcon = '○';
+                statusText = `Due in ${daysUntil} days`;
+            }
+            
+            return `
+                <div class="${statusClass}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${statusIcon} ${label}</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">${date.toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'})}</span>
+                        </div>
+                        <div style="text-align: right; font-weight: bold;">
+                            ${statusText}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Calculate Late Payment Penalties
+        function calculatePenalties() {
+            const taxDue = parseFloat(document.getElementById('penaltyTaxDue').value) || 0;
+            const dueDate = new Date(document.getElementById('penaltyDueDate').value);
+            const paidDate = new Date(document.getElementById('penaltyPaidDate').value);
+            
+            if (!taxDue || !dueDate || !paidDate) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const daysLate = Math.max(0, Math.ceil((paidDate - dueDate) / (1000 * 60 * 60 * 24)));
+            
+            let penalty = 0;
+            let penaltyBreakdown = '';
+            
+            // Calculate penalties based on days late
+            if (daysLate >= 1) {
+                penalty += LATE_FILING_PENALTIES.day1;
+                penaltyBreakdown += `<div>1+ days late: £${LATE_FILING_PENALTIES.day1.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 90) {
+                const dailyPenalty = Math.min(
+                    (daysLate - 90) * LATE_FILING_PENALTIES.month3Daily,
+                    LATE_FILING_PENALTIES.month3Max
+                );
+                penalty += dailyPenalty;
+                penaltyBreakdown += `<div>3+ months late (${daysLate - 90} days × £10): £${dailyPenalty.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 180) {
+                const sixMonthPenalty = Math.max(
+                    LATE_FILING_PENALTIES.month6,
+                    taxDue * LATE_FILING_PENALTIES.month6Percent
+                );
+                penalty += sixMonthPenalty;
+                penaltyBreakdown += `<div>6+ months late: £${sixMonthPenalty.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 365) {
+                const twelveMonthPenalty = Math.max(
+                    LATE_FILING_PENALTIES.month12,
+                    taxDue * LATE_FILING_PENALTIES.month12Percent
+                );
+                penalty += twelveMonthPenalty;
+                penaltyBreakdown += `<div>12+ months late: £${twelveMonthPenalty.toFixed(2)}</div>`;
+            }
+            
+            // Calculate interest
+            const dailyRate = LATE_PAYMENT_INTEREST_RATE / 365;
+            const interest = taxDue * dailyRate * daysLate;
+            
+            const total = penalty + interest;
+            
+            let html = `
+                <div style="background: #fff; padding: 15px; border: 2px solid #dc3545; border-radius: 5px;">
+                    <h4 style="color: #dc3545; margin-top: 0;">Penalty Calculation Results</h4>
+                    <div style="margin: 10px 0;"><strong>Days Late:</strong> ${daysLate} days</div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #f8d7da; border-radius: 5px;">
+                        <strong>Late Filing Penalties:</strong>
+                        ${penaltyBreakdown || '<div>No penalty (not late)</div>'}
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #dc3545;"><strong>Total Penalty: £${penalty.toFixed(2)}</strong></div>
+                    </div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                        <strong>Late Payment Interest:</strong>
+                        <div>Interest Rate: ${(LATE_PAYMENT_INTEREST_RATE * 100).toFixed(1)}% per annum</div>
+                        <div>Daily Rate: ${(dailyRate * 100).toFixed(4)}%</div>
+                        <div>Days: ${daysLate}</div>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #ffc107;"><strong>Total Interest: £${interest.toFixed(2)}</strong></div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 15px; background: #dc3545; color: #fff; border-radius: 5px; text-align: center;">
+                        <h3 style="margin: 0;">Total Additional Cost: £${total.toFixed(2)}</h3>
+                        <div style="margin-top: 5px;">Original Tax Due: £${taxDue.toFixed(2)}</div>
+                        <div style="margin-top: 5px; font-size: 1.2em;"><strong>Total Amount Due: £${(taxDue + total).toFixed(2)}</strong></div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('penaltyResults').innerHTML = html;
+        }
+
+        // Add Audit Entry
+        function addAuditEntry(action, details) {
+            const timestamp = new Date().toISOString();
+            const entry = {
+                timestamp,
+                action,
+                details
+            };
+            
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            auditLog.push(entry);
+            
+            // Keep only last 500 entries
+            if (auditLog.length > 500) {
+                auditLog.splice(0, auditLog.length - 500);
+            }
+            
+            localStorage.setItem('auditLog', JSON.stringify(auditLog));
+        }
+
+        // Display Audit Trail
+        function displayAuditTrail() {
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            
+            if (auditLog.length === 0) {
+                document.getElementById('auditTrailContent').innerHTML = '<p style="color: #666; font-style: italic;">No audit entries recorded yet.</p>';
+                return;
+            }
+            
+            // Show most recent 50 entries
+            const recentEntries = auditLog.slice(-50).reverse();
+            
+            let html = '<div>';
+            recentEntries.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                const formattedDate = date.toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                html += `
+                    <div class="audit-entry">
+                        ${formattedDate} - ${entry.action}: ${entry.details}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            html += `<p style="margin-top: 15px; color: #666; font-size: 0.9em;">Showing ${recentEntries.length} of ${auditLog.length} total entries</p>`;
+            
+            document.getElementById('auditTrailContent').innerHTML = html;
+        }
+
+        // Refresh Audit Trail
+        function refreshAuditTrail() {
+            displayAuditTrail();
+        }
+
+        // Export Audit Trail
+        function exportAuditTrail() {
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            
+            if (auditLog.length === 0) {
+                alert('No audit entries to export');
+                return;
+            }
+            
+            let csv = 'Timestamp,Action,Details\n';
+            auditLog.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleString('en-GB');
+                csv += `"${date}","${entry.action}","${entry.details}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `audit-trail-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addAuditEntry('Export', 'Audit trail exported to CSV');
+        }
+
+        // Clear Old Audit Entries
+        function clearAuditTrail() {
+            if (confirm('This will delete audit entries older than 90 days. Continue?')) {
+                const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+                const ninetyDaysAgo = new Date();
+                ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+                
+                const filtered = auditLog.filter(entry => {
+                    return new Date(entry.timestamp) > ninetyDaysAgo;
+                });
+                
+                localStorage.setItem('auditLog', JSON.stringify(filtered));
+                const removed = auditLog.length - filtered.length;
+                
+                alert(`Removed ${removed} old audit entries`);
+                addAuditEntry('Maintenance', `Cleared ${removed} audit entries older than 90 days`);
+                displayAuditTrail();
+            }
+        }
+
+        // Update HMRC sections when tax is calculated
+        function updateHMRCCompliance(taxResult, salary) {
+            // Generate and display HMRC Tax Computation
+            const computationHTML = generateHMRCTaxComputation(taxResult, salary);
+            document.getElementById('hmrcComputationContent').innerHTML = computationHTML;
+            document.getElementById('taxComputationSummary').style.display = 'block';
+            
+            // Generate and display Self Assessment Pre-Fill
+            const saHTML = generateSelfAssessmentPreFill();
+            document.getElementById('saPreFillContent').innerHTML = saHTML;
+            
+            // Update VAT Return (if not already displayed)
+            if (document.getElementById('vatReturnContent').innerHTML === '') {
+                updateVATReturn();
+            }
+            
+            // Update Tax Deadlines
+            updateTaxDeadlines();
+            
+            // Display Audit Trail
+            displayAuditTrail();
+        }
+
+        // ============ End Phase 8 Functions ============
+
         // Initialize on page load
         function initializeApp() {
             const data = loadFromLocalStorage();
@@ -2151,13 +2997,18 @@
                 date: date,
                 description: description,
                 amount: amount,
-                type: 'income'
+                type: 'income',
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
             };
 
             incomeEntries.push(entry);
             document.getElementById('incomeDate').value = '';
             document.getElementById('incomeDescription').value = '';
             document.getElementById('incomeAmount').value = '';
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Added income', `${description} - £${amount.toFixed(2)}`);
             
             saveToLocalStorage();
             refreshAllDisplays();
@@ -2184,13 +3035,18 @@
                 date: date,
                 description: description,
                 amount: amount,
-                type: 'expense'
+                type: 'expense',
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
             };
 
             expenseEntries.push(entry);
             document.getElementById('expenseDate').value = '';
             document.getElementById('expenseDescription').value = '';
             document.getElementById('expenseAmount').value = '';
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Added expense', `${description} - £${amount.toFixed(2)}`);
             
             saveToLocalStorage();
             refreshAllDisplays();
@@ -2199,11 +3055,21 @@
         // Delete entry
         function deleteEntry(id, type) {
             if (confirm('Are you sure you want to delete this entry?')) {
+                // Phase 8: Get entry details for audit log
+                let deletedEntry;
                 if (type === 'income') {
+                    deletedEntry = incomeEntries.find(entry => entry.id === id);
                     incomeEntries = incomeEntries.filter(entry => entry.id !== id);
                 } else {
+                    deletedEntry = expenseEntries.find(entry => entry.id === id);
                     expenseEntries = expenseEntries.filter(entry => entry.id !== id);
                 }
+                
+                // Phase 8: Add audit trail entry
+                if (deletedEntry) {
+                    addAuditEntry(`Deleted ${type}`, `${deletedEntry.description} - £${deletedEntry.amount.toFixed(2)}`);
+                }
+                
                 saveToLocalStorage();
                 refreshAllDisplays();
             }
@@ -2220,6 +3086,10 @@
 
             if (!entry) return;
 
+            // Phase 8: Store original values for audit log
+            const originalDescription = entry.description;
+            const originalAmount = entry.amount;
+
             const newDescription = prompt('Enter new description:', entry.description);
             if (newDescription === null) return;
 
@@ -2234,6 +3104,11 @@
 
             entry.description = newDescription.trim();
             entry.amount = parsedAmount;
+            entry.modifiedAt = new Date().toISOString();
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry(`Edited ${type}`, `${originalDescription} (£${originalAmount.toFixed(2)}) → ${entry.description} (£${entry.amount.toFixed(2)})`);
+            
             saveToLocalStorage();
             refreshAllDisplays();
         }
@@ -3778,6 +4653,9 @@
             document.getElementById('resultTotalTax').innerHTML = `<strong>Total Tax Due:</strong> £${result.totalTax.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
+            
+            // Phase 8: Update HMRC Compliance sections
+            updateHMRCCompliance(result, totalIncome);
         });
 
         // Phase 2: Add event listeners to auto-save advanced tax settings
