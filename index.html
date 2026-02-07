@@ -44,7 +44,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="number"], input[type="text"] {
+        input[type="number"], input[type="text"], input[type="date"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -216,6 +216,505 @@
         button.info-btn:hover {
             background: #138496;
         }
+        /* Advanced Tax Planning Styles */
+        .advanced-tax-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border: 2px solid #0056b3;
+        }
+        .advanced-tax-container h2 {
+            margin-top: 0;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+        }
+        details {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        details[open] {
+            border-color: #0056b3;
+        }
+        summary {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #0056b3;
+            cursor: pointer;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            background: #f8f9fa;
+            border-radius: 5px 5px 0 0;
+            user-select: none;
+        }
+        summary:hover {
+            background: #e9ecef;
+        }
+        details[open] summary {
+            background: #0056b3;
+            color: #fff;
+        }
+        .help-text {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 5px;
+            display: block;
+        }
+        .warning-text {
+            color: #dc3545;
+            font-weight: bold;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .info-text {
+            color: #004085;
+            padding: 10px;
+            background: #cce5ff;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .advanced-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 5px;
+            border-left: 4px solid #0056b3;
+        }
+        /* Phase 3: Export/Import Styles */
+        .export-btn {
+            background: #28a745;
+            margin-bottom: 5px;
+        }
+        .export-btn:hover {
+            background: #218838;
+        }
+        .import-btn {
+            background: #ffc107;
+            color: #000;
+        }
+        .import-btn:hover {
+            background: #e0a800;
+        }
+        .date-range-filter {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .date-range-filter label {
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: normal;
+        }
+        .date-range-filter input[type="date"] {
+            width: auto;
+            display: inline-block;
+            margin-right: 15px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content h3 {
+            margin-top: 0;
+        }
+        .column-mapping {
+            margin: 15px 0;
+        }
+        .column-mapping-row {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        .column-mapping-row label {
+            flex: 1;
+            font-weight: normal;
+        }
+        .column-mapping-row select {
+            flex: 2;
+        }
+        .preview-table {
+            margin: 15px 0;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .preview-table th,
+        .preview-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .preview-table th {
+            background: #0056b3;
+            color: #fff;
+        }
+        .preview-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .error-row {
+            background: #f8d7da !important;
+        }
+        .duplicate-row {
+            background: #fff3cd !important;
+        }
+        .validation-summary {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .validation-summary.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .validation-summary.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .validation-summary.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        @media print {
+            body {
+                background: #fff;
+            }
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                margin: 0;
+                padding: 20px;
+            }
+            /* Hide interactive elements */
+            .section,
+            button,
+            input,
+            select,
+            .data-management-container,
+            .year-selector-container,
+            .advanced-tax-container,
+            h1 {
+                display: none !important;
+            }
+            /* Show only printable content */
+            #printableReport {
+                display: block !important;
+            }
+            .print-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .print-header h1 {
+                display: block !important;
+                color: #000;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+            .print-section {
+                margin-bottom: 30px;
+                page-break-inside: avoid;
+            }
+            .print-section h2 {
+                color: #000;
+                border-bottom: 1px solid #000;
+            }
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+            }
+            .print-table th,
+            .print-table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+            }
+            .print-table th {
+                background: #e0e0e0;
+                font-weight: bold;
+            }
+            .print-total {
+                font-weight: bold;
+                border-top: 2px solid #000;
+            }
+        }
+        /* Phase 6: Business Metrics Dashboard Styles */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .kpi-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            background: #fff;
+            border: 2px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .kpi-card.good {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .kpi-card.warning {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+        .kpi-card.danger {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        .kpi-card.neutral {
+            border-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        .kpi-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .kpi-trend {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+        .kpi-trend.up {
+            color: #28a745;
+        }
+        .kpi-trend.down {
+            color: #dc3545;
+        }
+        .kpi-sublabel {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .metrics-table th,
+        .metrics-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .metrics-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        .metrics-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .forecast-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        .forecast-danger {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #721c24;
+        }
+        .no-data-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        /* Phase 8: HMRC Integration Styles */
+        .hmrc-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4f8;
+            border-radius: 8px;
+            border: 2px solid #005ea5;
+        }
+        .hmrc-container h2 {
+            margin-top: 0;
+            color: #005ea5;
+            border-bottom: 2px solid #005ea5;
+        }
+        .hmrc-computation {
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #005ea5;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+        .hmrc-computation h3 {
+            color: #005ea5;
+            margin-top: 0;
+            text-align: center;
+            border-bottom: 2px solid #005ea5;
+            padding-bottom: 10px;
+        }
+        .hmrc-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .hmrc-line.total {
+            font-weight: bold;
+            border-top: 2px solid #005ea5;
+            border-bottom: 2px solid #005ea5;
+            margin: 10px 0;
+            padding: 10px 0;
+        }
+        .hmrc-line.section-header {
+            font-weight: bold;
+            color: #005ea5;
+            text-transform: uppercase;
+            margin-top: 15px;
+            border-bottom: 2px solid #005ea5;
+        }
+        .hmrc-line.indented {
+            padding-left: 20px;
+        }
+        .hmrc-underline {
+            border-bottom: 2px solid #333;
+            margin: 5px 0;
+        }
+        .sa-box {
+            display: inline-block;
+            background: #fff;
+            border: 2px solid #005ea5;
+            padding: 10px;
+            margin: 5px;
+            min-width: 200px;
+            border-radius: 5px;
+        }
+        .sa-box-label {
+            font-weight: bold;
+            color: #005ea5;
+            font-size: 0.9em;
+        }
+        .sa-box-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .vat-return {
+            background: #fff;
+            padding: 15px;
+            border: 2px solid #005ea5;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .vat-box {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+        }
+        .vat-box.total {
+            font-weight: bold;
+            background: #e8f4f8;
+            border: 2px solid #005ea5;
+            margin: 5px 0;
+        }
+        .deadline-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ccc;
+            background: #fff;
+            border-radius: 5px;
+        }
+        .deadline-item.completed {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .deadline-item.urgent {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .deadline-item.upcoming {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .penalty-calculator {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .audit-entry {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-left: 3px solid #0056b3;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .quarter-selector {
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .quarter-selector button {
+            margin-right: 5px;
+            padding: 8px 15px;
+        }
+        .quarter-selector button.active {
+            background: #005ea5;
+        }
     </style>
 </head>
 <body>
@@ -240,6 +739,10 @@
             <h2>Income Tracking</h2>
             <div class="entry-form">
                 <div>
+                    <label for="incomeDate">Date:</label>
+                    <input type="date" id="incomeDate">
+                </div>
+                <div>
                     <label for="incomeDescription">Description:</label>
                     <input type="text" id="incomeDescription" placeholder="e.g., Salary, Freelance Work">
                 </div>
@@ -259,6 +762,10 @@
         <div class="section">
             <h2>Expense Tracking</h2>
             <div class="entry-form">
+                <div>
+                    <label for="expenseDate">Date:</label>
+                    <input type="date" id="expenseDate">
+                </div>
                 <div>
                     <label for="expenseDescription">Description:</label>
                     <input type="text" id="expenseDescription" placeholder="e.g., Office Supplies, Travel">
@@ -292,6 +799,92 @@
                     <div class="amount" id="netProfit">£0.00</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Phase 6: Business Metrics Dashboard -->
+        <div class="section" id="businessMetrics">
+            <h2>📊 Business Metrics Dashboard</h2>
+            <p>Real-time business intelligence for current tax year</p>
+            
+            <!-- KPI Cards Grid -->
+            <div class="kpi-grid" id="kpiGrid">
+                <div class="kpi-card neutral" id="grossProfitMarginCard" title="Gross Profit Margin = (Income - Expenses) / Income × 100%">
+                    <div class="kpi-label">Gross Profit Margin</div>
+                    <div class="kpi-value" id="grossProfitMargin">0%</div>
+                    <div class="kpi-sublabel">Target: &gt;20%</div>
+                </div>
+
+                <div class="kpi-card neutral" id="netProfitMarginCard" title="Net Profit Margin = Net Profit / Income × 100%">
+                    <div class="kpi-label">Net Profit Margin</div>
+                    <div class="kpi-value" id="netProfitMargin">0%</div>
+                    <div class="kpi-sublabel">After-tax profitability</div>
+                </div>
+
+                <div class="kpi-card neutral" id="avgMonthlyRevenueCard" title="Average revenue per month with entries">
+                    <div class="kpi-label">Avg Monthly Revenue</div>
+                    <div class="kpi-value" id="avgMonthlyRevenue">£0.00</div>
+                    <div class="kpi-sublabel" id="revenueTrend"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="avgMonthlyExpensesCard" title="Average expenses per month with entries">
+                    <div class="kpi-label">Avg Monthly Expenses</div>
+                    <div class="kpi-value" id="avgMonthlyExpenses">£0.00</div>
+                    <div class="kpi-sublabel" id="expenseTrend"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="monthOverMonthCard" title="Comparison of current month vs last month">
+                    <div class="kpi-label">Current vs Last Month</div>
+                    <div class="kpi-value" id="monthOverMonth">--</div>
+                    <div class="kpi-sublabel" id="momDetail"></div>
+                </div>
+
+                <div class="kpi-card neutral" id="burnRateCard" title="Monthly expense rate (cash consumption)">
+                    <div class="kpi-label">Burn Rate</div>
+                    <div class="kpi-value" id="burnRate">£0.00/mo</div>
+                    <div class="kpi-sublabel">Monthly cash burn</div>
+                </div>
+
+                <div class="kpi-card neutral" id="runwayCard" title="Months until cash runs out at current burn rate">
+                    <div class="kpi-label">Runway</div>
+                    <div class="kpi-value" id="runway">∞</div>
+                    <div class="kpi-sublabel">Months remaining</div>
+                </div>
+
+                <div class="kpi-card neutral" id="breakEvenCard" title="Monthly revenue needed to break even">
+                    <div class="kpi-label">Break-Even Point</div>
+                    <div class="kpi-value" id="breakEven">£0.00/mo</div>
+                    <div class="kpi-sublabel" id="breakEvenStatus"></div>
+                </div>
+            </div>
+            
+            <!-- Detailed Analytics (Collapsible) -->
+            <details>
+                <summary>💰 Cash Flow Forecast</summary>
+                <div id="cashFlowForecast">
+                    <p class="no-data-message">Add income and expense data to see cash flow projections.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>📉 Expense Analysis</summary>
+                <div id="expenseAnalysis">
+                    <p class="no-data-message">Add expense data to see detailed analysis.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>📈 Revenue Analysis</summary>
+                <div id="revenueAnalysis">
+                    <p class="no-data-message">Add income data to see revenue trends.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>💎 Profitability Metrics</summary>
+                <div id="profitabilityMetrics">
+                    <p class="no-data-message">Add data to see profitability analysis.</p>
+                </div>
+            </details>
         </div>
 
         <!-- Ledger Display Section -->
@@ -448,18 +1041,311 @@
                 <div id="resultPAYE" style="display: none; margin-top: 15px; padding: 10px; background: #f8e8f8; border-radius: 5px;"></div>
                 <div id="resultCompanyTax" style="display: none; margin-top: 15px; padding: 10px; background: #f8f8e8; border-radius: 5px;"></div>
                 <div id="resultCGT" style="display: none; margin-top: 15px; padding: 10px; background: #e8f8e8; border-radius: 5px;"></div>
+                
+                <!-- Advanced Tax Results -->
+                <div id="advancedTaxResults" style="display: none; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px; border: 2px solid #0056b3;">
+                    <h3 style="margin-top: 0; color: #0056b3;">Advanced Tax Calculations</h3>
+                    <div id="resultStudentLoan" style="display: none;" class="advanced-result"></div>
+                    <div id="resultPension" style="display: none;" class="advanced-result"></div>
+                    <div id="resultChildcare" style="display: none;" class="advanced-result"></div>
+                    <div id="resultGiftAid" style="display: none;" class="advanced-result"></div>
+                    <div id="resultDividend" style="display: none;" class="advanced-result"></div>
+                    <div id="resultSavings" style="display: none;" class="advanced-result"></div>
+                </div>
+                
                 <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
             </div>
+        </div>
+
+        <!-- Advanced Tax Planning Section -->
+        <div class="advanced-tax-container">
+            <h2>Advanced Tax Planning</h2>
+            <p style="color: #666; margin-bottom: 20px;">Configure additional tax calculations and reliefs. These settings will be saved per tax year.</p>
+
+            <!-- Student Loan Repayments -->
+            <details>
+                <summary>💼 Student Loan Repayments</summary>
+                <div>
+                    <label for="studentLoanPlan">Student Loan Plan:</label>
+                    <select id="studentLoanPlan" name="studentLoanPlan" onchange="updateStudentLoanInfo()">
+                        <option value="none">None</option>
+                        <option value="plan1">Plan 1 (£24,990 threshold @ 9%)</option>
+                        <option value="plan2">Plan 2 (£27,295 threshold @ 9%)</option>
+                        <option value="plan4">Plan 4 (£31,395 threshold @ 9%)</option>
+                        <option value="plan5">Plan 5 (£25,000 threshold @ 9%)</option>
+                        <option value="postgrad">Postgraduate Loan (£21,000 threshold @ 6%)</option>
+                    </select>
+                    <span class="help-text">Select your student loan repayment plan type</span>
+                    <div id="studentLoanInfo" class="info-text" style="display: none;"></div>
+                </div>
+            </details>
+
+            <!-- Pension Contributions -->
+            <details>
+                <summary>🏦 Pension Contributions</summary>
+                <div>
+                    <label for="pensionContribType">Contribution Type:</label>
+                    <select id="pensionContribType" name="pensionContribType">
+                        <option value="none">None</option>
+                        <option value="amount">Fixed Amount</option>
+                        <option value="percent">Percentage of Salary</option>
+                    </select>
+                    <span class="help-text">Choose how pension contributions are calculated</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="employerPension">Employer Contribution (£ or %):</label>
+                    <input type="number" id="employerPension" name="employerPension" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Employer's pension contribution</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="employeePension">Employee Contribution (£ or %):</label>
+                    <input type="number" id="employeePension" name="employeePension" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Your pension contribution</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="pensionMethod">Employee Contribution Method:</label>
+                    <select id="pensionMethod" name="pensionMethod">
+                        <option value="relief">Relief at Source (20% automatic relief)</option>
+                        <option value="sacrifice">Salary Sacrifice (pre-tax deduction)</option>
+                    </select>
+                    <span class="help-text">Salary sacrifice gives immediate tax relief; relief at source gives basic rate relief with higher rate claimed later</span>
+                </div>
+                <div id="pensionWarning" class="warning-text" style="display: none;"></div>
+            </details>
+
+            <!-- Childcare Tax Relief -->
+            <details>
+                <summary>👶 Childcare Tax Relief</summary>
+                <div>
+                    <label for="numChildren">Number of Children:</label>
+                    <input type="number" id="numChildren" name="numChildren" placeholder="0" min="0" value="0">
+                    <span class="help-text">Number of children eligible for Tax-Free Childcare (under 11, or under 17 if disabled)</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="numDisabledChildren">Number of Disabled Children:</label>
+                    <input type="number" id="numDisabledChildren" name="numDisabledChildren" placeholder="0" min="0" value="0">
+                    <span class="help-text">Disabled children get higher relief (£4,000 vs £2,000)</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="childcareExpenses">Annual Childcare Expenses (£):</label>
+                    <input type="number" id="childcareExpenses" name="childcareExpenses" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total annual childcare costs</span>
+                </div>
+                <div id="childcareInfo" class="info-text" style="display: none;"></div>
+                <div id="childcareWarning" class="warning-text" style="display: none;"></div>
+            </details>
+
+            <!-- Gift Aid -->
+            <details>
+                <summary>🎁 Gift Aid Calculator</summary>
+                <div>
+                    <label for="charitableDonations">Total Charitable Donations (£):</label>
+                    <input type="number" id="charitableDonations" name="charitableDonations" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total amount donated to charity (after your tax deduction if applicable)</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>How Gift Aid works:</strong><br>
+                    • Charity claims 25p for every £1 you donate (25% on your donation)<br>
+                    • Higher (40%) and additional (45%) rate taxpayers can claim extra relief<br>
+                    • If you donate £100, charity gets £125, and you may get extra relief
+                </div>
+            </details>
+
+            <!-- Dividend Income -->
+            <details>
+                <summary>📊 Dividend Income</summary>
+                <div>
+                    <label for="dividendIncome">Annual Dividend Income (£):</label>
+                    <input type="number" id="dividendIncome" name="dividendIncome" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total dividend income from shares and investments</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>Dividend Tax 2025/26:</strong><br>
+                    • Dividend Allowance: £500 (tax-free)<br>
+                    • Basic rate (up to £50,270): 8.75%<br>
+                    • Higher rate (£50,271-£125,140): 33.75%<br>
+                    • Additional rate (over £125,140): 39.35%<br>
+                    Tax rate depends on your total taxable income band.
+                </div>
+            </details>
+
+            <!-- Savings Interest -->
+            <details>
+                <summary>💰 Savings Interest</summary>
+                <div>
+                    <label for="savingsInterest">Annual Savings Interest (£):</label>
+                    <input type="number" id="savingsInterest" name="savingsInterest" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total interest from bank accounts, savings accounts, and bonds</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>Personal Savings Allowance 2025/26:</strong><br>
+                    • Basic rate taxpayers: £1,000 tax-free<br>
+                    • Higher rate taxpayers: £500 tax-free<br>
+                    • Additional rate taxpayers: £0 tax-free<br>
+                    • Starting Rate for Savings: £5,000 @ 0% (if income under £17,570)<br>
+                    Tax rate on interest above allowance matches your income tax band.
+                </div>
+            </details>
+        </div>
+
+        <!-- Phase 8: HMRC Compliance & Reporting -->
+        <div class="hmrc-container">
+            <h2>🏛️ HMRC Compliance & Reporting</h2>
+            <p style="color: #666; margin-bottom: 20px;">Official HMRC-style tax computations and Making Tax Digital (MTD) ready reports.</p>
+            
+            <!-- HMRC Tax Computation Summary -->
+            <div id="taxComputationSummary" style="display:none;">
+                <div class="hmrc-computation" id="hmrcComputationContent"></div>
+            </div>
+
+            <!-- Self Assessment Pre-Fill -->
+            <details>
+                <summary>📋 Self Assessment Pre-Fill Data</summary>
+                <div>
+                    <p style="color: #666;">Data formatted for SA100 Self Assessment tax return forms. Copy these values directly into your online tax return.</p>
+                    <div id="saPreFillContent"></div>
+                </div>
+            </details>
+
+            <!-- VAT Return (MTD Compatible) -->
+            <details>
+                <summary>💷 VAT Return (Making Tax Digital)</summary>
+                <div>
+                    <p style="color: #666;">9-box VAT return ready for MTD submission. Select quarter and VAT rate to calculate.</p>
+                    
+                    <div style="margin: 15px 0;">
+                        <label for="vatQuarter">Select Quarter:</label>
+                        <select id="vatQuarter" onchange="updateVATReturn()">
+                            <option value="Q1">Q1 (6 Apr - 5 Jul)</option>
+                            <option value="Q2">Q2 (6 Jul - 5 Oct)</option>
+                            <option value="Q3">Q3 (6 Oct - 5 Jan)</option>
+                            <option value="Q4">Q4 (6 Jan - 5 Apr)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin: 15px 0;">
+                        <label for="vatRate">VAT Rate:</label>
+                        <select id="vatRate" onchange="updateVATReturn()">
+                            <option value="0.20">Standard Rate (20%)</option>
+                            <option value="0.05">Reduced Rate (5%)</option>
+                            <option value="0">Zero Rate (0%)</option>
+                        </select>
+                    </div>
+
+                    <div id="vatReturnContent"></div>
+                    
+                    <button type="button" onclick="copyVATReturnData()" style="margin-top: 10px;">📋 Copy Values for MTD Submission</button>
+                </div>
+            </details>
+
+            <!-- Tax Deadlines Dashboard -->
+            <details>
+                <summary>📅 Tax Deadlines & Calendar</summary>
+                <div>
+                    <p style="color: #666;">Upcoming HMRC tax deadlines for current tax year with days remaining.</p>
+                    <div id="taxDeadlinesContent"></div>
+                </div>
+            </details>
+
+            <!-- Late Payment Penalty Calculator -->
+            <details>
+                <summary>⚠️ Late Payment Penalty Calculator</summary>
+                <div>
+                    <p style="color: #666;">Calculate penalties and interest for late tax payments.</p>
+                    
+                    <div class="penalty-calculator">
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyTaxDue">Tax Due (£):</label>
+                            <input type="number" id="penaltyTaxDue" placeholder="0.00" step="0.01" value="0">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyDueDate">Due Date:</label>
+                            <input type="date" id="penaltyDueDate" value="2026-01-31">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="penaltyPaidDate">Paid Date:</label>
+                            <input type="date" id="penaltyPaidDate">
+                        </div>
+                        
+                        <button type="button" onclick="calculatePenalties()">Calculate Penalties</button>
+                        
+                        <div id="penaltyResults" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Audit Trail -->
+            <details>
+                <summary>📜 Digital Record Audit Trail</summary>
+                <div>
+                    <p style="color: #666;">Complete audit log of all changes for HMRC digital record keeping requirements.</p>
+                    <button type="button" onclick="refreshAuditTrail()">🔄 Refresh</button>
+                    <button type="button" onclick="exportAuditTrail()">📥 Export Audit Log</button>
+                    <button type="button" onclick="clearAuditTrail()" class="danger-btn">🗑️ Clear Old Entries</button>
+                    <div id="auditTrailContent" style="margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </details>
         </div>
 
         <!-- Data Management Section -->
         <div class="data-management-container">
             <h2>Data Management</h2>
-            <p>Manage your tax year data with backup and restore options.</p>
-            <button type="button" class="danger-btn" onclick="clearCurrentYearData()">Clear Current Year Data</button>
-            <button type="button" class="success-btn" onclick="exportData()">Backup Data (Download JSON)</button>
-            <button type="button" class="info-btn" onclick="document.getElementById('importFileInput').click()">Load Backup</button>
-            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importData(event)">
+            <p>Manage your tax year data with backup, restore, and export options.</p>
+            
+            <!-- Date Range Filter -->
+            <div class="date-range-filter">
+                <h3 style="margin-top: 0;">Date Range Filter (for exports)</h3>
+                <label for="exportDateFrom">From:</label>
+                <input type="date" id="exportDateFrom">
+                <label for="exportDateTo">To:</label>
+                <input type="date" id="exportDateTo">
+                <button type="button" onclick="clearDateRange()">All Time</button>
+            </div>
+
+            <!-- Export Options -->
+            <div style="margin: 20px 0;">
+                <h3>Export Options</h3>
+                <button type="button" class="export-btn" onclick="exportToCSV('full')">📋 Export Full Ledger (CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToCSV('income')">📋 Export Income Summary (CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToCSV('expenses')">📋 Export Expenses Summary (CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToCSV('tax')">📋 Export Tax Computation (CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToCSV('annual')">📋 Export Annual Summary (CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToExcel()">📊 Export to Excel (Enhanced CSV)</button>
+                <button type="button" class="export-btn" onclick="exportToPDF()">📄 Export to PDF</button>
+            </div>
+
+            <!-- Import Options -->
+            <div style="margin: 20px 0;">
+                <h3>Import Options</h3>
+                <button type="button" class="import-btn" onclick="document.getElementById('csvImportFileInput').click()">📤 Import from CSV</button>
+                <input type="file" id="csvImportFileInput" accept=".csv" style="display: none;" onchange="handleCSVImport(event)">
+            </div>
+
+            <!-- Backup/Restore -->
+            <div style="margin: 20px 0;">
+                <h3>Backup & Restore</h3>
+                <button type="button" class="success-btn" onclick="exportData()">💾 Backup Data (Download JSON)</button>
+                <button type="button" class="info-btn" onclick="document.getElementById('importFileInput').click()">📂 Load Backup (JSON)</button>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importData(event)">
+                <button type="button" class="danger-btn" onclick="clearCurrentYearData()">🗑️ Clear Current Year Data</button>
+            </div>
+        </div>
+
+        <!-- Hidden printable div for PDF export -->
+        <div id="printableReport" style="display: none;"></div>
+
+        <!-- CSV Import Modal -->
+        <div id="csvImportModal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Import CSV Data</h3>
+                <div id="csvImportContent"></div>
+                <div style="margin-top: 20px;">
+                    <button type="button" onclick="closeImportModal()">Cancel</button>
+                    <button type="button" class="success-btn" onclick="confirmImport()" id="confirmImportBtn" style="display: none;">Confirm Import</button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -475,6 +1361,55 @@
         const NI_RATE = 0.12; // National Insurance rate for employees
         const SMALL_COMPANY_TAX_RATE = 0.19; // Small Profits Rate for Corporation Tax
         const MAIN_COMPANY_TAX_RATE = 0.25; // Main Rate for Corporation Tax
+
+        // Phase 2: Advanced Tax Planning Constants (2025/26)
+        
+        // Student Loans 2025/26
+        const STUDENT_LOAN_THRESHOLDS = {
+            none: { threshold: 0, rate: 0, name: 'None' },
+            plan1: { threshold: 24990, rate: 0.09, name: 'Plan 1' },
+            plan2: { threshold: 27295, rate: 0.09, name: 'Plan 2' },
+            plan4: { threshold: 31395, rate: 0.09, name: 'Plan 4' },
+            plan5: { threshold: 25000, rate: 0.09, name: 'Plan 5' },
+            postgrad: { threshold: 21000, rate: 0.06, name: 'Postgraduate Loan' }
+        };
+
+        // Pension 2025/26
+        const PENSION_ANNUAL_ALLOWANCE = 60000;
+        const PENSION_TAPER_THRESHOLD = 260000;
+        const TAX_RELIEF_RATES = {
+            basic: 0.20,
+            higher: 0.40,
+            additional: 0.45
+        };
+
+        // Childcare 2025/26
+        const CHILDCARE_TAX_FREE = { 
+            standard: 2000, 
+            disabled: 4000 
+        };
+        const CHILDCARE_INCOME_LIMIT = 100000;
+        const CHILDCARE_GOVERNMENT_CONTRIBUTION = 0.25; // 25% (£20 for every £80 paid)
+
+        // Gift Aid
+        const GIFT_AID_RATE = 0.25; // 25% enhancement
+
+        // Dividend 2025/26
+        const DIVIDEND_ALLOWANCE = 500;
+        const DIVIDEND_RATES = { 
+            basic: 0.0875,      // 8.75%
+            higher: 0.3375,     // 33.75%
+            additional: 0.3935  // 39.35%
+        };
+
+        // Savings 2025/26
+        const SAVINGS_ALLOWANCES = { 
+            basic: 1000, 
+            higher: 500, 
+            additional: 0 
+        };
+        const SAVINGS_STARTING_RATE = 5000;
+        const SAVINGS_STARTING_THRESHOLD = 17570;
 
         // Category configuration mapping
         const CATEGORY_CONFIG = {
@@ -509,6 +1444,44 @@
                 description: 'Property rental income and capital gains'
             }
         };
+
+        // Phase 8: HMRC Integration Constants
+        
+        // Current Tax Year (for deadline calculations)
+        const CURRENT_TAX_YEAR = '2025/26';
+        
+        // Tax Deadlines 2025/26
+        const TAX_DEADLINES = {
+            selfAssessment: {
+                paper: new Date('2025-10-31'),
+                online: new Date('2026-01-31'),
+                payment: new Date('2026-01-31')
+            },
+            paymentsOnAccount: {
+                first: new Date('2026-01-31'),
+                second: new Date('2026-07-31')
+            },
+            vatQuarters: {
+                Q1: { start: new Date('2025-04-06'), end: new Date('2025-07-05'), due: new Date('2025-08-07') },
+                Q2: { start: new Date('2025-07-06'), end: new Date('2025-10-05'), due: new Date('2025-11-07') },
+                Q3: { start: new Date('2025-10-06'), end: new Date('2026-01-05'), due: new Date('2026-02-07') },
+                Q4: { start: new Date('2026-01-06'), end: new Date('2026-04-05'), due: new Date('2026-05-07') }
+            }
+        };
+
+        // Late Filing Penalties
+        const LATE_FILING_PENALTIES = {
+            day1: 100,
+            month3Daily: 10,
+            month3Max: 900,
+            month6: 300,
+            month6Percent: 0.05,
+            month12: 300,
+            month12Percent: 0.05
+        };
+
+        // Late Payment Interest Rate (Bank of England base rate + 2.5%)
+        const LATE_PAYMENT_INTEREST_RATE = 0.075; // 7.5% annually
 
         // Update tax fields based on selected category
         function updateTaxFields() {
@@ -698,11 +1671,28 @@
             incomeEntries = yearData.income || [];
             expenseEntries = yearData.expenses || [];
             entryIdCounter = yearData.entryIdCounter || 0;
+            
+            // Migration: Add dates to entries that don't have them
+            const today = new Date().toISOString().split('T')[0];
+            incomeEntries.forEach(entry => {
+                if (!entry.date) {
+                    entry.date = today;
+                }
+            });
+            expenseEntries.forEach(entry => {
+                if (!entry.date) {
+                    entry.date = today;
+                }
+            });
         }
 
         // Switch to different year
         function switchYear() {
             const yearSelector = document.getElementById('yearSelector');
+            
+            // Save advanced tax settings before switching
+            saveAdvancedTaxSettings();
+            
             currentYear = yearSelector.value;
             
             // Save current data before switching
@@ -710,6 +1700,9 @@
             
             // Load new year data
             loadYearData(currentYear);
+            
+            // Load advanced tax settings for new year
+            loadAdvancedTaxSettings();
             
             // Refresh all displays (income list, expense list, summary, and ledger)
             refreshAllDisplays();
@@ -721,12 +1714,19 @@
                 return;
             }
             
+            // Phase 8: Record entries count for audit log
+            const incomeCount = incomeEntries.length;
+            const expenseCount = expenseEntries.length;
+            
             incomeEntries = [];
             expenseEntries = [];
             entryIdCounter = 0;
             
             saveToLocalStorage();
             refreshAllDisplays();
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Cleared data', `Deleted ${incomeCount} income and ${expenseCount} expense entries for ${currentYear}`);
             
             alert(`All data for ${currentYear} has been cleared.`);
         }
@@ -745,6 +1745,9 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Export', `Data exported to JSON backup file`);
             
             alert('Data exported successfully!');
         }
@@ -770,6 +1773,10 @@
                         document.getElementById('yearSelector').value = currentYear;
                         loadYearData(currentYear);
                         refreshAllDisplays();
+                        
+                        // Phase 8: Add audit trail entry
+                        addAuditEntry('Import', `Data imported from JSON backup file (${file.name})`);
+                        
                         alert('Data imported successfully!');
                     }
                 } catch (error) {
@@ -782,6 +1789,1170 @@
             event.target.value = '';
         }
 
+        // ============ Phase 3: Export/Import Functions ============
+
+        // Helper function to format date for display
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Helper function to download files
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear date range filter
+        function clearDateRange() {
+            document.getElementById('exportDateFrom').value = '';
+            document.getElementById('exportDateTo').value = '';
+        }
+
+        // Filter entries by date range
+        function filterEntriesByDateRange(entries, dateFrom, dateTo) {
+            if (!dateFrom && !dateTo) return entries;
+            
+            return entries.filter(entry => {
+                if (!entry.date) return false;
+                const entryDate = new Date(entry.date);
+                if (dateFrom && entryDate < new Date(dateFrom)) return false;
+                if (dateTo && entryDate > new Date(dateTo)) return false;
+                return true;
+            });
+        }
+
+        // Export to CSV
+        function exportToCSV(dataType) {
+            const dateFrom = document.getElementById('exportDateFrom').value;
+            const dateTo = document.getElementById('exportDateTo').value;
+            
+            let csv = '';
+            let filename = '';
+            
+            const filteredIncome = filterEntriesByDateRange(incomeEntries, dateFrom, dateTo);
+            const filteredExpenses = filterEntriesByDateRange(expenseEntries, dateFrom, dateTo);
+            
+            switch (dataType) {
+                case 'full':
+                    csv = generateFullLedgerCSV(filteredIncome, filteredExpenses);
+                    filename = `ledger-full-${currentYear}.csv`;
+                    break;
+                case 'income':
+                    csv = generateIncomeCSV(filteredIncome);
+                    filename = `ledger-income-${currentYear}.csv`;
+                    break;
+                case 'expenses':
+                    csv = generateExpensesCSV(filteredExpenses);
+                    filename = `ledger-expenses-${currentYear}.csv`;
+                    break;
+                case 'tax':
+                    csv = generateTaxComputationCSV();
+                    filename = `tax-computation-${currentYear}.csv`;
+                    break;
+                case 'annual':
+                    csv = generateAnnualSummaryCSV(filteredIncome, filteredExpenses);
+                    filename = `annual-summary-${currentYear}.csv`;
+                    break;
+            }
+            
+            downloadFile(csv, filename, 'text/csv;charset=utf-8;');
+            alert(`Exported ${dataType} data to ${filename}`);
+        }
+
+        // Generate full ledger CSV
+        function generateFullLedgerCSV(income, expenses) {
+            let csv = 'Date,Type,Description,Amount,Category\n';
+            
+            const allEntries = [...income, ...expenses].sort((a, b) => {
+                if (a.date && b.date) return new Date(a.date) - new Date(b.date);
+                return a.id - b.id;
+            });
+            
+            allEntries.forEach(entry => {
+                const date = entry.date || '';
+                const type = entry.type === 'income' ? 'Income' : 'Expense';
+                const description = `"${entry.description.replace(/"/g, '""')}"`;
+                const amount = entry.amount.toFixed(2);
+                const category = entry.category || (entry.type === 'income' ? 'Trading Income' : 'Business Expense');
+                csv += `${date},${type},${description},${amount},${category}\n`;
+            });
+            
+            return csv;
+        }
+
+        // Generate income CSV
+        function generateIncomeCSV(income) {
+            let csv = 'Date,Description,Amount,Category\n';
+            
+            income.forEach(entry => {
+                const date = entry.date || '';
+                const description = `"${entry.description.replace(/"/g, '""')}"`;
+                const amount = entry.amount.toFixed(2);
+                const category = entry.category || 'Trading Income';
+                csv += `${date},${description},${amount},${category}\n`;
+            });
+            
+            // Add total
+            const total = income.reduce((sum, entry) => sum + entry.amount, 0);
+            csv += `\nTotal Income,,${total.toFixed(2)}\n`;
+            
+            return csv;
+        }
+
+        // Generate expenses CSV
+        function generateExpensesCSV(expenses) {
+            let csv = 'Date,Description,Amount,Category\n';
+            
+            expenses.forEach(entry => {
+                const date = entry.date || '';
+                const description = `"${entry.description.replace(/"/g, '""')}"`;
+                const amount = entry.amount.toFixed(2);
+                const category = entry.category || 'Business Expense';
+                csv += `${date},${description},${amount},${category}\n`;
+            });
+            
+            // Add total
+            const total = expenses.reduce((sum, entry) => sum + entry.amount, 0);
+            csv += `\nTotal Expenses,,${total.toFixed(2)}\n`;
+            
+            return csv;
+        }
+
+        // Generate tax computation CSV
+        function generateTaxComputationCSV() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            let csv = 'Item,Amount\n';
+            csv += `Gross Income,${totalIncome.toFixed(2)}\n`;
+            csv += `Total Expenses,${totalExpenses.toFixed(2)}\n`;
+            csv += `Net Profit,${netProfit.toFixed(2)}\n`;
+            csv += '\n';
+            
+            // Get tax calculation if available
+            const data = loadFromLocalStorage();
+            if (data && data.taxYears[currentYear]?.taxCalculations) {
+                const taxCalc = data.taxYears[currentYear].taxCalculations;
+                if (taxCalc.incomeTax !== undefined) {
+                    csv += `Income Tax,${taxCalc.incomeTax.toFixed(2)}\n`;
+                }
+                if (taxCalc.nationalInsurance !== undefined) {
+                    csv += `National Insurance,${taxCalc.nationalInsurance.toFixed(2)}\n`;
+                }
+                if (taxCalc.totalTax !== undefined) {
+                    csv += `Total Tax Due,${taxCalc.totalTax.toFixed(2)}\n`;
+                }
+            }
+            
+            return csv;
+        }
+
+        // Generate annual summary CSV
+        function generateAnnualSummaryCSV(income, expenses) {
+            const totalIncome = income.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenses.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            let csv = `Annual Summary for Tax Year ${currentYear}\n\n`;
+            csv += 'Category,Amount\n';
+            csv += `Total Income,${totalIncome.toFixed(2)}\n`;
+            csv += `Total Expenses,${totalExpenses.toFixed(2)}\n`;
+            csv += `Net Profit/Loss,${netProfit.toFixed(2)}\n`;
+            csv += '\n';
+            csv += `Number of Income Entries,${income.length}\n`;
+            csv += `Number of Expense Entries,${expenses.length}\n`;
+            csv += `Total Transactions,${income.length + expenses.length}\n`;
+            
+            return csv;
+        }
+
+        // Export to Excel (enhanced CSV)
+        function exportToExcel() {
+            const dateFrom = document.getElementById('exportDateFrom').value;
+            const dateTo = document.getElementById('exportDateTo').value;
+            
+            const filteredIncome = filterEntriesByDateRange(incomeEntries, dateFrom, dateTo);
+            const filteredExpenses = filterEntriesByDateRange(expenseEntries, dateFrom, dateTo);
+            
+            const totalIncome = filteredIncome.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = filteredExpenses.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            let csv = `UK Tax Calculator Report - ${currentYear}\n`;
+            csv += `Generated: ${new Date().toLocaleString()}\n\n`;
+            
+            // Income Section
+            csv += '=== INCOME ===\n';
+            csv += 'Date,Description,Amount\n';
+            filteredIncome.forEach(entry => {
+                const date = entry.date || '';
+                const description = `"${entry.description.replace(/"/g, '""')}"`;
+                csv += `${date},${description},${entry.amount.toFixed(2)}\n`;
+            });
+            csv += `,,=SUM(C:C)\n`;
+            csv += `Total Income,,${totalIncome.toFixed(2)}\n\n`;
+            
+            // Expenses Section
+            csv += '=== EXPENSES ===\n';
+            csv += 'Date,Description,Amount\n';
+            filteredExpenses.forEach(entry => {
+                const date = entry.date || '';
+                const description = `"${entry.description.replace(/"/g, '""')}"`;
+                csv += `${date},${description},${entry.amount.toFixed(2)}\n`;
+            });
+            csv += `,,=SUM(C:C)\n`;
+            csv += `Total Expenses,,${totalExpenses.toFixed(2)}\n\n`;
+            
+            // Summary Section
+            csv += '=== FINANCIAL SUMMARY ===\n';
+            csv += 'Item,Amount\n';
+            csv += `Total Income,${totalIncome.toFixed(2)}\n`;
+            csv += `Total Expenses,${totalExpenses.toFixed(2)}\n`;
+            csv += `Net Profit/Loss,${netProfit.toFixed(2)}\n`;
+            
+            downloadFile(csv, `tax-report-excel-${currentYear}.csv`, 'text/csv;charset=utf-8;');
+            alert('Excel-compatible CSV exported successfully!');
+        }
+
+        // Export to PDF (using print dialog)
+        function exportToPDF() {
+            const dateFrom = document.getElementById('exportDateFrom').value;
+            const dateTo = document.getElementById('exportDateTo').value;
+            
+            const filteredIncome = filterEntriesByDateRange(incomeEntries, dateFrom, dateTo);
+            const filteredExpenses = filterEntriesByDateRange(expenseEntries, dateFrom, dateTo);
+            
+            const totalIncome = filteredIncome.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = filteredExpenses.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Build printable HTML
+            let html = `
+                <div class="print-header">
+                    <h1>UK Tax Calculator & Accounting Manager</h1>
+                    <h2>Tax Year: ${currentYear}</h2>
+                    <p>Generated: ${new Date().toLocaleDateString('en-GB')}</p>
+                    ${dateFrom || dateTo ? `<p>Date Range: ${dateFrom || 'Start'} to ${dateTo || 'End'}</p>` : '<p>Period: All Time</p>'}
+                </div>
+                
+                <div class="print-section">
+                    <h2>Income Entries</h2>
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredIncome.map(entry => `
+                                <tr>
+                                    <td>${formatDate(entry.date)}</td>
+                                    <td>${escapeHtml(entry.description)}</td>
+                                    <td>£${entry.amount.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                            <tr class="print-total">
+                                <td colspan="2"><strong>Total Income</strong></td>
+                                <td><strong>£${totalIncome.toFixed(2)}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="print-section">
+                    <h2>Expense Entries</h2>
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredExpenses.map(entry => `
+                                <tr>
+                                    <td>${formatDate(entry.date)}</td>
+                                    <td>${escapeHtml(entry.description)}</td>
+                                    <td>£${entry.amount.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                            <tr class="print-total">
+                                <td colspan="2"><strong>Total Expenses</strong></td>
+                                <td><strong>£${totalExpenses.toFixed(2)}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="print-section">
+                    <h2>Financial Summary</h2>
+                    <table class="print-table">
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Income</strong></td>
+                                <td>£${totalIncome.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Expenses</strong></td>
+                                <td>£${totalExpenses.toFixed(2)}</td>
+                            </tr>
+                            <tr class="print-total">
+                                <td><strong>Net Profit/Loss</strong></td>
+                                <td><strong>£${netProfit.toFixed(2)}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Insert into printable div
+            document.getElementById('printableReport').innerHTML = html;
+            
+            // Trigger print dialog
+            window.print();
+        }
+
+        // CSV Import handlers
+        let pendingImportData = null;
+
+        function handleCSVImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvText = e.target.result;
+                    const parsed = parseCSV(csvText);
+                    
+                    if (parsed.length === 0) {
+                        alert('CSV file is empty or invalid.');
+                        return;
+                    }
+                    
+                    showColumnMappingUI(parsed);
+                } catch (error) {
+                    alert('Error reading CSV file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Simple CSV parser
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const rows = [];
+            
+            for (let line of lines) {
+                const row = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    const nextChar = line[i + 1];
+                    
+                    if (char === '"') {
+                        if (inQuotes && nextChar === '"') {
+                            current += '"';
+                            i++;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                row.push(current.trim());
+                rows.push(row);
+            }
+            
+            return rows;
+        }
+
+        // Show column mapping UI
+        function showColumnMappingUI(csvData) {
+            const headers = csvData[0];
+            const dataRows = csvData.slice(1, Math.min(6, csvData.length)); // Show first 5 data rows
+            
+            let html = '<h4>Step 1: Map CSV Columns</h4>';
+            html += '<p>Please map your CSV columns to the required fields:</p>';
+            html += '<div class="column-mapping">';
+            
+            headers.forEach((header, index) => {
+                html += `
+                    <div class="column-mapping-row">
+                        <label>Column "${escapeHtml(header)}":</label>
+                        <select id="mapping_${index}">
+                            <option value="">-- Ignore --</option>
+                            <option value="date" ${header.toLowerCase().includes('date') ? 'selected' : ''}>Date</option>
+                            <option value="description" ${header.toLowerCase().includes('description') || header.toLowerCase().includes('detail') ? 'selected' : ''}>Description</option>
+                            <option value="amount" ${header.toLowerCase().includes('amount') || header.toLowerCase().includes('value') ? 'selected' : ''}>Amount</option>
+                            <option value="type" ${header.toLowerCase().includes('type') || header.toLowerCase().includes('category') ? 'selected' : ''}>Type (Income/Expense)</option>
+                        </select>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            html += '<h4>Step 2: Preview Data</h4>';
+            html += '<p>First 5 rows from your CSV:</p>';
+            html += '<table class="preview-table"><thead><tr>';
+            
+            headers.forEach(header => {
+                html += `<th>${escapeHtml(header)}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            dataRows.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += `<td>${escapeHtml(cell)}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            html += '<button type="button" class="success-btn" onclick="processCSVImport()">Process Import</button>';
+            
+            document.getElementById('csvImportContent').innerHTML = html;
+            document.getElementById('csvImportModal').classList.add('active');
+            
+            // Store data for processing
+            pendingImportData = csvData;
+        }
+
+        // Process CSV import after column mapping
+        function processCSVImport() {
+            if (!pendingImportData) return;
+            
+            const headers = pendingImportData[0];
+            const dataRows = pendingImportData.slice(1);
+            
+            // Get column mappings
+            const mapping = {};
+            headers.forEach((header, index) => {
+                const selectedField = document.getElementById(`mapping_${index}`).value;
+                if (selectedField) {
+                    mapping[selectedField] = index;
+                }
+            });
+            
+            // Validate required fields
+            if (mapping.description === undefined || mapping.amount === undefined) {
+                alert('Description and Amount columns are required. Please map them.');
+                return;
+            }
+            
+            // Parse and validate data
+            const validEntries = [];
+            const errors = [];
+            const duplicates = [];
+            
+            dataRows.forEach((row, rowIndex) => {
+                if (row.length === 0 || row.every(cell => !cell.trim())) return; // Skip empty rows
+                
+                try {
+                    const entry = {
+                        date: mapping.date !== undefined ? row[mapping.date] : new Date().toISOString().split('T')[0],
+                        description: row[mapping.description]?.trim() || '',
+                        amount: parseFloat(row[mapping.amount]?.replace(/[£,]/g, '') || '0'),
+                        type: 'income' // default
+                    };
+                    
+                    // Determine type
+                    if (mapping.type !== undefined) {
+                        const typeValue = row[mapping.type]?.toLowerCase() || '';
+                        if (typeValue.includes('expense') || typeValue.includes('cost') || typeValue.includes('payment')) {
+                            entry.type = 'expense';
+                        } else {
+                            entry.type = 'income';
+                        }
+                    }
+                    
+                    // Validate
+                    if (!entry.description) {
+                        errors.push(`Row ${rowIndex + 2}: Description is required`);
+                        return;
+                    }
+                    if (isNaN(entry.amount) || entry.amount <= 0) {
+                        errors.push(`Row ${rowIndex + 2}: Invalid amount "${row[mapping.amount]}"`);
+                        return;
+                    }
+                    
+                    // Check for duplicates
+                    const existingEntries = entry.type === 'income' ? incomeEntries : expenseEntries;
+                    const isDuplicate = existingEntries.some(e => 
+                        e.description === entry.description && 
+                        Math.abs(e.amount - entry.amount) < 0.01 &&
+                        (!e.date || !entry.date || e.date === entry.date)
+                    );
+                    
+                    if (isDuplicate) {
+                        duplicates.push(entry);
+                    } else {
+                        validEntries.push(entry);
+                    }
+                } catch (error) {
+                    errors.push(`Row ${rowIndex + 2}: ${error.message}`);
+                }
+            });
+            
+            // Show validation summary
+            showImportValidationSummary(validEntries, duplicates, errors);
+        }
+
+        // Show import validation summary
+        function showImportValidationSummary(validEntries, duplicates, errors) {
+            let html = '<h4>Import Validation Summary</h4>';
+            
+            if (errors.length > 0) {
+                html += '<div class="validation-summary error">';
+                html += `<strong>Errors Found (${errors.length}):</strong><ul>`;
+                errors.forEach(error => {
+                    html += `<li>${escapeHtml(error)}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (duplicates.length > 0) {
+                html += '<div class="validation-summary warning">';
+                html += `<strong>Duplicates Detected (${duplicates.length}):</strong><ul>`;
+                duplicates.forEach(entry => {
+                    html += `<li>${escapeHtml(entry.description)} - £${entry.amount.toFixed(2)}</li>`;
+                });
+                html += '</ul><p>Duplicates will be skipped.</p></div>';
+            }
+            
+            if (validEntries.length > 0) {
+                html += '<div class="validation-summary success">';
+                html += `<strong>Ready to Import (${validEntries.length} entries):</strong>`;
+                html += `<ul><li>Income entries: ${validEntries.filter(e => e.type === 'income').length}</li>`;
+                html += `<li>Expense entries: ${validEntries.filter(e => e.type === 'expense').length}</li></ul>`;
+                html += '</div>';
+            }
+            
+            if (validEntries.length === 0) {
+                html += '<p>No valid entries to import.</p>';
+            } else {
+                html += '<button type="button" class="success-btn" onclick="confirmImport()">Confirm & Import</button>';
+            }
+            
+            document.getElementById('csvImportContent').innerHTML = html;
+            
+            // Store valid entries for final import
+            pendingImportData = validEntries;
+        }
+
+        // Confirm and execute import
+        function confirmImport() {
+            if (!pendingImportData || pendingImportData.length === 0) return;
+            
+            let incomeCount = 0;
+            let expenseCount = 0;
+            
+            pendingImportData.forEach(entry => {
+                entry.id = entryIdCounter++;
+                
+                if (entry.type === 'income') {
+                    incomeEntries.push(entry);
+                    incomeCount++;
+                } else {
+                    expenseEntries.push(entry);
+                    expenseCount++;
+                }
+            });
+            
+            saveToLocalStorage();
+            refreshAllDisplays();
+            closeImportModal();
+            
+            alert(`Import successful!\n${incomeCount} income entries and ${expenseCount} expense entries added.`);
+        }
+
+        // Close import modal
+        function closeImportModal() {
+            document.getElementById('csvImportModal').classList.remove('active');
+            pendingImportData = null;
+        }
+
+        // ============ End Phase 3 Functions ============
+
+        // ============ Phase 8: HMRC Integration Functions ============
+
+        // Generate HMRC Tax Computation Summary
+        function generateHMRCTaxComputation(taxResult, salary) {
+            const advTax = taxResult.advancedTax || {};
+            const studentLoan = advTax.studentLoan || { repayment: 0 };
+            const dividendTax = advTax.dividends || { dividendTax: 0, taxableDividends: 0 };
+            const savingsTax = advTax.savings || { savingsTax: 0, taxableSavings: 0 };
+            
+            // Get income sources
+            const tradingIncome = salary || 0;
+            const dividendIncome = parseFloat(document.getElementById('dividendIncome').value) || 0;
+            const savingsInterest = parseFloat(document.getElementById('savingsInterest').value) || 0;
+            const propertyIncome = 0; // Could be added from income entries
+            
+            // Calculate total income
+            const totalIncome = tradingIncome + dividendIncome + savingsInterest + propertyIncome;
+            
+            // Allowances
+            const personalAllowance = PERSONAL_ALLOWANCE;
+            const tradingAllowance = tradingIncome > 0 ? TRADING_ALLOWANCE : 0;
+            const totalAllowances = personalAllowance + tradingAllowance;
+            
+            // Taxable income
+            const taxableIncome = Math.max(0, totalIncome - totalAllowances);
+            
+            // Calculate effective tax rate
+            const totalTaxDeductions = taxResult.totalTax;
+            const effectiveRate = totalIncome > 0 ? (totalTaxDeductions / totalIncome * 100) : 0;
+            
+            let html = `
+                <h3>HMRC TAX COMPUTATION ${CURRENT_TAX_YEAR}</h3>
+                
+                <div class="hmrc-line section-header"><span>INCOME</span><span></span></div>
+                <div class="hmrc-line"><span>Trading Income</span><span>£${tradingIncome.toFixed(2)}</span></div>
+                ${propertyIncome > 0 ? `<div class="hmrc-line"><span>Property Income</span><span>£${propertyIncome.toFixed(2)}</span></div>` : ''}
+                ${dividendIncome > 0 ? `<div class="hmrc-line"><span>Dividend Income</span><span>£${dividendIncome.toFixed(2)}</span></div>` : ''}
+                ${savingsInterest > 0 ? `<div class="hmrc-line"><span>Savings Interest</span><span>£${savingsInterest.toFixed(2)}</span></div>` : ''}
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total"><span>Total Income</span><span>£${totalIncome.toFixed(2)}</span></div>
+                
+                <div class="hmrc-line section-header" style="margin-top: 20px;"><span>ALLOWANCES</span><span></span></div>
+                <div class="hmrc-line"><span>Personal Allowance</span><span>(£${personalAllowance.toFixed(2)})</span></div>
+                ${tradingAllowance > 0 ? `<div class="hmrc-line"><span>Trading Allowance</span><span>(£${tradingAllowance.toFixed(2)})</span></div>` : ''}
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total"><span>Total Allowances</span><span>(£${totalAllowances.toFixed(2)})</span></div>
+                
+                <div class="hmrc-line total" style="margin-top: 20px; font-size: 1.1em;"><span>TAXABLE INCOME</span><span>£${taxableIncome.toFixed(2)}</span></div>
+                
+                <div class="hmrc-line section-header" style="margin-top: 20px;"><span>TAX CALCULATION</span><span></span></div>
+                <div class="hmrc-line"><span style="font-weight: bold;">Income Tax:</span><span></span></div>
+            `;
+            
+            // Add tax bands
+            if (taxResult.incomeTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Total Income Tax</span><span>£${taxResult.incomeTax.toFixed(2)}</span></div>`;
+            }
+            if (dividendTax.dividendTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Dividend Tax</span><span>£${dividendTax.dividendTax.toFixed(2)}</span></div>`;
+            }
+            if (savingsTax.savingsTax > 0) {
+                html += `<div class="hmrc-line indented"><span>Savings Tax</span><span>£${savingsTax.savingsTax.toFixed(2)}</span></div>`;
+            }
+            
+            const totalIncomeTax = taxResult.incomeTax + (dividendTax.dividendTax || 0) + (savingsTax.savingsTax || 0);
+            html += `<div class="hmrc-underline"></div>`;
+            html += `<div class="hmrc-line total"><span>Total Income Tax</span><span>£${totalIncomeTax.toFixed(2)}</span></div>`;
+            
+            html += `
+                <div class="hmrc-line" style="margin-top: 10px;"><span>National Insurance</span><span>£${taxResult.nationalInsurance.toFixed(2)}</span></div>
+            `;
+            
+            if (studentLoan.repayment > 0) {
+                html += `<div class="hmrc-line"><span>Student Loan Repayment</span><span>£${studentLoan.repayment.toFixed(2)}</span></div>`;
+            }
+            
+            html += `
+                <div class="hmrc-underline"></div>
+                <div class="hmrc-line total" style="font-size: 1.1em;"><span>TOTAL TAX & DEDUCTIONS</span><span>£${totalTaxDeductions.toFixed(2)}</span></div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border: 2px solid #005ea5; border-radius: 5px; text-align: center;">
+                    <strong style="font-size: 1.2em;">Effective Tax Rate: ${effectiveRate.toFixed(1)}%</strong>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Generate Self Assessment Pre-Fill Data
+        function generateSelfAssessmentPreFill() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const dividendIncome = parseFloat(document.getElementById('dividendIncome').value) || 0;
+            const savingsInterest = parseFloat(document.getElementById('savingsInterest').value) || 0;
+            
+            // Get income and expense totals
+            const yearData = taxYears[currentYear] || { income: [], expenses: [] };
+            const totalIncome = yearData.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpenses = yearData.expenses.reduce((sum, item) => sum + item.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            let html = `
+                <div style="background: #fff; padding: 20px; border: 2px solid #005ea5; border-radius: 5px; margin-top: 15px;">
+                    <h3 style="color: #005ea5; margin-top: 0;">SA103S - Self-Employment (Short)</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.1: Turnover (gross income)</div>
+                        <div class="sa-box-value">£${totalIncome.toFixed(2)}</div>
+                    </div>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.2: Allowable business expenses</div>
+                        <div class="sa-box-value">£${totalExpenses.toFixed(2)}</div>
+                    </div>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 11.3: Net profit</div>
+                        <div class="sa-box-value">£${netProfit.toFixed(2)}</div>
+                    </div>
+            `;
+            
+            if (dividendIncome > 0) {
+                html += `
+                    <h3 style="color: #005ea5; margin-top: 30px;">SA100 - Dividends</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 4: Dividends from UK companies</div>
+                        <div class="sa-box-value">£${dividendIncome.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            
+            if (savingsInterest > 0) {
+                html += `
+                    <h3 style="color: #005ea5; margin-top: 30px;">SA100 - Interest</h3>
+                    <div class="sa-box">
+                        <div class="sa-box-label">Box 1: Taxed UK interest</div>
+                        <div class="sa-box-value">£${savingsInterest.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                    <div style="margin-top: 20px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
+                        <strong>Note:</strong> These values are prepared for your Self Assessment tax return. 
+                        Always verify with your accountant before submission.
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Get transactions for a specific quarter
+        function getQuarterTransactions(quarter) {
+            const yearData = taxYears[currentYear] || { income: [], expenses: [] };
+            const quarterDates = TAX_DEADLINES.vatQuarters[quarter];
+            
+            const filterByQuarter = (item) => {
+                const itemDate = new Date(item.date);
+                return itemDate >= quarterDates.start && itemDate <= quarterDates.end;
+            };
+            
+            return {
+                income: yearData.income.filter(filterByQuarter),
+                expenses: yearData.expenses.filter(filterByQuarter)
+            };
+        }
+
+        // Calculate VAT Return
+        function calculateVATReturn(quarter, vatRate) {
+            const transactions = getQuarterTransactions(quarter);
+            
+            const totalSales = transactions.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalPurchases = transactions.expenses.reduce((sum, item) => sum + item.amount, 0);
+            
+            // Calculate VAT
+            const vatOnSales = totalSales * vatRate;
+            const vatOnPurchases = totalPurchases * vatRate;
+            const netVAT = vatOnSales - vatOnPurchases;
+            
+            return {
+                box1: vatOnSales,          // VAT due on sales
+                box2: 0,                   // VAT due on acquisitions
+                box3: vatOnSales,          // Total VAT due (1+2)
+                box4: vatOnPurchases,      // VAT reclaimed
+                box5: netVAT,              // Net VAT to pay/reclaim
+                box6: totalSales,          // Total sales ex VAT
+                box7: totalPurchases,      // Total purchases ex VAT
+                box8: 0,                   // Total supplies (EU)
+                box9: 0                    // Total acquisitions (EU)
+            };
+        }
+
+        // Update VAT Return Display
+        function updateVATReturn() {
+            const quarter = document.getElementById('vatQuarter').value;
+            const vatRate = parseFloat(document.getElementById('vatRate').value);
+            
+            const vat = calculateVATReturn(quarter, vatRate);
+            const quarterInfo = TAX_DEADLINES.vatQuarters[quarter];
+            
+            let html = `
+                <div class="vat-return">
+                    <h3 style="color: #005ea5; margin-top: 0;">VAT Return for ${quarter} (${quarterInfo.start.toLocaleDateString('en-GB')} - ${quarterInfo.end.toLocaleDateString('en-GB')})</h3>
+                    <p style="color: #666; font-size: 0.9em;">Due Date: ${quarterInfo.due.toLocaleDateString('en-GB')}</p>
+                    
+                    <div class="vat-box"><span><strong>Box 1:</strong> VAT due on sales and other outputs</span><span>£${vat.box1.toFixed(2)}</span></div>
+                    <div class="vat-box"><span><strong>Box 2:</strong> VAT due on acquisitions from other EC Member States</span><span>£${vat.box2.toFixed(2)}</span></div>
+                    <div class="vat-box total"><span><strong>Box 3:</strong> Total VAT due (Box 1 + Box 2)</span><span>£${vat.box3.toFixed(2)}</span></div>
+                    <div class="vat-box"><span><strong>Box 4:</strong> VAT reclaimed on purchases and other inputs</span><span>£${vat.box4.toFixed(2)}</span></div>
+                    <div class="vat-box total"><span><strong>Box 5:</strong> Net VAT to pay to HMRC or reclaim</span><span>${vat.box5 >= 0 ? '£' + vat.box5.toFixed(2) : '-£' + Math.abs(vat.box5).toFixed(2)}</span></div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 6:</strong> Total value of sales (ex VAT)</span><span>£${Math.round(vat.box6)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 7:</strong> Total value of purchases (ex VAT)</span><span>£${Math.round(vat.box7)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 8:</strong> Total value of supplies (EU)</span><span>£${Math.round(vat.box8)}</span></div>
+                        <div class="vat-box" style="border-bottom: none;"><span><strong>Box 9:</strong> Total value of acquisitions (EU)</span><span>£${Math.round(vat.box9)}</span></div>
+                    </div>
+                    
+                    <div style="padding: 10px; background: #e8f4f8; border: 1px solid #005ea5; border-radius: 5px;">
+                        <strong>MTD Submission Ready:</strong> These values are formatted for Making Tax Digital submission.
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('vatReturnContent').innerHTML = html;
+        }
+
+        // Copy VAT Return Data
+        function copyVATReturnData() {
+            const quarter = document.getElementById('vatQuarter').value;
+            const vatRate = parseFloat(document.getElementById('vatRate').value);
+            const vat = calculateVATReturn(quarter, vatRate);
+            
+            const text = `VAT Return ${quarter}
+Box 1: £${vat.box1.toFixed(2)}
+Box 2: £${vat.box2.toFixed(2)}
+Box 3: £${vat.box3.toFixed(2)}
+Box 4: £${vat.box4.toFixed(2)}
+Box 5: £${vat.box5.toFixed(2)}
+Box 6: £${Math.round(vat.box6)}
+Box 7: £${Math.round(vat.box7)}
+Box 8: £${Math.round(vat.box8)}
+Box 9: £${Math.round(vat.box9)}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('VAT return data copied to clipboard!');
+            }).catch(() => {
+                alert('Unable to copy to clipboard. Please copy manually.');
+            });
+        }
+
+        // Calculate days until deadline
+        function calculateDaysUntilDeadline(deadline) {
+            const now = new Date();
+            const diff = deadline - now;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
+        }
+
+        // Update Tax Deadlines Display
+        function updateTaxDeadlines() {
+            const now = new Date();
+            
+            let html = '<div style="background: #fff; padding: 15px; border-radius: 5px;">';
+            
+            // Self Assessment
+            html += '<h3 style="color: #005ea5; margin-top: 0;">📝 Self Assessment</h3>';
+            
+            const saPaperDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.paper);
+            const saOnlineDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.online);
+            const saPaymentDays = calculateDaysUntilDeadline(TAX_DEADLINES.selfAssessment.payment);
+            
+            html += generateDeadlineItem('Paper return deadline', TAX_DEADLINES.selfAssessment.paper, saPaperDays);
+            html += generateDeadlineItem('Online return deadline', TAX_DEADLINES.selfAssessment.online, saOnlineDays);
+            html += generateDeadlineItem('Payment deadline', TAX_DEADLINES.selfAssessment.payment, saPaymentDays);
+            
+            // VAT Returns
+            html += '<h3 style="color: #005ea5; margin-top: 20px;">💷 VAT Returns</h3>';
+            
+            Object.keys(TAX_DEADLINES.vatQuarters).forEach(quarter => {
+                const q = TAX_DEADLINES.vatQuarters[quarter];
+                const days = calculateDaysUntilDeadline(q.due);
+                html += generateDeadlineItem(
+                    `${quarter} (${q.start.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})} - ${q.end.toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})})`,
+                    q.due,
+                    days
+                );
+            });
+            
+            // Payments on Account
+            html += '<h3 style="color: #005ea5; margin-top: 20px;">💰 Payments on Account</h3>';
+            
+            const poa1Days = calculateDaysUntilDeadline(TAX_DEADLINES.paymentsOnAccount.first);
+            const poa2Days = calculateDaysUntilDeadline(TAX_DEADLINES.paymentsOnAccount.second);
+            
+            html += generateDeadlineItem('First payment', TAX_DEADLINES.paymentsOnAccount.first, poa1Days);
+            html += generateDeadlineItem('Second payment', TAX_DEADLINES.paymentsOnAccount.second, poa2Days);
+            
+            html += '</div>';
+            
+            document.getElementById('taxDeadlinesContent').innerHTML = html;
+        }
+
+        // Generate deadline item HTML
+        function generateDeadlineItem(label, date, daysUntil) {
+            let statusClass = 'deadline-item';
+            let statusIcon = '○';
+            let statusText = `${daysUntil} days`;
+            
+            if (daysUntil < 0) {
+                statusClass += ' completed';
+                statusIcon = '✓';
+                statusText = 'Past';
+            } else if (daysUntil <= 30) {
+                statusClass += ' urgent';
+                statusIcon = '⚠';
+                statusText = `Due in ${daysUntil} days`;
+            } else {
+                statusClass += ' upcoming';
+                statusIcon = '○';
+                statusText = `Due in ${daysUntil} days`;
+            }
+            
+            return `
+                <div class="${statusClass}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${statusIcon} ${label}</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">${date.toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'})}</span>
+                        </div>
+                        <div style="text-align: right; font-weight: bold;">
+                            ${statusText}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Calculate Late Payment Penalties
+        function calculatePenalties() {
+            const taxDue = parseFloat(document.getElementById('penaltyTaxDue').value) || 0;
+            const dueDate = new Date(document.getElementById('penaltyDueDate').value);
+            const paidDate = new Date(document.getElementById('penaltyPaidDate').value);
+            
+            if (!taxDue || !dueDate || !paidDate) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const daysLate = Math.max(0, Math.ceil((paidDate - dueDate) / (1000 * 60 * 60 * 24)));
+            
+            let penalty = 0;
+            let penaltyBreakdown = '';
+            
+            // Calculate penalties based on days late
+            if (daysLate >= 1) {
+                penalty += LATE_FILING_PENALTIES.day1;
+                penaltyBreakdown += `<div>1+ days late: £${LATE_FILING_PENALTIES.day1.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 90) {
+                const dailyPenalty = Math.min(
+                    (daysLate - 90) * LATE_FILING_PENALTIES.month3Daily,
+                    LATE_FILING_PENALTIES.month3Max
+                );
+                penalty += dailyPenalty;
+                penaltyBreakdown += `<div>3+ months late (${daysLate - 90} days × £10): £${dailyPenalty.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 180) {
+                const sixMonthPenalty = Math.max(
+                    LATE_FILING_PENALTIES.month6,
+                    taxDue * LATE_FILING_PENALTIES.month6Percent
+                );
+                penalty += sixMonthPenalty;
+                penaltyBreakdown += `<div>6+ months late: £${sixMonthPenalty.toFixed(2)}</div>`;
+            }
+            
+            if (daysLate >= 365) {
+                const twelveMonthPenalty = Math.max(
+                    LATE_FILING_PENALTIES.month12,
+                    taxDue * LATE_FILING_PENALTIES.month12Percent
+                );
+                penalty += twelveMonthPenalty;
+                penaltyBreakdown += `<div>12+ months late: £${twelveMonthPenalty.toFixed(2)}</div>`;
+            }
+            
+            // Calculate interest
+            const dailyRate = LATE_PAYMENT_INTEREST_RATE / 365;
+            const interest = taxDue * dailyRate * daysLate;
+            
+            const total = penalty + interest;
+            
+            let html = `
+                <div style="background: #fff; padding: 15px; border: 2px solid #dc3545; border-radius: 5px;">
+                    <h4 style="color: #dc3545; margin-top: 0;">Penalty Calculation Results</h4>
+                    <div style="margin: 10px 0;"><strong>Days Late:</strong> ${daysLate} days</div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #f8d7da; border-radius: 5px;">
+                        <strong>Late Filing Penalties:</strong>
+                        ${penaltyBreakdown || '<div>No penalty (not late)</div>'}
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #dc3545;"><strong>Total Penalty: £${penalty.toFixed(2)}</strong></div>
+                    </div>
+                    
+                    <div style="margin: 15px 0; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                        <strong>Late Payment Interest:</strong>
+                        <div>Interest Rate: ${(LATE_PAYMENT_INTEREST_RATE * 100).toFixed(1)}% per annum</div>
+                        <div>Daily Rate: ${(dailyRate * 100).toFixed(4)}%</div>
+                        <div>Days: ${daysLate}</div>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #ffc107;"><strong>Total Interest: £${interest.toFixed(2)}</strong></div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 15px; background: #dc3545; color: #fff; border-radius: 5px; text-align: center;">
+                        <h3 style="margin: 0;">Total Additional Cost: £${total.toFixed(2)}</h3>
+                        <div style="margin-top: 5px;">Original Tax Due: £${taxDue.toFixed(2)}</div>
+                        <div style="margin-top: 5px; font-size: 1.2em;"><strong>Total Amount Due: £${(taxDue + total).toFixed(2)}</strong></div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('penaltyResults').innerHTML = html;
+        }
+
+        // Add Audit Entry
+        function addAuditEntry(action, details) {
+            const timestamp = new Date().toISOString();
+            const entry = {
+                timestamp,
+                action,
+                details
+            };
+            
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            auditLog.push(entry);
+            
+            // Keep only last 500 entries
+            if (auditLog.length > 500) {
+                auditLog.splice(0, auditLog.length - 500);
+            }
+            
+            localStorage.setItem('auditLog', JSON.stringify(auditLog));
+        }
+
+        // Display Audit Trail
+        function displayAuditTrail() {
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            
+            if (auditLog.length === 0) {
+                document.getElementById('auditTrailContent').innerHTML = '<p style="color: #666; font-style: italic;">No audit entries recorded yet.</p>';
+                return;
+            }
+            
+            // Show most recent 50 entries
+            const recentEntries = auditLog.slice(-50).reverse();
+            
+            let html = '<div>';
+            recentEntries.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                const formattedDate = date.toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                html += `
+                    <div class="audit-entry">
+                        ${formattedDate} - ${entry.action}: ${entry.details}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            html += `<p style="margin-top: 15px; color: #666; font-size: 0.9em;">Showing ${recentEntries.length} of ${auditLog.length} total entries</p>`;
+            
+            document.getElementById('auditTrailContent').innerHTML = html;
+        }
+
+        // Refresh Audit Trail
+        function refreshAuditTrail() {
+            displayAuditTrail();
+        }
+
+        // Export Audit Trail
+        function exportAuditTrail() {
+            const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+            
+            if (auditLog.length === 0) {
+                alert('No audit entries to export');
+                return;
+            }
+            
+            let csv = 'Timestamp,Action,Details\n';
+            auditLog.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleString('en-GB');
+                csv += `"${date}","${entry.action}","${entry.details}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `audit-trail-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addAuditEntry('Export', 'Audit trail exported to CSV');
+        }
+
+        // Clear Old Audit Entries
+        function clearAuditTrail() {
+            if (confirm('This will delete audit entries older than 90 days. Continue?')) {
+                const auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+                const ninetyDaysAgo = new Date();
+                ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+                
+                const filtered = auditLog.filter(entry => {
+                    return new Date(entry.timestamp) > ninetyDaysAgo;
+                });
+                
+                localStorage.setItem('auditLog', JSON.stringify(filtered));
+                const removed = auditLog.length - filtered.length;
+                
+                alert(`Removed ${removed} old audit entries`);
+                addAuditEntry('Maintenance', `Cleared ${removed} audit entries older than 90 days`);
+                displayAuditTrail();
+            }
+        }
+
+        // Update HMRC sections when tax is calculated
+        function updateHMRCCompliance(taxResult, salary) {
+            // Generate and display HMRC Tax Computation
+            const computationHTML = generateHMRCTaxComputation(taxResult, salary);
+            document.getElementById('hmrcComputationContent').innerHTML = computationHTML;
+            document.getElementById('taxComputationSummary').style.display = 'block';
+            
+            // Generate and display Self Assessment Pre-Fill
+            const saHTML = generateSelfAssessmentPreFill();
+            document.getElementById('saPreFillContent').innerHTML = saHTML;
+            
+            // Update VAT Return (if not already displayed)
+            if (document.getElementById('vatReturnContent').innerHTML === '') {
+                updateVATReturn();
+            }
+            
+            // Update Tax Deadlines
+            updateTaxDeadlines();
+            
+            // Display Audit Trail
+            displayAuditTrail();
+        }
+
+        // ============ End Phase 8 Functions ============
+
         // Initialize on page load
         function initializeApp() {
             const data = loadFromLocalStorage();
@@ -793,7 +2964,13 @@
                 // First time initialization
                 saveToLocalStorage();
             }
+            // Load advanced tax settings for current year
+            loadAdvancedTaxSettings();
             refreshAllDisplays();
+            
+            // Phase 8: Initialize HMRC sections
+            updateTaxDeadlines();
+            displayAuditTrail();
         }
 
         // Helper function to escape HTML to prevent XSS
@@ -805,8 +2982,14 @@
 
         // Add income entry
         function addIncome() {
+            const date = document.getElementById('incomeDate').value;
             const description = document.getElementById('incomeDescription').value.trim();
             const amount = parseFloat(document.getElementById('incomeAmount').value);
+
+            if (!date) {
+                alert('Please select a date.');
+                return;
+            }
 
             if (!description || !amount || amount <= 0) {
                 alert('Please enter a valid description and amount for income.');
@@ -815,14 +2998,21 @@
 
             const entry = {
                 id: entryIdCounter++,
+                date: date,
                 description: description,
                 amount: amount,
-                type: 'income'
+                type: 'income',
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
             };
 
             incomeEntries.push(entry);
+            document.getElementById('incomeDate').value = '';
             document.getElementById('incomeDescription').value = '';
             document.getElementById('incomeAmount').value = '';
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Added income', `${description} - £${amount.toFixed(2)}`);
             
             saveToLocalStorage();
             refreshAllDisplays();
@@ -830,8 +3020,14 @@
 
         // Add expense entry
         function addExpense() {
+            const date = document.getElementById('expenseDate').value;
             const description = document.getElementById('expenseDescription').value.trim();
             const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+            if (!date) {
+                alert('Please select a date.');
+                return;
+            }
 
             if (!description || !amount || amount <= 0) {
                 alert('Please enter a valid description and amount for expense.');
@@ -840,14 +3036,21 @@
 
             const entry = {
                 id: entryIdCounter++,
+                date: date,
                 description: description,
                 amount: amount,
-                type: 'expense'
+                type: 'expense',
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
             };
 
             expenseEntries.push(entry);
+            document.getElementById('expenseDate').value = '';
             document.getElementById('expenseDescription').value = '';
             document.getElementById('expenseAmount').value = '';
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry('Added expense', `${description} - £${amount.toFixed(2)}`);
             
             saveToLocalStorage();
             refreshAllDisplays();
@@ -856,11 +3059,21 @@
         // Delete entry
         function deleteEntry(id, type) {
             if (confirm('Are you sure you want to delete this entry?')) {
+                // Phase 8: Get entry details for audit log
+                let deletedEntry;
                 if (type === 'income') {
+                    deletedEntry = incomeEntries.find(entry => entry.id === id);
                     incomeEntries = incomeEntries.filter(entry => entry.id !== id);
                 } else {
+                    deletedEntry = expenseEntries.find(entry => entry.id === id);
                     expenseEntries = expenseEntries.filter(entry => entry.id !== id);
                 }
+                
+                // Phase 8: Add audit trail entry
+                if (deletedEntry) {
+                    addAuditEntry(`Deleted ${type}`, `${deletedEntry.description} - £${deletedEntry.amount.toFixed(2)}`);
+                }
+                
                 saveToLocalStorage();
                 refreshAllDisplays();
             }
@@ -877,6 +3090,10 @@
 
             if (!entry) return;
 
+            // Phase 8: Store original values for audit log
+            const originalDescription = entry.description;
+            const originalAmount = entry.amount;
+
             const newDescription = prompt('Enter new description:', entry.description);
             if (newDescription === null) return;
 
@@ -891,16 +3108,22 @@
 
             entry.description = newDescription.trim();
             entry.amount = parsedAmount;
+            entry.modifiedAt = new Date().toISOString();
+            
+            // Phase 8: Add audit trail entry
+            addAuditEntry(`Edited ${type}`, `${originalDescription} (£${originalAmount.toFixed(2)}) → ${entry.description} (£${entry.amount.toFixed(2)})`);
+            
             saveToLocalStorage();
             refreshAllDisplays();
         }
 
-        // Refresh all displays (income list, expense list, summary, and ledger)
+        // Refresh all displays (income list, expense list, summary, ledger, and business metrics)
         function refreshAllDisplays() {
             updateIncomeList();
             updateExpenseList();
             updateSummary();
             updateLedger();
+            updateBusinessMetricsDashboard();
         }
 
         // Update income list
@@ -912,10 +3135,12 @@
                 return;
             }
 
-            let html = '<table><thead><tr><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
+            let html = '<table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
             incomeEntries.forEach(entry => {
+                const displayDate = entry.date ? formatDate(entry.date) : 'N/A';
                 html += `
                     <tr>
+                        <td>${displayDate}</td>
                         <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
                         <td>
@@ -938,10 +3163,12 @@
                 return;
             }
 
-            let html = '<table><thead><tr><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
+            let html = '<table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
             expenseEntries.forEach(entry => {
+                const displayDate = entry.date ? formatDate(entry.date) : 'N/A';
                 html += `
                     <tr>
+                        <td>${displayDate}</td>
                         <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
                         <td>
@@ -969,18 +3196,27 @@
         // Update ledger display
         function updateLedger() {
             const container = document.getElementById('ledgerDisplay');
-            const allEntries = [...incomeEntries, ...expenseEntries].sort((a, b) => a.id - b.id);
+            const allEntries = [...incomeEntries, ...expenseEntries].sort((a, b) => {
+                // Sort by date, then by id
+                if (a.date && b.date) {
+                    const dateCompare = new Date(a.date) - new Date(b.date);
+                    if (dateCompare !== 0) return dateCompare;
+                }
+                return a.id - b.id;
+            });
 
             if (allEntries.length === 0) {
                 container.innerHTML = '<p class="no-entries">No entries yet. Add income or expenses to see your ledger.</p>';
                 return;
             }
 
-            let html = '<table><thead><tr><th>Type</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
+            let html = '<table><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead><tbody>';
             allEntries.forEach(entry => {
                 const typeLabel = entry.type === 'income' ? 'Income' : 'Expense';
+                const displayDate = entry.date ? formatDate(entry.date) : 'N/A';
                 html += `
                     <tr>
+                        <td>${displayDate}</td>
                         <td><strong>${typeLabel}</strong></td>
                         <td>${escapeHtml(entry.description)}</td>
                         <td>£${entry.amount.toFixed(2)}</td>
@@ -993,6 +3229,963 @@
             });
             html += '</tbody></table>';
             container.innerHTML = html;
+        }
+
+        // ============ Phase 6: Business Metrics Dashboard Functions ============
+
+        // Helper function to group entries by month
+        function groupByMonth(entries) {
+            const monthlyTotals = {};
+            entries.forEach(entry => {
+                if (entry.date) {
+                    const month = entry.date.substring(0, 7); // YYYY-MM
+                    monthlyTotals[month] = (monthlyTotals[month] || 0) + entry.amount;
+                }
+            });
+            return monthlyTotals;
+        }
+
+        // Calculate average monthly value
+        function calculateAvgMonthly(entries) {
+            if (entries.length === 0) return 0;
+            
+            const monthlyTotals = groupByMonth(entries);
+            const months = Object.keys(monthlyTotals).length;
+            if (months === 0) return 0;
+            
+            const total = Object.values(monthlyTotals).reduce((sum, val) => sum + val, 0);
+            return total / months;
+        }
+
+        // Calculate sum for a specific month
+        function sumForMonth(entries, monthStr) {
+            return entries
+                .filter(entry => entry.date && entry.date.startsWith(monthStr))
+                .reduce((sum, entry) => sum + entry.amount, 0);
+        }
+
+        // Calculate percentage change
+        function calculatePercentChange(oldValue, newValue) {
+            if (oldValue === 0) {
+                return newValue > 0 ? 100 : 0;
+            }
+            return ((newValue - oldValue) / oldValue) * 100;
+        }
+
+        // Calculate Gross Profit Margin
+        function calculateGrossProfitMargin(totalIncome, totalExpenses) {
+            if (totalIncome === 0) return 0;
+            return ((totalIncome - totalExpenses) / totalIncome) * 100;
+        }
+
+        // Calculate Net Profit Margin
+        function calculateNetProfitMargin(netProfit, totalIncome) {
+            if (totalIncome === 0) return 0;
+            return (netProfit / totalIncome) * 100;
+        }
+
+        // Calculate month-over-month comparison
+        function calculateMonthOverMonth() {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+            const lastMonthStr = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
+            
+            const currentIncome = sumForMonth(incomeEntries, currentMonth);
+            const lastIncome = sumForMonth(incomeEntries, lastMonthStr);
+            const currentExpenses = sumForMonth(expenseEntries, currentMonth);
+            const lastExpenses = sumForMonth(expenseEntries, lastMonthStr);
+            
+            return {
+                incomeChange: calculatePercentChange(lastIncome, currentIncome),
+                expenseChange: calculatePercentChange(lastExpenses, currentExpenses),
+                currentIncome: currentIncome,
+                lastIncome: lastIncome,
+                currentExpenses: currentExpenses,
+                lastExpenses: lastExpenses
+            };
+        }
+
+        // Calculate burn rate
+        function calculateBurnRate() {
+            return calculateAvgMonthly(expenseEntries);
+        }
+
+        // Calculate runway
+        function calculateRunway(netProfit, burnRate) {
+            if (burnRate === 0) return Infinity;
+            if (netProfit <= 0) return 0;
+            return netProfit / burnRate;
+        }
+
+        // Forecast cash flow for next N months
+        function forecastCashFlow(months = 3) {
+            const avgMonthlyIncome = calculateAvgMonthly(incomeEntries);
+            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const currentCash = totalIncome - totalExpenses;
+            
+            const forecast = [];
+            let runningCash = currentCash;
+            
+            for (let i = 1; i <= months; i++) {
+                runningCash += avgMonthlyIncome - avgMonthlyExpenses;
+                forecast.push({
+                    month: i,
+                    projectedIncome: avgMonthlyIncome,
+                    projectedExpenses: avgMonthlyExpenses,
+                    projectedCash: runningCash
+                });
+            }
+            
+            return {
+                forecast: forecast,
+                currentCash: currentCash,
+                avgIncome: avgMonthlyIncome,
+                avgExpenses: avgMonthlyExpenses
+            };
+        }
+
+        // Analyze expenses
+        function analyzeExpenses() {
+            if (expenseEntries.length === 0) return { topExpenses: [], monthlyTrend: {} };
+            
+            // Group by description prefix (category proxy)
+            const byCategory = {};
+            expenseEntries.forEach(exp => {
+                const category = exp.description.split(/[\s,-]/)[0]; // Simple categorization
+                byCategory[category] = (byCategory[category] || 0) + exp.amount;
+            });
+            
+            // Get top 5
+            const topExpenses = Object.entries(byCategory)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([category, amount]) => ({ category, amount }));
+            
+            // Monthly trend
+            const monthlyTrend = groupByMonth(expenseEntries);
+            
+            return { topExpenses, monthlyTrend };
+        }
+
+        // Analyze revenue
+        function analyzeRevenue() {
+            if (incomeEntries.length === 0) return { 
+                monthlyRevenue: {}, 
+                bestMonth: null, 
+                bestAmount: 0, 
+                avgRevenue: 0,
+                growthRate: 0 
+            };
+            
+            const monthlyRevenue = groupByMonth(incomeEntries);
+            
+            // Find best month
+            let bestMonth = null;
+            let bestAmount = 0;
+            Object.entries(monthlyRevenue).forEach(([month, amount]) => {
+                if (amount > bestAmount) {
+                    bestAmount = amount;
+                    bestMonth = month;
+                }
+            });
+            
+            const avgRevenue = Object.values(monthlyRevenue).reduce((sum, val) => sum + val, 0) / Object.keys(monthlyRevenue).length;
+            
+            // Calculate growth rate (first month vs last month)
+            const months = Object.keys(monthlyRevenue).sort();
+            let growthRate = 0;
+            if (months.length >= 2) {
+                const firstMonth = monthlyRevenue[months[0]];
+                const lastMonth = monthlyRevenue[months[months.length - 1]];
+                growthRate = calculatePercentChange(firstMonth, lastMonth);
+            }
+            
+            return {
+                monthlyRevenue,
+                bestMonth,
+                bestAmount,
+                avgRevenue,
+                growthRate
+            };
+        }
+
+        // Calculate profitability metrics
+        function calculateProfitabilityMetrics() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Group by month for profit per month
+            const incomeByMonth = groupByMonth(incomeEntries);
+            const expensesByMonth = groupByMonth(expenseEntries);
+            
+            const profitByMonth = {};
+            const allMonths = new Set([...Object.keys(incomeByMonth), ...Object.keys(expensesByMonth)]);
+            
+            allMonths.forEach(month => {
+                const income = incomeByMonth[month] || 0;
+                const expenses = expensesByMonth[month] || 0;
+                profitByMonth[month] = income - expenses;
+            });
+            
+            const avgMonthlyProfit = Object.values(profitByMonth).length > 0 
+                ? Object.values(profitByMonth).reduce((sum, val) => sum + val, 0) / Object.values(profitByMonth).length 
+                : 0;
+            
+            return {
+                totalProfit: netProfit,
+                profitByMonth,
+                avgMonthlyProfit
+            };
+        }
+
+        // Update KPI card color
+        function updateKPICardColor(cardId, value, goodThreshold, warningThreshold, reverse = false) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            
+            card.classList.remove('good', 'warning', 'danger', 'neutral');
+            
+            if (reverse) {
+                // For metrics where lower is better (like burn rate)
+                if (value <= warningThreshold) {
+                    card.classList.add('good');
+                } else if (value <= goodThreshold) {
+                    card.classList.add('warning');
+                } else {
+                    card.classList.add('danger');
+                }
+            } else {
+                // For metrics where higher is better
+                if (value >= goodThreshold) {
+                    card.classList.add('good');
+                } else if (value >= warningThreshold) {
+                    card.classList.add('warning');
+                } else if (value < 0) {
+                    card.classList.add('danger');
+                } else {
+                    card.classList.add('neutral');
+                }
+            }
+        }
+
+        // Update Cash Flow Forecast section
+        function updateCashFlowForecast() {
+            const container = document.getElementById('cashFlowForecast');
+            
+            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add income and expense data to see cash flow projections.</p>';
+                return;
+            }
+            
+            const cashFlow = forecastCashFlow(3);
+            
+            let html = `
+                <p><strong>Current Cash Position:</strong> £${cashFlow.currentCash.toFixed(2)}</p>
+                <p><strong>Average Monthly Income:</strong> £${cashFlow.avgIncome.toFixed(2)}</p>
+                <p><strong>Average Monthly Expenses:</strong> £${cashFlow.avgExpenses.toFixed(2)}</p>
+                
+                <h4>3-Month Forecast</h4>
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Projected Income</th>
+                            <th>Projected Expenses</th>
+                            <th>Projected Cash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            cashFlow.forecast.forEach(f => {
+                const cashClass = f.projectedCash < 0 ? 'style="color: #dc3545; font-weight: bold;"' : '';
+                html += `
+                    <tr>
+                        <td>Month +${f.month}</td>
+                        <td>£${f.projectedIncome.toFixed(2)}</td>
+                        <td>£${f.projectedExpenses.toFixed(2)}</td>
+                        <td ${cashClass}>£${f.projectedCash.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            
+            // Add warnings
+            const willGoNegative = cashFlow.forecast.some(f => f.projectedCash < 0);
+            if (willGoNegative) {
+                html += '<div class="forecast-danger"><strong>⚠️ Warning:</strong> Cash flow projected to go negative within 3 months!</div>';
+            } else if (cashFlow.forecast[2].projectedCash < cashFlow.currentCash * 0.5) {
+                html += '<div class="forecast-warning"><strong>⚠️ Caution:</strong> Cash reserves declining. Monitor closely.</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Expense Analysis section
+        function updateExpenseAnalysis() {
+            const container = document.getElementById('expenseAnalysis');
+            
+            if (expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add expense data to see detailed analysis.</p>';
+                return;
+            }
+            
+            const analysis = analyzeExpenses();
+            
+            let html = '<h4>Top 5 Expense Categories</h4>';
+            
+            if (analysis.topExpenses.length > 0) {
+                html += '<table class="metrics-table"><thead><tr><th>Category</th><th>Total Amount</th><th>% of Total</th></tr></thead><tbody>';
+                
+                const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+                analysis.topExpenses.forEach(exp => {
+                    const percentage = (exp.amount / totalExpenses * 100).toFixed(1);
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(exp.category)}</td>
+                            <td>£${exp.amount.toFixed(2)}</td>
+                            <td>${percentage}%</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Monthly trend
+            const months = Object.keys(analysis.monthlyTrend).sort();
+            if (months.length >= 2) {
+                html += '<h4>Monthly Expense Trend</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Expenses</th><th>Change</th></tr></thead><tbody>';
+                
+                months.forEach((month, index) => {
+                    const amount = analysis.monthlyTrend[month];
+                    let changeHtml = '--';
+                    
+                    if (index > 0) {
+                        const prevAmount = analysis.monthlyTrend[months[index - 1]];
+                        const change = calculatePercentChange(prevAmount, amount);
+                        const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→';
+                        const color = change > 0 ? '#dc3545' : change < 0 ? '#28a745' : '#666';
+                        changeHtml = `<span style="color: ${color}">${arrow} ${Math.abs(change).toFixed(1)}%</span>`;
+                    }
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td>£${amount.toFixed(2)}</td>
+                            <td>${changeHtml}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                
+                // Suggestions
+                if (months.length >= 2) {
+                    const recentMonth = analysis.monthlyTrend[months[months.length - 1]];
+                    const previousMonth = analysis.monthlyTrend[months[months.length - 2]];
+                    const change = calculatePercentChange(previousMonth, recentMonth);
+                    
+                    if (change > 10) {
+                        html += '<div class="forecast-warning"><strong>💡 Insight:</strong> Expenses increased by ' + change.toFixed(1) + '% last month. Review for optimization opportunities.</div>';
+                    }
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Revenue Analysis section
+        function updateRevenueAnalysis() {
+            const container = document.getElementById('revenueAnalysis');
+            
+            if (incomeEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add income data to see revenue trends.</p>';
+                return;
+            }
+            
+            const analysis = analyzeRevenue();
+            
+            let html = `
+                <p><strong>Average Monthly Revenue:</strong> £${analysis.avgRevenue.toFixed(2)}</p>
+                <p><strong>Best Performing Month:</strong> ${analysis.bestMonth || 'N/A'} (£${analysis.bestAmount.toFixed(2)})</p>
+            `;
+            
+            if (analysis.growthRate !== 0) {
+                const growthColor = analysis.growthRate > 0 ? '#28a745' : '#dc3545';
+                const growthArrow = analysis.growthRate > 0 ? '↑' : '↓';
+                html += `<p><strong>Overall Growth Rate:</strong> <span style="color: ${growthColor}; font-weight: bold;">${growthArrow} ${Math.abs(analysis.growthRate).toFixed(1)}%</span></p>`;
+            }
+            
+            // Monthly revenue table
+            const months = Object.keys(analysis.monthlyRevenue).sort();
+            if (months.length > 0) {
+                html += '<h4>Monthly Revenue Breakdown</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Revenue</th><th>vs Average</th></tr></thead><tbody>';
+                
+                months.forEach(month => {
+                    const amount = analysis.monthlyRevenue[month];
+                    const vsAvg = ((amount - analysis.avgRevenue) / analysis.avgRevenue * 100).toFixed(1);
+                    const vsAvgColor = vsAvg > 0 ? '#28a745' : vsAvg < 0 ? '#dc3545' : '#666';
+                    const arrow = vsAvg > 0 ? '↑' : vsAvg < 0 ? '↓' : '→';
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td>£${amount.toFixed(2)}</td>
+                            <td><span style="color: ${vsAvgColor}">${arrow} ${Math.abs(vsAvg)}%</span></td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Seasonality detection
+            if (months.length >= 12) {
+                html += '<div class="info-text"><strong>📊 Note:</strong> With 12+ months of data, seasonality patterns may emerge. High performers: ' + analysis.bestMonth + '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update Profitability Metrics section
+        function updateProfitabilityMetrics() {
+            const container = document.getElementById('profitabilityMetrics');
+            
+            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
+                container.innerHTML = '<p class="no-data-message">Add data to see profitability analysis.</p>';
+                return;
+            }
+            
+            const metrics = calculateProfitabilityMetrics();
+            
+            let html = `
+                <p><strong>Total Profit (Current Year):</strong> £${metrics.totalProfit.toFixed(2)}</p>
+                <p><strong>Average Monthly Profit:</strong> £${metrics.avgMonthlyProfit.toFixed(2)}</p>
+            `;
+            
+            // Monthly profit breakdown
+            const months = Object.keys(metrics.profitByMonth).sort();
+            if (months.length > 0) {
+                html += '<h4>Monthly Profitability</h4>';
+                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody>';
+                
+                months.forEach(month => {
+                    const profit = metrics.profitByMonth[month];
+                    const profitColor = profit >= 0 ? '#28a745' : '#dc3545';
+                    const status = profit >= 0 ? '✓ Profitable' : '✗ Loss';
+                    
+                    html += `
+                        <tr>
+                            <td>${month}</td>
+                            <td style="color: ${profitColor}; font-weight: bold;">£${profit.toFixed(2)}</td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            // Calculate profitable months percentage
+            const profitableMonths = Object.values(metrics.profitByMonth).filter(p => p > 0).length;
+            const totalMonths = Object.values(metrics.profitByMonth).length;
+            if (totalMonths > 0) {
+                const profitablePercent = (profitableMonths / totalMonths * 100).toFixed(0);
+                html += `<p><strong>Profitable Months:</strong> ${profitableMonths} of ${totalMonths} (${profitablePercent}%)</p>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Main function to update Business Metrics Dashboard
+        function updateBusinessMetricsDashboard() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            // Calculate all metrics
+            const grossProfitMargin = calculateGrossProfitMargin(totalIncome, totalExpenses);
+            const netProfitMargin = calculateNetProfitMargin(netProfit, totalIncome);
+            const avgMonthlyRevenue = calculateAvgMonthly(incomeEntries);
+            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
+            const burnRate = calculateBurnRate();
+            const runway = calculateRunway(netProfit, burnRate);
+            const breakEvenPoint = avgMonthlyExpenses;
+            const monthOverMonth = calculateMonthOverMonth();
+            
+            // Update KPI values
+            document.getElementById('grossProfitMargin').textContent = grossProfitMargin.toFixed(1) + '%';
+            document.getElementById('netProfitMargin').textContent = netProfitMargin.toFixed(1) + '%';
+            document.getElementById('avgMonthlyRevenue').textContent = '£' + avgMonthlyRevenue.toFixed(2);
+            document.getElementById('avgMonthlyExpenses').textContent = '£' + avgMonthlyExpenses.toFixed(2);
+            document.getElementById('burnRate').textContent = '£' + burnRate.toFixed(2) + '/mo';
+            document.getElementById('breakEven').textContent = '£' + breakEvenPoint.toFixed(2) + '/mo';
+            
+            // Update runway
+            if (runway === Infinity || netProfit <= 0) {
+                document.getElementById('runway').textContent = netProfit > 0 ? '∞' : '0';
+            } else {
+                document.getElementById('runway').textContent = runway.toFixed(1) + ' mo';
+            }
+            
+            // Update month-over-month
+            if (monthOverMonth.currentIncome === 0 && monthOverMonth.lastIncome === 0) {
+                document.getElementById('monthOverMonth').textContent = '--';
+                document.getElementById('momDetail').textContent = 'No data yet';
+            } else {
+                const incomeArrow = monthOverMonth.incomeChange > 0 ? '↑' : monthOverMonth.incomeChange < 0 ? '↓' : '→';
+                document.getElementById('monthOverMonth').textContent = incomeArrow + ' ' + Math.abs(monthOverMonth.incomeChange).toFixed(1) + '%';
+                document.getElementById('momDetail').textContent = 'Revenue change';
+            }
+            
+            // Update card colors
+            updateKPICardColor('grossProfitMarginCard', grossProfitMargin, 20, 10);
+            updateKPICardColor('netProfitMarginCard', netProfitMargin, 15, 5);
+            
+            if (runway !== Infinity && runway > 0) {
+                updateKPICardColor('runwayCard', runway, 12, 6);
+            } else if (netProfit <= 0) {
+                const card = document.getElementById('runwayCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            } else {
+                const card = document.getElementById('runwayCard');
+                card.classList.remove('danger', 'warning');
+                card.classList.add('good');
+            }
+            
+            // Update break-even status
+            if (avgMonthlyRevenue >= breakEvenPoint) {
+                document.getElementById('breakEvenStatus').textContent = '✓ Above break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('danger', 'warning', 'neutral');
+                card.classList.add('good');
+            } else if (avgMonthlyRevenue >= breakEvenPoint * 0.8) {
+                document.getElementById('breakEvenStatus').textContent = '⚠ Near break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('good', 'danger', 'neutral');
+                card.classList.add('warning');
+            } else {
+                document.getElementById('breakEvenStatus').textContent = '✗ Below break-even';
+                const card = document.getElementById('breakEvenCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            }
+            
+            // Update month-over-month card color
+            if (monthOverMonth.incomeChange > 0) {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('danger', 'warning', 'neutral');
+                card.classList.add('good');
+            } else if (monthOverMonth.incomeChange < -10) {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('good', 'warning', 'neutral');
+                card.classList.add('danger');
+            } else {
+                const card = document.getElementById('monthOverMonthCard');
+                card.classList.remove('good', 'danger');
+                card.classList.add('neutral');
+            }
+            
+            // Update detailed sections
+            updateCashFlowForecast();
+            updateExpenseAnalysis();
+            updateRevenueAnalysis();
+            updateProfitabilityMetrics();
+        }
+
+        // ============ Phase 2: Advanced Tax Calculation Functions ============
+
+        // Update student loan info display
+        function updateStudentLoanInfo() {
+            const plan = document.getElementById('studentLoanPlan').value;
+            const infoDiv = document.getElementById('studentLoanInfo');
+            
+            if (plan === 'none') {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            const planInfo = STUDENT_LOAN_THRESHOLDS[plan];
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `<strong>${planInfo.name}:</strong> You'll repay ${(planInfo.rate * 100).toFixed(0)}% of income above £${planInfo.threshold.toLocaleString()} per year.`;
+        }
+
+        // Calculate student loan repayment
+        function calculateStudentLoan(income, plan) {
+            if (plan === 'none' || !STUDENT_LOAN_THRESHOLDS[plan]) {
+                return { annual: 0, monthly: 0, threshold: 0, rate: 0, planName: 'None' };
+            }
+            
+            const planInfo = STUDENT_LOAN_THRESHOLDS[plan];
+            const repayableIncome = Math.max(0, income - planInfo.threshold);
+            const annualRepayment = repayableIncome * planInfo.rate;
+            const monthlyRepayment = annualRepayment / 12;
+            
+            return {
+                annual: annualRepayment,
+                monthly: monthlyRepayment,
+                threshold: planInfo.threshold,
+                rate: planInfo.rate,
+                planName: planInfo.name
+            };
+        }
+
+        // Calculate pension contributions and tax relief
+        function calculatePension(income, employerAmount, employeeAmount, contribType, method) {
+            if (contribType === 'none') {
+                return {
+                    employerContribution: 0,
+                    employeeContribution: 0,
+                    totalContribution: 0,
+                    basicRateRelief: 0,
+                    higherRateRelief: 0,
+                    additionalRateRelief: 0,
+                    totalRelief: 0,
+                    exceedsAllowance: false,
+                    method: method
+                };
+            }
+
+            let employerContrib = 0;
+            let employeeContrib = 0;
+
+            // Calculate actual contributions
+            if (contribType === 'percent') {
+                employerContrib = income * (employerAmount / 100);
+                employeeContrib = income * (employeeAmount / 100);
+            } else {
+                employerContrib = employerAmount;
+                employeeContrib = employeeAmount;
+            }
+
+            const totalContrib = employerContrib + employeeContrib;
+            
+            // Calculate tax relief based on method
+            let basicRateRelief = 0;
+            let higherRateRelief = 0;
+            let additionalRateRelief = 0;
+
+            // For both methods, calculate potential relief
+            // Relief at source: charity gets 20% automatically
+            // Salary sacrifice: full tax relief at marginal rate
+            
+            if (method === 'relief') {
+                // Relief at source - basic rate automatic
+                basicRateRelief = employeeContrib * TAX_RELIEF_RATES.basic;
+                
+                // Higher and additional rate relief needs to be claimed
+                // Determine tax band based on income
+                if (income > 125140) {
+                    additionalRateRelief = employeeContrib * (TAX_RELIEF_RATES.additional - TAX_RELIEF_RATES.basic);
+                } else if (income > 50270) {
+                    higherRateRelief = employeeContrib * (TAX_RELIEF_RATES.higher - TAX_RELIEF_RATES.basic);
+                }
+            } else if (method === 'sacrifice') {
+                // Salary sacrifice - immediate relief at marginal rate
+                if (income > 125140) {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.additional;
+                } else if (income > 50270) {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.higher;
+                } else {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.basic;
+                }
+            }
+
+            const totalRelief = basicRateRelief + higherRateRelief + additionalRateRelief;
+            const exceedsAllowance = totalContrib > PENSION_ANNUAL_ALLOWANCE;
+
+            return {
+                employerContribution: employerContrib,
+                employeeContribution: employeeContrib,
+                totalContribution: totalContrib,
+                basicRateRelief: basicRateRelief,
+                higherRateRelief: higherRateRelief,
+                additionalRateRelief: additionalRateRelief,
+                totalRelief: totalRelief,
+                exceedsAllowance: exceedsAllowance,
+                method: method
+            };
+        }
+
+        // Calculate childcare tax relief
+        function calculateChildcare(numChildren, numDisabledChildren, expenses, income) {
+            if (numChildren === 0 && numDisabledChildren === 0) {
+                return {
+                    maxRelief: 0,
+                    actualRelief: 0,
+                    governmentContribution: 0,
+                    parentContribution: 0,
+                    exceedsLimit: false
+                };
+            }
+
+            const standardChildren = Math.max(0, numChildren - numDisabledChildren);
+            const maxReliefStandard = standardChildren * CHILDCARE_TAX_FREE.standard;
+            const maxReliefDisabled = numDisabledChildren * CHILDCARE_TAX_FREE.disabled;
+            const maxRelief = maxReliefStandard + maxReliefDisabled;
+
+            // Calculate government contribution (25% of parent's payment)
+            // For every £80 parent pays, government adds £20 (total £100)
+            const parentContribution = Math.min(expenses * 0.8, maxRelief * 0.8); // Parent pays 80%
+            const governmentContribution = parentContribution * 0.25; // Gov adds 25% of parent payment
+            const actualRelief = governmentContribution;
+
+            const exceedsLimit = income > CHILDCARE_INCOME_LIMIT;
+
+            return {
+                maxRelief: maxRelief,
+                actualRelief: actualRelief,
+                governmentContribution: governmentContribution,
+                parentContribution: parentContribution,
+                exceedsLimit: exceedsLimit
+            };
+        }
+
+        // Calculate Gift Aid
+        function calculateGiftAid(donations, income) {
+            if (donations === 0) {
+                return {
+                    charityGets: 0,
+                    giftAidAmount: 0,
+                    higherRateRelief: 0,
+                    additionalRateRelief: 0,
+                    totalTaxpayerRelief: 0
+                };
+            }
+
+            // Charity claims 25% on top of donation
+            const giftAidAmount = donations * GIFT_AID_RATE;
+            const charityGets = donations + giftAidAmount;
+
+            // Higher/Additional rate taxpayers can claim extra relief
+            let higherRateRelief = 0;
+            let additionalRateRelief = 0;
+
+            if (income > 125140) {
+                // Additional rate: 45% - 20% = 25% extra relief
+                additionalRateRelief = donations * 0.25;
+            } else if (income > 50270) {
+                // Higher rate: 40% - 20% = 20% extra relief
+                higherRateRelief = donations * 0.20;
+            }
+
+            const totalTaxpayerRelief = higherRateRelief + additionalRateRelief;
+
+            return {
+                charityGets: charityGets,
+                giftAidAmount: giftAidAmount,
+                higherRateRelief: higherRateRelief,
+                additionalRateRelief: additionalRateRelief,
+                totalTaxpayerRelief: totalTaxpayerRelief
+            };
+        }
+
+        // Calculate dividend tax
+        function calculateDividendTax(dividendIncome, taxableIncome) {
+            if (dividendIncome === 0) {
+                return {
+                    dividendTax: 0,
+                    taxableDividends: 0,
+                    allowanceUsed: 0,
+                    taxBand: 'none',
+                    strategy: ''
+                };
+            }
+
+            // Dividend allowance
+            const allowanceUsed = Math.min(dividendIncome, DIVIDEND_ALLOWANCE);
+            const taxableDividends = Math.max(0, dividendIncome - DIVIDEND_ALLOWANCE);
+
+            // Determine tax band based on total taxable income (excluding dividends)
+            let dividendTax = 0;
+            let taxBand = 'basic';
+            let remainingDividends = taxableDividends;
+            let totalIncome = taxableIncome;
+
+            // Additional rate (over £125,140)
+            if (totalIncome + remainingDividends > 125140) {
+                const additionalAmount = Math.min(remainingDividends, totalIncome + remainingDividends - 125140);
+                dividendTax += additionalAmount * DIVIDEND_RATES.additional;
+                remainingDividends -= additionalAmount;
+                totalIncome = 125140;
+                taxBand = 'additional';
+            }
+
+            // Higher rate (£50,270 to £125,140)
+            if (remainingDividends > 0 && totalIncome + remainingDividends > 50270) {
+                const higherAmount = Math.min(remainingDividends, totalIncome + remainingDividends - 50270);
+                dividendTax += higherAmount * DIVIDEND_RATES.higher;
+                remainingDividends -= higherAmount;
+                if (taxBand === 'basic') taxBand = 'higher';
+            }
+
+            // Basic rate (up to £50,270)
+            if (remainingDividends > 0) {
+                dividendTax += remainingDividends * DIVIDEND_RATES.basic;
+            }
+
+            // Strategy suggestion
+            let strategy = '';
+            if (taxBand === 'basic' && dividendIncome > DIVIDEND_ALLOWANCE) {
+                strategy = 'You\'re in the basic rate band. Dividend tax is 8.75% above the £500 allowance.';
+            } else if (taxBand === 'higher') {
+                strategy = 'Consider timing of dividend distributions to optimize tax. Higher rate is 33.75%.';
+            } else if (taxBand === 'additional') {
+                strategy = 'At 39.35% dividend tax, consider retaining profits in company or using salary instead.';
+            }
+
+            return {
+                dividendTax: dividendTax,
+                taxableDividends: taxableDividends,
+                allowanceUsed: allowanceUsed,
+                taxBand: taxBand,
+                strategy: strategy
+            };
+        }
+
+        // Calculate savings interest tax
+        function calculateSavingsTax(savingsInterest, taxableIncome, grossIncome) {
+            if (savingsInterest === 0) {
+                return {
+                    savingsTax: 0,
+                    taxableSavings: 0,
+                    allowanceUsed: 0,
+                    startingRateUsed: 0,
+                    taxBand: 'none'
+                };
+            }
+
+            let savingsTax = 0;
+            let remainingSavings = savingsInterest;
+            let taxBand = 'basic';
+
+            // Determine Personal Savings Allowance based on tax band
+            let savingsAllowance = 0;
+            if (taxableIncome > 125140) {
+                savingsAllowance = SAVINGS_ALLOWANCES.additional; // £0
+                taxBand = 'additional';
+            } else if (taxableIncome > 50270) {
+                savingsAllowance = SAVINGS_ALLOWANCES.higher; // £500
+                taxBand = 'higher';
+            } else {
+                savingsAllowance = SAVINGS_ALLOWANCES.basic; // £1,000
+                taxBand = 'basic';
+            }
+
+            // Starting Rate for Savings (if income under £17,570)
+            let startingRateUsed = 0;
+            if (grossIncome < SAVINGS_STARTING_THRESHOLD) {
+                const availableStartingRate = Math.min(
+                    SAVINGS_STARTING_RATE,
+                    SAVINGS_STARTING_THRESHOLD - grossIncome
+                );
+                startingRateUsed = Math.min(remainingSavings, availableStartingRate);
+                remainingSavings -= startingRateUsed;
+            }
+
+            // Apply Personal Savings Allowance
+            const allowanceUsed = Math.min(remainingSavings, savingsAllowance);
+            remainingSavings -= allowanceUsed;
+
+            // Tax on remaining savings at income tax rate
+            if (remainingSavings > 0) {
+                if (taxableIncome > 125140) {
+                    savingsTax = remainingSavings * 0.45;
+                } else if (taxableIncome > 50270) {
+                    savingsTax = remainingSavings * 0.40;
+                } else {
+                    savingsTax = remainingSavings * 0.20;
+                }
+            }
+
+            const taxableSavings = remainingSavings;
+
+            return {
+                savingsTax: savingsTax,
+                taxableSavings: taxableSavings,
+                allowanceUsed: allowanceUsed,
+                startingRateUsed: startingRateUsed,
+                taxBand: taxBand
+            };
+        }
+
+        // ============ End Phase 2 Functions ============
+
+        // Save advanced tax form values to localStorage
+        function saveAdvancedTaxSettings() {
+            const advancedSettings = {
+                studentLoanPlan: document.getElementById('studentLoanPlan').value,
+                pensionContribType: document.getElementById('pensionContribType').value,
+                employerPension: document.getElementById('employerPension').value,
+                employeePension: document.getElementById('employeePension').value,
+                pensionMethod: document.getElementById('pensionMethod').value,
+                numChildren: document.getElementById('numChildren').value,
+                numDisabledChildren: document.getElementById('numDisabledChildren').value,
+                childcareExpenses: document.getElementById('childcareExpenses').value,
+                charitableDonations: document.getElementById('charitableDonations').value,
+                dividendIncome: document.getElementById('dividendIncome').value,
+                savingsInterest: document.getElementById('savingsInterest').value
+            };
+
+            try {
+                const data = loadFromLocalStorage() || initializeDataStructure();
+                if (!data.taxYears[currentYear]) {
+                    data.taxYears[currentYear] = { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 };
+                }
+                data.taxYears[currentYear].advancedTax = advancedSettings;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving advanced tax settings:', e);
+            }
+        }
+
+        // Load advanced tax form values from localStorage
+        function loadAdvancedTaxSettings() {
+            try {
+                const data = loadFromLocalStorage();
+                if (!data || !data.taxYears[currentYear] || !data.taxYears[currentYear].advancedTax) {
+                    // Set defaults
+                    document.getElementById('studentLoanPlan').value = 'none';
+                    document.getElementById('pensionContribType').value = 'none';
+                    document.getElementById('employerPension').value = '0';
+                    document.getElementById('employeePension').value = '0';
+                    document.getElementById('pensionMethod').value = 'relief';
+                    document.getElementById('numChildren').value = '0';
+                    document.getElementById('numDisabledChildren').value = '0';
+                    document.getElementById('childcareExpenses').value = '0';
+                    document.getElementById('charitableDonations').value = '0';
+                    document.getElementById('dividendIncome').value = '0';
+                    document.getElementById('savingsInterest').value = '0';
+                    return;
+                }
+
+                const settings = data.taxYears[currentYear].advancedTax;
+                document.getElementById('studentLoanPlan').value = settings.studentLoanPlan || 'none';
+                document.getElementById('pensionContribType').value = settings.pensionContribType || 'none';
+                document.getElementById('employerPension').value = settings.employerPension || '0';
+                document.getElementById('employeePension').value = settings.employeePension || '0';
+                document.getElementById('pensionMethod').value = settings.pensionMethod || 'relief';
+                document.getElementById('numChildren').value = settings.numChildren || '0';
+                document.getElementById('numDisabledChildren').value = settings.numDisabledChildren || '0';
+                document.getElementById('childcareExpenses').value = settings.childcareExpenses || '0';
+                document.getElementById('charitableDonations').value = settings.charitableDonations || '0';
+                document.getElementById('dividendIncome').value = settings.dividendIncome || '0';
+                document.getElementById('savingsInterest').value = settings.savingsInterest || '0';
+
+                // Update UI elements that depend on loaded values
+                updateStudentLoanInfo();
+            } catch (e) {
+                console.error('Error loading advanced tax settings:', e);
+            }
         }
 
         // Tax calculation function
@@ -1108,6 +4301,29 @@
             // Calculate total tax
             result.totalTax = result.incomeTax + result.vat + result.paye + result.companyTax + result.cgt;
 
+            // Phase 2: Add advanced tax calculations if provided
+            if (taxConfig.advancedTax) {
+                result.advancedTax = {
+                    studentLoan: taxConfig.advancedTax.studentLoan || { annual: 0 },
+                    pension: taxConfig.advancedTax.pension || { totalRelief: 0 },
+                    childcare: taxConfig.advancedTax.childcare || { actualRelief: 0 },
+                    giftAid: taxConfig.advancedTax.giftAid || { totalTaxpayerRelief: 0 },
+                    dividend: taxConfig.advancedTax.dividend || { dividendTax: 0 },
+                    savings: taxConfig.advancedTax.savings || { savingsTax: 0 }
+                };
+
+                // Add student loan repayment to total (it's a deduction, not a tax)
+                result.totalTax += result.advancedTax.studentLoan.annual;
+                
+                // Add dividend tax and savings tax
+                result.totalTax += result.advancedTax.dividend.dividendTax;
+                result.totalTax += result.advancedTax.savings.savingsTax;
+
+                // Subtract tax reliefs
+                result.totalTax -= result.advancedTax.pension.totalRelief;
+                result.totalTax -= result.advancedTax.giftAid.totalTaxpayerRelief;
+            }
+
             return result;
         }
 
@@ -1175,6 +4391,52 @@
                 alert(validationWarnings.join('\n'));
             }
 
+            // Phase 2: Calculate preliminary taxable income for advanced calculations
+            let preliminaryAllowances = 0;
+            if (allowancesConfig.personalAllowance && category !== 'Company') preliminaryAllowances += PERSONAL_ALLOWANCE;
+            if (allowancesConfig.blindPersonsAllowance && category !== 'Company') preliminaryAllowances += BLIND_PERSONS_ALLOWANCE;
+            if (allowancesConfig.marriageAllowance && category !== 'Company') preliminaryAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
+            if (allowancesConfig.tradingAllowance && category !== 'Company') preliminaryAllowances += TRADING_ALLOWANCE;
+            if (allowancesConfig.propertyAllowance && category !== 'Company') preliminaryAllowances += PROPERTY_ALLOWANCE;
+            const preliminaryTaxableIncome = Math.max(0, totalIncome - preliminaryAllowances - totalExpenses);
+
+            // Phase 2: Collect advanced tax planning data
+            const advancedTaxData = {
+                studentLoan: calculateStudentLoan(
+                    totalIncome,
+                    document.getElementById('studentLoanPlan').value
+                ),
+                pension: calculatePension(
+                    totalIncome,
+                    parseFloat(document.getElementById('employerPension').value) || 0,
+                    parseFloat(document.getElementById('employeePension').value) || 0,
+                    document.getElementById('pensionContribType').value,
+                    document.getElementById('pensionMethod').value
+                ),
+                childcare: calculateChildcare(
+                    parseInt(document.getElementById('numChildren').value) || 0,
+                    parseInt(document.getElementById('numDisabledChildren').value) || 0,
+                    parseFloat(document.getElementById('childcareExpenses').value) || 0,
+                    totalIncome
+                ),
+                giftAid: calculateGiftAid(
+                    parseFloat(document.getElementById('charitableDonations').value) || 0,
+                    totalIncome
+                ),
+                dividend: calculateDividendTax(
+                    parseFloat(document.getElementById('dividendIncome').value) || 0,
+                    preliminaryTaxableIncome
+                ),
+                savings: calculateSavingsTax(
+                    parseFloat(document.getElementById('savingsInterest').value) || 0,
+                    preliminaryTaxableIncome,
+                    totalIncome
+                )
+            };
+
+            // Add advanced tax data to taxConfig
+            taxConfig.advancedTax = advancedTaxData;
+
             const result = calculateTax(totalIncome, totalExpenses, allowancesConfig, category, taxConfig);
 
             // Display basic information
@@ -1237,14 +4499,196 @@
                     <small>On taxable gains of £${taxableGains.toFixed(2)} (after £${CGT_ANNUAL_EXEMPT_AMOUNT} exemption)</small>`;
             }
 
+            // Phase 2: Display advanced tax results
+            const advancedTaxResultsDiv = document.getElementById('advancedTaxResults');
+            const resultStudentLoan = document.getElementById('resultStudentLoan');
+            const resultPension = document.getElementById('resultPension');
+            const resultChildcare = document.getElementById('resultChildcare');
+            const resultGiftAid = document.getElementById('resultGiftAid');
+            const resultDividend = document.getElementById('resultDividend');
+            const resultSavings = document.getElementById('resultSavings');
+
+            // Hide all advanced results initially
+            advancedTaxResultsDiv.style.display = 'none';
+            resultStudentLoan.style.display = 'none';
+            resultPension.style.display = 'none';
+            resultChildcare.style.display = 'none';
+            resultGiftAid.style.display = 'none';
+            resultDividend.style.display = 'none';
+            resultSavings.style.display = 'none';
+
+            let hasAdvancedResults = false;
+
+            // Student Loan Repayments
+            if (result.advancedTax && result.advancedTax.studentLoan.annual > 0) {
+                hasAdvancedResults = true;
+                resultStudentLoan.style.display = 'block';
+                const sl = result.advancedTax.studentLoan;
+                resultStudentLoan.innerHTML = `
+                    <strong>💼 Student Loan Repayments (${sl.planName}):</strong><br>
+                    Annual Repayment: £${sl.annual.toFixed(2)}<br>
+                    Monthly Repayment: £${sl.monthly.toFixed(2)}<br>
+                    <small>${(sl.rate * 100).toFixed(0)}% on income above £${sl.threshold.toLocaleString()}</small>
+                `;
+            }
+
+            // Pension Contributions
+            if (result.advancedTax && result.advancedTax.pension.totalContribution > 0) {
+                hasAdvancedResults = true;
+                resultPension.style.display = 'block';
+                const pension = result.advancedTax.pension;
+                let pensionHTML = `
+                    <strong>🏦 Pension Contributions:</strong><br>
+                    Employer Contribution: £${pension.employerContribution.toFixed(2)}<br>
+                    Employee Contribution: £${pension.employeeContribution.toFixed(2)}<br>
+                    Total Annual Contribution: £${pension.totalContribution.toFixed(2)}<br>
+                    <strong>Tax Relief:</strong> £${pension.totalRelief.toFixed(2)}<br>
+                `;
+                
+                if (pension.method === 'relief') {
+                    pensionHTML += `<small>Basic rate relief (20%): £${pension.basicRateRelief.toFixed(2)}`;
+                    if (pension.higherRateRelief > 0) {
+                        pensionHTML += `<br>Higher rate relief to claim: £${pension.higherRateRelief.toFixed(2)}`;
+                    }
+                    if (pension.additionalRateRelief > 0) {
+                        pensionHTML += `<br>Additional rate relief to claim: £${pension.additionalRateRelief.toFixed(2)}`;
+                    }
+                    pensionHTML += `</small>`;
+                } else {
+                    pensionHTML += `<small>Salary sacrifice - immediate tax relief at ${totalIncome > 125140 ? '45%' : totalIncome > 50270 ? '40%' : '20%'}</small>`;
+                }
+
+                if (pension.exceedsAllowance) {
+                    pensionHTML += `<br><span style="color: #dc3545; font-weight: bold;">⚠️ Warning: Exceeds annual allowance of £${PENSION_ANNUAL_ALLOWANCE.toLocaleString()}</span>`;
+                }
+
+                resultPension.innerHTML = pensionHTML;
+            }
+
+            // Childcare Tax Relief
+            if (result.advancedTax && result.advancedTax.childcare.actualRelief > 0) {
+                hasAdvancedResults = true;
+                resultChildcare.style.display = 'block';
+                const childcare = result.advancedTax.childcare;
+                let childcareHTML = `
+                    <strong>👶 Tax-Free Childcare:</strong><br>
+                    Government Contribution: £${childcare.governmentContribution.toFixed(2)}<br>
+                    Your Contribution: £${childcare.parentContribution.toFixed(2)}<br>
+                    Maximum Available: £${childcare.maxRelief.toFixed(2)}<br>
+                    <small>Government adds £20 for every £80 you pay (25% contribution)</small>
+                `;
+
+                if (childcare.exceedsLimit) {
+                    childcareHTML += `<br><span style="color: #dc3545; font-weight: bold;">⚠️ Warning: Income exceeds £${CHILDCARE_INCOME_LIMIT.toLocaleString()} per parent limit</span>`;
+                }
+
+                resultChildcare.innerHTML = childcareHTML;
+            }
+
+            // Gift Aid
+            if (result.advancedTax && result.advancedTax.giftAid.charityGets > 0) {
+                hasAdvancedResults = true;
+                resultGiftAid.style.display = 'block';
+                const giftAid = result.advancedTax.giftAid;
+                let giftAidHTML = `
+                    <strong>🎁 Gift Aid:</strong><br>
+                    Your Donation: £${(giftAid.charityGets - giftAid.giftAidAmount).toFixed(2)}<br>
+                    Charity Receives: £${giftAid.charityGets.toFixed(2)}<br>
+                    Gift Aid to Charity: £${giftAid.giftAidAmount.toFixed(2)}<br>
+                `;
+
+                if (giftAid.totalTaxpayerRelief > 0) {
+                    giftAidHTML += `<strong>Your Tax Relief:</strong> £${giftAid.totalTaxpayerRelief.toFixed(2)}<br>`;
+                    giftAidHTML += `<small>You can claim back this additional relief on your tax return</small>`;
+                }
+
+                resultGiftAid.innerHTML = giftAidHTML;
+            }
+
+            // Dividend Tax
+            if (result.advancedTax && result.advancedTax.dividend.dividendTax > 0) {
+                hasAdvancedResults = true;
+                resultDividend.style.display = 'block';
+                const dividend = result.advancedTax.dividend;
+                let dividendHTML = `
+                    <strong>📊 Dividend Tax:</strong><br>
+                    Total Dividend Income: £${(dividend.taxableDividends + dividend.allowanceUsed).toFixed(2)}<br>
+                    Tax-Free Allowance Used: £${dividend.allowanceUsed.toFixed(2)}<br>
+                    Taxable Dividends: £${dividend.taxableDividends.toFixed(2)}<br>
+                    <strong>Dividend Tax Due:</strong> £${dividend.dividendTax.toFixed(2)}<br>
+                `;
+
+                if (dividend.strategy) {
+                    dividendHTML += `<small><em>${dividend.strategy}</em></small>`;
+                }
+
+                resultDividend.innerHTML = dividendHTML;
+            }
+
+            // Savings Interest Tax
+            if (result.advancedTax && result.advancedTax.savings.savingsTax > 0) {
+                hasAdvancedResults = true;
+                resultSavings.style.display = 'block';
+                const savings = result.advancedTax.savings;
+                const totalSavings = savings.taxableSavings + savings.allowanceUsed + savings.startingRateUsed;
+                let savingsHTML = `
+                    <strong>💰 Savings Interest Tax:</strong><br>
+                    Total Savings Interest: £${totalSavings.toFixed(2)}<br>
+                `;
+
+                if (savings.startingRateUsed > 0) {
+                    savingsHTML += `Starting Rate (£5,000 @ 0%): £${savings.startingRateUsed.toFixed(2)}<br>`;
+                }
+                
+                savingsHTML += `Personal Savings Allowance: £${savings.allowanceUsed.toFixed(2)}<br>`;
+                savingsHTML += `Taxable Savings: £${savings.taxableSavings.toFixed(2)}<br>`;
+                savingsHTML += `<strong>Savings Tax Due:</strong> £${savings.savingsTax.toFixed(2)}<br>`;
+                savingsHTML += `<small>Tax rate: ${savings.taxBand === 'basic' ? '20%' : savings.taxBand === 'higher' ? '40%' : '45%'}</small>`;
+
+                resultSavings.innerHTML = savingsHTML;
+            }
+
+            // Show advanced tax results container if any results
+            if (hasAdvancedResults) {
+                advancedTaxResultsDiv.style.display = 'block';
+            }
+
             // Display total tax
             document.getElementById('resultTotalTax').innerHTML = `<strong>Total Tax Due:</strong> £${result.totalTax.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
+            
+            // Phase 8: Update HMRC Compliance sections
+            updateHMRCCompliance(result, totalIncome);
         });
 
-        // Initialize app on page load
-        initializeApp();
+        // Phase 2: Add event listeners to auto-save advanced tax settings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('incomeDate').value = today;
+            document.getElementById('expenseDate').value = today;
+            
+            const advancedTaxFields = [
+                'studentLoanPlan', 'pensionContribType', 'employerPension', 'employeePension',
+                'pensionMethod', 'numChildren', 'numDisabledChildren', 'childcareExpenses',
+                'charitableDonations', 'dividendIncome', 'savingsInterest'
+            ];
+
+            advancedTaxFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.addEventListener('change', saveAdvancedTaxSettings);
+                    // Also save on blur for text inputs
+                    if (element.tagName === 'INPUT') {
+                        element.addEventListener('blur', saveAdvancedTaxSettings);
+                    }
+                }
+            });
+            
+            // Initialize app after DOM is ready
+            initializeApp();
+        });
     </script>
 </body>
-</html>
+    </html>
