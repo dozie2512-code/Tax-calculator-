@@ -470,94 +470,33 @@
                 border-top: 2px solid #000;
             }
         }
-        /* Phase 6: Business Metrics Dashboard Styles */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+
+        /* Chart of Accounts Styles */
+        .account-categories {
             margin: 20px 0;
         }
-        .kpi-card {
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            background: #fff;
-            border: 2px solid;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .kpi-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .kpi-card.good {
-            border-color: #28a745;
-            background: #d4edda;
-        }
-        .kpi-card.warning {
-            border-color: #ffc107;
-            background: #fff3cd;
-        }
-        .kpi-card.danger {
-            border-color: #dc3545;
-            background: #f8d7da;
-        }
-        .kpi-card.neutral {
-            border-color: #17a2b8;
-            background: #d1ecf1;
-        }
-        .kpi-value {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #333;
-        }
-        .kpi-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .kpi-trend {
-            font-size: 1.2em;
-            margin-left: 5px;
-        }
-        .kpi-trend.up {
-            color: #28a745;
-        }
-        .kpi-trend.down {
-            color: #dc3545;
-        }
-        .kpi-sublabel {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: 5px;
-        }
-        .metrics-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        .metrics-table th,
-        .metrics-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .metrics-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
-        }
-        .metrics-table tr:hover {
-            background-color: #f5f5f5;
-        }
-        .forecast-warning {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 10px;
+        .account-categories details {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
             border-radius: 5px;
-            margin: 10px 0;
-            color: #856404;
+            border: 1px solid #dee2e6;
         }
+        .account-categories summary {
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        .account-categories ul {
+            margin: 10px 0 0 20px;
+            padding: 0;
+        }
+        .account-categories li {
+            margin: 5px 0;
+            color: #666;
+        }
+
         .forecast-danger {
             background: #f8d7da;
             border: 1px solid #dc3545;
@@ -801,90 +740,60 @@
             </div>
         </div>
 
-        <!-- Phase 6: Business Metrics Dashboard -->
-        <div class="section" id="businessMetrics">
-            <h2>📊 Business Metrics Dashboard</h2>
-            <p>Real-time business intelligence for current tax year</p>
+        <!-- Chart of Accounts -->
+        <div class="section" id="chartOfAccounts">
+            <h2>📊 Chart of Accounts</h2>
+            <p>Categorize your income and expenses using standard UK accounting categories</p>
             
-            <!-- KPI Cards Grid -->
-            <div class="kpi-grid" id="kpiGrid">
-                <div class="kpi-card neutral" id="grossProfitMarginCard" title="Gross Profit Margin = (Income - Expenses) / Income × 100%">
-                    <div class="kpi-label">Gross Profit Margin</div>
-                    <div class="kpi-value" id="grossProfitMargin">0%</div>
-                    <div class="kpi-sublabel">Target: &gt;20%</div>
-                </div>
-
-                <div class="kpi-card neutral" id="netProfitMarginCard" title="Net Profit Margin = Net Profit / Income × 100%">
-                    <div class="kpi-label">Net Profit Margin</div>
-                    <div class="kpi-value" id="netProfitMargin">0%</div>
-                    <div class="kpi-sublabel">After-tax profitability</div>
-                </div>
-
-                <div class="kpi-card neutral" id="avgMonthlyRevenueCard" title="Average revenue per month with entries">
-                    <div class="kpi-label">Avg Monthly Revenue</div>
-                    <div class="kpi-value" id="avgMonthlyRevenue">£0.00</div>
-                    <div class="kpi-sublabel" id="revenueTrend"></div>
-                </div>
-
-                <div class="kpi-card neutral" id="avgMonthlyExpensesCard" title="Average expenses per month with entries">
-                    <div class="kpi-label">Avg Monthly Expenses</div>
-                    <div class="kpi-value" id="avgMonthlyExpenses">£0.00</div>
-                    <div class="kpi-sublabel" id="expenseTrend"></div>
-                </div>
-
-                <div class="kpi-card neutral" id="monthOverMonthCard" title="Comparison of current month vs last month">
-                    <div class="kpi-label">Current vs Last Month</div>
-                    <div class="kpi-value" id="monthOverMonth">--</div>
-                    <div class="kpi-sublabel" id="momDetail"></div>
-                </div>
-
-                <div class="kpi-card neutral" id="burnRateCard" title="Monthly expense rate (cash consumption)">
-                    <div class="kpi-label">Burn Rate</div>
-                    <div class="kpi-value" id="burnRate">£0.00/mo</div>
-                    <div class="kpi-sublabel">Monthly cash burn</div>
-                </div>
-
-                <div class="kpi-card neutral" id="runwayCard" title="Months until cash runs out at current burn rate">
-                    <div class="kpi-label">Runway</div>
-                    <div class="kpi-value" id="runway">∞</div>
-                    <div class="kpi-sublabel">Months remaining</div>
-                </div>
-
-                <div class="kpi-card neutral" id="breakEvenCard" title="Monthly revenue needed to break even">
-                    <div class="kpi-label">Break-Even Point</div>
-                    <div class="kpi-value" id="breakEven">£0.00/mo</div>
-                    <div class="kpi-sublabel" id="breakEvenStatus"></div>
-                </div>
+            <div class="account-categories">
+                <details>
+                    <summary><strong>Assets</strong></summary>
+                    <ul>
+                        <li>Current Assets (Cash, Bank Accounts, Accounts Receivable)</li>
+                        <li>Fixed Assets (Property, Equipment, Vehicles)</li>
+                    </ul>
+                </details>
+                
+                <details>
+                    <summary><strong>Liabilities</strong></summary>
+                    <ul>
+                        <li>Current Liabilities (Accounts Payable, Short-term Loans)</li>
+                        <li>Long-term Liabilities (Mortgages, Long-term Loans)</li>
+                    </ul>
+                </details>
+                
+                <details>
+                    <summary><strong>Equity</strong></summary>
+                    <ul>
+                        <li>Owner's Capital</li>
+                        <li>Retained Earnings</li>
+                    </ul>
+                </details>
+                
+                <details>
+                    <summary><strong>Income</strong></summary>
+                    <ul>
+                        <li>Trading Income</li>
+                        <li>Employment Income</li>
+                        <li>Property Income</li>
+                        <li>Investment Income</li>
+                        <li>Other Income</li>
+                    </ul>
+                </details>
+                
+                <details open>
+                    <summary><strong>Expenses</strong></summary>
+                    <ul>
+                        <li>Cost of Sales</li>
+                        <li>Operating Expenses (Rent, Utilities, Salaries)</li>
+                        <li>Administrative Expenses</li>
+                        <li>Financial Expenses</li>
+                    </ul>
+                </details>
             </div>
             
-            <!-- Detailed Analytics (Collapsible) -->
-            <details>
-                <summary>💰 Cash Flow Forecast</summary>
-                <div id="cashFlowForecast">
-                    <p class="no-data-message">Add income and expense data to see cash flow projections.</p>
-                </div>
-            </details>
-            
-            <details>
-                <summary>📉 Expense Analysis</summary>
-                <div id="expenseAnalysis">
-                    <p class="no-data-message">Add expense data to see detailed analysis.</p>
-                </div>
-            </details>
-            
-            <details>
-                <summary>📈 Revenue Analysis</summary>
-                <div id="revenueAnalysis">
-                    <p class="no-data-message">Add income data to see revenue trends.</p>
-                </div>
-            </details>
-            
-            <details>
-                <summary>💎 Profitability Metrics</summary>
-                <div id="profitabilityMetrics">
-                    <p class="no-data-message">Add data to see profitability analysis.</p>
-                </div>
-            </details>
+            <h3>Account Categorization</h3>
+            <p class="info-text">Use the income and expense forms below to categorize your transactions. Each entry is automatically categorized based on its type.</p>
         </div>
 
         <!-- Ledger Display Section -->
@@ -964,6 +873,18 @@
                         <option value="no">No</option>
                         <option value="yes">Yes</option>
                     </select>
+                </div>
+
+                <div id="mileageAllowanceFields" style="display: none;">
+                    <label for="businessMiles">Business Miles Driven:</label>
+                    <input type="number" id="businessMiles" min="0" step="1" placeholder="Annual business miles">
+                    <p class="info-text">First 10,000 miles @ 45p, thereafter @ 25p per mile</p>
+                </div>
+
+                <div id="rentARoomFields" style="display: none;">
+                    <label for="rentFromLodgers">Annual Rent from Lodgers (£):</label>
+                    <input type="number" id="rentFromLodgers" min="0" step="0.01" placeholder="Total rent received from lodgers">
+                    <p class="info-text">Up to £7,500 tax-free (or £3,750 if shared)</p>
                 </div>
                 
                 <!-- Category-Specific Tax Fields -->
@@ -1054,6 +975,52 @@
                 </div>
                 
                 <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
+            </div>
+        </div>
+
+        <!-- Capital Allowances -->
+        <div class="section" id="capitalAllowances">
+            <h2>🏭 Capital Allowances</h2>
+            <p>Calculate tax relief for business assets (plant, machinery, equipment)</p>
+            
+            <form id="capitalAllowanceForm" onsubmit="addCapitalAsset(event)">
+                <div>
+                    <label for="assetDescription">Asset Description:</label>
+                    <input type="text" id="assetDescription" required placeholder="e.g., Laptop, Office Equipment">
+                </div>
+                <div>
+                    <label for="assetCost">Asset Cost (£):</label>
+                    <input type="number" id="assetCost" step="0.01" min="0" required>
+                </div>
+                <div>
+                    <label for="assetDate">Date of Purchase:</label>
+                    <input type="date" id="assetDate" required>
+                </div>
+                <div>
+                    <label for="assetCategory">Asset Category:</label>
+                    <select id="assetCategory" required>
+                        <option value="aia">Annual Investment Allowance (AIA) - Up to £1,000,000</option>
+                        <option value="main">Main Pool - 18% Writing Down Allowance</option>
+                        <option value="special">Special Rate Pool - 6% Writing Down Allowance</option>
+                        <option value="structures">Structures & Buildings - 3% per annum</option>
+                        <option value="full">Full Expensing - 100% (qualifying companies)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="disposalValue">Disposal Value (£) - Optional:</label>
+                    <input type="number" id="disposalValue" step="0.01" min="0" placeholder="If asset was sold">
+                </div>
+                <input type="submit" value="Add Capital Asset">
+            </form>
+            
+            <h3>Capital Assets</h3>
+            <div id="capitalAssetsList"></div>
+            
+            <div class="results" id="capitalAllowanceSummary" style="display: none;">
+                <h3>Capital Allowances Summary</h3>
+                <p><strong>Total Annual Investment Allowance:</strong> £<span id="totalAIA">0.00</span></p>
+                <p><strong>Total Writing Down Allowances:</strong> £<span id="totalWDA">0.00</span></p>
+                <p><strong>Total Capital Allowances (deductible from profits):</strong> <span style="color: #28a745; font-weight: bold;">£<span id="totalCapitalAllowances">0.00</span></span></p>
             </div>
         </div>
 
@@ -1579,12 +1546,12 @@
                     companyNumber: ''
                 },
                 taxYears: {
-                    '2026/27': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
-                    '2025/26': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
-                    '2024/25': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
-                    '2023/24': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
-                    '2022/23': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
-                    '2021/22': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 }
+                    '2026/27': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] },
+                    '2025/26': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] },
+                    '2024/25': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] },
+                    '2023/24': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] },
+                    '2022/23': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] },
+                    '2021/22': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0, capitalAssets: [] }
                 },
                 settings: {
                     dateFormat: 'DD/MM/YYYY',
@@ -1604,7 +1571,8 @@
                     income: incomeEntries,
                     expenses: expenseEntries,
                     taxCalculations: data.taxYears[currentYear]?.taxCalculations || {},
-                    entryIdCounter: entryIdCounter
+                    entryIdCounter: entryIdCounter,
+                    capitalAssets: capitalAssets
                 };
                 
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -1671,6 +1639,7 @@
             incomeEntries = yearData.income || [];
             expenseEntries = yearData.expenses || [];
             entryIdCounter = yearData.entryIdCounter || 0;
+            capitalAssets = yearData.capitalAssets || [];
             
             // Migration: Add dates to entries that don't have them
             const today = new Date().toISOString().split('T')[0];
@@ -1706,6 +1675,10 @@
             
             // Refresh all displays (income list, expense list, summary, and ledger)
             refreshAllDisplays();
+            
+            // Update capital assets list
+            updateCapitalAssetsList();
+            calculateCapitalAllowances();
         }
 
         // Clear current year data
@@ -2968,6 +2941,10 @@ Box 9: £${Math.round(vat.box9)}`;
             loadAdvancedTaxSettings();
             refreshAllDisplays();
             
+            // Update capital assets display
+            updateCapitalAssetsList();
+            calculateCapitalAllowances();
+            
             // Phase 8: Initialize HMRC sections
             updateTaxDeadlines();
             displayAuditTrail();
@@ -3123,7 +3100,6 @@ Box 9: £${Math.round(vat.box9)}`;
             updateExpenseList();
             updateSummary();
             updateLedger();
-            updateBusinessMetricsDashboard();
         }
 
         // Update income list
@@ -3231,575 +3207,124 @@ Box 9: £${Math.round(vat.box9)}`;
             container.innerHTML = html;
         }
 
-        // ============ Phase 6: Business Metrics Dashboard Functions ============
+        // ============ Capital Allowances Functions ============
 
-        // Helper function to group entries by month
-        function groupByMonth(entries) {
-            const monthlyTotals = {};
-            entries.forEach(entry => {
-                if (entry.date) {
-                    const month = entry.date.substring(0, 7); // YYYY-MM
-                    monthlyTotals[month] = (monthlyTotals[month] || 0) + entry.amount;
-                }
-            });
-            return monthlyTotals;
-        }
+        let capitalAssets = [];
 
-        // Calculate average monthly value
-        function calculateAvgMonthly(entries) {
-            if (entries.length === 0) return 0;
+        function addCapitalAsset(event) {
+            event.preventDefault();
             
-            const monthlyTotals = groupByMonth(entries);
-            const months = Object.keys(monthlyTotals).length;
-            if (months === 0) return 0;
-            
-            const total = Object.values(monthlyTotals).reduce((sum, val) => sum + val, 0);
-            return total / months;
-        }
-
-        // Calculate sum for a specific month
-        function sumForMonth(entries, monthStr) {
-            return entries
-                .filter(entry => entry.date && entry.date.startsWith(monthStr))
-                .reduce((sum, entry) => sum + entry.amount, 0);
-        }
-
-        // Calculate percentage change
-        function calculatePercentChange(oldValue, newValue) {
-            if (oldValue === 0) {
-                return newValue > 0 ? 100 : 0;
-            }
-            return ((newValue - oldValue) / oldValue) * 100;
-        }
-
-        // Calculate Gross Profit Margin
-        function calculateGrossProfitMargin(totalIncome, totalExpenses) {
-            if (totalIncome === 0) return 0;
-            return ((totalIncome - totalExpenses) / totalIncome) * 100;
-        }
-
-        // Calculate Net Profit Margin
-        function calculateNetProfitMargin(netProfit, totalIncome) {
-            if (totalIncome === 0) return 0;
-            return (netProfit / totalIncome) * 100;
-        }
-
-        // Calculate month-over-month comparison
-        function calculateMonthOverMonth() {
-            const now = new Date();
-            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
-            const lastMonthStr = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
-            
-            const currentIncome = sumForMonth(incomeEntries, currentMonth);
-            const lastIncome = sumForMonth(incomeEntries, lastMonthStr);
-            const currentExpenses = sumForMonth(expenseEntries, currentMonth);
-            const lastExpenses = sumForMonth(expenseEntries, lastMonthStr);
-            
-            return {
-                incomeChange: calculatePercentChange(lastIncome, currentIncome),
-                expenseChange: calculatePercentChange(lastExpenses, currentExpenses),
-                currentIncome: currentIncome,
-                lastIncome: lastIncome,
-                currentExpenses: currentExpenses,
-                lastExpenses: lastExpenses
-            };
-        }
-
-        // Calculate burn rate
-        function calculateBurnRate() {
-            return calculateAvgMonthly(expenseEntries);
-        }
-
-        // Calculate runway
-        function calculateRunway(netProfit, burnRate) {
-            if (burnRate === 0) return Infinity;
-            if (netProfit <= 0) return 0;
-            return netProfit / burnRate;
-        }
-
-        // Forecast cash flow for next N months
-        function forecastCashFlow(months = 3) {
-            const avgMonthlyIncome = calculateAvgMonthly(incomeEntries);
-            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
-            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const currentCash = totalIncome - totalExpenses;
-            
-            const forecast = [];
-            let runningCash = currentCash;
-            
-            for (let i = 1; i <= months; i++) {
-                runningCash += avgMonthlyIncome - avgMonthlyExpenses;
-                forecast.push({
-                    month: i,
-                    projectedIncome: avgMonthlyIncome,
-                    projectedExpenses: avgMonthlyExpenses,
-                    projectedCash: runningCash
-                });
-            }
-            
-            return {
-                forecast: forecast,
-                currentCash: currentCash,
-                avgIncome: avgMonthlyIncome,
-                avgExpenses: avgMonthlyExpenses
-            };
-        }
-
-        // Analyze expenses
-        function analyzeExpenses() {
-            if (expenseEntries.length === 0) return { topExpenses: [], monthlyTrend: {} };
-            
-            // Group by description prefix (category proxy)
-            const byCategory = {};
-            expenseEntries.forEach(exp => {
-                const category = exp.description.split(/[\s,-]/)[0]; // Simple categorization
-                byCategory[category] = (byCategory[category] || 0) + exp.amount;
-            });
-            
-            // Get top 5
-            const topExpenses = Object.entries(byCategory)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5)
-                .map(([category, amount]) => ({ category, amount }));
-            
-            // Monthly trend
-            const monthlyTrend = groupByMonth(expenseEntries);
-            
-            return { topExpenses, monthlyTrend };
-        }
-
-        // Analyze revenue
-        function analyzeRevenue() {
-            if (incomeEntries.length === 0) return { 
-                monthlyRevenue: {}, 
-                bestMonth: null, 
-                bestAmount: 0, 
-                avgRevenue: 0,
-                growthRate: 0 
+            const asset = {
+                id: Date.now(),
+                description: document.getElementById('assetDescription').value,
+                cost: parseFloat(document.getElementById('assetCost').value),
+                date: document.getElementById('assetDate').value,
+                category: document.getElementById('assetCategory').value,
+                disposalValue: parseFloat(document.getElementById('disposalValue').value) || 0
             };
             
-            const monthlyRevenue = groupByMonth(incomeEntries);
-            
-            // Find best month
-            let bestMonth = null;
-            let bestAmount = 0;
-            Object.entries(monthlyRevenue).forEach(([month, amount]) => {
-                if (amount > bestAmount) {
-                    bestAmount = amount;
-                    bestMonth = month;
-                }
-            });
-            
-            const avgRevenue = Object.values(monthlyRevenue).reduce((sum, val) => sum + val, 0) / Object.keys(monthlyRevenue).length;
-            
-            // Calculate growth rate (first month vs last month)
-            const months = Object.keys(monthlyRevenue).sort();
-            let growthRate = 0;
-            if (months.length >= 2) {
-                const firstMonth = monthlyRevenue[months[0]];
-                const lastMonth = monthlyRevenue[months[months.length - 1]];
-                growthRate = calculatePercentChange(firstMonth, lastMonth);
-            }
-            
-            return {
-                monthlyRevenue,
-                bestMonth,
-                bestAmount,
-                avgRevenue,
-                growthRate
-            };
+            capitalAssets.push(asset);
+            updateCapitalAssetsList();
+            calculateCapitalAllowances();
+            document.getElementById('capitalAllowanceForm').reset();
+            saveToLocalStorage();
         }
 
-        // Calculate profitability metrics
-        function calculateProfitabilityMetrics() {
-            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const netProfit = totalIncome - totalExpenses;
-            
-            // Group by month for profit per month
-            const incomeByMonth = groupByMonth(incomeEntries);
-            const expensesByMonth = groupByMonth(expenseEntries);
-            
-            const profitByMonth = {};
-            const allMonths = new Set([...Object.keys(incomeByMonth), ...Object.keys(expensesByMonth)]);
-            
-            allMonths.forEach(month => {
-                const income = incomeByMonth[month] || 0;
-                const expenses = expensesByMonth[month] || 0;
-                profitByMonth[month] = income - expenses;
-            });
-            
-            const avgMonthlyProfit = Object.values(profitByMonth).length > 0 
-                ? Object.values(profitByMonth).reduce((sum, val) => sum + val, 0) / Object.values(profitByMonth).length 
-                : 0;
-            
-            return {
-                totalProfit: netProfit,
-                profitByMonth,
-                avgMonthlyProfit
-            };
+        function deleteCapitalAsset(id) {
+            capitalAssets = capitalAssets.filter(asset => asset.id !== id);
+            updateCapitalAssetsList();
+            calculateCapitalAllowances();
+            saveToLocalStorage();
         }
 
-        // Update KPI card color
-        function updateKPICardColor(cardId, value, goodThreshold, warningThreshold, reverse = false) {
-            const card = document.getElementById(cardId);
-            if (!card) return;
+        function updateCapitalAssetsList() {
+            const listDiv = document.getElementById('capitalAssetsList');
             
-            card.classList.remove('good', 'warning', 'danger', 'neutral');
-            
-            if (reverse) {
-                // For metrics where lower is better (like burn rate)
-                if (value <= warningThreshold) {
-                    card.classList.add('good');
-                } else if (value <= goodThreshold) {
-                    card.classList.add('warning');
-                } else {
-                    card.classList.add('danger');
-                }
-            } else {
-                // For metrics where higher is better
-                if (value >= goodThreshold) {
-                    card.classList.add('good');
-                } else if (value >= warningThreshold) {
-                    card.classList.add('warning');
-                } else if (value < 0) {
-                    card.classList.add('danger');
-                } else {
-                    card.classList.add('neutral');
-                }
-            }
-        }
-
-        // Update Cash Flow Forecast section
-        function updateCashFlowForecast() {
-            const container = document.getElementById('cashFlowForecast');
-            
-            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
-                container.innerHTML = '<p class="no-data-message">Add income and expense data to see cash flow projections.</p>';
+            if (capitalAssets.length === 0) {
+                listDiv.innerHTML = '<p class="no-data-message">No capital assets added yet.</p>';
+                document.getElementById('capitalAllowanceSummary').style.display = 'none';
                 return;
             }
             
-            const cashFlow = forecastCashFlow(3);
+            let html = '<table class="data-table"><thead><tr><th>Description</th><th>Cost</th><th>Date</th><th>Category</th><th>Allowance</th><th>Actions</th></tr></thead><tbody>';
             
-            let html = `
-                <p><strong>Current Cash Position:</strong> £${cashFlow.currentCash.toFixed(2)}</p>
-                <p><strong>Average Monthly Income:</strong> £${cashFlow.avgIncome.toFixed(2)}</p>
-                <p><strong>Average Monthly Expenses:</strong> £${cashFlow.avgExpenses.toFixed(2)}</p>
+            capitalAssets.forEach(asset => {
+                const allowance = calculateAssetAllowance(asset);
+                const categoryNames = {
+                    'aia': 'AIA',
+                    'main': 'Main Pool (18%)',
+                    'special': 'Special Rate (6%)',
+                    'structures': 'Structures (3%)',
+                    'full': 'Full Expensing (100%)'
+                };
                 
-                <h4>3-Month Forecast</h4>
-                <table class="metrics-table">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Projected Income</th>
-                            <th>Projected Expenses</th>
-                            <th>Projected Cash</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            cashFlow.forecast.forEach(f => {
-                const cashClass = f.projectedCash < 0 ? 'style="color: #dc3545; font-weight: bold;"' : '';
                 html += `
                     <tr>
-                        <td>Month +${f.month}</td>
-                        <td>£${f.projectedIncome.toFixed(2)}</td>
-                        <td>£${f.projectedExpenses.toFixed(2)}</td>
-                        <td ${cashClass}>£${f.projectedCash.toFixed(2)}</td>
+                        <td>${escapeHtml(asset.description)}</td>
+                        <td>£${asset.cost.toFixed(2)}</td>
+                        <td>${asset.date}</td>
+                        <td>${categoryNames[asset.category]}</td>
+                        <td>£${allowance.toFixed(2)}</td>
+                        <td>
+                            <button class="delete-btn" onclick="deleteCapitalAsset(${asset.id})">Delete</button>
+                        </td>
                     </tr>
                 `;
             });
             
             html += '</tbody></table>';
-            
-            // Add warnings
-            const willGoNegative = cashFlow.forecast.some(f => f.projectedCash < 0);
-            if (willGoNegative) {
-                html += '<div class="forecast-danger"><strong>⚠️ Warning:</strong> Cash flow projected to go negative within 3 months!</div>';
-            } else if (cashFlow.forecast[2].projectedCash < cashFlow.currentCash * 0.5) {
-                html += '<div class="forecast-warning"><strong>⚠️ Caution:</strong> Cash reserves declining. Monitor closely.</div>';
-            }
-            
-            container.innerHTML = html;
+            listDiv.innerHTML = html;
         }
 
-        // Update Expense Analysis section
-        function updateExpenseAnalysis() {
-            const container = document.getElementById('expenseAnalysis');
+        function calculateAssetAllowance(asset) {
+            const cost = asset.cost - asset.disposalValue;
             
-            if (expenseEntries.length === 0) {
-                container.innerHTML = '<p class="no-data-message">Add expense data to see detailed analysis.</p>';
-                return;
+            switch (asset.category) {
+                case 'aia':
+                    // AIA up to £1,000,000
+                    return Math.min(cost, 1000000);
+                case 'main':
+                    // Main pool: 18% writing down allowance
+                    return cost * 0.18;
+                case 'special':
+                    // Special rate: 6% writing down allowance
+                    return cost * 0.06;
+                case 'structures':
+                    // Structures & Buildings: 3% per annum
+                    return cost * 0.03;
+                case 'full':
+                    // Full expensing: 100%
+                    return cost;
+                default:
+                    return 0;
             }
+        }
+
+        function calculateCapitalAllowances() {
+            let totalAIA = 0;
+            let totalWDA = 0;
             
-            const analysis = analyzeExpenses();
-            
-            let html = '<h4>Top 5 Expense Categories</h4>';
-            
-            if (analysis.topExpenses.length > 0) {
-                html += '<table class="metrics-table"><thead><tr><th>Category</th><th>Total Amount</th><th>% of Total</th></tr></thead><tbody>';
+            capitalAssets.forEach(asset => {
+                const allowance = calculateAssetAllowance(asset);
                 
-                const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
-                analysis.topExpenses.forEach(exp => {
-                    const percentage = (exp.amount / totalExpenses * 100).toFixed(1);
-                    html += `
-                        <tr>
-                            <td>${escapeHtml(exp.category)}</td>
-                            <td>£${exp.amount.toFixed(2)}</td>
-                            <td>${percentage}%</td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            // Monthly trend
-            const months = Object.keys(analysis.monthlyTrend).sort();
-            if (months.length >= 2) {
-                html += '<h4>Monthly Expense Trend</h4>';
-                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Expenses</th><th>Change</th></tr></thead><tbody>';
-                
-                months.forEach((month, index) => {
-                    const amount = analysis.monthlyTrend[month];
-                    let changeHtml = '--';
-                    
-                    if (index > 0) {
-                        const prevAmount = analysis.monthlyTrend[months[index - 1]];
-                        const change = calculatePercentChange(prevAmount, amount);
-                        const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→';
-                        const color = change > 0 ? '#dc3545' : change < 0 ? '#28a745' : '#666';
-                        changeHtml = `<span style="color: ${color}">${arrow} ${Math.abs(change).toFixed(1)}%</span>`;
-                    }
-                    
-                    html += `
-                        <tr>
-                            <td>${month}</td>
-                            <td>£${amount.toFixed(2)}</td>
-                            <td>${changeHtml}</td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-                
-                // Suggestions
-                if (months.length >= 2) {
-                    const recentMonth = analysis.monthlyTrend[months[months.length - 1]];
-                    const previousMonth = analysis.monthlyTrend[months[months.length - 2]];
-                    const change = calculatePercentChange(previousMonth, recentMonth);
-                    
-                    if (change > 10) {
-                        html += '<div class="forecast-warning"><strong>💡 Insight:</strong> Expenses increased by ' + change.toFixed(1) + '% last month. Review for optimization opportunities.</div>';
-                    }
+                if (asset.category === 'aia' || asset.category === 'full') {
+                    totalAIA += allowance;
+                } else {
+                    totalWDA += allowance;
                 }
+            });
+            
+            const totalAllowances = totalAIA + totalWDA;
+            
+            document.getElementById('totalAIA').textContent = totalAIA.toFixed(2);
+            document.getElementById('totalWDA').textContent = totalWDA.toFixed(2);
+            document.getElementById('totalCapitalAllowances').textContent = totalAllowances.toFixed(2);
+            
+            if (capitalAssets.length > 0) {
+                document.getElementById('capitalAllowanceSummary').style.display = 'block';
             }
             
-            container.innerHTML = html;
-        }
-
-        // Update Revenue Analysis section
-        function updateRevenueAnalysis() {
-            const container = document.getElementById('revenueAnalysis');
-            
-            if (incomeEntries.length === 0) {
-                container.innerHTML = '<p class="no-data-message">Add income data to see revenue trends.</p>';
-                return;
-            }
-            
-            const analysis = analyzeRevenue();
-            
-            let html = `
-                <p><strong>Average Monthly Revenue:</strong> £${analysis.avgRevenue.toFixed(2)}</p>
-                <p><strong>Best Performing Month:</strong> ${analysis.bestMonth || 'N/A'} (£${analysis.bestAmount.toFixed(2)})</p>
-            `;
-            
-            if (analysis.growthRate !== 0) {
-                const growthColor = analysis.growthRate > 0 ? '#28a745' : '#dc3545';
-                const growthArrow = analysis.growthRate > 0 ? '↑' : '↓';
-                html += `<p><strong>Overall Growth Rate:</strong> <span style="color: ${growthColor}; font-weight: bold;">${growthArrow} ${Math.abs(analysis.growthRate).toFixed(1)}%</span></p>`;
-            }
-            
-            // Monthly revenue table
-            const months = Object.keys(analysis.monthlyRevenue).sort();
-            if (months.length > 0) {
-                html += '<h4>Monthly Revenue Breakdown</h4>';
-                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Revenue</th><th>vs Average</th></tr></thead><tbody>';
-                
-                months.forEach(month => {
-                    const amount = analysis.monthlyRevenue[month];
-                    const vsAvg = ((amount - analysis.avgRevenue) / analysis.avgRevenue * 100).toFixed(1);
-                    const vsAvgColor = vsAvg > 0 ? '#28a745' : vsAvg < 0 ? '#dc3545' : '#666';
-                    const arrow = vsAvg > 0 ? '↑' : vsAvg < 0 ? '↓' : '→';
-                    
-                    html += `
-                        <tr>
-                            <td>${month}</td>
-                            <td>£${amount.toFixed(2)}</td>
-                            <td><span style="color: ${vsAvgColor}">${arrow} ${Math.abs(vsAvg)}%</span></td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            // Seasonality detection
-            if (months.length >= 12) {
-                html += '<div class="info-text"><strong>📊 Note:</strong> With 12+ months of data, seasonality patterns may emerge. High performers: ' + analysis.bestMonth + '</div>';
-            }
-            
-            container.innerHTML = html;
-        }
-
-        // Update Profitability Metrics section
-        function updateProfitabilityMetrics() {
-            const container = document.getElementById('profitabilityMetrics');
-            
-            if (incomeEntries.length === 0 && expenseEntries.length === 0) {
-                container.innerHTML = '<p class="no-data-message">Add data to see profitability analysis.</p>';
-                return;
-            }
-            
-            const metrics = calculateProfitabilityMetrics();
-            
-            let html = `
-                <p><strong>Total Profit (Current Year):</strong> £${metrics.totalProfit.toFixed(2)}</p>
-                <p><strong>Average Monthly Profit:</strong> £${metrics.avgMonthlyProfit.toFixed(2)}</p>
-            `;
-            
-            // Monthly profit breakdown
-            const months = Object.keys(metrics.profitByMonth).sort();
-            if (months.length > 0) {
-                html += '<h4>Monthly Profitability</h4>';
-                html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody>';
-                
-                months.forEach(month => {
-                    const profit = metrics.profitByMonth[month];
-                    const profitColor = profit >= 0 ? '#28a745' : '#dc3545';
-                    const status = profit >= 0 ? '✓ Profitable' : '✗ Loss';
-                    
-                    html += `
-                        <tr>
-                            <td>${month}</td>
-                            <td style="color: ${profitColor}; font-weight: bold;">£${profit.toFixed(2)}</td>
-                            <td>${status}</td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            // Calculate profitable months percentage
-            const profitableMonths = Object.values(metrics.profitByMonth).filter(p => p > 0).length;
-            const totalMonths = Object.values(metrics.profitByMonth).length;
-            if (totalMonths > 0) {
-                const profitablePercent = (profitableMonths / totalMonths * 100).toFixed(0);
-                html += `<p><strong>Profitable Months:</strong> ${profitableMonths} of ${totalMonths} (${profitablePercent}%)</p>`;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        // Main function to update Business Metrics Dashboard
-        function updateBusinessMetricsDashboard() {
-            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
-            const netProfit = totalIncome - totalExpenses;
-            
-            // Calculate all metrics
-            const grossProfitMargin = calculateGrossProfitMargin(totalIncome, totalExpenses);
-            const netProfitMargin = calculateNetProfitMargin(netProfit, totalIncome);
-            const avgMonthlyRevenue = calculateAvgMonthly(incomeEntries);
-            const avgMonthlyExpenses = calculateAvgMonthly(expenseEntries);
-            const burnRate = calculateBurnRate();
-            const runway = calculateRunway(netProfit, burnRate);
-            const breakEvenPoint = avgMonthlyExpenses;
-            const monthOverMonth = calculateMonthOverMonth();
-            
-            // Update KPI values
-            document.getElementById('grossProfitMargin').textContent = grossProfitMargin.toFixed(1) + '%';
-            document.getElementById('netProfitMargin').textContent = netProfitMargin.toFixed(1) + '%';
-            document.getElementById('avgMonthlyRevenue').textContent = '£' + avgMonthlyRevenue.toFixed(2);
-            document.getElementById('avgMonthlyExpenses').textContent = '£' + avgMonthlyExpenses.toFixed(2);
-            document.getElementById('burnRate').textContent = '£' + burnRate.toFixed(2) + '/mo';
-            document.getElementById('breakEven').textContent = '£' + breakEvenPoint.toFixed(2) + '/mo';
-            
-            // Update runway
-            if (runway === Infinity || netProfit <= 0) {
-                document.getElementById('runway').textContent = netProfit > 0 ? '∞' : '0';
-            } else {
-                document.getElementById('runway').textContent = runway.toFixed(1) + ' mo';
-            }
-            
-            // Update month-over-month
-            if (monthOverMonth.currentIncome === 0 && monthOverMonth.lastIncome === 0) {
-                document.getElementById('monthOverMonth').textContent = '--';
-                document.getElementById('momDetail').textContent = 'No data yet';
-            } else {
-                const incomeArrow = monthOverMonth.incomeChange > 0 ? '↑' : monthOverMonth.incomeChange < 0 ? '↓' : '→';
-                document.getElementById('monthOverMonth').textContent = incomeArrow + ' ' + Math.abs(monthOverMonth.incomeChange).toFixed(1) + '%';
-                document.getElementById('momDetail').textContent = 'Revenue change';
-            }
-            
-            // Update card colors
-            updateKPICardColor('grossProfitMarginCard', grossProfitMargin, 20, 10);
-            updateKPICardColor('netProfitMarginCard', netProfitMargin, 15, 5);
-            
-            if (runway !== Infinity && runway > 0) {
-                updateKPICardColor('runwayCard', runway, 12, 6);
-            } else if (netProfit <= 0) {
-                const card = document.getElementById('runwayCard');
-                card.classList.remove('good', 'warning', 'neutral');
-                card.classList.add('danger');
-            } else {
-                const card = document.getElementById('runwayCard');
-                card.classList.remove('danger', 'warning');
-                card.classList.add('good');
-            }
-            
-            // Update break-even status
-            if (avgMonthlyRevenue >= breakEvenPoint) {
-                document.getElementById('breakEvenStatus').textContent = '✓ Above break-even';
-                const card = document.getElementById('breakEvenCard');
-                card.classList.remove('danger', 'warning', 'neutral');
-                card.classList.add('good');
-            } else if (avgMonthlyRevenue >= breakEvenPoint * 0.8) {
-                document.getElementById('breakEvenStatus').textContent = '⚠ Near break-even';
-                const card = document.getElementById('breakEvenCard');
-                card.classList.remove('good', 'danger', 'neutral');
-                card.classList.add('warning');
-            } else {
-                document.getElementById('breakEvenStatus').textContent = '✗ Below break-even';
-                const card = document.getElementById('breakEvenCard');
-                card.classList.remove('good', 'warning', 'neutral');
-                card.classList.add('danger');
-            }
-            
-            // Update month-over-month card color
-            if (monthOverMonth.incomeChange > 0) {
-                const card = document.getElementById('monthOverMonthCard');
-                card.classList.remove('danger', 'warning', 'neutral');
-                card.classList.add('good');
-            } else if (monthOverMonth.incomeChange < -10) {
-                const card = document.getElementById('monthOverMonthCard');
-                card.classList.remove('good', 'warning', 'neutral');
-                card.classList.add('danger');
-            } else {
-                const card = document.getElementById('monthOverMonthCard');
-                card.classList.remove('good', 'danger');
-                card.classList.add('neutral');
-            }
-            
-            // Update detailed sections
-            updateCashFlowForecast();
-            updateExpenseAnalysis();
-            updateRevenueAnalysis();
-            updateProfitabilityMetrics();
+            return totalAllowances;
         }
 
         // ============ Phase 2: Advanced Tax Calculation Functions ============
