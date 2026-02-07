@@ -216,6 +216,78 @@
         button.info-btn:hover {
             background: #138496;
         }
+        /* Advanced Tax Planning Styles */
+        .advanced-tax-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border: 2px solid #0056b3;
+        }
+        .advanced-tax-container h2 {
+            margin-top: 0;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+        }
+        details {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        details[open] {
+            border-color: #0056b3;
+        }
+        summary {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #0056b3;
+            cursor: pointer;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            background: #f8f9fa;
+            border-radius: 5px 5px 0 0;
+            user-select: none;
+        }
+        summary:hover {
+            background: #e9ecef;
+        }
+        details[open] summary {
+            background: #0056b3;
+            color: #fff;
+        }
+        .help-text {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 5px;
+            display: block;
+        }
+        .warning-text {
+            color: #dc3545;
+            font-weight: bold;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .info-text {
+            color: #004085;
+            padding: 10px;
+            background: #cce5ff;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .advanced-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 5px;
+            border-left: 4px solid #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -448,8 +520,151 @@
                 <div id="resultPAYE" style="display: none; margin-top: 15px; padding: 10px; background: #f8e8f8; border-radius: 5px;"></div>
                 <div id="resultCompanyTax" style="display: none; margin-top: 15px; padding: 10px; background: #f8f8e8; border-radius: 5px;"></div>
                 <div id="resultCGT" style="display: none; margin-top: 15px; padding: 10px; background: #e8f8e8; border-radius: 5px;"></div>
+                
+                <!-- Advanced Tax Results -->
+                <div id="advancedTaxResults" style="display: none; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px; border: 2px solid #0056b3;">
+                    <h3 style="margin-top: 0; color: #0056b3;">Advanced Tax Calculations</h3>
+                    <div id="resultStudentLoan" style="display: none;" class="advanced-result"></div>
+                    <div id="resultPension" style="display: none;" class="advanced-result"></div>
+                    <div id="resultChildcare" style="display: none;" class="advanced-result"></div>
+                    <div id="resultGiftAid" style="display: none;" class="advanced-result"></div>
+                    <div id="resultDividend" style="display: none;" class="advanced-result"></div>
+                    <div id="resultSavings" style="display: none;" class="advanced-result"></div>
+                </div>
+                
                 <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
             </div>
+        </div>
+
+        <!-- Advanced Tax Planning Section -->
+        <div class="advanced-tax-container">
+            <h2>Advanced Tax Planning</h2>
+            <p style="color: #666; margin-bottom: 20px;">Configure additional tax calculations and reliefs. These settings will be saved per tax year.</p>
+
+            <!-- Student Loan Repayments -->
+            <details>
+                <summary>💼 Student Loan Repayments</summary>
+                <div>
+                    <label for="studentLoanPlan">Student Loan Plan:</label>
+                    <select id="studentLoanPlan" name="studentLoanPlan" onchange="updateStudentLoanInfo()">
+                        <option value="none">None</option>
+                        <option value="plan1">Plan 1 (£24,990 threshold @ 9%)</option>
+                        <option value="plan2">Plan 2 (£27,295 threshold @ 9%)</option>
+                        <option value="plan4">Plan 4 (£31,395 threshold @ 9%)</option>
+                        <option value="plan5">Plan 5 (£25,000 threshold @ 9%)</option>
+                        <option value="postgrad">Postgraduate Loan (£21,000 threshold @ 6%)</option>
+                    </select>
+                    <span class="help-text">Select your student loan repayment plan type</span>
+                    <div id="studentLoanInfo" class="info-text" style="display: none;"></div>
+                </div>
+            </details>
+
+            <!-- Pension Contributions -->
+            <details>
+                <summary>🏦 Pension Contributions</summary>
+                <div>
+                    <label for="pensionContribType">Contribution Type:</label>
+                    <select id="pensionContribType" name="pensionContribType">
+                        <option value="none">None</option>
+                        <option value="amount">Fixed Amount</option>
+                        <option value="percent">Percentage of Salary</option>
+                    </select>
+                    <span class="help-text">Choose how pension contributions are calculated</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="employerPension">Employer Contribution (£ or %):</label>
+                    <input type="number" id="employerPension" name="employerPension" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Employer's pension contribution</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="employeePension">Employee Contribution (£ or %):</label>
+                    <input type="number" id="employeePension" name="employeePension" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Your pension contribution</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="pensionMethod">Employee Contribution Method:</label>
+                    <select id="pensionMethod" name="pensionMethod">
+                        <option value="relief">Relief at Source (20% automatic relief)</option>
+                        <option value="sacrifice">Salary Sacrifice (pre-tax deduction)</option>
+                    </select>
+                    <span class="help-text">Salary sacrifice gives immediate tax relief; relief at source gives basic rate relief with higher rate claimed later</span>
+                </div>
+                <div id="pensionWarning" class="warning-text" style="display: none;"></div>
+            </details>
+
+            <!-- Childcare Tax Relief -->
+            <details>
+                <summary>👶 Childcare Tax Relief</summary>
+                <div>
+                    <label for="numChildren">Number of Children:</label>
+                    <input type="number" id="numChildren" name="numChildren" placeholder="0" min="0" value="0">
+                    <span class="help-text">Number of children eligible for Tax-Free Childcare (under 11, or under 17 if disabled)</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="numDisabledChildren">Number of Disabled Children:</label>
+                    <input type="number" id="numDisabledChildren" name="numDisabledChildren" placeholder="0" min="0" value="0">
+                    <span class="help-text">Disabled children get higher relief (£4,000 vs £2,000)</span>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="childcareExpenses">Annual Childcare Expenses (£):</label>
+                    <input type="number" id="childcareExpenses" name="childcareExpenses" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total annual childcare costs</span>
+                </div>
+                <div id="childcareInfo" class="info-text" style="display: none;"></div>
+                <div id="childcareWarning" class="warning-text" style="display: none;"></div>
+            </details>
+
+            <!-- Gift Aid -->
+            <details>
+                <summary>🎁 Gift Aid Calculator</summary>
+                <div>
+                    <label for="charitableDonations">Total Charitable Donations (£):</label>
+                    <input type="number" id="charitableDonations" name="charitableDonations" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total amount donated to charity (after your tax deduction if applicable)</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>How Gift Aid works:</strong><br>
+                    • Charity claims 25p for every £1 you donate (25% on your donation)<br>
+                    • Higher (40%) and additional (45%) rate taxpayers can claim extra relief<br>
+                    • If you donate £100, charity gets £125, and you may get extra relief
+                </div>
+            </details>
+
+            <!-- Dividend Income -->
+            <details>
+                <summary>📊 Dividend Income</summary>
+                <div>
+                    <label for="dividendIncome">Annual Dividend Income (£):</label>
+                    <input type="number" id="dividendIncome" name="dividendIncome" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total dividend income from shares and investments</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>Dividend Tax 2025/26:</strong><br>
+                    • Dividend Allowance: £500 (tax-free)<br>
+                    • Basic rate (up to £50,270): 8.75%<br>
+                    • Higher rate (£50,271-£125,140): 33.75%<br>
+                    • Additional rate (over £125,140): 39.35%<br>
+                    Tax rate depends on your total taxable income band.
+                </div>
+            </details>
+
+            <!-- Savings Interest -->
+            <details>
+                <summary>💰 Savings Interest</summary>
+                <div>
+                    <label for="savingsInterest">Annual Savings Interest (£):</label>
+                    <input type="number" id="savingsInterest" name="savingsInterest" placeholder="0" step="0.01" value="0">
+                    <span class="help-text">Total interest from bank accounts, savings accounts, and bonds</span>
+                </div>
+                <div class="info-text" style="margin-top: 15px;">
+                    <strong>Personal Savings Allowance 2025/26:</strong><br>
+                    • Basic rate taxpayers: £1,000 tax-free<br>
+                    • Higher rate taxpayers: £500 tax-free<br>
+                    • Additional rate taxpayers: £0 tax-free<br>
+                    • Starting Rate for Savings: £5,000 @ 0% (if income under £17,570)<br>
+                    Tax rate on interest above allowance matches your income tax band.
+                </div>
+            </details>
         </div>
 
         <!-- Data Management Section -->
@@ -475,6 +690,55 @@
         const NI_RATE = 0.12; // National Insurance rate for employees
         const SMALL_COMPANY_TAX_RATE = 0.19; // Small Profits Rate for Corporation Tax
         const MAIN_COMPANY_TAX_RATE = 0.25; // Main Rate for Corporation Tax
+
+        // Phase 2: Advanced Tax Planning Constants (2025/26)
+        
+        // Student Loans 2025/26
+        const STUDENT_LOAN_THRESHOLDS = {
+            none: { threshold: 0, rate: 0, name: 'None' },
+            plan1: { threshold: 24990, rate: 0.09, name: 'Plan 1' },
+            plan2: { threshold: 27295, rate: 0.09, name: 'Plan 2' },
+            plan4: { threshold: 31395, rate: 0.09, name: 'Plan 4' },
+            plan5: { threshold: 25000, rate: 0.09, name: 'Plan 5' },
+            postgrad: { threshold: 21000, rate: 0.06, name: 'Postgraduate Loan' }
+        };
+
+        // Pension 2025/26
+        const PENSION_ANNUAL_ALLOWANCE = 60000;
+        const PENSION_TAPER_THRESHOLD = 260000;
+        const TAX_RELIEF_RATES = {
+            basic: 0.20,
+            higher: 0.40,
+            additional: 0.45
+        };
+
+        // Childcare 2025/26
+        const CHILDCARE_TAX_FREE = { 
+            standard: 2000, 
+            disabled: 4000 
+        };
+        const CHILDCARE_INCOME_LIMIT = 100000;
+        const CHILDCARE_GOVERNMENT_CONTRIBUTION = 0.25; // 25% (£20 for every £80 paid)
+
+        // Gift Aid
+        const GIFT_AID_RATE = 0.25; // 25% enhancement
+
+        // Dividend 2025/26
+        const DIVIDEND_ALLOWANCE = 500;
+        const DIVIDEND_RATES = { 
+            basic: 0.0875,      // 8.75%
+            higher: 0.3375,     // 33.75%
+            additional: 0.3935  // 39.35%
+        };
+
+        // Savings 2025/26
+        const SAVINGS_ALLOWANCES = { 
+            basic: 1000, 
+            higher: 500, 
+            additional: 0 
+        };
+        const SAVINGS_STARTING_RATE = 5000;
+        const SAVINGS_STARTING_THRESHOLD = 17570;
 
         // Category configuration mapping
         const CATEGORY_CONFIG = {
@@ -703,6 +967,10 @@
         // Switch to different year
         function switchYear() {
             const yearSelector = document.getElementById('yearSelector');
+            
+            // Save advanced tax settings before switching
+            saveAdvancedTaxSettings();
+            
             currentYear = yearSelector.value;
             
             // Save current data before switching
@@ -710,6 +978,9 @@
             
             // Load new year data
             loadYearData(currentYear);
+            
+            // Load advanced tax settings for new year
+            loadAdvancedTaxSettings();
             
             // Refresh all displays (income list, expense list, summary, and ledger)
             refreshAllDisplays();
@@ -793,6 +1064,8 @@
                 // First time initialization
                 saveToLocalStorage();
             }
+            // Load advanced tax settings for current year
+            loadAdvancedTaxSettings();
             refreshAllDisplays();
         }
 
@@ -995,6 +1268,392 @@
             container.innerHTML = html;
         }
 
+        // ============ Phase 2: Advanced Tax Calculation Functions ============
+
+        // Update student loan info display
+        function updateStudentLoanInfo() {
+            const plan = document.getElementById('studentLoanPlan').value;
+            const infoDiv = document.getElementById('studentLoanInfo');
+            
+            if (plan === 'none') {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            const planInfo = STUDENT_LOAN_THRESHOLDS[plan];
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `<strong>${planInfo.name}:</strong> You'll repay ${(planInfo.rate * 100).toFixed(0)}% of income above £${planInfo.threshold.toLocaleString()} per year.`;
+        }
+
+        // Calculate student loan repayment
+        function calculateStudentLoan(income, plan) {
+            if (plan === 'none' || !STUDENT_LOAN_THRESHOLDS[plan]) {
+                return { annual: 0, monthly: 0, threshold: 0, rate: 0, planName: 'None' };
+            }
+            
+            const planInfo = STUDENT_LOAN_THRESHOLDS[plan];
+            const repayableIncome = Math.max(0, income - planInfo.threshold);
+            const annualRepayment = repayableIncome * planInfo.rate;
+            const monthlyRepayment = annualRepayment / 12;
+            
+            return {
+                annual: annualRepayment,
+                monthly: monthlyRepayment,
+                threshold: planInfo.threshold,
+                rate: planInfo.rate,
+                planName: planInfo.name
+            };
+        }
+
+        // Calculate pension contributions and tax relief
+        function calculatePension(income, employerAmount, employeeAmount, contribType, method) {
+            if (contribType === 'none') {
+                return {
+                    employerContribution: 0,
+                    employeeContribution: 0,
+                    totalContribution: 0,
+                    basicRateRelief: 0,
+                    higherRateRelief: 0,
+                    additionalRateRelief: 0,
+                    totalRelief: 0,
+                    exceedsAllowance: false,
+                    method: method
+                };
+            }
+
+            let employerContrib = 0;
+            let employeeContrib = 0;
+
+            // Calculate actual contributions
+            if (contribType === 'percent') {
+                employerContrib = income * (employerAmount / 100);
+                employeeContrib = income * (employeeAmount / 100);
+            } else {
+                employerContrib = employerAmount;
+                employeeContrib = employeeAmount;
+            }
+
+            const totalContrib = employerContrib + employeeContrib;
+            
+            // Calculate tax relief based on method
+            let basicRateRelief = 0;
+            let higherRateRelief = 0;
+            let additionalRateRelief = 0;
+
+            // For both methods, calculate potential relief
+            // Relief at source: charity gets 20% automatically
+            // Salary sacrifice: full tax relief at marginal rate
+            
+            if (method === 'relief') {
+                // Relief at source - basic rate automatic
+                basicRateRelief = employeeContrib * TAX_RELIEF_RATES.basic;
+                
+                // Higher and additional rate relief needs to be claimed
+                // Determine tax band based on income
+                if (income > 125140) {
+                    additionalRateRelief = employeeContrib * (TAX_RELIEF_RATES.additional - TAX_RELIEF_RATES.basic);
+                } else if (income > 50270) {
+                    higherRateRelief = employeeContrib * (TAX_RELIEF_RATES.higher - TAX_RELIEF_RATES.basic);
+                }
+            } else if (method === 'sacrifice') {
+                // Salary sacrifice - immediate relief at marginal rate
+                if (income > 125140) {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.additional;
+                } else if (income > 50270) {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.higher;
+                } else {
+                    basicRateRelief = employeeContrib * TAX_RELIEF_RATES.basic;
+                }
+            }
+
+            const totalRelief = basicRateRelief + higherRateRelief + additionalRateRelief;
+            const exceedsAllowance = totalContrib > PENSION_ANNUAL_ALLOWANCE;
+
+            return {
+                employerContribution: employerContrib,
+                employeeContribution: employeeContrib,
+                totalContribution: totalContrib,
+                basicRateRelief: basicRateRelief,
+                higherRateRelief: higherRateRelief,
+                additionalRateRelief: additionalRateRelief,
+                totalRelief: totalRelief,
+                exceedsAllowance: exceedsAllowance,
+                method: method
+            };
+        }
+
+        // Calculate childcare tax relief
+        function calculateChildcare(numChildren, numDisabledChildren, expenses, income) {
+            if (numChildren === 0 && numDisabledChildren === 0) {
+                return {
+                    maxRelief: 0,
+                    actualRelief: 0,
+                    governmentContribution: 0,
+                    parentContribution: 0,
+                    exceedsLimit: false
+                };
+            }
+
+            const standardChildren = Math.max(0, numChildren - numDisabledChildren);
+            const maxReliefStandard = standardChildren * CHILDCARE_TAX_FREE.standard;
+            const maxReliefDisabled = numDisabledChildren * CHILDCARE_TAX_FREE.disabled;
+            const maxRelief = maxReliefStandard + maxReliefDisabled;
+
+            // Calculate government contribution (25% of parent's payment)
+            // For every £80 parent pays, government adds £20 (total £100)
+            const parentContribution = Math.min(expenses * 0.8, maxRelief * 0.8); // Parent pays 80%
+            const governmentContribution = parentContribution * 0.25; // Gov adds 25% of parent payment
+            const actualRelief = governmentContribution;
+
+            const exceedsLimit = income > CHILDCARE_INCOME_LIMIT;
+
+            return {
+                maxRelief: maxRelief,
+                actualRelief: actualRelief,
+                governmentContribution: governmentContribution,
+                parentContribution: parentContribution,
+                exceedsLimit: exceedsLimit
+            };
+        }
+
+        // Calculate Gift Aid
+        function calculateGiftAid(donations, income) {
+            if (donations === 0) {
+                return {
+                    charityGets: 0,
+                    giftAidAmount: 0,
+                    higherRateRelief: 0,
+                    additionalRateRelief: 0,
+                    totalTaxpayerRelief: 0
+                };
+            }
+
+            // Charity claims 25% on top of donation
+            const giftAidAmount = donations * GIFT_AID_RATE;
+            const charityGets = donations + giftAidAmount;
+
+            // Higher/Additional rate taxpayers can claim extra relief
+            let higherRateRelief = 0;
+            let additionalRateRelief = 0;
+
+            if (income > 125140) {
+                // Additional rate: 45% - 20% = 25% extra relief
+                additionalRateRelief = donations * 0.25;
+            } else if (income > 50270) {
+                // Higher rate: 40% - 20% = 20% extra relief
+                higherRateRelief = donations * 0.20;
+            }
+
+            const totalTaxpayerRelief = higherRateRelief + additionalRateRelief;
+
+            return {
+                charityGets: charityGets,
+                giftAidAmount: giftAidAmount,
+                higherRateRelief: higherRateRelief,
+                additionalRateRelief: additionalRateRelief,
+                totalTaxpayerRelief: totalTaxpayerRelief
+            };
+        }
+
+        // Calculate dividend tax
+        function calculateDividendTax(dividendIncome, taxableIncome) {
+            if (dividendIncome === 0) {
+                return {
+                    dividendTax: 0,
+                    taxableDividends: 0,
+                    allowanceUsed: 0,
+                    taxBand: 'none',
+                    strategy: ''
+                };
+            }
+
+            // Dividend allowance
+            const allowanceUsed = Math.min(dividendIncome, DIVIDEND_ALLOWANCE);
+            const taxableDividends = Math.max(0, dividendIncome - DIVIDEND_ALLOWANCE);
+
+            // Determine tax band based on total taxable income (excluding dividends)
+            let dividendTax = 0;
+            let taxBand = 'basic';
+            let remainingDividends = taxableDividends;
+            let totalIncome = taxableIncome;
+
+            // Additional rate (over £125,140)
+            if (totalIncome + remainingDividends > 125140) {
+                const additionalAmount = Math.min(remainingDividends, totalIncome + remainingDividends - 125140);
+                dividendTax += additionalAmount * DIVIDEND_RATES.additional;
+                remainingDividends -= additionalAmount;
+                totalIncome = 125140;
+                taxBand = 'additional';
+            }
+
+            // Higher rate (£50,270 to £125,140)
+            if (remainingDividends > 0 && totalIncome + remainingDividends > 50270) {
+                const higherAmount = Math.min(remainingDividends, totalIncome + remainingDividends - 50270);
+                dividendTax += higherAmount * DIVIDEND_RATES.higher;
+                remainingDividends -= higherAmount;
+                if (taxBand === 'basic') taxBand = 'higher';
+            }
+
+            // Basic rate (up to £50,270)
+            if (remainingDividends > 0) {
+                dividendTax += remainingDividends * DIVIDEND_RATES.basic;
+            }
+
+            // Strategy suggestion
+            let strategy = '';
+            if (taxBand === 'basic' && dividendIncome > DIVIDEND_ALLOWANCE) {
+                strategy = 'You\'re in the basic rate band. Dividend tax is 8.75% above the £500 allowance.';
+            } else if (taxBand === 'higher') {
+                strategy = 'Consider timing of dividend distributions to optimize tax. Higher rate is 33.75%.';
+            } else if (taxBand === 'additional') {
+                strategy = 'At 39.35% dividend tax, consider retaining profits in company or using salary instead.';
+            }
+
+            return {
+                dividendTax: dividendTax,
+                taxableDividends: taxableDividends,
+                allowanceUsed: allowanceUsed,
+                taxBand: taxBand,
+                strategy: strategy
+            };
+        }
+
+        // Calculate savings interest tax
+        function calculateSavingsTax(savingsInterest, taxableIncome, grossIncome) {
+            if (savingsInterest === 0) {
+                return {
+                    savingsTax: 0,
+                    taxableSavings: 0,
+                    allowanceUsed: 0,
+                    startingRateUsed: 0,
+                    taxBand: 'none'
+                };
+            }
+
+            let savingsTax = 0;
+            let remainingSavings = savingsInterest;
+            let taxBand = 'basic';
+
+            // Determine Personal Savings Allowance based on tax band
+            let savingsAllowance = 0;
+            if (taxableIncome > 125140) {
+                savingsAllowance = SAVINGS_ALLOWANCES.additional; // £0
+                taxBand = 'additional';
+            } else if (taxableIncome > 50270) {
+                savingsAllowance = SAVINGS_ALLOWANCES.higher; // £500
+                taxBand = 'higher';
+            } else {
+                savingsAllowance = SAVINGS_ALLOWANCES.basic; // £1,000
+                taxBand = 'basic';
+            }
+
+            // Starting Rate for Savings (if income under £17,570)
+            let startingRateUsed = 0;
+            if (grossIncome < SAVINGS_STARTING_THRESHOLD) {
+                const availableStartingRate = Math.min(
+                    SAVINGS_STARTING_RATE,
+                    SAVINGS_STARTING_THRESHOLD - grossIncome
+                );
+                startingRateUsed = Math.min(remainingSavings, availableStartingRate);
+                remainingSavings -= startingRateUsed;
+            }
+
+            // Apply Personal Savings Allowance
+            const allowanceUsed = Math.min(remainingSavings, savingsAllowance);
+            remainingSavings -= allowanceUsed;
+
+            // Tax on remaining savings at income tax rate
+            if (remainingSavings > 0) {
+                if (taxableIncome > 125140) {
+                    savingsTax = remainingSavings * 0.45;
+                } else if (taxableIncome > 50270) {
+                    savingsTax = remainingSavings * 0.40;
+                } else {
+                    savingsTax = remainingSavings * 0.20;
+                }
+            }
+
+            const taxableSavings = remainingSavings;
+
+            return {
+                savingsTax: savingsTax,
+                taxableSavings: taxableSavings,
+                allowanceUsed: allowanceUsed,
+                startingRateUsed: startingRateUsed,
+                taxBand: taxBand
+            };
+        }
+
+        // ============ End Phase 2 Functions ============
+
+        // Save advanced tax form values to localStorage
+        function saveAdvancedTaxSettings() {
+            const advancedSettings = {
+                studentLoanPlan: document.getElementById('studentLoanPlan').value,
+                pensionContribType: document.getElementById('pensionContribType').value,
+                employerPension: document.getElementById('employerPension').value,
+                employeePension: document.getElementById('employeePension').value,
+                pensionMethod: document.getElementById('pensionMethod').value,
+                numChildren: document.getElementById('numChildren').value,
+                numDisabledChildren: document.getElementById('numDisabledChildren').value,
+                childcareExpenses: document.getElementById('childcareExpenses').value,
+                charitableDonations: document.getElementById('charitableDonations').value,
+                dividendIncome: document.getElementById('dividendIncome').value,
+                savingsInterest: document.getElementById('savingsInterest').value
+            };
+
+            try {
+                const data = loadFromLocalStorage() || initializeDataStructure();
+                if (!data.taxYears[currentYear]) {
+                    data.taxYears[currentYear] = { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 };
+                }
+                data.taxYears[currentYear].advancedTax = advancedSettings;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving advanced tax settings:', e);
+            }
+        }
+
+        // Load advanced tax form values from localStorage
+        function loadAdvancedTaxSettings() {
+            try {
+                const data = loadFromLocalStorage();
+                if (!data || !data.taxYears[currentYear] || !data.taxYears[currentYear].advancedTax) {
+                    // Set defaults
+                    document.getElementById('studentLoanPlan').value = 'none';
+                    document.getElementById('pensionContribType').value = 'none';
+                    document.getElementById('employerPension').value = '0';
+                    document.getElementById('employeePension').value = '0';
+                    document.getElementById('pensionMethod').value = 'relief';
+                    document.getElementById('numChildren').value = '0';
+                    document.getElementById('numDisabledChildren').value = '0';
+                    document.getElementById('childcareExpenses').value = '0';
+                    document.getElementById('charitableDonations').value = '0';
+                    document.getElementById('dividendIncome').value = '0';
+                    document.getElementById('savingsInterest').value = '0';
+                    return;
+                }
+
+                const settings = data.taxYears[currentYear].advancedTax;
+                document.getElementById('studentLoanPlan').value = settings.studentLoanPlan || 'none';
+                document.getElementById('pensionContribType').value = settings.pensionContribType || 'none';
+                document.getElementById('employerPension').value = settings.employerPension || '0';
+                document.getElementById('employeePension').value = settings.employeePension || '0';
+                document.getElementById('pensionMethod').value = settings.pensionMethod || 'relief';
+                document.getElementById('numChildren').value = settings.numChildren || '0';
+                document.getElementById('numDisabledChildren').value = settings.numDisabledChildren || '0';
+                document.getElementById('childcareExpenses').value = settings.childcareExpenses || '0';
+                document.getElementById('charitableDonations').value = settings.charitableDonations || '0';
+                document.getElementById('dividendIncome').value = settings.dividendIncome || '0';
+                document.getElementById('savingsInterest').value = settings.savingsInterest || '0';
+
+                // Update UI elements that depend on loaded values
+                updateStudentLoanInfo();
+            } catch (e) {
+                console.error('Error loading advanced tax settings:', e);
+            }
+        }
+
         // Tax calculation function
         function calculateTax(income, expenses, allowancesConfig, category, taxConfig) {
             const BASIC_TAX_RATE = 0.20;  // 20%
@@ -1108,6 +1767,29 @@
             // Calculate total tax
             result.totalTax = result.incomeTax + result.vat + result.paye + result.companyTax + result.cgt;
 
+            // Phase 2: Add advanced tax calculations if provided
+            if (taxConfig.advancedTax) {
+                result.advancedTax = {
+                    studentLoan: taxConfig.advancedTax.studentLoan || { annual: 0 },
+                    pension: taxConfig.advancedTax.pension || { totalRelief: 0 },
+                    childcare: taxConfig.advancedTax.childcare || { actualRelief: 0 },
+                    giftAid: taxConfig.advancedTax.giftAid || { totalTaxpayerRelief: 0 },
+                    dividend: taxConfig.advancedTax.dividend || { dividendTax: 0 },
+                    savings: taxConfig.advancedTax.savings || { savingsTax: 0 }
+                };
+
+                // Add student loan repayment to total (it's a deduction, not a tax)
+                result.totalTax += result.advancedTax.studentLoan.annual;
+                
+                // Add dividend tax and savings tax
+                result.totalTax += result.advancedTax.dividend.dividendTax;
+                result.totalTax += result.advancedTax.savings.savingsTax;
+
+                // Subtract tax reliefs
+                result.totalTax -= result.advancedTax.pension.totalRelief;
+                result.totalTax -= result.advancedTax.giftAid.totalTaxpayerRelief;
+            }
+
             return result;
         }
 
@@ -1175,6 +1857,52 @@
                 alert(validationWarnings.join('\n'));
             }
 
+            // Phase 2: Calculate preliminary taxable income for advanced calculations
+            let preliminaryAllowances = 0;
+            if (allowancesConfig.personalAllowance && category !== 'Company') preliminaryAllowances += PERSONAL_ALLOWANCE;
+            if (allowancesConfig.blindPersonsAllowance && category !== 'Company') preliminaryAllowances += BLIND_PERSONS_ALLOWANCE;
+            if (allowancesConfig.marriageAllowance && category !== 'Company') preliminaryAllowances += MARRIAGE_ALLOWANCE_TRANSFER;
+            if (allowancesConfig.tradingAllowance && category !== 'Company') preliminaryAllowances += TRADING_ALLOWANCE;
+            if (allowancesConfig.propertyAllowance && category !== 'Company') preliminaryAllowances += PROPERTY_ALLOWANCE;
+            const preliminaryTaxableIncome = Math.max(0, totalIncome - preliminaryAllowances - totalExpenses);
+
+            // Phase 2: Collect advanced tax planning data
+            const advancedTaxData = {
+                studentLoan: calculateStudentLoan(
+                    totalIncome,
+                    document.getElementById('studentLoanPlan').value
+                ),
+                pension: calculatePension(
+                    totalIncome,
+                    parseFloat(document.getElementById('employerPension').value) || 0,
+                    parseFloat(document.getElementById('employeePension').value) || 0,
+                    document.getElementById('pensionContribType').value,
+                    document.getElementById('pensionMethod').value
+                ),
+                childcare: calculateChildcare(
+                    parseInt(document.getElementById('numChildren').value) || 0,
+                    parseInt(document.getElementById('numDisabledChildren').value) || 0,
+                    parseFloat(document.getElementById('childcareExpenses').value) || 0,
+                    totalIncome
+                ),
+                giftAid: calculateGiftAid(
+                    parseFloat(document.getElementById('charitableDonations').value) || 0,
+                    totalIncome
+                ),
+                dividend: calculateDividendTax(
+                    parseFloat(document.getElementById('dividendIncome').value) || 0,
+                    preliminaryTaxableIncome
+                ),
+                savings: calculateSavingsTax(
+                    parseFloat(document.getElementById('savingsInterest').value) || 0,
+                    preliminaryTaxableIncome,
+                    totalIncome
+                )
+            };
+
+            // Add advanced tax data to taxConfig
+            taxConfig.advancedTax = advancedTaxData;
+
             const result = calculateTax(totalIncome, totalExpenses, allowancesConfig, category, taxConfig);
 
             // Display basic information
@@ -1237,10 +1965,184 @@
                     <small>On taxable gains of £${taxableGains.toFixed(2)} (after £${CGT_ANNUAL_EXEMPT_AMOUNT} exemption)</small>`;
             }
 
+            // Phase 2: Display advanced tax results
+            const advancedTaxResultsDiv = document.getElementById('advancedTaxResults');
+            const resultStudentLoan = document.getElementById('resultStudentLoan');
+            const resultPension = document.getElementById('resultPension');
+            const resultChildcare = document.getElementById('resultChildcare');
+            const resultGiftAid = document.getElementById('resultGiftAid');
+            const resultDividend = document.getElementById('resultDividend');
+            const resultSavings = document.getElementById('resultSavings');
+
+            // Hide all advanced results initially
+            advancedTaxResultsDiv.style.display = 'none';
+            resultStudentLoan.style.display = 'none';
+            resultPension.style.display = 'none';
+            resultChildcare.style.display = 'none';
+            resultGiftAid.style.display = 'none';
+            resultDividend.style.display = 'none';
+            resultSavings.style.display = 'none';
+
+            let hasAdvancedResults = false;
+
+            // Student Loan Repayments
+            if (result.advancedTax && result.advancedTax.studentLoan.annual > 0) {
+                hasAdvancedResults = true;
+                resultStudentLoan.style.display = 'block';
+                const sl = result.advancedTax.studentLoan;
+                resultStudentLoan.innerHTML = `
+                    <strong>💼 Student Loan Repayments (${sl.planName}):</strong><br>
+                    Annual Repayment: £${sl.annual.toFixed(2)}<br>
+                    Monthly Repayment: £${sl.monthly.toFixed(2)}<br>
+                    <small>${(sl.rate * 100).toFixed(0)}% on income above £${sl.threshold.toLocaleString()}</small>
+                `;
+            }
+
+            // Pension Contributions
+            if (result.advancedTax && result.advancedTax.pension.totalContribution > 0) {
+                hasAdvancedResults = true;
+                resultPension.style.display = 'block';
+                const pension = result.advancedTax.pension;
+                let pensionHTML = `
+                    <strong>🏦 Pension Contributions:</strong><br>
+                    Employer Contribution: £${pension.employerContribution.toFixed(2)}<br>
+                    Employee Contribution: £${pension.employeeContribution.toFixed(2)}<br>
+                    Total Annual Contribution: £${pension.totalContribution.toFixed(2)}<br>
+                    <strong>Tax Relief:</strong> £${pension.totalRelief.toFixed(2)}<br>
+                `;
+                
+                if (pension.method === 'relief') {
+                    pensionHTML += `<small>Basic rate relief (20%): £${pension.basicRateRelief.toFixed(2)}`;
+                    if (pension.higherRateRelief > 0) {
+                        pensionHTML += `<br>Higher rate relief to claim: £${pension.higherRateRelief.toFixed(2)}`;
+                    }
+                    if (pension.additionalRateRelief > 0) {
+                        pensionHTML += `<br>Additional rate relief to claim: £${pension.additionalRateRelief.toFixed(2)}`;
+                    }
+                    pensionHTML += `</small>`;
+                } else {
+                    pensionHTML += `<small>Salary sacrifice - immediate tax relief at ${totalIncome > 125140 ? '45%' : totalIncome > 50270 ? '40%' : '20%'}</small>`;
+                }
+
+                if (pension.exceedsAllowance) {
+                    pensionHTML += `<br><span style="color: #dc3545; font-weight: bold;">⚠️ Warning: Exceeds annual allowance of £${PENSION_ANNUAL_ALLOWANCE.toLocaleString()}</span>`;
+                }
+
+                resultPension.innerHTML = pensionHTML;
+            }
+
+            // Childcare Tax Relief
+            if (result.advancedTax && result.advancedTax.childcare.actualRelief > 0) {
+                hasAdvancedResults = true;
+                resultChildcare.style.display = 'block';
+                const childcare = result.advancedTax.childcare;
+                let childcareHTML = `
+                    <strong>👶 Tax-Free Childcare:</strong><br>
+                    Government Contribution: £${childcare.governmentContribution.toFixed(2)}<br>
+                    Your Contribution: £${childcare.parentContribution.toFixed(2)}<br>
+                    Maximum Available: £${childcare.maxRelief.toFixed(2)}<br>
+                    <small>Government adds £20 for every £80 you pay (25% contribution)</small>
+                `;
+
+                if (childcare.exceedsLimit) {
+                    childcareHTML += `<br><span style="color: #dc3545; font-weight: bold;">⚠️ Warning: Income exceeds £${CHILDCARE_INCOME_LIMIT.toLocaleString()} per parent limit</span>`;
+                }
+
+                resultChildcare.innerHTML = childcareHTML;
+            }
+
+            // Gift Aid
+            if (result.advancedTax && result.advancedTax.giftAid.charityGets > 0) {
+                hasAdvancedResults = true;
+                resultGiftAid.style.display = 'block';
+                const giftAid = result.advancedTax.giftAid;
+                let giftAidHTML = `
+                    <strong>🎁 Gift Aid:</strong><br>
+                    Your Donation: £${(giftAid.charityGets - giftAid.giftAidAmount).toFixed(2)}<br>
+                    Charity Receives: £${giftAid.charityGets.toFixed(2)}<br>
+                    Gift Aid to Charity: £${giftAid.giftAidAmount.toFixed(2)}<br>
+                `;
+
+                if (giftAid.totalTaxpayerRelief > 0) {
+                    giftAidHTML += `<strong>Your Tax Relief:</strong> £${giftAid.totalTaxpayerRelief.toFixed(2)}<br>`;
+                    giftAidHTML += `<small>You can claim back this additional relief on your tax return</small>`;
+                }
+
+                resultGiftAid.innerHTML = giftAidHTML;
+            }
+
+            // Dividend Tax
+            if (result.advancedTax && result.advancedTax.dividend.dividendTax > 0) {
+                hasAdvancedResults = true;
+                resultDividend.style.display = 'block';
+                const dividend = result.advancedTax.dividend;
+                let dividendHTML = `
+                    <strong>📊 Dividend Tax:</strong><br>
+                    Total Dividend Income: £${(dividend.taxableDividends + dividend.allowanceUsed).toFixed(2)}<br>
+                    Tax-Free Allowance Used: £${dividend.allowanceUsed.toFixed(2)}<br>
+                    Taxable Dividends: £${dividend.taxableDividends.toFixed(2)}<br>
+                    <strong>Dividend Tax Due:</strong> £${dividend.dividendTax.toFixed(2)}<br>
+                `;
+
+                if (dividend.strategy) {
+                    dividendHTML += `<small><em>${dividend.strategy}</em></small>`;
+                }
+
+                resultDividend.innerHTML = dividendHTML;
+            }
+
+            // Savings Interest Tax
+            if (result.advancedTax && result.advancedTax.savings.savingsTax > 0) {
+                hasAdvancedResults = true;
+                resultSavings.style.display = 'block';
+                const savings = result.advancedTax.savings;
+                const totalSavings = savings.taxableSavings + savings.allowanceUsed + savings.startingRateUsed;
+                let savingsHTML = `
+                    <strong>💰 Savings Interest Tax:</strong><br>
+                    Total Savings Interest: £${totalSavings.toFixed(2)}<br>
+                `;
+
+                if (savings.startingRateUsed > 0) {
+                    savingsHTML += `Starting Rate (£5,000 @ 0%): £${savings.startingRateUsed.toFixed(2)}<br>`;
+                }
+                
+                savingsHTML += `Personal Savings Allowance: £${savings.allowanceUsed.toFixed(2)}<br>`;
+                savingsHTML += `Taxable Savings: £${savings.taxableSavings.toFixed(2)}<br>`;
+                savingsHTML += `<strong>Savings Tax Due:</strong> £${savings.savingsTax.toFixed(2)}<br>`;
+                savingsHTML += `<small>Tax rate: ${savings.taxBand === 'basic' ? '20%' : savings.taxBand === 'higher' ? '40%' : '45%'}</small>`;
+
+                resultSavings.innerHTML = savingsHTML;
+            }
+
+            // Show advanced tax results container if any results
+            if (hasAdvancedResults) {
+                advancedTaxResultsDiv.style.display = 'block';
+            }
+
             // Display total tax
             document.getElementById('resultTotalTax').innerHTML = `<strong>Total Tax Due:</strong> £${result.totalTax.toFixed(2)}`;
             
             document.getElementById('results').style.display = 'block';
+        });
+
+        // Phase 2: Add event listeners to auto-save advanced tax settings
+        document.addEventListener('DOMContentLoaded', function() {
+            const advancedTaxFields = [
+                'studentLoanPlan', 'pensionContribType', 'employerPension', 'employeePension',
+                'pensionMethod', 'numChildren', 'numDisabledChildren', 'childcareExpenses',
+                'charitableDonations', 'dividendIncome', 'savingsInterest'
+            ];
+
+            advancedTaxFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.addEventListener('change', saveAdvancedTaxSettings);
+                    // Also save on blur for text inputs
+                    if (element.tagName === 'INPUT') {
+                        element.addEventListener('blur', saveAdvancedTaxSettings);
+                    }
+                }
+            });
         });
 
         // Initialize app on page load

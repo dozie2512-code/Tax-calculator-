@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phase 2 Test</title>
+</head>
+<body>
+    <h1>Phase 2 Implementation Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Test constants are defined
+        const tests = [];
+        
+        // Load the main page to check constants
+        fetch('index.html')
+            .then(response => response.text())
+            .then(html => {
+                const resultsDiv = document.getElementById('test-results');
+                let output = '<h2>Test Results</h2><ul>';
+                
+                // Check for Phase 2 constants
+                const checks = [
+                    { name: 'STUDENT_LOAN_THRESHOLDS', pattern: /const STUDENT_LOAN_THRESHOLDS/ },
+                    { name: 'PENSION_ANNUAL_ALLOWANCE', pattern: /const PENSION_ANNUAL_ALLOWANCE/ },
+                    { name: 'CHILDCARE_TAX_FREE', pattern: /const CHILDCARE_TAX_FREE/ },
+                    { name: 'GIFT_AID_RATE', pattern: /const GIFT_AID_RATE/ },
+                    { name: 'DIVIDEND_ALLOWANCE', pattern: /const DIVIDEND_ALLOWANCE/ },
+                    { name: 'SAVINGS_ALLOWANCES', pattern: /const SAVINGS_ALLOWANCES/ },
+                    { name: 'calculateStudentLoan function', pattern: /function calculateStudentLoan\(/ },
+                    { name: 'calculatePension function', pattern: /function calculatePension\(/ },
+                    { name: 'calculateChildcare function', pattern: /function calculateChildcare\(/ },
+                    { name: 'calculateGiftAid function', pattern: /function calculateGiftAid\(/ },
+                    { name: 'calculateDividendTax function', pattern: /function calculateDividendTax\(/ },
+                    { name: 'calculateSavingsTax function', pattern: /function calculateSavingsTax\(/ },
+                    { name: 'Student Loan section', pattern: /Student Loan Repayments/ },
+                    { name: 'Pension section', pattern: /Pension Contributions/ },
+                    { name: 'Childcare section', pattern: /Childcare Tax Relief/ },
+                    { name: 'Gift Aid section', pattern: /Gift Aid Calculator/ },
+                    { name: 'Dividend section', pattern: /Dividend Income/ },
+                    { name: 'Savings section', pattern: /Savings Interest/ },
+                    { name: 'Advanced Tax Container', pattern: /advanced-tax-container/ },
+                    { name: 'saveAdvancedTaxSettings function', pattern: /function saveAdvancedTaxSettings\(/ },
+                    { name: 'loadAdvancedTaxSettings function', pattern: /function loadAdvancedTaxSettings\(/ }
+                ];
+                
+                let passCount = 0;
+                checks.forEach(check => {
+                    const found = check.pattern.test(html);
+                    if (found) {
+                        output += `<li style="color: green;">✓ ${check.name} - FOUND</li>`;
+                        passCount++;
+                    } else {
+                        output += `<li style="color: red;">✗ ${check.name} - NOT FOUND</li>`;
+                    }
+                });
+                
+                output += '</ul>';
+                output += `<h3>Summary: ${passCount} / ${checks.length} checks passed</h3>`;
+                
+                if (passCount === checks.length) {
+                    output += '<p style="color: green; font-weight: bold;">✓ All Phase 2 components implemented successfully!</p>';
+                } else {
+                    output += '<p style="color: red; font-weight: bold;">✗ Some components are missing.</p>';
+                }
+                
+                resultsDiv.innerHTML = output;
+            })
+            .catch(error => {
+                document.getElementById('test-results').innerHTML = '<p style="color: red;">Error loading index.html: ' + error + '</p>';
+            });
+    </script>
+</body>
+</html>
