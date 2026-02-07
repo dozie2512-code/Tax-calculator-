@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 6 Test - Business Metrics Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f4f4f9;
+        }
+        .test-section {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .test-passed {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .test-failed {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        h1 { color: #0056b3; }
+        h2 { color: #0056b3; border-bottom: 2px solid #0056b3; padding-bottom: 5px; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 5px 0; }
+        .iframe-container {
+            width: 100%;
+            height: 800px;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phase 6 Implementation Test - Business Metrics Dashboard</h1>
+    
+    <div class="test-section">
+        <h2>✅ Implementation Checklist</h2>
+        <ul>
+            <li>✓ Dashboard HTML structure added between Financial Summary and Detailed Ledger</li>
+            <li>✓ 8 KPI cards implemented with responsive grid</li>
+            <li>✓ CSS styling for KPI cards (good/warning/danger states)</li>
+            <li>✓ JavaScript calculation functions added</li>
+            <li>✓ Cash Flow Forecast section (collapsible)</li>
+            <li>✓ Expense Analysis section (collapsible)</li>
+            <li>✓ Revenue Analysis section (collapsible)</li>
+            <li>✓ Profitability Metrics section (collapsible)</li>
+            <li>✓ Integration with refreshAllDisplays()</li>
+            <li>✓ Auto-update on data changes</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Key Features Implemented</h2>
+        <h3>KPI Cards:</h3>
+        <ul>
+            <li>1. Gross Profit Margin - with color coding (Green &gt;20%, Yellow 10-20%, Red &lt;10%)</li>
+            <li>2. Net Profit Margin - after-tax profitability indicator</li>
+            <li>3. Average Monthly Revenue - with trend indicators</li>
+            <li>4. Average Monthly Expenses - with trend indicators</li>
+            <li>5. Current vs Last Month - month-over-month comparison</li>
+            <li>6. Burn Rate - monthly expense rate</li>
+            <li>7. Runway - months until cash runs out</li>
+            <li>8. Break-Even Point - monthly revenue needed</li>
+        </ul>
+        
+        <h3>Collapsible Sections:</h3>
+        <ul>
+            <li>💰 Cash Flow Forecast - 3-month projection with warnings</li>
+            <li>📉 Expense Analysis - Top 5 categories and monthly trends</li>
+            <li>📈 Revenue Analysis - Best months and growth rates</li>
+            <li>💎 Profitability Metrics - Monthly profit breakdown</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Testing Instructions</h2>
+        <ol>
+            <li>Open index.html in a browser</li>
+            <li>Add sample income entries (various amounts and dates)</li>
+            <li>Add sample expense entries (various amounts and dates)</li>
+            <li>Scroll down to see the Business Metrics Dashboard</li>
+            <li>Verify all 8 KPI cards show calculated values</li>
+            <li>Verify card colors change based on thresholds</li>
+            <li>Expand each collapsible section to verify detailed analytics</li>
+            <li>Add/edit/delete entries and verify dashboard auto-updates</li>
+            <li>Switch tax years and verify calculations are year-specific</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Expected Behavior</h2>
+        <ul>
+            <li>Dashboard appears after Financial Summary section</li>
+            <li>All calculations based on current year data only</li>
+            <li>KPI cards show "--" or "0" when no data available</li>
+            <li>Cards change color based on performance thresholds</li>
+            <li>Hover effects work on KPI cards (lift up effect)</li>
+            <li>Collapsible sections show meaningful analysis when expanded</li>
+            <li>No console errors</li>
+            <li>Responsive design works on mobile (cards stack vertically)</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 Live Preview</h2>
+        <p>The application is embedded below. You can interact with it directly:</p>
+        <div class="iframe-container">
+            <iframe src="index.html"></iframe>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>✨ Implementation Notes</h2>
+        <ul>
+            <li>✓ Single-file structure maintained (all in index.html)</li>
+            <li>✓ No external libraries used (vanilla JavaScript)</li>
+            <li>✓ Integrates seamlessly with existing Phase 1-3 features</li>
+            <li>✓ No additional data storage required (all calculated on-the-fly)</li>
+            <li>✓ Performance optimized (calculations only on data changes)</li>
+            <li>✓ Mobile responsive with CSS grid</li>
+            <li>✓ Accessible with tooltips on KPI cards</li>
+            <li>✓ Visual feedback with emojis and color coding</li>
+        </ul>
+    </div>
+</body>
+</html>
