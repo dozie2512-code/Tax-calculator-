@@ -331,6 +331,17 @@
             </div>
         </div>
 
+        <!-- Enhanced Reports Section -->
+        <div class="section">
+            <h2>Financial Reports</h2>
+            <button type="button" onclick="toggleFinancialReports()" style="margin-bottom: 15px;">
+                <span id="reportsToggleText">Show Detailed Reports</span>
+            </button>
+            <div id="financialReportsDisplay" style="display: none;">
+                <!-- Reports will be generated here -->
+            </div>
+        </div>
+
         <!-- Tax Calculator Section -->
         <div class="section">
             <h2>Tax Calculator</h2>
@@ -1607,6 +1618,295 @@
                 mileageEntries = mileageEntries.filter(entry => entry.id !== id);
                 updateMileageDisplay();
             }
+        }
+
+        // Toggle Financial Reports Display
+        function toggleFinancialReports() {
+            const display = document.getElementById('financialReportsDisplay');
+            const toggleText = document.getElementById('reportsToggleText');
+            
+            if (display.style.display === 'none') {
+                generateFinancialReports();
+                display.style.display = 'block';
+                toggleText.textContent = 'Hide Detailed Reports';
+            } else {
+                display.style.display = 'none';
+                toggleText.textContent = 'Show Detailed Reports';
+            }
+        }
+
+        // Generate all financial reports
+        function generateFinancialReports() {
+            const container = document.getElementById('financialReportsDisplay');
+            
+            let html = '';
+            
+            // 1. Income by Category Report
+            html += generateIncomeByCategoryReport();
+            
+            // 2. Expenses by Category Report
+            html += generateExpensesByCategoryReport();
+            
+            // 3. Profit & Loss Statement
+            html += generateProfitAndLossStatement();
+            
+            // 4. Tax Optimization Summary
+            html += generateTaxOptimizationSummary();
+            
+            // 5. Account Balance Report
+            html += generateAccountBalanceReport();
+            
+            container.innerHTML = html;
+        }
+
+        // Generate Income by Category Report
+        function generateIncomeByCategoryReport() {
+            if (incomeEntries.length === 0) {
+                return '<div style="margin-bottom: 30px;"><h3>Income by Category</h3><p style="color: #666;">No income entries yet.</p></div>';
+            }
+            
+            const categoryTotals = {};
+            const categoryVAT = {};
+            let totalIncome = 0;
+            let totalVAT = 0;
+            
+            incomeEntries.forEach(entry => {
+                const category = entry.accountName || 'Uncategorized';
+                if (!categoryTotals[category]) {
+                    categoryTotals[category] = 0;
+                    categoryVAT[category] = 0;
+                }
+                categoryTotals[category] += entry.amount;
+                categoryVAT[category] += entry.vatAmount || 0;
+                totalIncome += entry.amount;
+                totalVAT += entry.vatAmount || 0;
+            });
+            
+            let html = '<div style="margin-bottom: 30px;"><h3 style="color: #0056b3;">Income by Category</h3>';
+            html += '<table style="width: 100%; border-collapse: collapse;"><thead><tr style="background: #0056b3; color: white;"><th style="padding: 10px; text-align: left;">Account</th><th style="padding: 10px; text-align: right;">Amount</th><th style="padding: 10px; text-align: right;">VAT</th><th style="padding: 10px; text-align: right;">%</th></tr></thead><tbody>';
+            
+            Object.entries(categoryTotals).forEach(([category, amount]) => {
+                const percentage = (amount / totalIncome * 100).toFixed(1);
+                const vat = categoryVAT[category];
+                html += `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">${escapeHtml(category)}</td>
+                        <td style="padding: 10px; text-align: right; color: #28a745; font-weight: bold;">£${amount.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right;">£${vat.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right;">${percentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                <tr style="background: #f0f0f0; font-weight: bold;">
+                    <td style="padding: 10px;">Total</td>
+                    <td style="padding: 10px; text-align: right; color: #28a745;">£${totalIncome.toFixed(2)}</td>
+                    <td style="padding: 10px; text-align: right;">£${totalVAT.toFixed(2)}</td>
+                    <td style="padding: 10px; text-align: right;">100%</td>
+                </tr>
+            `;
+            html += '</tbody></table></div>';
+            
+            return html;
+        }
+
+        // Generate Expenses by Category Report
+        function generateExpensesByCategoryReport() {
+            if (expenseEntries.length === 0) {
+                return '<div style="margin-bottom: 30px;"><h3>Expenses by Category</h3><p style="color: #666;">No expense entries yet.</p></div>';
+            }
+            
+            const categoryTotals = {};
+            const categoryDeductible = {};
+            let totalExpenses = 0;
+            let totalDeductible = 0;
+            
+            expenseEntries.forEach(entry => {
+                const category = entry.accountName || 'Uncategorized';
+                if (!categoryTotals[category]) {
+                    categoryTotals[category] = 0;
+                    categoryDeductible[category] = 0;
+                }
+                categoryTotals[category] += entry.amount;
+                if (entry.deductible) {
+                    categoryDeductible[category] += entry.amount;
+                    totalDeductible += entry.amount;
+                }
+                totalExpenses += entry.amount;
+            });
+            
+            let html = '<div style="margin-bottom: 30px;"><h3 style="color: #0056b3;">Expenses by Category</h3>';
+            html += '<table style="width: 100%; border-collapse: collapse;"><thead><tr style="background: #0056b3; color: white;"><th style="padding: 10px; text-align: left;">Account</th><th style="padding: 10px; text-align: right;">Amount</th><th style="padding: 10px; text-align: right;">Deductible</th><th style="padding: 10px; text-align: right;">%</th></tr></thead><tbody>';
+            
+            Object.entries(categoryTotals).forEach(([category, amount]) => {
+                const percentage = (amount / totalExpenses * 100).toFixed(1);
+                const deductible = categoryDeductible[category] || 0;
+                html += `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">${escapeHtml(category)}</td>
+                        <td style="padding: 10px; text-align: right; color: #dc3545; font-weight: bold;">£${amount.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right; color: ${deductible > 0 ? '#28a745' : '#999'};">£${deductible.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right;">${percentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            // Add mileage expenses if any
+            if (mileageEntries.length > 0) {
+                const totalMileageRelief = mileageEntries.reduce((sum, e) => sum + e.hmrcAmount, 0);
+                const mileagePercentage = (totalMileageRelief / (totalExpenses + totalMileageRelief) * 100).toFixed(1);
+                html += `
+                    <tr style="border-bottom: 1px solid #ddd; background: #fff3cd;">
+                        <td style="padding: 10px;"><strong>Mileage Allowance</strong></td>
+                        <td style="padding: 10px; text-align: right; color: #dc3545; font-weight: bold;">£${totalMileageRelief.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right; color: #28a745;">£${totalMileageRelief.toFixed(2)}</td>
+                        <td style="padding: 10px; text-align: right;">${mileagePercentage}%</td>
+                    </tr>
+                `;
+            }
+            
+            html += `
+                <tr style="background: #f0f0f0; font-weight: bold;">
+                    <td style="padding: 10px;">Total</td>
+                    <td style="padding: 10px; text-align: right; color: #dc3545;">£${totalExpenses.toFixed(2)}</td>
+                    <td style="padding: 10px; text-align: right; color: #28a745;">£${totalDeductible.toFixed(2)}</td>
+                    <td style="padding: 10px; text-align: right;">100%</td>
+                </tr>
+            `;
+            html += '</tbody></table></div>';
+            
+            return html;
+        }
+
+        // Generate Profit & Loss Statement
+        function generateProfitAndLossStatement() {
+            const totalIncome = incomeEntries.reduce((sum, e) => sum + e.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, e) => sum + e.amount, 0);
+            const totalMileage = mileageEntries.reduce((sum, e) => sum + e.hmrcAmount, 0);
+            const grossProfit = totalIncome;
+            const totalCosts = totalExpenses + totalMileage;
+            const netProfit = grossProfit - totalCosts;
+            
+            let html = '<div style="margin-bottom: 30px;"><h3 style="color: #0056b3;">Profit & Loss Statement</h3>';
+            html += '<div style="background: #f9f9f9; padding: 20px; border-radius: 4px;">';
+            
+            html += '<div style="margin-bottom: 20px;"><h4 style="color: #28a745; margin: 0 0 10px 0;">Revenue</h4>';
+            html += '<table style="width: 100%;"><tbody>';
+            incomeEntries.forEach(entry => {
+                html += `<tr><td>${escapeHtml(entry.accountName || 'Income')}</td><td style="text-align: right;">£${entry.amount.toFixed(2)}</td></tr>`;
+            });
+            html += `<tr style="border-top: 2px solid #28a745; font-weight: bold;"><td>Total Revenue</td><td style="text-align: right; color: #28a745;">£${totalIncome.toFixed(2)}</td></tr>`;
+            html += '</tbody></table></div>';
+            
+            html += '<div style="margin-bottom: 20px;"><h4 style="color: #dc3545; margin: 0 0 10px 0;">Less: Expenses</h4>';
+            html += '<table style="width: 100%;"><tbody>';
+            expenseEntries.forEach(entry => {
+                html += `<tr><td>${escapeHtml(entry.accountName || 'Expense')}</td><td style="text-align: right;">£${entry.amount.toFixed(2)}</td></tr>`;
+            });
+            if (mileageEntries.length > 0) {
+                html += `<tr><td>Mileage Allowance</td><td style="text-align: right;">£${totalMileage.toFixed(2)}</td></tr>`;
+            }
+            html += `<tr style="border-top: 2px solid #dc3545; font-weight: bold;"><td>Total Expenses</td><td style="text-align: right; color: #dc3545;">£${totalCosts.toFixed(2)}</td></tr>`;
+            html += '</tbody></table></div>';
+            
+            const profitColor = netProfit >= 0 ? '#28a745' : '#dc3545';
+            html += `<div style="border-top: 3px solid #0056b3; padding-top: 15px; margin-top: 15px;">`;
+            html += `<h4 style="margin: 0;">Net ${netProfit >= 0 ? 'Profit' : 'Loss'}: <span style="color: ${profitColor}; font-size: 1.3em;">£${netProfit.toFixed(2)}</span></h4>`;
+            html += '</div></div></div>';
+            
+            return html;
+        }
+
+        // Generate Tax Optimization Summary
+        function generateTaxOptimizationSummary() {
+            const totalDeductibleExpenses = expenseEntries.filter(e => e.deductible).reduce((sum, e) => sum + e.amount, 0);
+            const totalMileageRelief = mileageEntries.reduce((sum, e) => sum + e.taxRelief, 0);
+            
+            let html = '<div style="margin-bottom: 30px;"><h3 style="color: #0056b3;">Tax Optimization Summary</h3>';
+            html += '<div style="background: #e8f4f8; padding: 20px; border-radius: 4px;">';
+            
+            html += '<table style="width: 100%;"><tbody>';
+            html += `<tr><td><strong>Total Deductible Expenses:</strong></td><td style="text-align: right; color: #28a745; font-weight: bold;">£${totalDeductibleExpenses.toFixed(2)}</td></tr>`;
+            if (totalMileageRelief > 0) {
+                html += `<tr><td><strong>Mileage Allowance Relief:</strong></td><td style="text-align: right; color: #28a745; font-weight: bold;">£${totalMileageRelief.toFixed(2)}</td></tr>`;
+            }
+            html += `<tr style="border-top: 2px solid #0056b3; margin-top: 10px;"><td><strong>Total Tax Relief Available:</strong></td><td style="text-align: right; color: #0056b3; font-weight: bold; font-size: 1.2em;">£${(totalDeductibleExpenses + totalMileageRelief).toFixed(2)}</td></tr>`;
+            html += '</tbody></table>';
+            
+            html += '<div style="margin-top: 20px; padding: 15px; background: #fff; border-left: 4px solid #0056b3;">';
+            html += '<h4 style="margin: 0 0 10px 0; color: #0056b3;">Recommendations:</h4>';
+            html += '<ul style="margin: 0; padding-left: 20px;">';
+            
+            if (totalMileageRelief > 0) {
+                html += '<li>You can claim £' + totalMileageRelief.toFixed(2) + ' in mileage tax relief</li>';
+            }
+            
+            if (incomeEntries.length > 0 && expenseEntries.length === 0) {
+                html += '<li>Consider tracking business expenses to reduce taxable income</li>';
+            }
+            
+            const hasNonDeductible = expenseEntries.some(e => !e.deductible);
+            if (hasNonDeductible) {
+                html += '<li>Some expenses are non-deductible. Review entertainment and personal expenses</li>';
+            }
+            
+            html += '<li>Use the Tax Calculator below to see your final tax liability with all allowances</li>';
+            html += '<li>Consider pension contributions for additional tax relief</li>';
+            html += '</ul></div>';
+            
+            html += '</div></div>';
+            
+            return html;
+        }
+
+        // Generate Account Balance Report
+        function generateAccountBalanceReport() {
+            const accountBalances = {};
+            const accountCounts = {};
+            
+            incomeEntries.forEach(entry => {
+                const account = entry.accountCode + ' - ' + entry.accountName;
+                if (!accountBalances[account]) {
+                    accountBalances[account] = 0;
+                    accountCounts[account] = 0;
+                }
+                accountBalances[account] += entry.amount;
+                accountCounts[account]++;
+            });
+            
+            expenseEntries.forEach(entry => {
+                const account = entry.accountCode + ' - ' + entry.accountName;
+                if (!accountBalances[account]) {
+                    accountBalances[account] = 0;
+                    accountCounts[account] = 0;
+                }
+                accountBalances[account] -= entry.amount;
+                accountCounts[account]++;
+            });
+            
+            if (Object.keys(accountBalances).length === 0) {
+                return '<div style="margin-bottom: 30px;"><h3>Account Balance Report</h3><p style="color: #666;">No transactions yet.</p></div>';
+            }
+            
+            let html = '<div style="margin-bottom: 30px;"><h3 style="color: #0056b3;">Account Balance Report</h3>';
+            html += '<table style="width: 100%; border-collapse: collapse;"><thead><tr style="background: #0056b3; color: white;"><th style="padding: 10px; text-align: left;">Account</th><th style="padding: 10px; text-align: center;">Transactions</th><th style="padding: 10px; text-align: right;">Balance</th></tr></thead><tbody>';
+            
+            Object.entries(accountBalances).sort((a, b) => b[1] - a[1]).forEach(([account, balance]) => {
+                const count = accountCounts[account];
+                const balanceColor = balance >= 0 ? '#28a745' : '#dc3545';
+                html += `
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">${escapeHtml(account)}</td>
+                        <td style="padding: 10px; text-align: center;">${count}</td>
+                        <td style="padding: 10px; text-align: right; color: ${balanceColor}; font-weight: bold;">£${balance.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            
+            return html;
         }
 
         // Show/hide allowance input fields based on selection
