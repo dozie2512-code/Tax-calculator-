@@ -165,11 +165,75 @@
             color: #666;
             font-style: italic;
         }
+        .year-selector-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border: 2px solid #0056b3;
+        }
+        .year-selector-container label {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0056b3;
+            margin-right: 10px;
+        }
+        .year-selector-container select {
+            font-size: 1em;
+            padding: 10px;
+            min-width: 150px;
+        }
+        .data-management-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+        }
+        .data-management-container h2 {
+            margin-top: 0;
+            color: #856404;
+            border-bottom: 2px solid #856404;
+        }
+        .data-management-container button {
+            margin: 5px;
+        }
+        button.danger-btn {
+            background: #dc3545;
+        }
+        button.danger-btn:hover {
+            background: #c82333;
+        }
+        button.success-btn {
+            background: #28a745;
+        }
+        button.success-btn:hover {
+            background: #218838;
+        }
+        button.info-btn {
+            background: #17a2b8;
+        }
+        button.info-btn:hover {
+            background: #138496;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>UK Tax Calculator & Accounting Manager</h1>
+
+        <!-- Year Selector Section -->
+        <div class="year-selector-container">
+            <label for="yearSelector">Tax Year:</label>
+            <select id="yearSelector" onchange="switchYear()">
+                <option value="2026/27">2026/27 (Planning)</option>
+                <option value="2025/26" selected>2025/26 (Current)</option>
+                <option value="2024/25">2024/25</option>
+                <option value="2023/24">2023/24</option>
+                <option value="2022/23">2022/23</option>
+                <option value="2021/22">2021/22</option>
+            </select>
+        </div>
 
         <!-- Income Tracking Section -->
         <div class="section">
@@ -387,6 +451,16 @@
                 <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
             </div>
         </div>
+
+        <!-- Data Management Section -->
+        <div class="data-management-container">
+            <h2>Data Management</h2>
+            <p>Manage your tax year data with backup and restore options.</p>
+            <button type="button" class="danger-btn" onclick="clearCurrentYearData()">Clear Current Year Data</button>
+            <button type="button" class="success-btn" onclick="exportData()">Backup Data (Download JSON)</button>
+            <button type="button" class="info-btn" onclick="document.getElementById('importFileInput').click()">Load Backup</button>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importData(event)">
+        </div>
     </div>
     <script>
         // Constants for 2025/26 Tax Year
@@ -510,10 +584,217 @@
             document.getElementById('vatFields').style.display = vatRegistered ? 'block' : 'none';
         }
 
-        // Data storage
+        // Data storage - Multi-year structure
+        const STORAGE_KEY = 'ukTaxCalculatorData';
+        const DATA_VERSION = '2.0';
+        
+        let currentYear = '2025/26';
         let incomeEntries = [];
         let expenseEntries = [];
         let entryIdCounter = 0;
+
+        // Initialize data structure
+        function initializeDataStructure() {
+            return {
+                version: DATA_VERSION,
+                currentYear: currentYear,
+                businessProfile: {
+                    businessName: '',
+                    tradingName: '',
+                    address: '',
+                    vatNumber: '',
+                    companyNumber: ''
+                },
+                taxYears: {
+                    '2026/27': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
+                    '2025/26': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
+                    '2024/25': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
+                    '2023/24': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
+                    '2022/23': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 },
+                    '2021/22': { income: [], expenses: [], taxCalculations: {}, entryIdCounter: 0 }
+                },
+                settings: {
+                    dateFormat: 'DD/MM/YYYY',
+                    currencyFormat: 'GBP'
+                }
+            };
+        }
+
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            try {
+                const data = loadFromLocalStorage() || initializeDataStructure();
+                
+                // Update current year data
+                data.currentYear = currentYear;
+                data.taxYears[currentYear] = {
+                    income: incomeEntries,
+                    expenses: expenseEntries,
+                    taxCalculations: data.taxYears[currentYear]?.taxCalculations || {},
+                    entryIdCounter: entryIdCounter
+                };
+                
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                alert('Failed to save data. Your browser storage may be full.');
+            }
+        }
+
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return null;
+                
+                const data = JSON.parse(stored);
+                
+                // Migrate old data format if needed
+                if (!data.version || data.version !== DATA_VERSION) {
+                    return migrateOldData(data);
+                }
+                
+                return data;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return null;
+            }
+        }
+
+        // Migrate old data format to new structure
+        function migrateOldData(oldData) {
+            const newData = initializeDataStructure();
+            
+            // If old data exists in array format, it's from a pre-1.0 version
+            // This format predates the current implementation and cannot be reliably migrated
+            // Initialize with empty structure instead
+            if (Array.isArray(oldData)) {
+                return newData;
+            }
+            
+            // If data exists without version, assume it's from version 1.0 (current year only)
+            // Migrate this data to the 2025/26 tax year in the new multi-year structure
+            if (oldData && !oldData.version) {
+                if (oldData.income || oldData.expenses) {
+                    newData.taxYears['2025/26'].income = oldData.income || [];
+                    newData.taxYears['2025/26'].expenses = oldData.expenses || [];
+                }
+            }
+            
+            return newData;
+        }
+
+        // Load data for specific year
+        function loadYearData(year) {
+            const data = loadFromLocalStorage();
+            if (!data || !data.taxYears[year]) {
+                incomeEntries = [];
+                expenseEntries = [];
+                entryIdCounter = 0;
+                return;
+            }
+            
+            const yearData = data.taxYears[year];
+            incomeEntries = yearData.income || [];
+            expenseEntries = yearData.expenses || [];
+            entryIdCounter = yearData.entryIdCounter || 0;
+        }
+
+        // Switch to different year
+        function switchYear() {
+            const yearSelector = document.getElementById('yearSelector');
+            currentYear = yearSelector.value;
+            
+            // Save current data before switching
+            saveToLocalStorage();
+            
+            // Load new year data
+            loadYearData(currentYear);
+            
+            // Refresh all displays (income list, expense list, summary, and ledger)
+            refreshAllDisplays();
+        }
+
+        // Clear current year data
+        function clearCurrentYearData() {
+            if (!confirm(`Are you sure you want to clear ALL data for ${currentYear}? This cannot be undone!`)) {
+                return;
+            }
+            
+            incomeEntries = [];
+            expenseEntries = [];
+            entryIdCounter = 0;
+            
+            saveToLocalStorage();
+            refreshAllDisplays();
+            
+            alert(`All data for ${currentYear} has been cleared.`);
+        }
+
+        // Export data to JSON file
+        function exportData() {
+            const data = loadFromLocalStorage() || initializeDataStructure();
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `uk-tax-calculator-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Data exported successfully!');
+        }
+
+        // Import data from JSON file
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate data structure
+                    if (!importedData.version || !importedData.taxYears) {
+                        throw new Error('Invalid data format');
+                    }
+                    
+                    if (confirm('This will replace ALL existing data. Continue?')) {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+                        currentYear = importedData.currentYear || '2025/26';
+                        document.getElementById('yearSelector').value = currentYear;
+                        loadYearData(currentYear);
+                        refreshAllDisplays();
+                        alert('Data imported successfully!');
+                    }
+                } catch (error) {
+                    alert('Error importing data: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Initialize on page load
+        function initializeApp() {
+            const data = loadFromLocalStorage();
+            if (data) {
+                currentYear = data.currentYear || '2025/26';
+                document.getElementById('yearSelector').value = currentYear;
+                loadYearData(currentYear);
+            } else {
+                // First time initialization
+                saveToLocalStorage();
+            }
+            refreshAllDisplays();
+        }
 
         // Helper function to escape HTML to prevent XSS
         function escapeHtml(text) {
@@ -543,7 +824,8 @@
             document.getElementById('incomeDescription').value = '';
             document.getElementById('incomeAmount').value = '';
             
-            updateDisplays();
+            saveToLocalStorage();
+            refreshAllDisplays();
         }
 
         // Add expense entry
@@ -567,7 +849,8 @@
             document.getElementById('expenseDescription').value = '';
             document.getElementById('expenseAmount').value = '';
             
-            updateDisplays();
+            saveToLocalStorage();
+            refreshAllDisplays();
         }
 
         // Delete entry
@@ -578,7 +861,8 @@
                 } else {
                     expenseEntries = expenseEntries.filter(entry => entry.id !== id);
                 }
-                updateDisplays();
+                saveToLocalStorage();
+                refreshAllDisplays();
             }
         }
 
@@ -607,11 +891,12 @@
 
             entry.description = newDescription.trim();
             entry.amount = parsedAmount;
-            updateDisplays();
+            saveToLocalStorage();
+            refreshAllDisplays();
         }
 
-        // Update all displays
-        function updateDisplays() {
+        // Refresh all displays (income list, expense list, summary, and ledger)
+        function refreshAllDisplays() {
             updateIncomeList();
             updateExpenseList();
             updateSummary();
@@ -958,8 +1243,8 @@
             document.getElementById('results').style.display = 'block';
         });
 
-        // Initialize displays
-        updateDisplays();
+        // Initialize app on page load
+        initializeApp();
     </script>
 </body>
-                        </html>
+    </html>
