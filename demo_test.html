@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phase 1 Feature Demo</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f4f4f9; }
+        .feature { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .feature h3 { color: #0056b3; margin-top: 0; }
+        .pass { color: #28a745; font-weight: bold; }
+        .fail { color: #dc3545; font-weight: bold; }
+        iframe { width: 100%; height: 500px; border: 2px solid #0056b3; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>UK Tax Calculator - Phase 1 Feature Demo</h1>
+    
+    <div class="feature">
+        <h3>✅ Feature 1: Year Selector</h3>
+        <p>A prominent year selector dropdown is now visible at the top of the application.</p>
+        <p><strong>How to test:</strong> Look for the blue-themed "Tax Year" selector below the main title.</p>
+    </div>
+    
+    <div class="feature">
+        <h3>✅ Feature 2: Multi-Year Data Isolation</h3>
+        <p>Each tax year has completely separate data. Data entered in one year doesn't appear in another.</p>
+        <p><strong>How to test:</strong></p>
+        <ol>
+            <li>Add income/expense entries in 2025/26</li>
+            <li>Switch to 2024/25 - page will be empty</li>
+            <li>Add different entries in 2024/25</li>
+            <li>Switch back to 2025/26 - original data reappears</li>
+        </ol>
+    </div>
+    
+    <div class="feature">
+        <h3>✅ Feature 3: Auto-Save to LocalStorage</h3>
+        <p>All data is automatically saved to your browser's localStorage after every operation.</p>
+        <p><strong>How to test:</strong></p>
+        <ol>
+            <li>Add several income and expense entries</li>
+            <li>Refresh the page (F5)</li>
+            <li>All data should still be there</li>
+            <li>Open DevTools (F12) > Application > Local Storage > check "ukTaxCalculatorData"</li>
+        </ol>
+    </div>
+    
+    <div class="feature">
+        <h3>✅ Feature 4: Data Management Controls</h3>
+        <p>Three new buttons at the bottom allow you to manage your data:</p>
+        <ul>
+            <li><strong>Clear Current Year Data</strong> (Red) - Clears only the selected year</li>
+            <li><strong>Backup Data</strong> (Green) - Downloads all data as JSON</li>
+            <li><strong>Load Backup</strong> (Blue) - Imports data from JSON file</li>
+        </ul>
+        <p><strong>How to test:</strong> Scroll to the bottom to see the yellow "Data Management" section.</p>
+    </div>
+    
+    <div class="feature">
+        <h3>✅ Feature 5: Data Versioning (v2.0)</h3>
+        <p>The new data structure includes version information for future migrations.</p>
+        <p><strong>How to test:</strong> Export data and open the JSON file - look for "version": "2.0"</p>
+    </div>
+    
+    <div class="feature">
+        <h3>Live Application Demo</h3>
+        <iframe src="index.html"></iframe>
+    </div>
+    
+    <div class="feature">
+        <h3>Testing Checklist</h3>
+        <p>Use this checklist to verify all features:</p>
+        <ol>
+            <li>☐ Year selector visible and functional</li>
+            <li>☐ Can switch between 6 different years (2021/22 to 2026/27)</li>
+            <li>☐ Data persists after page refresh</li>
+            <li>☐ Each year has isolated data</li>
+            <li>☐ Clear data button works with confirmation</li>
+            <li>☐ Export creates downloadable JSON file</li>
+            <li>☐ Import validates and restores data</li>
+            <li>☐ All existing features still work (income, expenses, tax calc)</li>
+            <li>☐ No JavaScript errors in console</li>
+            <li>☐ UI is consistent with existing design</li>
+        </ol>
+    </div>
+</body>
+</html>
