@@ -1466,6 +1466,9 @@
         const NI_RATE = 0.12; // National Insurance rate for employees
         const SMALL_COMPANY_TAX_RATE = 0.19; // Small Profits Rate for Corporation Tax
         const MAIN_COMPANY_TAX_RATE = 0.25; // Main Rate for Corporation Tax
+        const CLASS2_NIC_WEEKLY_RATE = 3.45; // Class 2 NIC weekly rate 2025/26
+        const WEEKS_PER_YEAR = 52; // Weeks per year
+        const AIA_LIMIT = 1000000; // Annual Investment Allowance limit
 
         // Phase 2: Advanced Tax Planning Constants (2025/26)
         
@@ -3423,8 +3426,8 @@ Box 9: £${Math.round(vat.box9)}`;
             
             switch (asset.category) {
                 case 'aia':
-                    // AIA up to £1,000,000
-                    return Math.min(cost, 1000000);
+                    // AIA up to limit
+                    return Math.min(cost, AIA_LIMIT);
                 case 'main':
                     // Main pool: 18% writing down allowance
                     return cost * 0.18;
@@ -3515,48 +3518,54 @@ Box 9: £${Math.round(vat.box9)}`;
             const taxableIncome = totalIncome - totalExpenses;
             
             // Calculate Income Tax (basic bands, no allowances)
+            const BASIC_RATE_THRESHOLD = 50270;
+            const HIGHER_RATE_THRESHOLD = 125140;
+            const BASIC_RATE = 0.20;
+            const HIGHER_RATE = 0.40;
+            const ADDITIONAL_RATE = 0.45;
+            
             let incomeTax = 0;
             let taxBreakdown = '';
             
-            if (taxableIncome <= 12570) {
-                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
-            } else if (taxableIncome <= 50270) {
-                const taxable = taxableIncome - 12570;
-                incomeTax = taxable * 0.20;
-                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
-                taxBreakdown += formatComputationLine(`£12,571 - £${taxableIncome.toFixed(0)} @ 20%`, incomeTax) + '\n';
-            } else if (taxableIncome <= 125140) {
-                const basicTax = (50270 - 12570) * 0.20;
-                const higherTax = (taxableIncome - 50270) * 0.40;
+            if (taxableIncome <= PERSONAL_ALLOWANCE) {
+                taxBreakdown += formatComputationLine(`£0 - £${PERSONAL_ALLOWANCE.toLocaleString()} @ 0%`, 0) + '\n';
+            } else if (taxableIncome <= BASIC_RATE_THRESHOLD) {
+                const taxable = taxableIncome - PERSONAL_ALLOWANCE;
+                incomeTax = taxable * BASIC_RATE;
+                taxBreakdown += formatComputationLine(`£0 - £${PERSONAL_ALLOWANCE.toLocaleString()} @ 0%`, 0) + '\n';
+                taxBreakdown += formatComputationLine(`£${(PERSONAL_ALLOWANCE + 1).toLocaleString()} - £${taxableIncome.toFixed(0)} @ 20%`, incomeTax) + '\n';
+            } else if (taxableIncome <= HIGHER_RATE_THRESHOLD) {
+                const basicTax = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * BASIC_RATE;
+                const higherTax = (taxableIncome - BASIC_RATE_THRESHOLD) * HIGHER_RATE;
                 incomeTax = basicTax + higherTax;
-                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
-                taxBreakdown += formatComputationLine('£12,571 - £50,270 @ 20%', basicTax) + '\n';
-                taxBreakdown += formatComputationLine(`£50,271 - £${taxableIncome.toFixed(0)} @ 40%`, higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£0 - £${PERSONAL_ALLOWANCE.toLocaleString()} @ 0%`, 0) + '\n';
+                taxBreakdown += formatComputationLine(`£${(PERSONAL_ALLOWANCE + 1).toLocaleString()} - £${BASIC_RATE_THRESHOLD.toLocaleString()} @ 20%`, basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(BASIC_RATE_THRESHOLD + 1).toLocaleString()} - £${taxableIncome.toFixed(0)} @ 40%`, higherTax) + '\n';
             } else {
-                const basicTax = (50270 - 12570) * 0.20;
-                const higherTax = (125140 - 50270) * 0.40;
-                const additionalTax = (taxableIncome - 125140) * 0.45;
+                const basicTax = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * BASIC_RATE;
+                const higherTax = (HIGHER_RATE_THRESHOLD - BASIC_RATE_THRESHOLD) * HIGHER_RATE;
+                const additionalTax = (taxableIncome - HIGHER_RATE_THRESHOLD) * ADDITIONAL_RATE;
                 incomeTax = basicTax + higherTax + additionalTax;
-                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
-                taxBreakdown += formatComputationLine('£12,571 - £50,270 @ 20%', basicTax) + '\n';
-                taxBreakdown += formatComputationLine('£50,271 - £125,140 @ 40%', higherTax) + '\n';
-                taxBreakdown += formatComputationLine(`£125,141 - £${taxableIncome.toFixed(0)} @ 45%`, additionalTax) + '\n';
+                taxBreakdown += formatComputationLine(`£0 - £${PERSONAL_ALLOWANCE.toLocaleString()} @ 0%`, 0) + '\n';
+                taxBreakdown += formatComputationLine(`£${(PERSONAL_ALLOWANCE + 1).toLocaleString()} - £${BASIC_RATE_THRESHOLD.toLocaleString()} @ 20%`, basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(BASIC_RATE_THRESHOLD + 1).toLocaleString()} - £${HIGHER_RATE_THRESHOLD.toLocaleString()} @ 40%`, higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(HIGHER_RATE_THRESHOLD + 1).toLocaleString()} - £${taxableIncome.toFixed(0)} @ 45%`, additionalTax) + '\n';
             }
             
             // Calculate National Insurance (simplified)
             let class2NIC = 0;
             let class4NIC = 0;
             
-            if (taxableIncome > 12570) {
-                class2NIC = 3.45 * 52; // £3.45 per week
+            if (taxableIncome > PERSONAL_ALLOWANCE) {
+                class2NIC = CLASS2_NIC_WEEKLY_RATE * WEEKS_PER_YEAR;
             }
             
-            if (taxableIncome > 12570) {
-                const nicableIncome = taxableIncome - 12570;
-                if (nicableIncome <= 50270) {
+            if (taxableIncome > PERSONAL_ALLOWANCE) {
+                const nicableIncome = taxableIncome - PERSONAL_ALLOWANCE;
+                if (nicableIncome <= BASIC_RATE_THRESHOLD) {
                     class4NIC = nicableIncome * 0.09;
                 } else {
-                    class4NIC = (50270 - 12570) * 0.09 + (nicableIncome - 50270) * 0.02;
+                    class4NIC = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * 0.09 + (nicableIncome - BASIC_RATE_THRESHOLD) * 0.02;
                 }
             }
             
@@ -3584,11 +3593,14 @@ ${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
         }
 
         function generateComputationB(totalIncome, totalExpenses) {
-            // Get all allowances
-            const personalAllowance = 12570;
-            const tradingAllowance = 1000;
-            const propertyAllowance = 1000;
-            const blindPersonAllowance = 3130;
+            // Tax rate thresholds
+            const BASIC_RATE_THRESHOLD = 50270;
+            const HIGHER_RATE_THRESHOLD = 125140;
+            const BASIC_RATE = 0.20;
+            const HIGHER_RATE = 0.40;
+            const ADDITIONAL_RATE = 0.45;
+            
+            // Get all allowances and reliefs
             const mileageAllowance = calculateMileageAllowance();
             const rentARoomRelief = calculateRentARoomRelief();
             const capitalAllowances = calculateCapitalAllowances();
@@ -3596,72 +3608,72 @@ ${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
             // Calculate adjusted taxable income
             let adjustedIncome = totalIncome - totalExpenses;
             let allowancesApplied = [];
-            let totalAllowances = 0;
+            let totalAllowancesAmount = 0;
             
             // Apply allowances that reduce income
             if (mileageAllowance > 0) {
                 adjustedIncome -= mileageAllowance;
-                totalAllowances += mileageAllowance;
+                totalAllowancesAmount += mileageAllowance;
                 allowancesApplied.push({ name: 'Mileage Allowance Relief', amount: mileageAllowance });
             }
             
             if (rentARoomRelief > 0) {
                 adjustedIncome -= rentARoomRelief;
-                totalAllowances += rentARoomRelief;
+                totalAllowancesAmount += rentARoomRelief;
                 allowancesApplied.push({ name: 'Rent a Room Relief', amount: rentARoomRelief });
             }
             
             if (capitalAllowances > 0) {
                 adjustedIncome -= capitalAllowances;
-                totalAllowances += capitalAllowances;
+                totalAllowancesAmount += capitalAllowances;
                 allowancesApplied.push({ name: 'Capital Allowances', amount: capitalAllowances });
             }
             
             // Personal allowance reduces taxable amount
-            const taxableAfterPA = Math.max(0, adjustedIncome - personalAllowance);
+            totalAllowancesAmount += PERSONAL_ALLOWANCE;
+            const taxableAfterPA = Math.max(0, adjustedIncome - PERSONAL_ALLOWANCE);
             
             // Calculate Income Tax with allowances
             let incomeTax = 0;
             let taxBreakdown = '';
+            const basicBandAfterPA = BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE; // 37,700
+            const higherBandAfterPA = HIGHER_RATE_THRESHOLD - PERSONAL_ALLOWANCE; // 112,570
             
             if (taxableAfterPA === 0) {
                 taxBreakdown += formatComputationLine('£0 - £0 @ 0%', 0) + '\n';
-            } else if (taxableAfterPA <= 37700) { // 50270 - 12570
-                incomeTax = taxableAfterPA * 0.20;
+            } else if (taxableAfterPA <= basicBandAfterPA) {
+                incomeTax = taxableAfterPA * BASIC_RATE;
                 taxBreakdown += formatComputationLine(`£0 - £${taxableAfterPA.toFixed(0)} @ 20%`, incomeTax) + '\n';
-            } else if (taxableAfterPA <= 112570) { // 125140 - 12570
-                const basicTax = 37700 * 0.20;
-                const higherTax = (taxableAfterPA - 37700) * 0.40;
+            } else if (taxableAfterPA <= higherBandAfterPA) {
+                const basicTax = basicBandAfterPA * BASIC_RATE;
+                const higherTax = (taxableAfterPA - basicBandAfterPA) * HIGHER_RATE;
                 incomeTax = basicTax + higherTax;
-                taxBreakdown += formatComputationLine('£0 - £37,700 @ 20%', basicTax) + '\n';
-                taxBreakdown += formatComputationLine(`£37,701 - £${taxableAfterPA.toFixed(0)} @ 40%`, higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£0 - £${basicBandAfterPA.toLocaleString()} @ 20%`, basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(basicBandAfterPA + 1).toLocaleString()} - £${taxableAfterPA.toFixed(0)} @ 40%`, higherTax) + '\n';
             } else {
-                const basicTax = 37700 * 0.20;
-                const higherTax = (112570 - 37700) * 0.40;
-                const additionalTax = (taxableAfterPA - 112570) * 0.45;
+                const basicTax = basicBandAfterPA * BASIC_RATE;
+                const higherTax = (higherBandAfterPA - basicBandAfterPA) * HIGHER_RATE;
+                const additionalTax = (taxableAfterPA - higherBandAfterPA) * ADDITIONAL_RATE;
                 incomeTax = basicTax + higherTax + additionalTax;
-                taxBreakdown += formatComputationLine('£0 - £37,700 @ 20%', basicTax) + '\n';
-                taxBreakdown += formatComputationLine('£37,701 - £112,570 @ 40%', higherTax) + '\n';
-                taxBreakdown += formatComputationLine(`£112,571 - £${taxableAfterPA.toFixed(0)} @ 45%`, additionalTax) + '\n';
+                taxBreakdown += formatComputationLine(`£0 - £${basicBandAfterPA.toLocaleString()} @ 20%`, basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(basicBandAfterPA + 1).toLocaleString()} - £${higherBandAfterPA.toLocaleString()} @ 40%`, higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£${(higherBandAfterPA + 1).toLocaleString()} - £${taxableAfterPA.toFixed(0)} @ 45%`, additionalTax) + '\n';
             }
-            
-            // Marriage Allowance tax credit (if applicable)
-            const marriageAllowanceCredit = 252; // 20% of £1,260 transfer
             
             // Calculate National Insurance (same as Computation A for simplicity)
             let class2NIC = 0;
             let class4NIC = 0;
             
-            if (adjustedIncome > 12570) {
-                class2NIC = 3.45 * 52;
+            if (adjustedIncome > PERSONAL_ALLOWANCE) {
+                class2NIC = CLASS2_NIC_WEEKLY_RATE * WEEKS_PER_YEAR;
             }
             
-            if (adjustedIncome > 12570) {
-                const nicableIncome = adjustedIncome - 12570;
-                if (nicableIncome <= 50270) {
+            if (adjustedIncome > PERSONAL_ALLOWANCE) {
+                const nicableIncome = adjustedIncome - PERSONAL_ALLOWANCE;
+                if (nicableIncome <= BASIC_RATE_THRESHOLD) {
                     class4NIC = nicableIncome * 0.09;
                 } else {
-                    class4NIC = (50270 - 12570) * 0.09 + (nicableIncome - 50270) * 0.02;
+                    class4NIC = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * 0.09 + (nicableIncome - BASIC_RATE_THRESHOLD) * 0.02;
                 }
             }
             
@@ -3669,11 +3681,7 @@ ${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
             const totalTax = incomeTax + totalNIC;
             
             let allowancesText = '';
-            allowancesText += formatComputationLine('Personal Allowance', -personalAllowance) + '\n';
-            
-            if (tradingAllowance > 0) {
-                allowancesText += formatComputationLine('Trading Allowance', -tradingAllowance) + '\n';
-            }
+            allowancesText += formatComputationLine('Personal Allowance', -PERSONAL_ALLOWANCE) + '\n';
             
             allowancesApplied.forEach(allowance => {
                 allowancesText += formatComputationLine(allowance.name, -allowance.amount) + '\n';
@@ -3699,7 +3707,7 @@ ${formatComputationLine('Total National Insurance', totalNIC, false, true)}
 ${formatComputationLine('TOTAL TAX LIABILITY (AFTER RELIEFS)', totalTax, true)}
 `;
             
-            return { computation, totalTax, incomeTax, totalNIC, totalAllowances };
+            return { computation, totalTax, incomeTax, totalNIC, totalAllowances: totalAllowancesAmount };
         }
 
         function showDualComputations() {
@@ -3753,7 +3761,7 @@ Effective Tax Rate (after): ${((compB.totalTax / totalIncome) * 100).toFixed(2)}
 
         function exportToPDF() {
             // Simple PDF export using print to PDF functionality
-            alert('Please use your browser\'s Print function and select "Save as PDF" as the destination.\n\nSteps:\n1. Click "Print Computations" button\n2. In the print dialog, choose "Save as PDF"\n3. Click Save');
+            alert('PDF Export Instructions:\n\nThis will open the print dialog. Select "Save as PDF" as your printer/destination, then click Save.\n\nThe tax computations will be formatted for professional PDF output.');
             window.print();
         }
 
