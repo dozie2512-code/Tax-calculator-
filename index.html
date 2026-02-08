@@ -1469,6 +1469,11 @@
         const CLASS2_NIC_WEEKLY_RATE = 3.45; // Class 2 NIC weekly rate 2025/26
         const WEEKS_PER_YEAR = 52; // Weeks per year
         const AIA_LIMIT = 1000000; // Annual Investment Allowance limit
+        const CLASS2_SMALL_PROFITS_THRESHOLD = 6725; // Small Profits Threshold for Class 2 NIC 2025/26
+        const CLASS4_LOWER_PROFITS_LIMIT = 12570; // Lower Profits Limit for Class 4 NIC 2025/26
+        const CLASS4_UPPER_PROFITS_LIMIT = 50270; // Upper Profits Limit for Class 4 NIC 2025/26
+        const PA_REDUCTION_THRESHOLD = 100000; // Income threshold where Personal Allowance starts reducing
+        const PA_REDUCTION_RATE = 0.5; // £1 PA reduction for every £2 over threshold
 
         // Phase 2: Advanced Tax Planning Constants (2025/26)
         
@@ -3517,6 +3522,10 @@ Box 9: £${Math.round(vat.box9)}`;
         function generateComputationA(totalIncome, totalExpenses) {
             const taxableIncome = totalIncome - totalExpenses;
             
+            // NOTE: This is a simplified computation for comparison purposes.
+            // It does not account for Personal Allowance tapering (£1 reduction per £2 earned above £100,000)
+            // For accurate high-income calculations, consult a tax professional or HMRC guidance.
+            
             // Calculate Income Tax (basic bands, no allowances)
             const BASIC_RATE_THRESHOLD = 50270;
             const HIGHER_RATE_THRESHOLD = 125140;
@@ -3556,16 +3565,22 @@ Box 9: £${Math.round(vat.box9)}`;
             let class2NIC = 0;
             let class4NIC = 0;
             
-            if (taxableIncome > PERSONAL_ALLOWANCE) {
+            // Class 2 NIC - payable if self-employed profits exceed Small Profits Threshold
+            if (taxableIncome > CLASS2_SMALL_PROFITS_THRESHOLD) {
                 class2NIC = CLASS2_NIC_WEEKLY_RATE * WEEKS_PER_YEAR;
             }
             
-            if (taxableIncome > PERSONAL_ALLOWANCE) {
-                const nicableIncome = taxableIncome - PERSONAL_ALLOWANCE;
-                if (nicableIncome <= BASIC_RATE_THRESHOLD) {
-                    class4NIC = nicableIncome * 0.09;
+            // Class 4 NIC - calculated on profits between Lower and Upper Profits Limits
+            if (taxableIncome > CLASS4_LOWER_PROFITS_LIMIT) {
+                const class4Profits = taxableIncome - CLASS4_LOWER_PROFITS_LIMIT;
+                if (taxableIncome <= CLASS4_UPPER_PROFITS_LIMIT) {
+                    // All profits in lower band (9%)
+                    class4NIC = class4Profits * 0.09;
                 } else {
-                    class4NIC = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * 0.09 + (nicableIncome - BASIC_RATE_THRESHOLD) * 0.02;
+                    // Split between lower band (9%) and upper band (2%)
+                    const lowerBandProfits = CLASS4_UPPER_PROFITS_LIMIT - CLASS4_LOWER_PROFITS_LIMIT;
+                    const upperBandProfits = taxableIncome - CLASS4_UPPER_PROFITS_LIMIT;
+                    class4NIC = (lowerBandProfits * 0.09) + (upperBandProfits * 0.02);
                 }
             }
             
@@ -3593,6 +3608,10 @@ ${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
         }
 
         function generateComputationB(totalIncome, totalExpenses) {
+            // NOTE: This is a simplified computation for comparison purposes.
+            // It does not account for Personal Allowance tapering (£1 reduction per £2 earned above £100,000)
+            // For accurate high-income calculations, consult a tax professional or HMRC guidance.
+            
             // Tax rate thresholds
             const BASIC_RATE_THRESHOLD = 50270;
             const HIGHER_RATE_THRESHOLD = 125140;
@@ -3660,20 +3679,26 @@ ${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
                 taxBreakdown += formatComputationLine(`£${(higherBandAfterPA + 1).toLocaleString()} - £${taxableAfterPA.toFixed(0)} @ 45%`, additionalTax) + '\n';
             }
             
-            // Calculate National Insurance (same as Computation A for simplicity)
+            // Calculate National Insurance (using correct NIC thresholds)
             let class2NIC = 0;
             let class4NIC = 0;
             
-            if (adjustedIncome > PERSONAL_ALLOWANCE) {
+            // Class 2 NIC - payable if self-employed profits exceed Small Profits Threshold
+            if (adjustedIncome > CLASS2_SMALL_PROFITS_THRESHOLD) {
                 class2NIC = CLASS2_NIC_WEEKLY_RATE * WEEKS_PER_YEAR;
             }
             
-            if (adjustedIncome > PERSONAL_ALLOWANCE) {
-                const nicableIncome = adjustedIncome - PERSONAL_ALLOWANCE;
-                if (nicableIncome <= BASIC_RATE_THRESHOLD) {
-                    class4NIC = nicableIncome * 0.09;
+            // Class 4 NIC - calculated on profits between Lower and Upper Profits Limits
+            if (adjustedIncome > CLASS4_LOWER_PROFITS_LIMIT) {
+                const class4Profits = adjustedIncome - CLASS4_LOWER_PROFITS_LIMIT;
+                if (adjustedIncome <= CLASS4_UPPER_PROFITS_LIMIT) {
+                    // All profits in lower band (9%)
+                    class4NIC = class4Profits * 0.09;
                 } else {
-                    class4NIC = (BASIC_RATE_THRESHOLD - PERSONAL_ALLOWANCE) * 0.09 + (nicableIncome - BASIC_RATE_THRESHOLD) * 0.02;
+                    // Split between lower band (9%) and upper band (2%)
+                    const lowerBandProfits = CLASS4_UPPER_PROFITS_LIMIT - CLASS4_LOWER_PROFITS_LIMIT;
+                    const upperBandProfits = adjustedIncome - CLASS4_UPPER_PROFITS_LIMIT;
+                    class4NIC = (lowerBandProfits * 0.09) + (upperBandProfits * 0.02);
                 }
             }
             
