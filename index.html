@@ -1009,6 +1009,7 @@
                 <div>
                     <label for="disposalValue">Disposal Value (£) - Optional:</label>
                     <input type="number" id="disposalValue" step="0.01" min="0" placeholder="If asset was sold">
+                    <p class="info-text" style="color: #dc3545; font-weight: bold;">⚠️ Warning: Disposal calculations are simplified and may not reflect actual UK tax treatment (balancing charges/allowances). Consult a tax professional for accurate disposal calculations.</p>
                 </div>
                 <input type="submit" value="Add Capital Asset">
             </form>
@@ -1018,6 +1019,10 @@
             
             <div class="results" id="capitalAllowanceSummary" style="display: none;">
                 <h3>Capital Allowances Summary</h3>
+                <p style="background: #fff3cd; padding: 10px; border-radius: 5px; border: 1px solid #ffc107;">
+                    <strong>Note:</strong> These calculations provide estimates. Actual UK tax treatment involves pool systems and balancing charges. 
+                    For accurate filing, consult HMRC guidelines or a qualified accountant.
+                </p>
                 <p><strong>Total Annual Investment Allowance:</strong> £<span id="totalAIA">0.00</span></p>
                 <p><strong>Total Writing Down Allowances:</strong> £<span id="totalWDA">0.00</span></p>
                 <p><strong>Total Capital Allowances (deductible from profits):</strong> <span style="color: #28a745; font-weight: bold;">£<span id="totalCapitalAllowances">0.00</span></span></p>
