@@ -654,6 +654,106 @@
         .quarter-selector button.active {
             background: #005ea5;
         }
+
+        /* Dual Tax Computations Styles */
+        .computation-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .computation-controls button {
+            background: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        .computation-controls button:hover {
+            background: #003f7f;
+        }
+
+        .computations-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .computations-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .computation-box {
+            background: #f8f9fa;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .computation-box h3 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+
+        .computation-display {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .tax-savings-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .tax-savings-box h3 {
+            text-align: center;
+            color: #28a745;
+            margin-top: 0;
+        }
+
+        .positive-amount {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .negative-amount {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @media print {
+            .computation-controls {
+                display: none;
+            }
+            
+            .computations-container {
+                page-break-inside: avoid;
+            }
+            
+            .computation-box {
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -975,6 +1075,39 @@
                 </div>
                 
                 <p id="resultTotalTax" style="font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-top: 15px; border-top: 2px solid #0056b3;"></p>
+            </div>
+        </div>
+
+        <!-- Dual Tax Computations -->
+        <div class="section" id="dualTaxComputations" style="display: none;">
+            <h2>📋 Professional Tax Computations</h2>
+            
+            <div class="computation-controls">
+                <button type="button" onclick="toggleComputation('computationA')">
+                    <span id="toggleComputationAText">Hide</span> Computation A
+                </button>
+                <button type="button" onclick="toggleComputation('computationB')">
+                    <span id="toggleComputationBText">Hide</span> Computation B
+                </button>
+                <button type="button" onclick="printComputations()">🖨️ Print Computations</button>
+                <button type="button" onclick="exportToPDF()">📄 Export to PDF</button>
+            </div>
+            
+            <div class="computations-container">
+                <div class="computation-box" id="computationA">
+                    <h3>COMPUTATION A: TAX BEFORE RELIEFS</h3>
+                    <pre class="computation-display" id="computationADisplay"></pre>
+                </div>
+                
+                <div class="computation-box" id="computationB">
+                    <h3>COMPUTATION B: TAX AFTER RELIEFS AND ALLOWANCES</h3>
+                    <pre class="computation-display" id="computationBDisplay"></pre>
+                </div>
+            </div>
+            
+            <div class="tax-savings-box">
+                <h3>💰 TAX SAVINGS SUMMARY</h3>
+                <pre class="computation-display" id="taxSavingsDisplay"></pre>
             </div>
         </div>
 
@@ -3105,6 +3238,7 @@ Box 9: £${Math.round(vat.box9)}`;
             updateExpenseList();
             updateSummary();
             updateLedger();
+            showDualComputations();
         }
 
         // Update income list
@@ -3333,6 +3467,294 @@ Box 9: £${Math.round(vat.box9)}`;
             }
             
             return totalAllowances;
+        }
+
+        // ============ Dual Tax Computation Functions ============
+
+        function formatCurrency(amount) {
+            return '£' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function formatComputationLine(label, amount, isTotal = false, isSubtotal = false) {
+            const padding = 50;
+            const labelPadded = label.padEnd(padding, ' ');
+            const amountStr = formatCurrency(Math.abs(amount));
+            
+            if (isTotal) {
+                return `${'='.repeat(70)}\n${labelPadded}${amountStr}\n${'='.repeat(70)}`;
+            } else if (isSubtotal) {
+                return `${'-'.repeat(70)}\n${labelPadded}${amountStr}`;
+            } else if (amount < 0) {
+                return `${labelPadded}(${amountStr})`;
+            } else {
+                return `${labelPadded}${amountStr}`;
+            }
+        }
+
+        function calculateMileageAllowance() {
+            const miles = parseFloat(document.getElementById('businessMiles')?.value) || 0;
+            if (miles === 0) return 0;
+            
+            // First 10,000 miles @ 45p, thereafter @ 25p
+            if (miles <= 10000) {
+                return miles * 0.45;
+            } else {
+                return (10000 * 0.45) + ((miles - 10000) * 0.25);
+            }
+        }
+
+        function calculateRentARoomRelief() {
+            const rentReceived = parseFloat(document.getElementById('rentFromLodgers')?.value) || 0;
+            if (rentReceived === 0) return 0;
+            
+            // Up to £7,500 tax-free
+            return Math.min(rentReceived, 7500);
+        }
+
+        function generateComputationA(totalIncome, totalExpenses) {
+            const taxableIncome = totalIncome - totalExpenses;
+            
+            // Calculate Income Tax (basic bands, no allowances)
+            let incomeTax = 0;
+            let taxBreakdown = '';
+            
+            if (taxableIncome <= 12570) {
+                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
+            } else if (taxableIncome <= 50270) {
+                const taxable = taxableIncome - 12570;
+                incomeTax = taxable * 0.20;
+                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
+                taxBreakdown += formatComputationLine(`£12,571 - £${taxableIncome.toFixed(0)} @ 20%`, incomeTax) + '\n';
+            } else if (taxableIncome <= 125140) {
+                const basicTax = (50270 - 12570) * 0.20;
+                const higherTax = (taxableIncome - 50270) * 0.40;
+                incomeTax = basicTax + higherTax;
+                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
+                taxBreakdown += formatComputationLine('£12,571 - £50,270 @ 20%', basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£50,271 - £${taxableIncome.toFixed(0)} @ 40%`, higherTax) + '\n';
+            } else {
+                const basicTax = (50270 - 12570) * 0.20;
+                const higherTax = (125140 - 50270) * 0.40;
+                const additionalTax = (taxableIncome - 125140) * 0.45;
+                incomeTax = basicTax + higherTax + additionalTax;
+                taxBreakdown += formatComputationLine('£0 - £12,570 @ 0%', 0) + '\n';
+                taxBreakdown += formatComputationLine('£12,571 - £50,270 @ 20%', basicTax) + '\n';
+                taxBreakdown += formatComputationLine('£50,271 - £125,140 @ 40%', higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£125,141 - £${taxableIncome.toFixed(0)} @ 45%`, additionalTax) + '\n';
+            }
+            
+            // Calculate National Insurance (simplified)
+            let class2NIC = 0;
+            let class4NIC = 0;
+            
+            if (taxableIncome > 12570) {
+                class2NIC = 3.45 * 52; // £3.45 per week
+            }
+            
+            if (taxableIncome > 12570) {
+                const nicableIncome = taxableIncome - 12570;
+                if (nicableIncome <= 50270) {
+                    class4NIC = nicableIncome * 0.09;
+                } else {
+                    class4NIC = (50270 - 12570) * 0.09 + (nicableIncome - 50270) * 0.02;
+                }
+            }
+            
+            const totalNIC = class2NIC + class4NIC;
+            const totalTax = incomeTax + totalNIC;
+            
+            let computation = `
+UK TAX COMPUTATION FOR TAX YEAR 2025/26
+${formatComputationLine('Trading/Employment Income', totalIncome)}
+${formatComputationLine('Less: Business Expenses', -totalExpenses)}
+${formatComputationLine('Total Taxable Income', taxableIncome, false, true)}
+
+Income Tax Calculation:
+${taxBreakdown}${formatComputationLine('Total Income Tax', incomeTax, false, true)}
+
+National Insurance:
+${formatComputationLine('Class 2 NIC', class2NIC)}
+${formatComputationLine('Class 4 NIC', class4NIC)}
+${formatComputationLine('Total National Insurance', totalNIC, false, true)}
+
+${formatComputationLine('TOTAL TAX LIABILITY (BEFORE RELIEFS)', totalTax, true)}
+`;
+            
+            return { computation, totalTax, incomeTax, totalNIC };
+        }
+
+        function generateComputationB(totalIncome, totalExpenses) {
+            // Get all allowances
+            const personalAllowance = 12570;
+            const tradingAllowance = 1000;
+            const propertyAllowance = 1000;
+            const blindPersonAllowance = 3130;
+            const mileageAllowance = calculateMileageAllowance();
+            const rentARoomRelief = calculateRentARoomRelief();
+            const capitalAllowances = calculateCapitalAllowances();
+            
+            // Calculate adjusted taxable income
+            let adjustedIncome = totalIncome - totalExpenses;
+            let allowancesApplied = [];
+            let totalAllowances = 0;
+            
+            // Apply allowances that reduce income
+            if (mileageAllowance > 0) {
+                adjustedIncome -= mileageAllowance;
+                totalAllowances += mileageAllowance;
+                allowancesApplied.push({ name: 'Mileage Allowance Relief', amount: mileageAllowance });
+            }
+            
+            if (rentARoomRelief > 0) {
+                adjustedIncome -= rentARoomRelief;
+                totalAllowances += rentARoomRelief;
+                allowancesApplied.push({ name: 'Rent a Room Relief', amount: rentARoomRelief });
+            }
+            
+            if (capitalAllowances > 0) {
+                adjustedIncome -= capitalAllowances;
+                totalAllowances += capitalAllowances;
+                allowancesApplied.push({ name: 'Capital Allowances', amount: capitalAllowances });
+            }
+            
+            // Personal allowance reduces taxable amount
+            const taxableAfterPA = Math.max(0, adjustedIncome - personalAllowance);
+            
+            // Calculate Income Tax with allowances
+            let incomeTax = 0;
+            let taxBreakdown = '';
+            
+            if (taxableAfterPA === 0) {
+                taxBreakdown += formatComputationLine('£0 - £0 @ 0%', 0) + '\n';
+            } else if (taxableAfterPA <= 37700) { // 50270 - 12570
+                incomeTax = taxableAfterPA * 0.20;
+                taxBreakdown += formatComputationLine(`£0 - £${taxableAfterPA.toFixed(0)} @ 20%`, incomeTax) + '\n';
+            } else if (taxableAfterPA <= 112570) { // 125140 - 12570
+                const basicTax = 37700 * 0.20;
+                const higherTax = (taxableAfterPA - 37700) * 0.40;
+                incomeTax = basicTax + higherTax;
+                taxBreakdown += formatComputationLine('£0 - £37,700 @ 20%', basicTax) + '\n';
+                taxBreakdown += formatComputationLine(`£37,701 - £${taxableAfterPA.toFixed(0)} @ 40%`, higherTax) + '\n';
+            } else {
+                const basicTax = 37700 * 0.20;
+                const higherTax = (112570 - 37700) * 0.40;
+                const additionalTax = (taxableAfterPA - 112570) * 0.45;
+                incomeTax = basicTax + higherTax + additionalTax;
+                taxBreakdown += formatComputationLine('£0 - £37,700 @ 20%', basicTax) + '\n';
+                taxBreakdown += formatComputationLine('£37,701 - £112,570 @ 40%', higherTax) + '\n';
+                taxBreakdown += formatComputationLine(`£112,571 - £${taxableAfterPA.toFixed(0)} @ 45%`, additionalTax) + '\n';
+            }
+            
+            // Marriage Allowance tax credit (if applicable)
+            const marriageAllowanceCredit = 252; // 20% of £1,260 transfer
+            
+            // Calculate National Insurance (same as Computation A for simplicity)
+            let class2NIC = 0;
+            let class4NIC = 0;
+            
+            if (adjustedIncome > 12570) {
+                class2NIC = 3.45 * 52;
+            }
+            
+            if (adjustedIncome > 12570) {
+                const nicableIncome = adjustedIncome - 12570;
+                if (nicableIncome <= 50270) {
+                    class4NIC = nicableIncome * 0.09;
+                } else {
+                    class4NIC = (50270 - 12570) * 0.09 + (nicableIncome - 50270) * 0.02;
+                }
+            }
+            
+            const totalNIC = class2NIC + class4NIC;
+            const totalTax = incomeTax + totalNIC;
+            
+            let allowancesText = '';
+            allowancesText += formatComputationLine('Personal Allowance', -personalAllowance) + '\n';
+            
+            if (tradingAllowance > 0) {
+                allowancesText += formatComputationLine('Trading Allowance', -tradingAllowance) + '\n';
+            }
+            
+            allowancesApplied.forEach(allowance => {
+                allowancesText += formatComputationLine(allowance.name, -allowance.amount) + '\n';
+            });
+            
+            let computation = `
+UK TAX COMPUTATION FOR TAX YEAR 2025/26
+${formatComputationLine('Total Income', totalIncome)}
+${formatComputationLine('Less: Business Expenses', -totalExpenses)}
+${formatComputationLine('Gross Profit', totalIncome - totalExpenses, false, true)}
+
+Less: Allowances and Reliefs:
+${allowancesText}${formatComputationLine('Adjusted Taxable Income', taxableAfterPA, false, true)}
+
+Income Tax Calculation:
+${taxBreakdown}${formatComputationLine('Total Income Tax', incomeTax, false, true)}
+
+National Insurance:
+${formatComputationLine('Class 2 NIC', class2NIC)}
+${formatComputationLine('Class 4 NIC', class4NIC)}
+${formatComputationLine('Total National Insurance', totalNIC, false, true)}
+
+${formatComputationLine('TOTAL TAX LIABILITY (AFTER RELIEFS)', totalTax, true)}
+`;
+            
+            return { computation, totalTax, incomeTax, totalNIC, totalAllowances };
+        }
+
+        function showDualComputations() {
+            const totalIncome = incomeEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            const totalExpenses = expenseEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            
+            if (totalIncome === 0) {
+                document.getElementById('dualTaxComputations').style.display = 'none';
+                return;
+            }
+            
+            const compA = generateComputationA(totalIncome, totalExpenses);
+            const compB = generateComputationB(totalIncome, totalExpenses);
+            
+            document.getElementById('computationADisplay').textContent = compA.computation;
+            document.getElementById('computationBDisplay').textContent = compB.computation;
+            
+            const taxSaved = compA.totalTax - compB.totalTax;
+            const savingsSummary = `
+TAX SAVINGS ANALYSIS
+${'-'.repeat(70)}
+${formatComputationLine('Tax before reliefs', compA.totalTax)}
+${formatComputationLine('Tax after reliefs', compB.totalTax)}
+${formatComputationLine('TOTAL TAX SAVED', taxSaved, false, true)}
+
+Total Allowances Applied: ${formatCurrency(compB.totalAllowances)}
+Effective Tax Rate (before): ${((compA.totalTax / totalIncome) * 100).toFixed(2)}%
+Effective Tax Rate (after): ${((compB.totalTax / totalIncome) * 100).toFixed(2)}%
+`;
+            
+            document.getElementById('taxSavingsDisplay').textContent = savingsSummary;
+            document.getElementById('dualTaxComputations').style.display = 'block';
+        }
+
+        function toggleComputation(computationId) {
+            const element = document.getElementById(computationId);
+            const toggleText = document.getElementById(`toggle${computationId.charAt(0).toUpperCase() + computationId.slice(1)}Text`);
+            
+            if (element.style.display === 'none') {
+                element.style.display = 'block';
+                toggleText.textContent = 'Hide';
+            } else {
+                element.style.display = 'none';
+                toggleText.textContent = 'Show';
+            }
+        }
+
+        function printComputations() {
+            window.print();
+        }
+
+        function exportToPDF() {
+            // Simple PDF export using print to PDF functionality
+            alert('Please use your browser\'s Print function and select "Save as PDF" as the destination.\n\nSteps:\n1. Click "Print Computations" button\n2. In the print dialog, choose "Save as PDF"\n3. Click Save');
+            window.print();
         }
 
         // ============ Phase 2: Advanced Tax Calculation Functions ============
@@ -4193,6 +4615,9 @@ Box 9: £${Math.round(vat.box9)}`;
             
             // Phase 8: Update HMRC Compliance sections
             updateHMRCCompliance(result, totalIncome);
+            
+            // Show dual tax computations
+            showDualComputations();
         });
 
         // Phase 2: Add event listeners to auto-save advanced tax settings
