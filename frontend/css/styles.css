@@ -1,0 +1,49 @@
+/* 
+ * Custom styles for Tax Optimizer
+ * TailwindCSS handles most styling via CDN
+ */
+
+/* Smooth scrolling for the whole page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Focus states for accessibility */
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    header,
+    footer,
+    #userTypeSection,
+    #inputSection {
+        display: none;
+    }
+    
+    #resultsSection {
+        display: block !important;
+    }
+}

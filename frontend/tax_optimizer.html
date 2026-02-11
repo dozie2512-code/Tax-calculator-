@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Optimization Calculator</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .user-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .user-card.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .comparison-card {
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">
+                        <i class="fas fa-calculator text-blue-600"></i>
+                        UK Tax Optimization Calculator
+                    </h1>
+                    <p class="text-gray-600 mt-2">Maximize your tax efficiency with personalized recommendations</p>
+                </div>
+                <div class="text-sm text-gray-500">
+                    <p>2025/2026 Tax Year</p>
+                    <p class="text-xs mt-1">Illustrative Guidance Only</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- User Type Selection -->
+        <section id="userTypeSection" class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Select Your User Type</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Company Director -->
+                <div class="user-card bg-white rounded-lg p-6 shadow-lg border-2 border-transparent" 
+                     data-user-type="director">
+                    <div class="text-center">
+                        <div class="text-5xl text-blue-600 mb-4">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Company Director</h3>
+                        <p class="text-gray-600 text-sm">
+                            Optimize salary vs dividends, pension contributions, and overall compensation structure
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sole Trader -->
+                <div class="user-card bg-white rounded-lg p-6 shadow-lg border-2 border-transparent" 
+                     data-user-type="sole-trader">
+                    <div class="text-center">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Sole Trader</h3>
+                        <p class="text-gray-600 text-sm">
+                            Maximize expense claims, capital allowances, and pension relief for self-employed
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Company Owner -->
+                <div class="user-card bg-white rounded-lg p-6 shadow-lg border-2 border-transparent" 
+                     data-user-type="company-owner">
+                    <div class="text-center">
+                        <div class="text-5xl text-purple-600 mb-4">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Company Owner</h3>
+                        <p class="text-gray-600 text-sm">
+                            Corporation tax planning, R&D relief, and profit extraction strategies
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Landlord -->
+                <div class="user-card bg-white rounded-lg p-6 shadow-lg border-2 border-transparent" 
+                     data-user-type="landlord">
+                    <div class="text-center">
+                        <div class="text-5xl text-orange-600 mb-4">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Landlord</h3>
+                        <p class="text-gray-600 text-sm">
+                            Property allowances, mortgage relief, and incorporation analysis
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Input Forms (Hidden by default) -->
+        <section id="inputSection" class="mb-8 hidden fade-in">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <span id="formTitle">Enter Your Details</span>
+                </h2>
+                
+                <!-- Director Form -->
+                <form id="directorForm" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Annual Salary (£)
+                            </label>
+                            <input type="number" name="salary" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="30000" value="30000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Annual Dividends (£)
+                            </label>
+                            <input type="number" name="dividends" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="20000" value="20000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Company Profit (£)
+                            </label>
+                            <input type="number" name="company_profit" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="60000" value="60000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Pension Contribution (£)
+                            </label>
+                            <input type="number" name="pension_contribution" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="0" value="0" min="0" step="100">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 flex items-center gap-2">
+                            <i class="fas fa-calculator"></i>
+                            Calculate Optimization
+                        </button>
+                        <button type="button" onclick="resetForm()" 
+                                class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Sole Trader Form -->
+                <form id="soleTraderForm" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Trading Income (£)
+                            </label>
+                            <input type="number" name="trading_income" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="50000" value="50000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Allowable Expenses (£)
+                            </label>
+                            <input type="number" name="allowable_expenses" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="8000" value="8000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Pension Contribution (£)
+                            </label>
+                            <input type="number" name="pension_contribution" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="3000" value="3000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Capital Allowances (£)
+                            </label>
+                            <input type="number" name="capital_allowances" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="2000" value="2000" min="0" step="100">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" 
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 flex items-center gap-2">
+                            <i class="fas fa-calculator"></i>
+                            Calculate Optimization
+                        </button>
+                        <button type="button" onclick="resetForm()" 
+                                class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Company Owner Form -->
+                <form id="companyOwnerForm" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Company Profit (£)
+                            </label>
+                            <input type="number" name="company_profit" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="100000" value="100000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Annual Salary (£)
+                            </label>
+                            <input type="number" name="salary" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="30000" value="30000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Annual Dividends (£)
+                            </label>
+                            <input type="number" name="dividends" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="40000" value="40000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                R&D Expenditure (£)
+                            </label>
+                            <input type="number" name="r_and_d_expenditure" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="15000" value="15000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Capital Investment (£)
+                            </label>
+                            <input type="number" name="capital_investment" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="20000" value="20000" min="0" step="100">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" 
+                                class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 flex items-center gap-2">
+                            <i class="fas fa-calculator"></i>
+                            Calculate Optimization
+                        </button>
+                        <button type="button" onclick="resetForm()" 
+                                class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Landlord Form -->
+                <form id="landlordForm" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Rental Income (£)
+                            </label>
+                            <input type="number" name="rental_income" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                   placeholder="30000" value="30000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Mortgage Interest (£)
+                            </label>
+                            <input type="number" name="mortgage_interest" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                   placeholder="8000" value="8000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Other Expenses (£)
+                            </label>
+                            <input type="number" name="other_expenses" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                   placeholder="5000" value="5000" min="0" step="100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Number of Properties
+                            </label>
+                            <input type="number" name="number_of_properties" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                   placeholder="2" value="2" min="1" step="1">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" name="is_furnished" 
+                                       class="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                                       checked>
+                                <span class="text-gray-700 font-semibold">Properties are furnished</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" 
+                                class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 flex items-center gap-2">
+                            <i class="fas fa-calculator"></i>
+                            Calculate Optimization
+                        </button>
+                        <button type="button" onclick="resetForm()" 
+                                class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="hidden text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Calculating your tax optimization...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-8">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle mr-3"></i>
+                <div>
+                    <p class="font-bold">Error</p>
+                    <p id="errorText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden fade-in">
+            
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Current Total Tax</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2" id="currentTax">£0</p>
+                        </div>
+                        <div class="text-4xl text-red-500">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Optimal Total Tax</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2" id="optimalTax">£0</p>
+                        </div>
+                        <div class="text-4xl text-green-500">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-sm font-semibold">Potential Saving</p>
+                            <p class="text-3xl font-bold mt-2" id="potentialSaving">£0</p>
+                        </div>
+                        <div class="text-4xl">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                
+                <!-- Current Position -->
+                <div class="comparison-card bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-red-500 mr-3"></i>
+                        Current Position
+                    </h3>
+                    <div id="currentPosition" class="space-y-3"></div>
+                </div>
+
+                <!-- Optimal Position -->
+                <div class="comparison-card bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-green-500 mr-3"></i>
+                        Optimal Position
+                    </h3>
+                    <div id="optimalPosition" class="space-y-3"></div>
+                </div>
+
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+                    Personalized Recommendations
+                </h3>
+                <div id="recommendations" class="space-y-4"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-md mt-12">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center text-gray-600">
+                <p class="font-semibold text-red-600 mb-2">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Important Tax Disclaimer
+                </p>
+                <p class="text-sm max-w-4xl mx-auto">
+                    This calculator provides <strong>illustrative guidance only</strong> based on 2025/2026 tax rates and is 
+                    <strong>not official tax advice</strong>. Tax calculations are simplified and may not cover all scenarios. 
+                    Actual tax liability depends on individual circumstances. Tax laws and rates change regularly. 
+                    Always consult with a qualified tax advisor or accountant for official advice.
+                </p>
+                <p class="text-xs mt-4">
+                    Built with Flask, TailwindCSS, and JavaScript | © 2025 UK Tax Optimization Calculator
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/optimizer.js"></script>
+    
+</body>
+</html>
