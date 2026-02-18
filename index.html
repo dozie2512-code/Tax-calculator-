@@ -1370,29 +1370,27 @@
     caRateDefault:20.0, depRateDefault:20.0, turnoverThreshold:100000000 
   };
   
-  // PIT/PAYE bands per UK tax law (note: these are placeholder values - adjust for actual UK rates)
+  // Income Tax bands per UK tax law (2025-26 tax year - these are example rates)
   const PAYE_BANDS = [
-    { upTo: 800000, rate: 0.00 },       // First £800,000 @ 0%
-    { upTo: 3000000, rate: 0.15 },      // Next £2,200,000 @ 15%
-    { upTo: 12000000, rate: 0.18 },     // Next £9,000,000 @ 18%
-    { upTo: 25000000, rate: 0.21 },     // Next £13,000,000 @ 21%
-    { upTo: 50000000, rate: 0.23 },     // Next £25,000,000 @ 23%
-    { upTo: Infinity, rate: 0.25 }      // Above £50,000,000 @ 25%
+    { upTo: 12570, rate: 0.00 },       // Personal Allowance £12,570 @ 0%
+    { upTo: 50270, rate: 0.20 },       // Basic rate £12,571-£50,270 @ 20%
+    { upTo: 125140, rate: 0.40 },      // Higher rate £50,271-£125,140 @ 40%
+    { upTo: Infinity, rate: 0.45 }     // Additional rate over £125,140 @ 45%
   ];
   
   // CIT Turnover threshold options
   const CIT_THRESHOLDS = {
     NONE: 0,
-    MEDIUM: 50000000,   // £50,000,000
-    LARGE: 100000000    // £100,000,000
+    SMALL: 50000,      // £50,000 - Small profits rate threshold
+    LARGE: 250000      // £250,000 - Main rate threshold
   };
   
   // Tax calculation constants
-  const ASSET_RESIDUAL_VALUE = 10; // £10 residual at end of useful life
+  const ASSET_RESIDUAL_VALUE = 1; // £1 residual at end of useful life (UK standard)
   const NON_TAXABLE_INCOME_CA_THRESHOLD = 0.10; // 10% threshold for CA relief
-  const CGT_EXEMPTION_PROCEEDS = 150000000; // £150,000,000
-  const CGT_EXEMPTION_GAIN = 10000000; // £10,000,000
-  const CGT_RATE = 0.10; // 10% Capital Gains Tax rate
+  const CGT_EXEMPTION_PROCEEDS = 0; // No proceeds exemption in UK
+  const CGT_EXEMPTION_GAIN = 3000; // £3,000 - UK CGT annual exempt amount (2025-26)
+  const CGT_RATE = 0.10; // 10% Capital Gains Tax rate (basic rate)
   
   // Tax payment account names - used to exclude from P&L and track tax payments
   const TAX_PAYMENT_ACCOUNTS = [];
@@ -4862,7 +4860,7 @@
           cgtExcludedFromTaxable += effectiveGain;
         }
       } else {
-        // For Business/Enterprise Plus: gains included in taxable profit unless exempt
+        // For Sole Trader/Partnership/LLP: gains included in taxable profit unless exempt
         // If the gain is exempt (share exemption), exclude from taxable profit
         if(g.isShareExempt && effectiveGain > 0) {
           // Exempt gains: exclude from taxable profit
@@ -4957,7 +4955,7 @@
     const whtReceivableNet = Math.max(0, whtReceivable - whtPaidToAuthority);
     
     let html = '';
-    // For Company/Business/Enterprise Plus: show full summary
+    // For all UK entity types: show full summary
     html += `<div><strong>Accounting Profit:</strong> ${fmt(accountingProfit)}</div>`;
     html += `<div><strong>Taxable Profit:</strong> ${fmt(taxableProfit)}</div>`;
     html += `<div class="small-muted">Revenue ${fmt(revenue)} | Expenses ${fmt(expenses)} (including Dep ${fmt(depreciationDaily)})</div>`;
@@ -5622,19 +5620,18 @@
     const assessableProfit = Math.max(0, adjustedProfit - lossBF);
     const taxableProfit = Math.max(0, assessableProfit - capitalAllowance);
     
-    // Determine CIT rate based on turnover (UK Corporation Tax rates - placeholder values)
-    // Micro companies (turnover <= £25M): 0%
-    // Small companies (turnover > £25M and <= £100M): 20%
-    // Large companies (turnover > £100M): 30%
+    // Determine Corporation Tax rate based on profits (UK Corporation Tax rates 2023+)
+    // Small profits rate (19%) applies up to £50,000
+    // Main rate (25%) applies over £250,000
+    // Marginal relief between £50,000-£250,000
     let citRate = 0;
-    if(revenue > CIT_THRESHOLDS.LARGE) {
-      citRate = 0.30; // 30% for large companies
-    } else if(revenue > CIT_THRESHOLDS.MEDIUM) {
-      citRate = 0.20; // 20% for medium companies
-    } else if(revenue > 25000000) {
-      citRate = 0.20; // 20% for small companies above £25M
+    if(taxableProfit > CIT_THRESHOLDS.LARGE) {
+      citRate = 0.25; // 25% for profits over £250,000
+    } else if(taxableProfit > CIT_THRESHOLDS.SMALL) {
+      citRate = 0.19; // 19% with marginal relief (simplified)
+    } else {
+      citRate = 0.19; // 19% for small profits up to £50,000
     }
-    // Below £25M = 0% rate
     
     const citLiability = taxableProfit * citRate;
     
@@ -5823,7 +5820,7 @@
       html += `<div class="small-muted">For Companies with turnover threshold > £100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
       html += `<div class="small-muted">Current turnover threshold setting: ${fmt(threshold)}</div>`;
     } else {
-      html += `<div class="small-muted">For Business/Enterprise Plus: Net gains are included in taxable profit and subject to PIT rates.</div>`;
+      html += `<div class="small-muted">For Sole Trader/Partnership/LLP: Net gains are included in taxable profit and subject to Income Tax rates.</div>`;
     }
     html += `<div class="small-muted" style="margin-top:6px;">Carryforward losses can only offset gains in future accounting periods (years after the loss occurred).</div>`;
     
