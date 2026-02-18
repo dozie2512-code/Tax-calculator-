@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Taxpro — Nigeria Tax Calculator</title>
+  <title>Taxpro — UK Tax Calculator</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root { --gap:12px; --muted:#666; --danger:#b00; --accent:#0b76d1; --bg:#f8f9fb; --panel:#fff; }
@@ -420,8 +420,8 @@
   <!-- Pre-login overlay - blocks access until user signs in -->
   <div id="preLoginOverlay" class="prelogin-overlay">
     <div class="prelogin-card prelogin-card-wide">
-      <h2>Taxpro — Nigeria Tax Calculator</h2>
-      <p class="prelogin-tagline">Accurate Taxes, Real Time Filing</p>
+      <h2>Taxpro — UK Tax Calculator</h2>
+      <p class="prelogin-tagline">Accurate UK Taxes, Real Time Filing</p>
 
       <!-- Offer countdown timer -->
       <div id="preloginOfferBox" class="offer-countdown-box">
@@ -431,25 +431,26 @@
 
       <!-- Pricing Plan Cards -->
       <div class="plan-cards">
-        <!-- Business Plan (formerly Enterprise) -->
+        <!-- Sole Trader Plan -->
         <details class="plan-card highlight">
           <summary>
             <div class="plan-header-left">
-              <h3>Business <span class="plan-badge">7-day trial</span></h3>
+              <h3>Sole Trader <span class="plan-badge">7-day trial</span></h3>
             </div>
             <div class="plan-header-right">
-              <span class="plan-offer-price">₦40,000/year</span>
+              <span class="plan-offer-price">£200/year</span>
               <span class="plan-arrow">▼</span>
             </div>
           </summary>
           <div class="plan-pricing">
-            <div class="plan-full-price">₦60,000/year</div>
-            <div class="plan-offer-price">₦40,000/year</div>
+            <div class="plan-full-price">£300/year</div>
+            <div class="plan-offer-price">£200/year</div>
           </div>
           <ul class="plan-features">
-            <li>2 Users + Tax Advisor</li>
+            <li>1 User + Tax Advisor</li>
             <li>Record Income &amp; Expenses &amp; Profits</li>
-            <li>Track VAT, WHT, PAYE and PIT</li>
+            <li>Track VAT, Income Tax, National Insurance</li>
+            <li>Self Assessment support</li>
             <li>Tax Support via Chat and Email</li>
           </ul>
           <div class="plan-checkbox-row">
@@ -460,20 +461,20 @@
           <div style="margin-top:10px;padding:8px;background:#f9fafb;border-radius:6px;border:1px solid #e6e9ef;">
             <div class="plan-checkbox-row">
               <input type="checkbox" id="businessHireTaxAccountant" />
-              <label for="businessHireTaxAccountant">Add Tax Accountant Service <span class="addon-price">(+₦25,000/month)</span> (Monthend Adjustment &amp; Tax Filing)</label>
+              <label for="businessHireTaxAccountant">Add Tax Accountant Service <span class="addon-price">(+£125/month)</span> (Self Assessment Filing &amp; Tax Planning)</label>
             </div>
             <div class="plan-checkbox-row" style="margin-top:8px;">
               <input type="checkbox" id="businessBookkeepingService" />
-              <label for="businessBookkeepingService">Add Bookkeeping and Tax Service <span class="addon-price">(+₦75,000/month)</span></label>
+              <label for="businessBookkeepingService">Add Bookkeeping and Tax Service <span class="addon-price">(+£375/month)</span></label>
             </div>
           </div>
 
           <div class="plan-total">
             <div class="plan-total-label">Total</div>
-            <div class="plan-total-value" id="businessTotal">₦40,000</div>
+            <div class="plan-total-value" id="businessTotal">£200</div>
           </div>
           <div class="plan-buttons-container">
-            <a href="https://buy.stripe.com/business-plan" target="_blank" rel="noopener noreferrer" class="plan-buy-btn" id="businessBuyLink">Buy Now</a>
+            <a href="https://buy.stripe.com/sole-trader-plan" target="_blank" rel="noopener noreferrer" class="plan-buy-btn" id="businessBuyLink">Buy Now</a>
           </div>
         </details>
 
@@ -484,18 +485,19 @@
               <h3>Company <span class="plan-badge">7-day trial</span></h3>
             </div>
             <div class="plan-header-right">
-              <span class="plan-offer-price">₦60,000/year</span>
+              <span class="plan-offer-price">£300/year</span>
               <span class="plan-arrow">▼</span>
             </div>
           </summary>
           <div class="plan-pricing">
-            <div class="plan-full-price">₦80,000/year</div>
-            <div class="plan-offer-price">₦60,000/year</div>
+            <div class="plan-full-price">£400/year</div>
+            <div class="plan-offer-price">£300/year</div>
           </div>
           <ul class="plan-features">
             <li>3 Users + Tax Advisor</li>
             <li>Record Income &amp; Expenses &amp; Profits</li>
-            <li>Track VAT, WHT, PAYE, CGT, and CIT</li>
+            <li>Track VAT, Corporation Tax, PAYE, Capital Gains Tax</li>
+            <li>Limited Company compliance</li>
             <li>Tax Support via Chat and Email</li>
           </ul>
           <div class="plan-checkbox-row">
@@ -506,42 +508,42 @@
           <div style="margin-top:10px;padding:8px;background:#f9fafb;border-radius:6px;border:1px solid #e6e9ef;">
             <div class="plan-checkbox-row">
               <input type="checkbox" id="companyHireTaxAccountant" />
-              <label for="companyHireTaxAccountant">Add Tax Accountant Service <span class="addon-price">(+₦25,000/month)</span> (Monthend Adjustment &amp; Tax Filing)</label>
+              <label for="companyHireTaxAccountant">Add Tax Accountant Service <span class="addon-price">(+£125/month)</span> (Corporation Tax Filing &amp; Compliance)</label>
             </div>
             <div class="plan-checkbox-row" style="margin-top:8px;">
               <input type="checkbox" id="companyBookkeepingService" />
-              <label for="companyBookkeepingService">Add Bookkeeping and Tax Service <span class="addon-price">(+₦100,000/month)</span></label>
+              <label for="companyBookkeepingService">Add Bookkeeping and Tax Service <span class="addon-price">(+£500/month)</span></label>
             </div>
           </div>
 
           <div class="plan-total">
             <div class="plan-total-label">Total</div>
-            <div class="plan-total-value" id="companyTotal">₦60,000</div>
+            <div class="plan-total-value" id="companyTotal">£300</div>
           </div>
           <div class="plan-buttons-container">
             <a href="https://buy.stripe.com/company-plan" target="_blank" rel="noopener noreferrer" class="plan-buy-btn" id="companyBuyLink">Buy Now</a>
           </div>
         </details>
 
-        <!-- New Enterprise Plan -->
+        <!-- Enterprise Plan -->
         <details class="plan-card highlight">
           <summary>
             <div class="plan-header-left">
               <h3>Enterprise <span class="plan-badge">7-day trial</span></h3>
             </div>
             <div class="plan-header-right">
-              <span class="plan-offer-price">₦100,000/year</span>
+              <span class="plan-offer-price">£500/year</span>
               <span class="plan-arrow">▼</span>
             </div>
           </summary>
           <div class="plan-pricing">
-            <div class="plan-full-price">₦150,000/year</div>
-            <div class="plan-offer-price">₦100,000/year</div>
+            <div class="plan-full-price">£750/year</div>
+            <div class="plan-offer-price">£500/year</div>
           </div>
           <ul class="plan-features">
             <li>Designed for Accountants and Multi-Business</li>
             <li>Includes 3 Subscription Plans (Enterprise/Company)</li>
-            <li>Track VAT, WHT, PAYE, CGT, PIT, and CIT</li>
+            <li>Track VAT, Corporation Tax, PAYE, Capital Gains Tax, Income Tax, National Insurance</li>
             <li>Tax Financial Report</li>
             <li>Earn Monthly Revenues on Tax Hire</li>
             <li>Tax Support via Chat and Email</li>
@@ -553,7 +555,7 @@
 
           <div class="plan-total">
             <div class="plan-total-label">Total</div>
-            <div class="plan-total-value" id="enterpriseTotal">₦100,000</div>
+            <div class="plan-total-value" id="enterpriseTotal">£500</div>
           </div>
           <div class="plan-buttons-container">
             <a href="https://buy.stripe.com/enterprise-plan" target="_blank" rel="noopener noreferrer" class="plan-buy-btn" id="enterpriseBuyLink">Buy Now</a>
@@ -621,7 +623,7 @@
   </div>
 
   <header>
-    <h1>Taxpro — Nigeria Tax Calculator</h1>
+    <h1>Taxpro — UK Tax Calculator</h1>
 
     <div class="panel controls" style="align-items:center;">
       <label>Active User:</label>
@@ -734,7 +736,7 @@
 
         <label>Description: <input type="text" id="txnDesc" placeholder="Details" /></label>
 
-        <label>Amount (₦): <input type="number" id="txnAmount" min="0" step="0.01" /></label>
+        <label>Amount (£): <input type="number" id="txnAmount" min="0" step="0.01" /></label>
 
         <label id="txnVatLabel">VAT:
           <select id="txnVatType">
@@ -745,7 +747,7 @@
         </label>
 
         <label class="inline-label" id="txnWhtLabel">
-          <input type="checkbox" id="txnWht" /> WHT applied
+          <input type="checkbox" id="txnWht" /> CIS applied
         </label>
         <label id="txnWhtBasisLabel" style="display:none;">Basis:
           <select id="txnWhtBasis">
@@ -756,7 +758,7 @@
         <label id="txnWhtRateLabel" style="display:none;">Rate (%) <input type="number" id="txnWhtRate" class="smallInput" min="0" step="0.01" /></label>
 
         <label class="inline-label" id="txnPayeLabel">
-          <input type="checkbox" id="txnSalary" /> Salary (PAYE)
+          <input type="checkbox" id="txnSalary" /> Salary (PAYE/NI)
         </label>
 
         <div style="width:1px;height:28px;background:#e6e6e6;margin:0 8px;"></div>
@@ -768,7 +770,7 @@
             <option value="nontaxable">Non-taxable income</option>
           </select>
         </label>
-        <label id="txnAdjustmentAmountLabel" style="display:none;">Amt (₦): <input type="number" id="txnAdjustmentAmount" class="smallInput" min="0" step="0.01" /></label>
+        <label id="txnAdjustmentAmountLabel" style="display:none;">Amt (£): <input type="number" id="txnAdjustmentAmount" class="smallInput" min="0" step="0.01" /></label>
 
         <label>Contact:
           <div style="display:flex;gap:4px;align-items:center;">
@@ -807,10 +809,10 @@
             <select id="invAccountSelect"></select>
           </label>
           <label>Qty: <input type="number" id="invQty" min="0" step="1" /></label>
-          <label>Unit Price (₦): <input type="number" id="invUnitPrice" min="0" step="0.01" /></label>
+          <label>Unit Price (£): <input type="number" id="invUnitPrice" min="0" step="0.01" /></label>
 
           <label>Opening Qty: <input type="number" id="invOpeningQty" min="0" step="1" /></label>
-          <label>Opening Avg Cost (₦): <input type="number" id="invOpeningAvgCost" min="0" step="0.01" /></label>
+          <label>Opening Avg Cost (£): <input type="number" id="invOpeningAvgCost" min="0" step="0.01" /></label>
 
           <label id="invVatLabel">VAT:
             <select id="invVatType">
@@ -849,10 +851,10 @@
             </select>
           </label>
           <label>Qty: <input type="number" id="assetQty" min="1" step="1" class="smallInput" value="1" /></label>
-          <label>Unit Price (₦): <input type="number" id="assetUnitPrice" min="0" step="0.01" /></label>
-          <label>Cost (₦): <input type="number" id="assetCost" min="0" step="0.01" /></label>
-          <label>Opening Cost (₦): <input type="number" id="assetOpeningCost" min="0" step="0.01" /></label>
-          <label>Opening Accumulated Depreciation (₦): <input type="number" id="assetOpeningAccDep" min="0" step="0.01" /></label>
+          <label>Unit Price (£): <input type="number" id="assetUnitPrice" min="0" step="0.01" /></label>
+          <label>Cost (£): <input type="number" id="assetCost" min="0" step="0.01" /></label>
+          <label>Opening Cost (£): <input type="number" id="assetOpeningCost" min="0" step="0.01" /></label>
+          <label>Opening Accumulated Depreciation (£): <input type="number" id="assetOpeningAccDep" min="0" step="0.01" /></label>
           <label>Purchase date: <input type="date" id="assetPurchaseDate" /></label>
           <label>Useful life (years): <input type="number" id="assetLife" min="1" step="1" class="smallInput" /></label>
           <label>Capital allowance % (annual): <input type="number" id="assetCA" min="0" step="0.01" class="smallInput" /></label>
@@ -890,7 +892,7 @@
           </label>
           <label>Disposal date: <input type="date" id="assetDisposalDate" /></label>
           <label>Quantity to dispose: <input type="number" id="assetDisposalQty" min="1" step="1" class="smallInput" value="1" /></label>
-          <label>Disposal proceeds (₦): <input type="number" id="assetDisposalProceeds" min="0" step="0.01" /></label>
+          <label>Disposal proceeds (£): <input type="number" id="assetDisposalProceeds" min="0" step="0.01" /></label>
           <label>Disposal account:
             <select id="assetDisposalAccount"></select>
           </label>
@@ -900,7 +902,7 @@
           <button id="btnAssetDisposalCancel" class="small">Cancel</button>
           <button id="btnAssetDisposalUndo" class="small danger">Undo last asset action</button>
         </div>
-        <small class="note">Chargeable gains and losses will be classified based on asset classification and included in tax calculations according to entity rules. Profit/loss = proceeds - tax written down value (TWDV = ₦10 residual at end of life).</small>
+        <small class="note">Chargeable gains and losses will be classified based on asset classification and included in tax calculations according to entity rules. Profit/loss = proceeds - tax written down value (TWDV = £10 residual at end of life).</small>
       </div>
     </section>
 
@@ -975,10 +977,9 @@
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
         <button class="small tab active" data-report="vatReport">VAT Report</button>
-        <button class="small tab" data-report="whtReport">WHT Report</button>
-        <button class="small tab" data-report="payeReport">PAYE Report</button>
-        <button class="small tab" data-report="pitBusiness">PIT Report</button>
-        <button class="small tab" data-report="citReport">CIT Report</button>
+        <button class="small tab" data-report="payeReport">PAYE &amp; National Insurance Report</button>
+        <button class="small tab" data-report="pitBusiness">Self Assessment Report</button>
+        <button class="small tab" data-report="citReport">Corporation Tax Report</button>
         <button class="small tab" data-report="cgtReport">CGT Report</button>
         <button class="small tab" data-report="inventoryReport">Inventory Schedule</button>
         <button class="small tab" data-report="assetsReport">Asset Schedule</button>
@@ -1037,17 +1038,18 @@
     <div class="row">
       <label>Entity type:
         <select id="bizEntity">
-          <option value="Company">Company</option>
-          <option value="Business">Business</option>
-          <option value="Enterprise Plus">Enterprise Plus</option>
+          <option value="Limited Company">Limited Company</option>
+          <option value="Sole Trader">Sole Trader</option>
+          <option value="Partnership">Partnership</option>
+          <option value="LLP">Limited Liability Partnership (LLP)</option>
         </select>
       </label>
       <label>VAT rate %: <input type="number" id="bizVat" class="smallInput" min="0" step="0.01" /></label>
       <label>WHT rate %: <input type="number" id="bizWht" class="smallInput" min="0" step="0.01" /></label>
       <label id="bizTurnoverThresholdLabel">Turnover Threshold (CIT):
         <select id="bizTurnoverThresholdSelect" class="smallInput">
-          <option value="50000000">₦50,000,000</option>
-          <option value="100000000">₦100,000,000</option>
+          <option value="50000000">£50,000,000</option>
+          <option value="100000000">£100,000,000</option>
         </select>
       </label>
       <!-- CIT fields hidden but preserved in data via hidden inputs -->
@@ -1066,8 +1068,8 @@
 
     <div class="form-section">
       <div class="row">
-        <label>Loss brought forward (₦): <input type="number" id="bizLossBF" class="smallInput" min="0" step="0.01" /></label>
-        <label>CA broughtforward (₦): <input type="number" id="bizCACF" class="smallInput" min="0" step="0.01" /></label>
+        <label>Loss brought forward (£): <input type="number" id="bizLossBF" class="smallInput" min="0" step="0.01" /></label>
+        <label>CA broughtforward (£): <input type="number" id="bizCACF" class="smallInput" min="0" step="0.01" /></label>
       </div>
 
       <div class="row" style="margin-top:6px;">
@@ -1092,12 +1094,12 @@
       <div id="annualStatutoryDeductionsSection" style="margin-top:8px; display:none;">
         <h4 style="margin:6px 0 4px 0;">Annual Statutory Deductions (used for PAYE / PIT)</h4>
         <div class="row">
-          <label>Pension (₦): <input type="number" id="bizDedPension" class="smallInput" min="0" step="0.01" /></label>
-          <label>Rent relief (₦): <input type="number" id="bizDedRent" class="smallInput" min="0" step="0.01" /></label>
-          <label>Life assurance (₦): <input type="number" id="bizDedLife" class="smallInput" min="0" step="0.01" /></label>
-          <label>Mortgage interest (₦): <input type="number" id="bizDedMortgage" class="smallInput" min="0" step="0.01" /></label>
-          <label>NHF (₦): <input type="number" id="bizDedNHF" class="smallInput" min="0" step="0.01" /></label>
-          <label>NHIS (₦): <input type="number" id="bizDedNHIS" class="smallInput" min="0" step="0.01" /></label>
+          <label>Pension (£): <input type="number" id="bizDedPension" class="smallInput" min="0" step="0.01" /></label>
+          <label>Rent relief (£): <input type="number" id="bizDedRent" class="smallInput" min="0" step="0.01" /></label>
+          <label>Life assurance (£): <input type="number" id="bizDedLife" class="smallInput" min="0" step="0.01" /></label>
+          <label>Mortgage interest (£): <input type="number" id="bizDedMortgage" class="smallInput" min="0" step="0.01" /></label>
+          <label>NHF (£): <input type="number" id="bizDedNHF" class="smallInput" min="0" step="0.01" /></label>
+          <label>NHIS (£): <input type="number" id="bizDedNHIS" class="smallInput" min="0" step="0.01" /></label>
         </div>
         <small class="note">If you set statutory deductions on a contact (SoleTrader), that will override these values for PIT.</small>
       </div>
@@ -1146,14 +1148,14 @@
     <div class="form-section" id="contactDeductionsSection">
       <h4 style="margin:6px 0 4px 0;">Statutory Deductions (for SoleTrader/Employee)</h4>
       <div class="row">
-        <label>Pension (₦): <input type="number" id="contactDedPension" class="smallInput" min="0" step="0.01" /></label>
-        <label>Rent relief (₦): <input type="number" id="contactDedRent" class="smallInput" min="0" step="0.01" /></label>
-        <label>Life assurance (₦): <input type="number" id="contactDedLife" class="smallInput" min="0" step="0.01" /></label>
+        <label>Pension (£): <input type="number" id="contactDedPension" class="smallInput" min="0" step="0.01" /></label>
+        <label>Rent relief (£): <input type="number" id="contactDedRent" class="smallInput" min="0" step="0.01" /></label>
+        <label>Life assurance (£): <input type="number" id="contactDedLife" class="smallInput" min="0" step="0.01" /></label>
       </div>
       <div class="row">
-        <label>Mortgage interest (₦): <input type="number" id="contactDedMortgage" class="smallInput" min="0" step="0.01" /></label>
-        <label>NHF (₦): <input type="number" id="contactDedNHF" class="smallInput" min="0" step="0.01" /></label>
-        <label>NHIS (₦): <input type="number" id="contactDedNHIS" class="smallInput" min="0" step="0.01" /></label>
+        <label>Mortgage interest (£): <input type="number" id="contactDedMortgage" class="smallInput" min="0" step="0.01" /></label>
+        <label>NHF (£): <input type="number" id="contactDedNHF" class="smallInput" min="0" step="0.01" /></label>
+        <label>NHIS (£): <input type="number" id="contactDedNHIS" class="smallInput" min="0" step="0.01" /></label>
       </div>
       <small class="note">These deductions override business-level statutory deductions when computing PIT/PAYE for this contact.</small>
     </div>
@@ -1179,20 +1181,21 @@
   </div>
 
 <div id="signupModal" class="modal">
-  <h3>Signup — Nigeria Tax (7-day trial)</h3>
+  <h3>Signup — UK Tax (7-day trial)</h3>
   <div class="row">
     <label>Name: <input type="text" id="signupName" required></label>
     <label>Username: <input type="text" id="signupUsername" required></label>
     <label>Email: <input type="email" id="signupEmail" required placeholder="your@email.com"></label>
   </div>
   <div class="row">
-    <label>Phone: <input type="tel" id="signupPhone" placeholder="e.g. +234..."></label>
+    <label>Phone: <input type="tel" id="signupPhone" placeholder="e.g. +44..."></label>
     <label>Password: <input type="password" id="signupPassword" minlength="6" placeholder="Min 6 characters" required></label>
     <label>Plan:
       <select id="signupPlan">
-        <option value="Business">Business</option>
-        <option value="Company">Company</option>
-        <option value="Enterprise Plus">Enterprise Plus</option>
+        <option value="Sole Trader">Sole Trader</option>
+        <option value="Limited Company">Limited Company</option>
+        <option value="Partnership">Partnership</option>
+        <option value="LLP">Limited Liability Partnership (LLP)</option>
       </select>
     </label>
   </div>
@@ -1227,9 +1230,10 @@
   <div class="row">
     <label>Entity Type:
       <select id="entitySelectType">
-        <option value="Business">Business</option>
-        <option value="Company">Company</option>
-        <option value="Enterprise Plus">Enterprise Plus</option>
+        <option value="Sole Trader">Sole Trader</option>
+        <option value="Limited Company">Limited Company</option>
+        <option value="Partnership">Partnership</option>
+        <option value="LLP">Limited Liability Partnership (LLP)</option>
       </select>
     </label>
   </div>
@@ -1306,15 +1310,15 @@
   <div style="margin-top:12px; padding:12px; background:#f8f9fb; border-radius:6px;">
     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
       <span>Subtotal:</span>
-      <span id="invoiceSubtotal">₦0.00</span>
+      <span id="invoiceSubtotal">£0.00</span>
     </div>
     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
       <span>VAT:</span>
-      <span id="invoiceVatAmount">₦0.00</span>
+      <span id="invoiceVatAmount">£0.00</span>
     </div>
     <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem;">
       <span>Total:</span>
-      <span id="invoiceTotal">₦0.00</span>
+      <span id="invoiceTotal">£0.00</span>
     </div>
   </div>
   
@@ -1328,7 +1332,7 @@
 
   <script>
   /************************************************************************
-   * Nigeria Multi-User Multi-Business Accounting & Tax Engine
+   * UK Multi-User Multi-Business Accounting & Tax Engine
    * Enhanced Version 2.0 - Comprehensive Tax & Entity Management
    * 
    * CHANGELOG:
@@ -1366,29 +1370,27 @@
     caRateDefault:20.0, depRateDefault:20.0, turnoverThreshold:100000000 
   };
   
-  // PIT/PAYE bands per Nigerian tax law (updated to match requirements)
+  // Income Tax bands per UK tax law (2025-26 tax year - these are example rates)
   const PAYE_BANDS = [
-    { upTo: 800000, rate: 0.00 },       // First ₦800,000 @ 0%
-    { upTo: 3000000, rate: 0.15 },      // Next ₦2,200,000 @ 15%
-    { upTo: 12000000, rate: 0.18 },     // Next ₦9,000,000 @ 18%
-    { upTo: 25000000, rate: 0.21 },     // Next ₦13,000,000 @ 21%
-    { upTo: 50000000, rate: 0.23 },     // Next ₦25,000,000 @ 23%
-    { upTo: Infinity, rate: 0.25 }      // Above ₦50,000,000 @ 25%
+    { upTo: 12570, rate: 0.00 },       // Personal Allowance £12,570 @ 0%
+    { upTo: 50270, rate: 0.20 },       // Basic rate £12,571-£50,270 @ 20%
+    { upTo: 125140, rate: 0.40 },      // Higher rate £50,271-£125,140 @ 40%
+    { upTo: Infinity, rate: 0.45 }     // Additional rate over £125,140 @ 45%
   ];
   
   // CIT Turnover threshold options
   const CIT_THRESHOLDS = {
     NONE: 0,
-    MEDIUM: 50000000,   // ₦50,000,000
-    LARGE: 100000000    // ₦100,000,000
+    SMALL: 50000,      // £50,000 - Small profits rate threshold
+    LARGE: 250000      // £250,000 - Main rate threshold
   };
   
   // Tax calculation constants
-  const ASSET_RESIDUAL_VALUE = 10; // ₦10 residual at end of useful life
+  const ASSET_RESIDUAL_VALUE = 1; // £1 residual at end of useful life (UK standard)
   const NON_TAXABLE_INCOME_CA_THRESHOLD = 0.10; // 10% threshold for CA relief
-  const CGT_EXEMPTION_PROCEEDS = 150000000; // ₦150,000,000
-  const CGT_EXEMPTION_GAIN = 10000000; // ₦10,000,000
-  const CGT_RATE = 0.10; // 10% Capital Gains Tax rate
+  const CGT_EXEMPTION_PROCEEDS = 0; // No proceeds exemption in UK
+  const CGT_EXEMPTION_GAIN = 3000; // £3,000 - UK CGT annual exempt amount (2025-26)
+  const CGT_RATE = 0.10; // 10% Capital Gains Tax rate (basic rate)
   
   // Tax payment account names - used to exclude from P&L and track tax payments
   const TAX_PAYMENT_ACCOUNTS = [];
@@ -1411,7 +1413,7 @@
   /**
    * Creates a default business for a user after signup.
    * @param {string} userId - The user's ID
-   * @param {string} entityType - The entity type (Individual/Enterprise/Company)
+   * @param {string} entityType - The entity type (Sole Trader/Partnership/Limited Company/LLP)
    * @returns {string} - The created business ID
    */
   function createBusinessForUser(userId, entityType) {
@@ -1420,7 +1422,7 @@
     
     // Determine how many businesses to create based on entity type
     let businessesToCreate = 1;
-    if (entityType === 'Enterprise Plus') {
+    if (entityType === 'Partnership' || entityType === 'LLP') {
       businessesToCreate = 3;
     }
     
@@ -1456,7 +1458,7 @@
         lossBroughtForward: 0, caCarryForward: 0,
         defaultExpenseDisallowable: false, defaultRevenueNonTax: false,
         userIds: [userId], // Track users associated with this business
-        maxUsers: entityType === 'Business' ? 2 : 3, // 2 for Business, 3 for Company/Enterprise Plus
+        maxUsers: entityType === 'Sole Trader' ? 1 : 3, // 1 for Sole Trader, 3 for others
         trialStart: Date.now(),
         trialDays: 7,
         chargeableLosses: {}, // CGT: { year: { assetClassName: amount } }
@@ -1796,7 +1798,7 @@
 
   // utilities
   function uid(prefix = 'id'){ return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
-  function fmt(n){ return (n==null || isNaN(Number(n))) ? '₦0.00' : '₦' + Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function fmt(n){ return (n==null || isNaN(Number(n))) ? '£0.00' : '£' + Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
   function rawFmt(n){ return Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
   function escapeHtml(text){ if(!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
   function today(){ return new Date().toISOString().slice(0,10); }
@@ -1839,13 +1841,16 @@
     state.cashbook = state.cashbook || {};
     
     state.businesses.forEach(b => {
-      // MIGRATION: Rename SoleProprietor to Business, and Enterprise to Business
-      if (b.entity === 'SoleProprietor' || b.entity === 'Enterprise') {
-        b.entity = 'Business';
+      // MIGRATION: Map old entity types to new UK entity types
+      if (b.entity === 'SoleProprietor' || b.entity === 'Individual' || b.entity === 'Business') {
+        b.entity = 'Sole Trader';
       }
-      // MIGRATION: Rename Individual to Business (removing Individual entity)
-      if (b.entity === 'Individual') {
-        b.entity = 'Business';
+      if (b.entity === 'Company') {
+        b.entity = 'Limited Company';
+      }
+      if (b.entity === 'Enterprise' || b.entity === 'Enterprise Plus') {
+        b.entity = 'Partnership';
+      }
       }
       
       // MIGRATION: Add turnoverThreshold if missing (default 100M)
@@ -1986,7 +1991,7 @@
         id: b,
         name: 'Demo Business',
         ownerId: u,
-        entity: 'Company',
+        entity: 'Limited Company',
         entityLocked: false, // Demo business entity is not locked
         vatRate: DEFAULTS.vatRate,
         whtRate: DEFAULTS.whtRate,
@@ -3099,7 +3104,7 @@
     
     businessModalTitle.textContent = 'Add Business';
     bizName.value = ''; bizOwnerSelect.value = state.users[0] ? state.users[0].id : '';
-    bizEntity.value = 'Company'; bizVat.value = DEFAULTS.vatRate; bizWht.value = DEFAULTS.whtRate; bizCit.value = DEFAULTS.citRate;
+    bizEntity.value = 'Limited Company'; bizVat.value = DEFAULTS.vatRate; bizWht.value = DEFAULTS.whtRate; bizCit.value = DEFAULTS.citRate;
     bizTurnoverThreshold.value = DEFAULTS.turnoverThreshold;
     
     // Update turnover threshold select
@@ -3916,27 +3921,27 @@
         
         // CGT: Apply entity-specific rules for net (post-offset) gain
         if(netGainAfterOffset > 0 && !isShareExempt) {
-          if(b.entity === 'Business' || b.entity === 'Enterprise Plus') {
-            // Business or Enterprise Plus: include netGain in taxable profit
+          if(b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') {
+            // Sole Trader, Partnership, or LLP: include netGain in taxable profit
             includedInTaxableProfit = true;
             addAudit('cgt.taxable_profit', 'asset', asset.id, 
               `Chargeable gain ${fmt(netGainAfterOffset)} included in taxable profit for ${b.entity}`,
               { entityType: b.entity, netGain: netGainAfterOffset, includedInTaxableProfit: true });
             
-          } else if(b.entity === 'Company') {
-            // Company: check turnover threshold
+          } else if(b.entity === 'Limited Company') {
+            // Limited Company: check turnover threshold
             const turnoverThreshold = Number(b.turnoverThreshold || 0);
             
             if(turnoverThreshold <= 100000000) {
-              // Turnover threshold <= ₦100,000,000: do NOT include in taxable profit and do NOT charge CGT
+              // Turnover threshold <= £100,000,000: do NOT include in taxable profit and do NOT charge CGT
               includedInTaxableProfit = false;
               cgtCharge = 0;
               addAudit('cgt.company_exempt', 'asset', asset.id, 
-                `Company with turnover threshold ${fmt(turnoverThreshold)} <= ₦100,000,000: No CGT charged, gain not included in taxable profit`,
+                `Company with turnover threshold ${fmt(turnoverThreshold)} <= £100,000,000: No CGT charged, gain not included in taxable profit`,
                 { turnoverThreshold: turnoverThreshold, netGain: netGainAfterOffset, cgtCharge: 0 });
                 
             } else {
-              // Turnover threshold > ₦100,000,000: do NOT include in taxable profit but charge CGT at 30%
+              // Turnover threshold > £100,000,000: do NOT include in taxable profit but charge CGT at 30%
               includedInTaxableProfit = false;
               cgtCharge = Math.round(netGainAfterOffset * CGT_COMPANY_RATE * 100) / 100;
               addAudit('cgt.charge', 'asset', asset.id, 
@@ -4849,13 +4854,13 @@
       // Use netGain (after offset) for correct taxable profit calculation
       const effectiveGain = g.netGain || g.gain || 0;
       
-      if(b.entity === 'Company'){
-        // For Company: gains are excluded from taxable profit (CGT charged separately)
+      if(b.entity === 'Limited Company'){
+        // For Limited Company: gains are excluded from taxable profit (CGT charged separately)
         if(!g.isShareExempt && effectiveGain > 0) {
           cgtExcludedFromTaxable += effectiveGain;
         }
       } else {
-        // For Business/Enterprise Plus: gains included in taxable profit unless exempt
+        // For Sole Trader/Partnership/LLP: gains included in taxable profit unless exempt
         // If the gain is exempt (share exemption), exclude from taxable profit
         if(g.isShareExempt && effectiveGain > 0) {
           // Exempt gains: exclude from taxable profit
@@ -4865,8 +4870,8 @@
       }
     }
     
-    // For Company, exclude chargeable gains from taxable profit (handled separately via CGT)
-    if(b.entity === 'Company'){
+    // For Limited Company, exclude chargeable gains from taxable profit (handled separately via CGT)
+    if(b.entity === 'Limited Company'){
       taxableProfit -= cgtExcludedFromTaxable;
     }
     
@@ -4901,7 +4906,7 @@
     
     let citCharge = 0;
     let whtCarryForward = 0;
-    if(b.entity === 'Company' && b.citEnabled){
+    if(b.entity === 'Limited Company' && b.citEnabled){
       const threshold = b.turnoverThreshold || DEFAULTS.turnoverThreshold;
       
       // CIT logic based on selected threshold:
@@ -4929,9 +4934,9 @@
       }
     }
 
-    // PIT for Business/Enterprise Plus (renamed from SoleProprietor)
+    // PIT for Sole Trader/Partnership/LLP
     let pitCharge = 0;
-    if((b.entity === 'Business' || b.entity === 'Enterprise Plus') && b.pitEnabled){
+    if((b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') && b.pitEnabled){
       if(taxableProfit > 0){
         const pitLiability = computePAYEOnAnnualIncome(taxableProfit);
         // Deduct WHT remitted (already paid) from PIT charge
@@ -4950,7 +4955,7 @@
     const whtReceivableNet = Math.max(0, whtReceivable - whtPaidToAuthority);
     
     let html = '';
-    // For Company/Business/Enterprise Plus: show full summary
+    // For all UK entity types: show full summary
     html += `<div><strong>Accounting Profit:</strong> ${fmt(accountingProfit)}</div>`;
     html += `<div><strong>Taxable Profit:</strong> ${fmt(taxableProfit)}</div>`;
     html += `<div class="small-muted">Revenue ${fmt(revenue)} | Expenses ${fmt(expenses)} (including Dep ${fmt(depreciationDaily)})</div>`;
@@ -4999,7 +5004,7 @@
     html += `</div>`;
     
     // CIT/PIT Section
-    if(b.entity === 'Company'){
+    if(b.entity === 'Limited Company'){
       const citOutstanding = Math.max(0, citCharge - citPaid);
       html += `<div style="background:#f8f9fb; padding:10px; margin:8px 0; border-radius:6px; border-left:4px solid ${citOutstanding > 0 ? '#dc2626' : '#059669'};">`;
       html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">`;
@@ -5452,10 +5457,10 @@
     const finalLiability = Math.max(0, pitLiability - whtReceivable);
     const effectiveRate = grossTaxableProfit > 0 ? ((finalLiability / grossTaxableProfit) * 100).toFixed(2) : '0.00';
     
-    let html = `<h3>Personal Income Tax Computation (Business)</h3>`;
+    let html = `<h3>Self Assessment Computation (Business)</h3>`;
     html += `<p><strong>Business Name:</strong> ${b.name}</p>`;
     html += `<p><strong>Tax Year:</strong> ${currentYear}</p>`;
-    html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (₦)</th></tr></thead><tbody>`;
+    html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
     
     // Accounting profit
     html += `<tr><td><strong>Accounting profit</strong></td><td style="text-align:right;"><strong>${fmt(accountingProfit)}</strong></td></tr>`;
@@ -5615,19 +5620,18 @@
     const assessableProfit = Math.max(0, adjustedProfit - lossBF);
     const taxableProfit = Math.max(0, assessableProfit - capitalAllowance);
     
-    // Determine CIT rate based on turnover (Nigerian CIT progressive rates)
-    // Micro companies (turnover <= ₦25M): 0%
-    // Small companies (turnover > ₦25M and <= ₦100M): 20%
-    // Large companies (turnover > ₦100M): 30%
+    // Determine Corporation Tax rate based on profits (UK Corporation Tax rates 2023+)
+    // Small profits rate (19%) applies up to £50,000
+    // Main rate (25%) applies over £250,000
+    // Marginal relief between £50,000-£250,000
     let citRate = 0;
-    if(revenue > CIT_THRESHOLDS.LARGE) {
-      citRate = 0.30; // 30% for large companies
-    } else if(revenue > CIT_THRESHOLDS.MEDIUM) {
-      citRate = 0.20; // 20% for medium companies
-    } else if(revenue > 25000000) {
-      citRate = 0.20; // 20% for small companies above ₦25M
+    if(taxableProfit > CIT_THRESHOLDS.LARGE) {
+      citRate = 0.25; // 25% for profits over £250,000
+    } else if(taxableProfit > CIT_THRESHOLDS.SMALL) {
+      citRate = 0.19; // 19% with marginal relief (simplified)
+    } else {
+      citRate = 0.19; // 19% for small profits up to £50,000
     }
-    // Below ₦25M = 0% rate
     
     const citLiability = taxableProfit * citRate;
     
@@ -5635,10 +5639,10 @@
     const finalLiability = Math.max(0, citLiability - whtRemitted);
     const effectiveRate = taxableProfit > 0 ? ((finalLiability / taxableProfit) * 100).toFixed(2) : '0.00';
     
-    let html = `<h3>Company Income Tax Computation</h3>`;
+    let html = `<h3>Corporation Tax Computation</h3>`;
     html += `<p><strong>Company Name:</strong> ${b.name}</p>`;
     html += `<p><strong>Financial Year Ended:</strong> ${currentYear}</p>`;
-    html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (₦)</th></tr></thead><tbody>`;
+    html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
     
     html += `<tr><td><strong>Accounting profit</strong></td><td style="text-align:right;"><strong>${fmt(accountingProfit)}</strong></td></tr>`;
     
@@ -5775,7 +5779,7 @@
     html += `</tbody></table>`;
     
     html += `<h4 style="margin-top:16px;">CGT Summary</h4>`;
-    html += `<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (₦)</th></tr></thead><tbody>`;
+    html += `<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
     html += `<tr><td>Total Gains</td><td style="text-align:right;">${fmt(totalGains)}</td></tr>`;
     html += `<tr><td>Total Losses (recorded as carryforward)</td><td style="text-align:right;">(${fmt(totalLosses)})</td></tr>`;
     html += `<tr><td>Total Offset Used (from prior-year losses)</td><td style="text-align:right;">(${fmt(totalOffsetUsed)})</td></tr>`;
@@ -5786,7 +5790,7 @@
     // Carryforward losses section
     html += `<h4 style="margin-top:16px;">Carryforward Losses</h4>`;
     if(availableCarryforwardLosses > 0 || totalCarryforwardLosses > 0) {
-      html += `<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (₦)</th></tr></thead><tbody>`;
+      html += `<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
       html += `<tr><td>Losses Created This Period</td><td style="text-align:right;">${fmt(totalCarryforwardLosses)}</td></tr>`;
       html += `<tr><td>Available Carryforward Losses (to offset future gains)</td><td style="text-align:right;">${fmt(availableCarryforwardLosses)}</td></tr>`;
       html += `</tbody></table>`;
@@ -5811,12 +5815,12 @@
     
     // Entity-specific notes
     html += `<h4 style="margin-top:16px;">Notes</h4>`;
-    if(b.entity === 'Company') {
+    if(b.entity === 'Limited Company') {
       const threshold = b.turnoverThreshold || 0;
-      html += `<div class="small-muted">For Companies with turnover threshold > ₦100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
+      html += `<div class="small-muted">For Companies with turnover threshold > £100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
       html += `<div class="small-muted">Current turnover threshold setting: ${fmt(threshold)}</div>`;
     } else {
-      html += `<div class="small-muted">For Business/Enterprise Plus: Net gains are included in taxable profit and subject to PIT rates.</div>`;
+      html += `<div class="small-muted">For Sole Trader/Partnership/LLP: Net gains are included in taxable profit and subject to Income Tax rates.</div>`;
     }
     html += `<div class="small-muted" style="margin-top:6px;">Carryforward losses can only offset gains in future accounting periods (years after the loss occurred).</div>`;
     
@@ -6066,7 +6070,7 @@
     let inventoryOptions = '<option value="">-- Select from Inventory or Enter Custom --</option>';
     for(const invItem of inventory) {
       const selected = item && item.inventoryId === invItem.id ? 'selected' : '';
-      inventoryOptions += `<option value="${invItem.id}" ${selected}>${invItem.name} (₦${invItem.averageCost?.toFixed(2) || '0.00'})</option>`;
+      inventoryOptions += `<option value="${invItem.id}" ${selected}>${invItem.name} (£${invItem.averageCost?.toFixed(2) || '0.00'})</option>`;
     }
     
     return `
@@ -6744,12 +6748,12 @@
       </div>
     `;
     
-    // Add CIT info for Company entity with turnover > 100M
-    if (b.entity === 'Company' && turnover > 100000000) {
+    // Add Corporation Tax info for Limited Company entity with turnover > 100M
+    if (b.entity === 'Limited Company' && turnover > 100000000) {
       businessInfo += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">CIT:</span>
-          <span class="dashboard-metric-value">30% (Turnover > ₦100M)</span>
+          <span class="dashboard-metric-label">Corporation Tax:</span>
+          <span class="dashboard-metric-value">30% (Turnover > £100M)</span>
         </div>
       `;
     }
@@ -6811,15 +6815,15 @@
     let totalPIT = 0;
     let totalCIT = 0;
     
-    if (b.entity === 'Business' && profit > 0) {
-      // PIT calculation (simplified progressive tax up to 25%)
+    if ((b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') && profit > 0) {
+      // Income Tax calculation (simplified progressive tax up to 25%)
       // This is a simplified estimate based on profit
       const pitBase = profit - (b.lossBroughtForward || 0);
       if (pitBase > 0) {
         totalPIT = pitBase * 0.15; // Average estimate, actual is progressive 0-25%
       }
-    } else if (b.entity === 'Company' && profit > 0) {
-      // CIT calculation at 30% for turnover > 100M, otherwise lower rate
+    } else if (b.entity === 'Limited Company' && profit > 0) {
+      // Corporation Tax calculation at 30% for turnover > 100M, otherwise lower rate
       const citBase = profit - (b.lossBroughtForward || 0) - (b.caCarryForward || 0);
       if (citBase > 0) {
         const citRate = turnover > 100000000 ? 0.30 : (b.citRate || 30) / 100;
@@ -6850,21 +6854,21 @@
       </div>
     `;
     
-    // Show PIT for Business entity
-    if (b.entity === 'Business') {
+    // Show Income Tax for Sole Trader/Partnership/LLP entity
+    if (b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') {
       taxSummary += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">PIT (est.):</span>
+          <span class="dashboard-metric-label">Income Tax (est.):</span>
           <span class="dashboard-metric-value">${fmt(totalPIT)}</span>
         </div>
       `;
     }
     
-    // Show CIT for Company entity
-    if (b.entity === 'Company') {
+    // Show Corporation Tax for Limited Company entity
+    if (b.entity === 'Limited Company') {
       taxSummary += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">CIT (est.):</span>
+          <span class="dashboard-metric-label">Corporation Tax (est.):</span>
           <span class="dashboard-metric-value">${fmt(totalCIT)}</span>
         </div>
       `;
@@ -7101,7 +7105,7 @@
       // Get eligible employees/sole traders for dropdown
       const eligibleContacts = populateEmployeeDropdownForPaye(selectedBizId);
       
-      let html = `<h3>PAYE Report</h3>`;
+      let html = `<h3>PAYE &amp; National Insurance Report</h3>`;
       
       // Employee/SoleTrader dropdown for statutory deductions
       if(eligibleContacts.length > 0){
@@ -7753,24 +7757,24 @@
     // Pricing configuration
     const PLANS = {
       business: {
-        fullPrice: 60000,
-        offerPrice: 40000,
-        taxAccountantPrice: 25000,
-        bookkeepingPrice: 75000,
-        buyLink: 'https://buy.stripe.com/business-plan',
+        fullPrice: 300,
+        offerPrice: 200,
+        taxAccountantPrice: 125,
+        bookkeepingPrice: 375,
+        buyLink: 'https://buy.stripe.com/sole-trader-plan',
         taxAccountantLink: 'https://buy.stripe.com/hire-tax-accountant-business'
       },
       company: {
-        fullPrice: 80000,
-        offerPrice: 60000,
-        taxAccountantPrice: 25000,
-        bookkeepingPrice: 100000,
+        fullPrice: 400,
+        offerPrice: 300,
+        taxAccountantPrice: 125,
+        bookkeepingPrice: 500,
         buyLink: 'https://buy.stripe.com/company-plan',
         taxAccountantLink: 'https://buy.stripe.com/hire-tax-accountant-company'
       },
       enterprise: {
-        fullPrice: 150000,
-        offerPrice: 100000,
+        fullPrice: 750,
+        offerPrice: 500,
         addonBusinessPrice: 15000,
         addonCompanyPrice: 25000,
         buyLink: 'https://buy.stripe.com/enterprise-plan',
@@ -7857,8 +7861,8 @@
     }
     
     // Format currency
-    function formatNaira(amount) {
-      return '₦' + amount.toLocaleString();
+    function formatPounds(amount) {
+      return '£' + amount.toLocaleString();
     }
     
     // Calculate and update total for a plan
@@ -7923,7 +7927,7 @@
       
       const total = basePrice + addonPrice;
       
-      totalEl.textContent = formatNaira(total);
+      totalEl.textContent = formatPounds(total);
       
       // Update buy link with current price
       if (buyLink) {
