@@ -1038,9 +1038,10 @@
     <div class="row">
       <label>Entity type:
         <select id="bizEntity">
-          <option value="Company">Company</option>
-          <option value="Business">Business</option>
-          <option value="Enterprise Plus">Enterprise Plus</option>
+          <option value="Limited Company">Limited Company</option>
+          <option value="Sole Trader">Sole Trader</option>
+          <option value="Partnership">Partnership</option>
+          <option value="LLP">Limited Liability Partnership (LLP)</option>
         </select>
       </label>
       <label>VAT rate %: <input type="number" id="bizVat" class="smallInput" min="0" step="0.01" /></label>
@@ -1187,13 +1188,14 @@
     <label>Email: <input type="email" id="signupEmail" required placeholder="your@email.com"></label>
   </div>
   <div class="row">
-    <label>Phone: <input type="tel" id="signupPhone" placeholder="e.g. +234..."></label>
+    <label>Phone: <input type="tel" id="signupPhone" placeholder="e.g. +44..."></label>
     <label>Password: <input type="password" id="signupPassword" minlength="6" placeholder="Min 6 characters" required></label>
     <label>Plan:
       <select id="signupPlan">
-        <option value="Business">Business</option>
-        <option value="Company">Company</option>
-        <option value="Enterprise Plus">Enterprise Plus</option>
+        <option value="Sole Trader">Sole Trader</option>
+        <option value="Limited Company">Limited Company</option>
+        <option value="Partnership">Partnership</option>
+        <option value="LLP">Limited Liability Partnership (LLP)</option>
       </select>
     </label>
   </div>
@@ -1228,9 +1230,10 @@
   <div class="row">
     <label>Entity Type:
       <select id="entitySelectType">
-        <option value="Business">Business</option>
-        <option value="Company">Company</option>
-        <option value="Enterprise Plus">Enterprise Plus</option>
+        <option value="Sole Trader">Sole Trader</option>
+        <option value="Limited Company">Limited Company</option>
+        <option value="Partnership">Partnership</option>
+        <option value="LLP">Limited Liability Partnership (LLP)</option>
       </select>
     </label>
   </div>
@@ -1412,7 +1415,7 @@
   /**
    * Creates a default business for a user after signup.
    * @param {string} userId - The user's ID
-   * @param {string} entityType - The entity type (Individual/Enterprise/Company)
+   * @param {string} entityType - The entity type (Sole Trader/Partnership/Limited Company/LLP)
    * @returns {string} - The created business ID
    */
   function createBusinessForUser(userId, entityType) {
@@ -1421,7 +1424,7 @@
     
     // Determine how many businesses to create based on entity type
     let businessesToCreate = 1;
-    if (entityType === 'Enterprise Plus') {
+    if (entityType === 'Partnership' || entityType === 'LLP') {
       businessesToCreate = 3;
     }
     
@@ -1457,7 +1460,7 @@
         lossBroughtForward: 0, caCarryForward: 0,
         defaultExpenseDisallowable: false, defaultRevenueNonTax: false,
         userIds: [userId], // Track users associated with this business
-        maxUsers: entityType === 'Business' ? 2 : 3, // 2 for Business, 3 for Company/Enterprise Plus
+        maxUsers: entityType === 'Sole Trader' ? 1 : 3, // 1 for Sole Trader, 3 for others
         trialStart: Date.now(),
         trialDays: 7,
         chargeableLosses: {}, // CGT: { year: { assetClassName: amount } }
@@ -1840,13 +1843,16 @@
     state.cashbook = state.cashbook || {};
     
     state.businesses.forEach(b => {
-      // MIGRATION: Rename SoleProprietor to Business, and Enterprise to Business
-      if (b.entity === 'SoleProprietor' || b.entity === 'Enterprise') {
-        b.entity = 'Business';
+      // MIGRATION: Map old entity types to new UK entity types
+      if (b.entity === 'SoleProprietor' || b.entity === 'Individual' || b.entity === 'Business') {
+        b.entity = 'Sole Trader';
       }
-      // MIGRATION: Rename Individual to Business (removing Individual entity)
-      if (b.entity === 'Individual') {
-        b.entity = 'Business';
+      if (b.entity === 'Company') {
+        b.entity = 'Limited Company';
+      }
+      if (b.entity === 'Enterprise' || b.entity === 'Enterprise Plus') {
+        b.entity = 'Partnership';
+      }
       }
       
       // MIGRATION: Add turnoverThreshold if missing (default 100M)
@@ -1987,7 +1993,7 @@
         id: b,
         name: 'Demo Business',
         ownerId: u,
-        entity: 'Company',
+        entity: 'Limited Company',
         entityLocked: false, // Demo business entity is not locked
         vatRate: DEFAULTS.vatRate,
         whtRate: DEFAULTS.whtRate,
@@ -3100,7 +3106,7 @@
     
     businessModalTitle.textContent = 'Add Business';
     bizName.value = ''; bizOwnerSelect.value = state.users[0] ? state.users[0].id : '';
-    bizEntity.value = 'Company'; bizVat.value = DEFAULTS.vatRate; bizWht.value = DEFAULTS.whtRate; bizCit.value = DEFAULTS.citRate;
+    bizEntity.value = 'Limited Company'; bizVat.value = DEFAULTS.vatRate; bizWht.value = DEFAULTS.whtRate; bizCit.value = DEFAULTS.citRate;
     bizTurnoverThreshold.value = DEFAULTS.turnoverThreshold;
     
     // Update turnover threshold select
@@ -3917,15 +3923,15 @@
         
         // CGT: Apply entity-specific rules for net (post-offset) gain
         if(netGainAfterOffset > 0 && !isShareExempt) {
-          if(b.entity === 'Business' || b.entity === 'Enterprise Plus') {
-            // Business or Enterprise Plus: include netGain in taxable profit
+          if(b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') {
+            // Sole Trader, Partnership, or LLP: include netGain in taxable profit
             includedInTaxableProfit = true;
             addAudit('cgt.taxable_profit', 'asset', asset.id, 
               `Chargeable gain ${fmt(netGainAfterOffset)} included in taxable profit for ${b.entity}`,
               { entityType: b.entity, netGain: netGainAfterOffset, includedInTaxableProfit: true });
             
-          } else if(b.entity === 'Company') {
-            // Company: check turnover threshold
+          } else if(b.entity === 'Limited Company') {
+            // Limited Company: check turnover threshold
             const turnoverThreshold = Number(b.turnoverThreshold || 0);
             
             if(turnoverThreshold <= 100000000) {
@@ -4850,8 +4856,8 @@
       // Use netGain (after offset) for correct taxable profit calculation
       const effectiveGain = g.netGain || g.gain || 0;
       
-      if(b.entity === 'Company'){
-        // For Company: gains are excluded from taxable profit (CGT charged separately)
+      if(b.entity === 'Limited Company'){
+        // For Limited Company: gains are excluded from taxable profit (CGT charged separately)
         if(!g.isShareExempt && effectiveGain > 0) {
           cgtExcludedFromTaxable += effectiveGain;
         }
@@ -4866,8 +4872,8 @@
       }
     }
     
-    // For Company, exclude chargeable gains from taxable profit (handled separately via CGT)
-    if(b.entity === 'Company'){
+    // For Limited Company, exclude chargeable gains from taxable profit (handled separately via CGT)
+    if(b.entity === 'Limited Company'){
       taxableProfit -= cgtExcludedFromTaxable;
     }
     
@@ -4902,7 +4908,7 @@
     
     let citCharge = 0;
     let whtCarryForward = 0;
-    if(b.entity === 'Company' && b.citEnabled){
+    if(b.entity === 'Limited Company' && b.citEnabled){
       const threshold = b.turnoverThreshold || DEFAULTS.turnoverThreshold;
       
       // CIT logic based on selected threshold:
@@ -4930,9 +4936,9 @@
       }
     }
 
-    // PIT for Business/Enterprise Plus (renamed from SoleProprietor)
+    // PIT for Sole Trader/Partnership/LLP
     let pitCharge = 0;
-    if((b.entity === 'Business' || b.entity === 'Enterprise Plus') && b.pitEnabled){
+    if((b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') && b.pitEnabled){
       if(taxableProfit > 0){
         const pitLiability = computePAYEOnAnnualIncome(taxableProfit);
         // Deduct WHT remitted (already paid) from PIT charge
@@ -5000,7 +5006,7 @@
     html += `</div>`;
     
     // CIT/PIT Section
-    if(b.entity === 'Company'){
+    if(b.entity === 'Limited Company'){
       const citOutstanding = Math.max(0, citCharge - citPaid);
       html += `<div style="background:#f8f9fb; padding:10px; margin:8px 0; border-radius:6px; border-left:4px solid ${citOutstanding > 0 ? '#dc2626' : '#059669'};">`;
       html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">`;
@@ -5812,7 +5818,7 @@
     
     // Entity-specific notes
     html += `<h4 style="margin-top:16px;">Notes</h4>`;
-    if(b.entity === 'Company') {
+    if(b.entity === 'Limited Company') {
       const threshold = b.turnoverThreshold || 0;
       html += `<div class="small-muted">For Companies with turnover threshold > £100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
       html += `<div class="small-muted">Current turnover threshold setting: ${fmt(threshold)}</div>`;
@@ -6745,8 +6751,8 @@
       </div>
     `;
     
-    // Add CIT info for Company entity with turnover > 100M
-    if (b.entity === 'Company' && turnover > 100000000) {
+    // Add Corporation Tax info for Limited Company entity with turnover > 100M
+    if (b.entity === 'Limited Company' && turnover > 100000000) {
       businessInfo += `
         <div class="dashboard-metric">
           <span class="dashboard-metric-label">Corporation Tax:</span>
@@ -6812,15 +6818,15 @@
     let totalPIT = 0;
     let totalCIT = 0;
     
-    if (b.entity === 'Business' && profit > 0) {
-      // PIT calculation (simplified progressive tax up to 25%)
+    if ((b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') && profit > 0) {
+      // Income Tax calculation (simplified progressive tax up to 25%)
       // This is a simplified estimate based on profit
       const pitBase = profit - (b.lossBroughtForward || 0);
       if (pitBase > 0) {
         totalPIT = pitBase * 0.15; // Average estimate, actual is progressive 0-25%
       }
-    } else if (b.entity === 'Company' && profit > 0) {
-      // CIT calculation at 30% for turnover > 100M, otherwise lower rate
+    } else if (b.entity === 'Limited Company' && profit > 0) {
+      // Corporation Tax calculation at 30% for turnover > 100M, otherwise lower rate
       const citBase = profit - (b.lossBroughtForward || 0) - (b.caCarryForward || 0);
       if (citBase > 0) {
         const citRate = turnover > 100000000 ? 0.30 : (b.citRate || 30) / 100;
@@ -6851,21 +6857,21 @@
       </div>
     `;
     
-    // Show PIT for Business entity
-    if (b.entity === 'Business') {
+    // Show Income Tax for Sole Trader/Partnership/LLP entity
+    if (b.entity === 'Sole Trader' || b.entity === 'Partnership' || b.entity === 'LLP') {
       taxSummary += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">PIT (est.):</span>
+          <span class="dashboard-metric-label">Income Tax (est.):</span>
           <span class="dashboard-metric-value">${fmt(totalPIT)}</span>
         </div>
       `;
     }
     
-    // Show CIT for Company entity
-    if (b.entity === 'Company') {
+    // Show Corporation Tax for Limited Company entity
+    if (b.entity === 'Limited Company') {
       taxSummary += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">CIT (est.):</span>
+          <span class="dashboard-metric-label">Corporation Tax (est.):</span>
           <span class="dashboard-metric-value">${fmt(totalCIT)}</span>
         </div>
       `;
