@@ -747,7 +747,7 @@
         </label>
 
         <label class="inline-label" id="txnWhtLabel">
-          <input type="checkbox" id="txnWht" /> WHT applied
+          <input type="checkbox" id="txnWht" /> CIS applied
         </label>
         <label id="txnWhtBasisLabel" style="display:none;">Basis:
           <select id="txnWhtBasis">
@@ -758,7 +758,7 @@
         <label id="txnWhtRateLabel" style="display:none;">Rate (%) <input type="number" id="txnWhtRate" class="smallInput" min="0" step="0.01" /></label>
 
         <label class="inline-label" id="txnPayeLabel">
-          <input type="checkbox" id="txnSalary" /> Salary (PAYE)
+          <input type="checkbox" id="txnSalary" /> Salary (PAYE/NI)
         </label>
 
         <div style="width:1px;height:28px;background:#e6e6e6;margin:0 8px;"></div>
@@ -977,10 +977,9 @@
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
         <button class="small tab active" data-report="vatReport">VAT Report</button>
-        <button class="small tab" data-report="whtReport">WHT Report</button>
-        <button class="small tab" data-report="payeReport">PAYE Report</button>
-        <button class="small tab" data-report="pitBusiness">PIT Report</button>
-        <button class="small tab" data-report="citReport">CIT Report</button>
+        <button class="small tab" data-report="payeReport">PAYE &amp; National Insurance Report</button>
+        <button class="small tab" data-report="pitBusiness">Self Assessment Report</button>
+        <button class="small tab" data-report="citReport">Corporation Tax Report</button>
         <button class="small tab" data-report="cgtReport">CGT Report</button>
         <button class="small tab" data-report="inventoryReport">Inventory Schedule</button>
         <button class="small tab" data-report="assetsReport">Asset Schedule</button>
@@ -3930,15 +3929,15 @@
             const turnoverThreshold = Number(b.turnoverThreshold || 0);
             
             if(turnoverThreshold <= 100000000) {
-              // Turnover threshold <= ₦100,000,000: do NOT include in taxable profit and do NOT charge CGT
+              // Turnover threshold <= £100,000,000: do NOT include in taxable profit and do NOT charge CGT
               includedInTaxableProfit = false;
               cgtCharge = 0;
               addAudit('cgt.company_exempt', 'asset', asset.id, 
-                `Company with turnover threshold ${fmt(turnoverThreshold)} <= ₦100,000,000: No CGT charged, gain not included in taxable profit`,
+                `Company with turnover threshold ${fmt(turnoverThreshold)} <= £100,000,000: No CGT charged, gain not included in taxable profit`,
                 { turnoverThreshold: turnoverThreshold, netGain: netGainAfterOffset, cgtCharge: 0 });
                 
             } else {
-              // Turnover threshold > ₦100,000,000: do NOT include in taxable profit but charge CGT at 30%
+              // Turnover threshold > £100,000,000: do NOT include in taxable profit but charge CGT at 30%
               includedInTaxableProfit = false;
               cgtCharge = Math.round(netGainAfterOffset * CGT_COMPANY_RATE * 100) / 100;
               addAudit('cgt.charge', 'asset', asset.id, 
@@ -5454,7 +5453,7 @@
     const finalLiability = Math.max(0, pitLiability - whtReceivable);
     const effectiveRate = grossTaxableProfit > 0 ? ((finalLiability / grossTaxableProfit) * 100).toFixed(2) : '0.00';
     
-    let html = `<h3>Personal Income Tax Computation (Business)</h3>`;
+    let html = `<h3>Self Assessment Computation (Business)</h3>`;
     html += `<p><strong>Business Name:</strong> ${b.name}</p>`;
     html += `<p><strong>Tax Year:</strong> ${currentYear}</p>`;
     html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
@@ -5637,7 +5636,7 @@
     const finalLiability = Math.max(0, citLiability - whtRemitted);
     const effectiveRate = taxableProfit > 0 ? ((finalLiability / taxableProfit) * 100).toFixed(2) : '0.00';
     
-    let html = `<h3>Company Income Tax Computation</h3>`;
+    let html = `<h3>Corporation Tax Computation</h3>`;
     html += `<p><strong>Company Name:</strong> ${b.name}</p>`;
     html += `<p><strong>Financial Year Ended:</strong> ${currentYear}</p>`;
     html += `<table style="width:100%;border-collapse:collapse;margin-top:16px;"><thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;width:150px;">Amount (£)</th></tr></thead><tbody>`;
@@ -5815,7 +5814,7 @@
     html += `<h4 style="margin-top:16px;">Notes</h4>`;
     if(b.entity === 'Company') {
       const threshold = b.turnoverThreshold || 0;
-      html += `<div class="small-muted">For Companies with turnover threshold > ₦100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
+      html += `<div class="small-muted">For Companies with turnover threshold > £100,000,000: CGT is charged at 30% on net gains, not included in taxable profit.</div>`;
       html += `<div class="small-muted">Current turnover threshold setting: ${fmt(threshold)}</div>`;
     } else {
       html += `<div class="small-muted">For Business/Enterprise Plus: Net gains are included in taxable profit and subject to PIT rates.</div>`;
@@ -6750,8 +6749,8 @@
     if (b.entity === 'Company' && turnover > 100000000) {
       businessInfo += `
         <div class="dashboard-metric">
-          <span class="dashboard-metric-label">CIT:</span>
-          <span class="dashboard-metric-value">30% (Turnover > ₦100M)</span>
+          <span class="dashboard-metric-label">Corporation Tax:</span>
+          <span class="dashboard-metric-value">30% (Turnover > £100M)</span>
         </div>
       `;
     }
@@ -7103,7 +7102,7 @@
       // Get eligible employees/sole traders for dropdown
       const eligibleContacts = populateEmployeeDropdownForPaye(selectedBizId);
       
-      let html = `<h3>PAYE Report</h3>`;
+      let html = `<h3>PAYE &amp; National Insurance Report</h3>`;
       
       // Employee/SoleTrader dropdown for statutory deductions
       if(eligibleContacts.length > 0){
