@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Optimization Calculator</title>
+    <!-- TailwindCSS CDN for rapid prototyping. For production, use a build process or self-host -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .user-type-card {
+            transition: all 0.3s ease;
+        }
+        .user-type-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .user-type-card.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .loading {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .recommendation-card {
+            transition: all 0.2s ease;
+        }
+        .recommendation-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold">UK Tax Optimization Calculator</h1>
+            <p class="text-blue-100 mt-2">Get personalized tax-saving recommendations based on your situation</p>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Step 1: Select User Type -->
+        <div id="step1" class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 1: Select Your User Type</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Director Card -->
+                <div class="user-type-card bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 cursor-pointer" 
+                     onclick="selectUserType('director')">
+                    <div class="text-4xl mb-3">👔</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Company Director</h3>
+                    <p class="text-sm text-gray-600">Optimize salary vs dividends and pension contributions</p>
+                </div>
+
+                <!-- Sole Trader Card -->
+                <div class="user-type-card bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 cursor-pointer" 
+                     onclick="selectUserType('sole-trader')">
+                    <div class="text-4xl mb-3">🛠️</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Sole Trader</h3>
+                    <p class="text-sm text-gray-600">Maximize expense claims and capital allowances</p>
+                </div>
+
+                <!-- Company Owner Card -->
+                <div class="user-type-card bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 cursor-pointer" 
+                     onclick="selectUserType('company-owner')">
+                    <div class="text-4xl mb-3">🏢</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Company Owner</h3>
+                    <p class="text-sm text-gray-600">Plan corporation tax and R&D relief strategies</p>
+                </div>
+
+                <!-- Landlord Card -->
+                <div class="user-type-card bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 cursor-pointer" 
+                     onclick="selectUserType('landlord')">
+                    <div class="text-4xl mb-3">🏠</div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Landlord</h3>
+                    <p class="text-sm text-gray-600">Optimize property income and mortgage relief</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Input Form -->
+        <div id="step2" class="mb-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 2: Enter Your Details</h2>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <!-- Director Form -->
+                <form id="directorForm" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Annual Salary (£)</label>
+                        <input type="number" name="salary" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Your current annual salary</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dividends (£)</label>
+                        <input type="number" name="dividends" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Proposed or current dividend amount</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Profit (£)</label>
+                        <input type="number" name="company_profit" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Company's taxable profit before distributions</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Pension Contribution (£) - Optional</label>
+                        <input type="number" name="pension_contribution" step="0.01" min="0" value="0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Annual pension contribution amount</p>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+                        Calculate Optimization
+                    </button>
+                </form>
+
+                <!-- Sole Trader Form -->
+                <form id="soleTraderForm" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Trading Income (£)</label>
+                        <input type="number" name="trading_income" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Gross trading income before expenses</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Allowable Expenses (£)</label>
+                        <input type="number" name="allowable_expenses" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Total business expenses claimed</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Pension Contribution (£) - Optional</label>
+                        <input type="number" name="pension_contribution" step="0.01" min="0" value="0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Personal pension contribution</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Capital Allowances (£) - Optional</label>
+                        <input type="number" name="capital_allowances" step="0.01" min="0" value="0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Capital allowances claimed on equipment</p>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+                        Calculate Optimization
+                    </button>
+                </form>
+
+                <!-- Company Owner Form -->
+                <form id="companyOwnerForm" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Profit (£)</label>
+                        <input type="number" name="company_profit" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Company's taxable profit</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Director Salary (£)</label>
+                        <input type="number" name="salary" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Your director's salary</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dividends (£)</label>
+                        <input type="number" name="dividends" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Dividends paid or proposed</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">R&D Expenditure (£) - Optional</label>
+                        <input type="number" name="r_and_d_expenditure" step="0.01" min="0" value="0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Research & Development costs</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Capital Investment (£) - Optional</label>
+                        <input type="number" name="capital_investment" step="0.01" min="0" value="0"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Capital investment in qualifying assets</p>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+                        Calculate Optimization
+                    </button>
+                </form>
+
+                <!-- Landlord Form -->
+                <form id="landlordForm" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rental Income (£)</label>
+                        <input type="number" name="rental_income" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Total annual rental income</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mortgage Interest (£)</label>
+                        <input type="number" name="mortgage_interest" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Annual mortgage interest payments</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Other Expenses (£)</label>
+                        <input type="number" name="other_expenses" step="0.01" min="0" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Repairs, insurance, agent fees, etc.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Number of Properties</label>
+                        <input type="number" name="number_of_properties" min="1" value="1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Total rental properties owned</p>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" name="is_furnished" id="is_furnished"
+                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="is_furnished" class="ml-2 text-sm font-medium text-gray-700">Properties are furnished</label>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+                        Calculate Optimization
+                    </button>
+                </form>
+
+                <button onclick="resetCalculator()" 
+                        class="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    ← Change User Type
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="hidden flex justify-center items-center py-12">
+            <div class="loading"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error" class="hidden mb-8">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700" id="errorMessage"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Results -->
+        <div id="step3" class="hidden mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 3: Your Tax Optimization Report</h2>
+            
+            <!-- Current vs Optimal Position -->
+            <div id="positionComparison" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Current Position</h3>
+                    <div id="currentPosition"></div>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg shadow-md p-6 border-2 border-green-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Optimal Position</h3>
+                    <div id="optimalPosition"></div>
+                </div>
+            </div>
+
+            <!-- Potential Savings -->
+            <div id="savingsCard" class="hidden bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="text-center">
+                    <p class="text-lg font-medium mb-2">Potential Tax Savings</p>
+                    <p class="text-4xl font-bold" id="potentialSaving">£0</p>
+                </div>
+            </div>
+
+            <!-- Tax Analysis -->
+            <div id="taxAnalysis" class="hidden bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Tax Analysis</h3>
+                <div id="taxAnalysisContent"></div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">💡 Recommended Tax Strategies</h3>
+                <div id="recommendations" class="space-y-4"></div>
+            </div>
+
+            <button onclick="resetCalculator()" 
+                    class="mt-6 bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition duration-200">
+                Start New Calculation
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">
+                This calculator provides illustrative tax optimization guidance based on 2025/2026 tax rates.
+                For official tax advice, please consult with a qualified tax advisor or accountant.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let selectedUserType = null;
+
+        // Select user type
+        function selectUserType(type) {
+            selectedUserType = type;
+            
+            // Update UI - highlight selected card
+            document.querySelectorAll('.user-type-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Show form section
+            document.getElementById('step2').classList.remove('hidden');
+            
+            // Hide all forms
+            document.getElementById('directorForm').classList.add('hidden');
+            document.getElementById('soleTraderForm').classList.add('hidden');
+            document.getElementById('companyOwnerForm').classList.add('hidden');
+            document.getElementById('landlordForm').classList.add('hidden');
+            
+            // Show selected form
+            const formMap = {
+                'director': 'directorForm',
+                'sole-trader': 'soleTraderForm',
+                'company-owner': 'companyOwnerForm',
+                'landlord': 'landlordForm'
+            };
+            document.getElementById(formMap[type]).classList.remove('hidden');
+            
+            // Scroll to form
+            document.getElementById('step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Reset calculator
+        function resetCalculator() {
+            selectedUserType = null;
+            document.querySelectorAll('.user-type-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('directorForm').reset();
+            document.getElementById('soleTraderForm').reset();
+            document.getElementById('companyOwnerForm').reset();
+            document.getElementById('landlordForm').reset();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-GB', {
+                style: 'currency',
+                currency: 'GBP',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Display results
+        function displayResults(data) {
+            document.getElementById('step3').classList.remove('hidden');
+            
+            // Show position comparison if available
+            if (data.current_position && data.optimal_position) {
+                document.getElementById('positionComparison').classList.remove('hidden');
+                
+                // Current position
+                let currentHTML = '<div class="space-y-2">';
+                for (const [key, value] of Object.entries(data.current_position)) {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    currentHTML += `<div class="flex justify-between"><span class="text-gray-600">${label}:</span><span class="font-semibold">${typeof value === 'number' ? formatCurrency(value) : value}</span></div>`;
+                }
+                currentHTML += '</div>';
+                document.getElementById('currentPosition').innerHTML = currentHTML;
+                
+                // Optimal position
+                let optimalHTML = '<div class="space-y-2">';
+                for (const [key, value] of Object.entries(data.optimal_position)) {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    optimalHTML += `<div class="flex justify-between"><span class="text-gray-600">${label}:</span><span class="font-semibold">${typeof value === 'number' ? formatCurrency(value) : value}</span></div>`;
+                }
+                optimalHTML += '</div>';
+                document.getElementById('optimalPosition').innerHTML = optimalHTML;
+            }
+            
+            // Show potential savings
+            if (data.potential_saving !== undefined) {
+                document.getElementById('savingsCard').classList.remove('hidden');
+                document.getElementById('potentialSaving').textContent = formatCurrency(data.potential_saving);
+            }
+            
+            // Show tax analysis for other user types
+            if (data.income_analysis || data.company_analysis || data.property_details || data.tax_calculation) {
+                document.getElementById('taxAnalysis').classList.remove('hidden');
+                let analysisHTML = '<div class="space-y-3">';
+                
+                const analysisData = data.income_analysis || data.company_analysis || data.property_details || data.tax_calculation;
+                for (const [key, value] of Object.entries(analysisData)) {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const displayValue = typeof value === 'number' ? formatCurrency(value) : 
+                                       typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+                    analysisHTML += `<div class="flex justify-between border-b border-gray-200 pb-2"><span class="text-gray-600">${label}:</span><span class="font-semibold">${displayValue}</span></div>`;
+                }
+                
+                // Add tax position if available
+                if (data.tax_position) {
+                    analysisHTML += '<div class="mt-4"><h4 class="font-semibold text-gray-800 mb-2">Tax Position</h4>';
+                    for (const [key, value] of Object.entries(data.tax_position)) {
+                        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        analysisHTML += `<div class="flex justify-between text-sm"><span class="text-gray-600">${label}:</span><span>${typeof value === 'number' ? formatCurrency(value) : value}</span></div>`;
+                    }
+                    analysisHTML += '</div>';
+                }
+                
+                analysisHTML += '</div>';
+                document.getElementById('taxAnalysisContent').innerHTML = analysisHTML;
+            }
+            
+            // Display recommendations
+            const recommendationsHTML = data.recommendations.map((rec, index) => {
+                const savingText = typeof rec.saving === 'number' ? formatCurrency(rec.saving) : rec.saving;
+                return `
+                    <div class="recommendation-card bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                                    ${index + 1}
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h4 class="font-semibold text-gray-800 mb-1">${rec.strategy}</h4>
+                                <p class="text-sm text-gray-600 mb-2">${rec.description}</p>
+                                <div class="flex items-center text-sm">
+                                    <span class="text-green-600 font-semibold">💰 Potential Saving: ${savingText}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('recommendations').innerHTML = recommendationsHTML;
+            
+            // Scroll to results
+            document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle form submission
+        async function handleSubmit(event, endpoint) {
+            event.preventDefault();
+            
+            // Hide previous results and errors
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            const data = {};
+            
+            for (const [key, value] of formData.entries()) {
+                if (key === 'is_furnished') {
+                    data[key] = value === 'on';
+                } else if (key === 'number_of_properties') {
+                    data[key] = parseInt(value);
+                } else {
+                    data[key] = parseFloat(value);
+                }
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/optimize/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').classList.add('hidden');
+                
+                if (!response.ok) {
+                    showError(result.error || 'An error occurred. Please check your inputs and try again.');
+                    return;
+                }
+                
+                // Display results
+                displayResults(result);
+                
+            } catch (error) {
+                document.getElementById('loading').classList.add('hidden');
+                showError('Unable to connect to the server. Please ensure the API is running on http://localhost:5000');
+                console.error('Error:', error);
+            }
+        }
+
+        // Attach form submit handlers
+        document.getElementById('directorForm').addEventListener('submit', (e) => handleSubmit(e, 'director'));
+        document.getElementById('soleTraderForm').addEventListener('submit', (e) => handleSubmit(e, 'sole-trader'));
+        document.getElementById('companyOwnerForm').addEventListener('submit', (e) => handleSubmit(e, 'company-owner'));
+        document.getElementById('landlordForm').addEventListener('submit', (e) => handleSubmit(e, 'landlord'));
+    </script>
+</body>
+</html>
