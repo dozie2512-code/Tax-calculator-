@@ -1,275 +1,49 @@
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-
-public class UKAccountingSystem {
-
-    // ==============================
-    // ENUMS
-    // ==============================
-
-    enum BusinessType {
-        SOLE_TRADER,
-        LANDLORD,
-        LIMITED_COMPANY
-    }
-
-    enum TransactionType {
-        INCOME,
-        EXPENSE
-    }
-
-    enum ExpenseCategory {
-        GENERAL,
-        MORTGAGE_INTEREST,
-        SALARY,
-        DIVIDENDS
-    }
-
-    // ==============================
-    // DATA MODELS
-    // ==============================
-
-    static class Transaction {
-        TransactionType type;
-        ExpenseCategory category;
-        BigDecimal amount;
-
-        Transaction(TransactionType type, ExpenseCategory category, double amount) {
-            this.type = type;
-            this.category = category;
-            this.amount = BigDecimal.valueOf(amount);
-        }
-    }
-
-    static class TaxYearConfig {
-
-        // Income Tax
-        BigDecimal personalAllowance = bd(12570);
-        BigDecimal basicRateLimit = bd(50270);
-        BigDecimal higherRateLimit = bd(125140);
-        BigDecimal basicRate = bd(0.20);
-        BigDecimal higherRate = bd(0.40);
-        BigDecimal additionalRate = bd(0.45);
-
-        // NIC
-        BigDecimal class2Weekly = bd(3.45);
-        BigDecimal class4LowerLimit = bd(12570);
-        BigDecimal class4UpperLimit = bd(50270);
-        BigDecimal class4MainRate = bd(0.09);
-        BigDecimal class4AdditionalRate = bd(0.02);
-
-        // Corporation Tax
-        BigDecimal corpSmallRate = bd(0.19);
-        BigDecimal corpMainRate = bd(0.25);
-        BigDecimal corpLowerLimit = bd(50000);
-        BigDecimal corpUpperLimit = bd(250000);
-        BigDecimal marginalReliefFraction = bd(0.015);
-
-        // Dividend
-        BigDecimal dividendAllowance = bd(1000);
-        BigDecimal dividendBasicRate = bd(0.0875);
-        BigDecimal dividendHigherRate = bd(0.3375);
-        BigDecimal dividendAdditionalRate = bd(0.3935);
-    }
-
-    // ==============================
-    // TAX ENGINE
-    // ==============================
-
-    static class TaxEngine {
-
-        TaxYearConfig config = new TaxYearConfig();
-
-        BigDecimal calculateProfit(List<Transaction> txs) {
-            BigDecimal income = BigDecimal.ZERO;
-            BigDecimal expenses = BigDecimal.ZERO;
-
-            for (Transaction t : txs) {
-                if (t.type == TransactionType.INCOME)
-                    income = income.add(t.amount);
-                else
-                    expenses = expenses.add(t.amount);
-            }
-
-            return income.subtract(expenses);
-        }
-
-        // -------------------------
-        // PERSONAL ALLOWANCE TAPER
-        // -------------------------
-        BigDecimal adjustedPersonalAllowance(BigDecimal income) {
-            if (income.compareTo(bd(100000)) <= 0)
-                return config.personalAllowance;
-
-            BigDecimal reduction = income.subtract(bd(100000)).divide(bd(2), RoundingMode.HALF_UP);
-            BigDecimal allowance = config.personalAllowance.subtract(reduction);
-
-            return allowance.max(BigDecimal.ZERO);
-        }
-
-        // -------------------------
-        // INCOME TAX
-        // -------------------------
-        BigDecimal calculateIncomeTax(BigDecimal profit) {
-
-            BigDecimal allowance = adjustedPersonalAllowance(profit);
-            BigDecimal taxable = profit.subtract(allowance).max(BigDecimal.ZERO);
-            BigDecimal tax = BigDecimal.ZERO;
-
-            if (taxable.compareTo(config.basicRateLimit.subtract(config.personalAllowance)) <= 0) {
-                tax = taxable.multiply(config.basicRate);
-            } else {
-                BigDecimal basicBand = config.basicRateLimit.subtract(config.personalAllowance);
-                tax = basicBand.multiply(config.basicRate);
-
-                BigDecimal remaining = taxable.subtract(basicBand);
-
-                if (profit.compareTo(config.higherRateLimit) <= 0) {
-                    tax = tax.add(remaining.multiply(config.higherRate));
-                } else {
-                    BigDecimal higherBand = config.higherRateLimit.subtract(config.basicRateLimit);
-                    tax = tax.add(higherBand.multiply(config.higherRate));
-
-                    BigDecimal additional = remaining.subtract(higherBand);
-                    tax = tax.add(additional.multiply(config.additionalRate));
-                }
-            }
-
-            return tax;
-        }
-
-        // -------------------------
-        // CLASS 2 & 4 NIC
-        // -------------------------
-        BigDecimal calculateNIC(BigDecimal profit) {
-
-            BigDecimal class2 = config.class2Weekly.multiply(bd(52));
-
-            BigDecimal class4 = BigDecimal.ZERO;
-
-            if (profit.compareTo(config.class4LowerLimit) > 0) {
-
-                BigDecimal mainBand = profit.min(config.class4UpperLimit)
-                        .subtract(config.class4LowerLimit);
-
-                class4 = mainBand.multiply(config.class4MainRate);
-
-                if (profit.compareTo(config.class4UpperLimit) > 0) {
-                    BigDecimal additional = profit.subtract(config.class4UpperLimit);
-                    class4 = class4.add(additional.multiply(config.class4AdditionalRate));
-                }
-            }
-
-            return class2.add(class4);
-        }
-
-        // -------------------------
-        // LANDLORD (Section 24)
-        // -------------------------
-        BigDecimal calculateLandlordTax(List<Transaction> txs) {
-
-            BigDecimal income = BigDecimal.ZERO;
-            BigDecimal allowableExpenses = BigDecimal.ZERO;
-            BigDecimal mortgageInterest = BigDecimal.ZERO;
-
-            for (Transaction t : txs) {
-                if (t.type == TransactionType.INCOME)
-                    income = income.add(t.amount);
-                else if (t.category == ExpenseCategory.MORTGAGE_INTEREST)
-                    mortgageInterest = mortgageInterest.add(t.amount);
-                else
-                    allowableExpenses = allowableExpenses.add(t.amount);
-            }
-
-            BigDecimal taxableProfit = income.subtract(allowableExpenses);
-            BigDecimal incomeTax = calculateIncomeTax(taxableProfit);
-
-            BigDecimal mortgageCredit = mortgageInterest.multiply(bd(0.20));
-
-            return incomeTax.subtract(mortgageCredit).max(BigDecimal.ZERO);
-        }
-
-        // -------------------------
-        // CORPORATION TAX
-        // -------------------------
-        BigDecimal calculateCorporationTax(BigDecimal profit) {
-
-            if (profit.compareTo(config.corpLowerLimit) <= 0)
-                return profit.multiply(config.corpSmallRate);
-
-            if (profit.compareTo(config.corpUpperLimit) >= 0)
-                return profit.multiply(config.corpMainRate);
-
-            BigDecimal mainTax = profit.multiply(config.corpMainRate);
-
-            BigDecimal relief = config.corpUpperLimit
-                    .subtract(profit)
-                    .multiply(profit)
-                    .multiply(config.marginalReliefFraction)
-                    .divide(config.corpUpperLimit, 6, RoundingMode.HALF_UP);
-
-            return mainTax.subtract(relief);
-        }
-
-        // -------------------------
-        // DIVIDEND TAX
-        // -------------------------
-        BigDecimal calculateDividendTax(BigDecimal dividends, BigDecimal otherIncome) {
-
-            BigDecimal taxableDividends =
-                    dividends.subtract(config.dividendAllowance).max(BigDecimal.ZERO);
-
-            BigDecimal totalIncome = dividends.add(otherIncome);
-
-            if (totalIncome.compareTo(config.basicRateLimit) <= 0)
-                return taxableDividends.multiply(config.dividendBasicRate);
-
-            if (totalIncome.compareTo(config.higherRateLimit) <= 0)
-                return taxableDividends.multiply(config.dividendHigherRate);
-
-            return taxableDividends.multiply(config.dividendAdditionalRate);
-        }
-    }
-
-    // ==============================
-    // HELPER
-    // ==============================
-
-    static BigDecimal bd(double val) {
-        return BigDecimal.valueOf(val);
-    }
-
-    // ==============================
-    // MAIN DEMO
-    // ==============================
-
-    public static void main(String[] args) {
-
-        TaxEngine engine = new TaxEngine();
-        List<Transaction> transactions = new ArrayList<>();
-
-        // Example Business Data
-        transactions.add(new Transaction(TransactionType.INCOME, ExpenseCategory.GENERAL, 120000));
-        transactions.add(new Transaction(TransactionType.EXPENSE, ExpenseCategory.GENERAL, 20000));
-        transactions.add(new Transaction(TransactionType.EXPENSE, ExpenseCategory.MORTGAGE_INTEREST, 10000));
-
-        BigDecimal profit = engine.calculateProfit(transactions);
-
-        System.out.println("Net Profit: £" + profit);
-
-        System.out.println("\n--- Sole Trader ---");
-        System.out.println("Income Tax: £" + engine.calculateIncomeTax(profit));
-        System.out.println("NIC: £" + engine.calculateNIC(profit));
-
-        System.out.println("\n--- Landlord ---");
-        System.out.println("Landlord Tax: £" + engine.calculateLandlordTax(transactions));
-
-        System.out.println("\n--- Limited Company ---");
-        System.out.println("Corporation Tax: £" + engine.calculateCorporationTax(profit));
-
-        System.out.println("\n--- Director Dividend Example ---");
-        BigDecimal dividendTax = engine.calculateDividendTax(bd(30000), bd(12570));
-        System.out.println("Dividend Tax: £" + dividendTax);
-    }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Tax Calculator &amp; UKVI Sponsor Licence – Java Console Project</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+    h1 { border-bottom: 2px solid #333; padding-bottom: 8px; }
+    h2 { margin-top: 32px; }
+    code, pre { background: #f4f4f4; border-radius: 4px; }
+    pre { padding: 12px; overflow-x: auto; }
+    code { padding: 2px 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>UK Tax Calculator &amp; UKVI Sponsor Licence</h1>
+  <p>This repository is a <strong>Java console project</strong>. There is no web front-end; all logic runs from the command line using plain <code>javac</code> / <code>java</code>.</p>
+
+  <h2>Modules</h2>
+
+  <h3>1. UK Accounting &amp; Tax Calculator</h3>
+  <p>Source file: <code>src/main/java/UKAccountingSystem.java</code></p>
+  <p>Calculates income tax, NIC, corporation tax, and dividend tax for sole traders, landlords, and limited companies.</p>
+
+  <h3>2. UKVI Sponsor Licence Console App</h3>
+  <p>Source file: <code>src/main/java/ukvi/UkviSponsorLicenceApp.java</code></p>
+  <p>Builds a UKVI sponsor licence readiness report: key personnel, compliance checklist, supporting documents, and a READY / NOT READY summary.</p>
+
+  <h2>How to Compile &amp; Run</h2>
+
+  <h3>Compile all sources</h3>
+  <pre><code>javac -d out $(find src/main/java -name "*.java")</code></pre>
+
+  <h3>Run the Tax Calculator</h3>
+  <pre><code>java -cp out UKAccountingSystem</code></pre>
+
+  <h3>Run the UKVI Sponsor Licence App</h3>
+  <pre><code>java -cp out ukvi.UkviSponsorLicenceApp</code></pre>
+
+  <h2>Requirements</h2>
+  <ul>
+    <li>Java 11 or later</li>
+    <li>No build tool (Maven / Gradle) required – plain <code>javac</code> is sufficient</li>
+  </ul>
+
+</body>
+</html>
