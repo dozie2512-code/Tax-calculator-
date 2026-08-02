@@ -1,2129 +1,1870 @@
-                  
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Comprehensive accounting workspace for inventory, multi-business operations, team access, and entity-specific tax planning.">
-  <title>LedgerOS - Comprehensive Accounting Workspace</title>
-  <style>
-    :root {
-      --bg: #f3f5fb;
-      --surface: #ffffff;
-      --surface-alt: #eef2ff;
-      --line: #d9e0f0;
-      --text: #172033;
-      --muted: #5f6b85;
-      --primary: #4f46e5;
-      --primary-dark: #3730a3;
-      --success: #0f9d58;
-      --warning: #f59e0b;
-      --danger: #dc2626;
-      --info: #0ea5e9;
-      --shadow: 0 14px 40px rgba(31, 41, 55, 0.08);
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 45%, #eef2f7 100%);
-      color: var(--text);
-    }
-
-    .shell {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(18px);
-      background: rgba(243, 245, 251, 0.9);
-      border-bottom: 1px solid rgba(217, 224, 240, 0.8);
-    }
-
-    .topbar-inner {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 14px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .brand strong {
-      font-size: 1.1rem;
-      letter-spacing: 0.02em;
-    }
-
-    .brand span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .nav a,
-    .ghost-button {
-      text-decoration: none;
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid transparent;
-      transition: 0.2s ease;
-      font-size: 0.92rem;
-      cursor: pointer;
-    }
-
-    .nav a:hover,
-    .ghost-button:hover {
-      border-color: var(--line);
-      transform: translateY(-1px);
-    }
-
-    .hero {
-      margin-top: 24px;
-      background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.22), transparent 30%), linear-gradient(135deg, #111827 0%, #312e81 55%, #4338ca 100%);
-      color: white;
-      border-radius: 28px;
-      padding: 32px;
-      box-shadow: var(--shadow);
-      display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 24px;
-    }
-
-    .hero h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 3.5vw, 3.1rem);
-      line-height: 1.05;
-    }
-
-    .hero p {
-      margin: 0 0 18px;
-      color: rgba(255, 255, 255, 0.86);
-      max-width: 70ch;
-    }
-
-    .hero-grid,
-    .stats-grid,
-    .panel-grid,
-    .inventory-grid,
-    .detail-grid,
-    .tax-grid,
-    .summary-grid {
-      display: grid;
-      gap: 18px;
-    }
-
-    .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 22px; }
-    .panel-grid { grid-template-columns: 1.1fr 1fr; }
-    .inventory-grid { grid-template-columns: 1fr 1fr; }
-    .detail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .tax-grid { grid-template-columns: 1.1fr 0.9fr; }
-    .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-    .glass-card,
-    .panel,
-    .stat-card,
-    .list-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(217, 224, 240, 0.8);
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.18);
-      padding: 18px;
-    }
-
-    .panel,
-    .list-card {
-      padding: 22px;
-    }
-
-    .panel h2,
-    .list-card h2,
-    .section-heading h2 {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin: 34px 0 18px;
-    }
-
-    .section-heading p,
-    .panel-header p,
-    .muted {
-      margin: 6px 0 0;
-      color: var(--muted);
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
-
-    .panel-header .badge-row { margin-top: 8px; }
-
-    .stat-card {
-      padding: 20px;
-      background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 10px;
-    }
-
-    .stat-value {
-      font-size: 1.9rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .stat-footnote {
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
-    .badge-row,
-    .pill-row,
-    .workflow-list,
-    .kpi-inline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .badge,
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      border: 1px solid transparent;
-    }
-
-    .badge.primary { background: rgba(79, 70, 229, 0.14); color: #312e81; }
-    .badge.success { background: rgba(15, 157, 88, 0.14); color: #10683f; }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #9a6700; }
-    .badge.danger { background: rgba(220, 38, 38, 0.14); color: #991b1b; }
-    .badge.info { background: rgba(14, 165, 233, 0.15); color: #0c4a6e; }
-    .pill { background: #f8fafc; border-color: var(--line); }
-
-    form {
-      display: grid;
-      gap: 14px;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    label {
-      display: grid;
-      gap: 8px;
-      font-size: 0.92rem;
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    input,
-    select,
-    textarea,
-    button {
-      font: inherit;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: white;
-      color: var(--text);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: rgba(79, 70, 229, 0.45);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 96px;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .primary-button,
-    .secondary-button,
-    .danger-button {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      font-weight: 700;
-    }
-
-    .primary-button { background: var(--primary); color: white; }
-    .secondary-button { background: #e2e8f0; color: var(--text); }
-    .danger-button { background: #fee2e2; color: #991b1b; }
-
-    .primary-button:hover,
-    .secondary-button:hover,
-    .danger-button:hover { transform: translateY(-1px); }
-
-    .table-shell {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 640px;
-      background: white;
-    }
-
-    th,
-    td {
-      padding: 13px 14px;
-      border-bottom: 1px solid #edf2f7;
-      text-align: left;
-      font-size: 0.92rem;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f8fafc;
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .list-item,
-    .workflow-item,
-    .business-card {
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, #fff 0%, #fafcff 100%);
-    }
-
-    .business-card.active {
-      border-color: rgba(79, 70, 229, 0.42);
-      box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.18);
-    }
-
-    .business-card h3,
-    .workflow-item h3,
-    .list-item h3 {
-      margin: 0 0 6px;
-      font-size: 1rem;
-    }
-
-    .split {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .empty-state {
-      padding: 18px;
-      border-radius: 16px;
-      border: 1px dashed var(--line);
-      color: var(--muted);
-      background: #f8fafc;
-    }
-
-    .mini-metric {
-      padding: 14px;
-      border-radius: 14px;
-      background: var(--surface-alt);
-      border: 1px solid rgba(79, 70, 229, 0.08);
-    }
-
-    .mini-metric strong {
-      display: block;
-      margin-top: 8px;
-      font-size: 1.15rem;
-    }
-
-    .notice {
-      padding: 16px 18px;
-      border-radius: 16px;
-      border-left: 4px solid var(--primary);
-      background: #eef2ff;
-      color: #312e81;
-    }
-
-    .notice.warning {
-      border-left-color: var(--warning);
-      background: #fff7ed;
-      color: #9a6700;
-    }
-
-    .notice.success {
-      border-left-color: var(--success);
-      background: #ecfdf3;
-      color: #166534;
-    }
-
-    .timeline {
-      display: grid;
-      gap: 14px;
-    }
-
-    .timeline-item {
-      padding: 14px 16px;
-      border-left: 3px solid rgba(79, 70, 229, 0.28);
-      background: white;
-      border-radius: 0 14px 14px 0;
-    }
-
-    .small { font-size: 0.84rem; color: var(--muted); }
-    .positive { color: var(--success); }
-    .negative { color: var(--danger); }
-
-    @media (max-width: 1200px) {
-      .hero,
-      .panel-grid,
-      .inventory-grid,
-      .tax-grid,
-      .summary-grid { grid-template-columns: 1fr; }
-
-      .stats-grid,
-      .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 760px) {
-      .shell,
-      .topbar-inner { padding: 16px; }
-
-      .hero { padding: 24px; }
-
-      .stats-grid,
-      .detail-grid,
-      .hero-grid,
-      .form-grid,
-      .form-grid.three { grid-template-columns: 1fr; }
-
-      .split,
-      .panel-header,
-      .section-heading,
-      .topbar-inner { flex-direction: column; align-items: stretch; }
-
-      table { min-width: 540px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FreeAgent-style accounts and tax software — multi-business workspace, inventory, ledger, and tax estimation.">
+<title>LedgerOS · Accounts &amp; Tax Workspace</title>
+<style>
+/* ── Design tokens ────────────────────────────────────── */
+:root {
+  --bg: #f0f4ff;
+  --surface: #ffffff;
+  --surface2: #f7f9ff;
+  --border: #dde3f3;
+  --text: #111827;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-light: #eef2ff;
+  --success: #059669;
+  --success-bg: #ecfdf5;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --info: #0284c7;
+  --info-bg: #f0f9ff;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 16px rgba(79,70,229,.08);
+  --shadow-lg: 0 10px 40px rgba(79,70,229,.12);
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-sm: 8px;
+  --font: "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+/* ── Reset + base ─────────────────────────────────────── */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
+a{color:var(--primary);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:.95rem}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+th{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--surface2)}
+td{font-size:.9rem}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbff}
+
+/* ── Layout shell ─────────────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+}
+.topbar-inner{
+  max-width:1520px;margin:0 auto;
+  padding:0 24px;height:60px;
+  display:flex;align-items:center;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-logo{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:1rem;letter-spacing:-1px;
+}
+.brand-name{font-weight:700;font-size:1.05rem;letter-spacing:-.02em}
+.brand-tag{font-size:.75rem;color:var(--muted);margin-left:4px}
+
+.biz-switcher{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border:1px solid var(--border);border-radius:999px;
+  background:var(--surface);cursor:pointer;
+  font-size:.88rem;font-weight:500;transition:.15s;
+  max-width:220px;
+}
+.biz-switcher:hover{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.biz-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0}
+.biz-switcher .chevron{margin-left:auto;color:var(--muted);font-size:.8rem}
+
+.topnav{display:flex;gap:2px;flex:1;justify-content:center;flex-wrap:wrap}
+.topnav a{
+  padding:7px 14px;border-radius:999px;font-size:.88rem;font-weight:500;
+  color:var(--muted);transition:.15s;white-space:nowrap;
+}
+.topnav a:hover,.topnav a.active{background:var(--primary-light);color:var(--primary)}
+
+.topbar-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+
+.shell{max-width:1520px;margin:0 auto;padding:28px 24px;display:flex;flex-direction:column;gap:32px}
+
+/* ── Cards + sections ─────────────────────────────────── */
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;margin-bottom:18px;
+}
+.section-title{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+.section-sub{font-size:.85rem;color:var(--muted);margin-top:2px}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:24px;
+  box-shadow:var(--shadow);
+}
+.card-sm{padding:16px 20px}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow-sm);transition:.15s;
+}
+.kpi:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.kpi-label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.kpi-value{font-size:1.55rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+.kpi-sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+.kpi.kpi-primary{border-color:var(--primary);background:var(--primary-light)}
+.kpi.kpi-primary .kpi-value{color:var(--primary)}
+.kpi.kpi-success{border-color:#bbf7d0;background:var(--success-bg)}
+.kpi.kpi-success .kpi-value{color:var(--success)}
+.kpi.kpi-danger{border-color:#fecaca;background:var(--danger-bg)}
+.kpi.kpi-danger .kpi-value{color:var(--danger)}
+.kpi.kpi-warning{border-color:#fde68a;background:var(--warning-bg)}
+.kpi.kpi-warning .kpi-value{color:var(--warning)}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:999px;font-size:.88rem;
+  font-weight:600;border:none;transition:.15s;white-space:nowrap;
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-sm{padding:6px 13px;font-size:.8rem}
+.btn-xs{padding:4px 10px;font-size:.75rem}
+
+/* ── Forms ────────────────────────────────────────────── */
+.form-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.form-grid-2{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.8rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.field input,.field select,.field textarea{
+  padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface2);color:var(--text);transition:.15s;font-size:.9rem;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--primary);background:#fff;
+  box-shadow:0 0 0 3px var(--primary-light);
+}
+.field textarea{resize:vertical;min-height:72px}
+.field-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+
+/* ── Badges + tags ────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:999px;font-size:.75rem;font-weight:600;
+}
+.badge-primary{background:var(--primary-light);color:var(--primary)}
+.badge-success{background:var(--success-bg);color:var(--success)}
+.badge-warning{background:var(--warning-bg);color:var(--warning)}
+.badge-danger{background:var(--danger-bg);color:var(--danger)}
+.badge-gray{background:#f3f4f6;color:var(--muted)}
+.badge-info{background:var(--info-bg);color:var(--info)}
+
+/* ── Alerts ───────────────────────────────────────────── */
+.alert{
+  padding:12px 16px;border-radius:var(--radius-sm);
+  font-size:.88rem;display:flex;gap:10px;align-items:flex-start;
+  border-left:3px solid;
+}
+.alert-warning{background:var(--warning-bg);border-color:var(--warning);color:#92400e}
+.alert-danger{background:var(--danger-bg);border-color:var(--danger);color:#991b1b}
+.alert-success{background:var(--success-bg);border-color:var(--success);color:#065f46}
+.alert-info{background:var(--info-bg);border-color:var(--info);color:#0c4a6e}
+
+/* ── Modal ────────────────────────────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(17,24,39,.45);backdrop-filter:blur(4px);
+  justify-content:center;align-items:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  padding:28px;max-width:560px;width:100%;
+  box-shadow:var(--shadow-lg);animation:modalIn .2s ease;
+  max-height:90vh;overflow-y:auto;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.97) translateY(8px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:1.05rem;font-weight:700}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1;padding:4px 8px;border-radius:6px}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;flex-wrap:wrap}
+
+/* ── Timeline ─────────────────────────────────────────── */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-icon{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;
+}
+.tl-icon-green{background:#d1fae5;color:var(--success)}
+.tl-icon-red{background:#fee2e2;color:var(--danger)}
+.tl-icon-blue{background:#e0f2fe;color:var(--info)}
+.tl-icon-yellow{background:#fef3c7;color:var(--warning)}
+.tl-meta{flex:1;min-width:0}
+.tl-title{font-size:.88rem;font-weight:600}
+.tl-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.tl-amount{font-size:.95rem;font-weight:700;flex-shrink:0;text-align:right}
+.tl-amount.pos{color:var(--success)}
+.tl-amount.neg{color:var(--danger)}
+
+/* ── Dropdowns ────────────────────────────────────────── */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{
+  display:none;position:absolute;top:calc(100% + 6px);left:0;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  min-width:220px;z-index:150;overflow:hidden;
+}
+.dropdown-menu.open{display:block}
+.dropdown-item{
+  display:block;width:100%;padding:10px 16px;text-align:left;
+  background:none;border:none;font-size:.88rem;cursor:pointer;
+  border-bottom:1px solid var(--border);transition:.1s;color:var(--text);
+}
+.dropdown-item:last-child{border-bottom:none}
+.dropdown-item:hover{background:var(--primary-light);color:var(--primary)}
+.dropdown-item.active{background:var(--primary-light);color:var(--primary);font-weight:600}
+.dropdown-sep{border:none;border-top:2px solid var(--border);margin:4px 0}
+
+/* ── Tabs ─────────────────────────────────────────────── */
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:20px;flex-wrap:wrap}
+.tab{
+  padding:10px 18px;font-size:.88rem;font-weight:600;
+  background:none;border:none;cursor:pointer;color:var(--muted);
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;border-radius:8px 8px 0 0;
+}
+.tab:hover{color:var(--primary);background:var(--primary-light)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Misc utilities ───────────────────────────────────── */
+.flex{display:flex}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
+.items-center{align-items:center}.justify-between{justify-content:space-between}
+.wrap{flex-wrap:wrap}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:18px}
+.mb-3{margin-bottom:12px}.mb-4{margin-bottom:18px}
+.text-muted{color:var(--muted)}.text-sm{font-size:.85rem}.text-xs{font-size:.75rem}
+.text-right{text-align:right}.text-center{text-align:center}
+.font-bold{font-weight:700}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty-state{
+  text-align:center;padding:48px 24px;color:var(--muted);
+}
+.empty-state .emo{font-size:2.5rem;margin-bottom:12px}
+.empty-state p{font-size:.9rem}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.overflow-x{overflow-x:auto}
+.w-full{width:100%}
+
+/* Business card grid */
+.biz-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.biz-card{
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--radius);padding:20px;cursor:pointer;transition:.15s;
+}
+.biz-card:hover{border-color:var(--primary);box-shadow:var(--shadow)}
+.biz-card.selected{border-color:var(--primary);background:var(--primary-light)}
+.biz-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.biz-avatar{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1rem;color:#fff;flex-shrink:0;
+}
+.biz-card-info h3{font-size:.95rem;font-weight:700;margin-bottom:2px}
+.biz-card-info small{font-size:.78rem;color:var(--muted)}
+.biz-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+/* Access matrix table */
+.matrix-table th,.matrix-table td{text-align:center;padding:8px}
+.matrix-table td:first-child,.matrix-table th:first-child{text-align:left}
+.check-y{color:var(--success);font-size:1rem}
+.check-n{color:var(--border);font-size:1rem}
+
+/* Inventory row progress */
+.stock-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-top:4px;min-width:80px}
+.stock-bar-fill{height:100%;border-radius:3px;transition:.3s}
+
+/* Portfolio summary bar */
+.portfolio-bar{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:12px;background:var(--primary);border-radius:var(--radius-lg);
+  padding:20px 24px;color:#fff;
+}
+.portfolio-item .label{font-size:.75rem;opacity:.8;text-transform:uppercase;letter-spacing:.04em}
+.portfolio-item .value{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-top:2px}
+
+/* Tax band table */
+.tax-band td:last-child{font-weight:700;text-align:right}
+
+/* Responsive */
+@media(max-width:768px){
+  .topbar-inner{height:auto;padding:10px 16px;gap:10px;flex-wrap:wrap}
+  .topnav{justify-content:flex-start;width:100%}
+  .shell{padding:16px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .portfolio-bar{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--primary)}
+
+/* Print hide */
+@media print{.topbar,.topbar-actions,.btn,.modal-overlay{display:none!important}}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <strong>LedgerOS</strong>
-        <span>Single-file accounting platform prototype for multi-entity finance teams</span>
-      </div>
-      <nav class="nav">
-        <a href="#overview">Overview</a>
-        <a href="#businesses">Businesses</a>
-        <a href="#users">Users</a>
-        <a href="#inventory">Inventory</a>
-        <a href="#accounting">Accounting</a>
-        <a href="#tax">Tax</a>
-      </nav>
+
+<!-- ═══════════════════════════════════════════════ TOP BAR -->
+<header class="topbar" role="banner">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">LA</div>
+      <span class="brand-name">LedgerOS</span>
+      <span class="brand-tag">Accounts &amp; Tax</span>
     </div>
-  </header>
 
-  <main class="shell">
-    <section id="overview" class="hero">
+    <!-- Business switcher -->
+    <div class="dropdown" id="bizDropdown">
+      <button class="biz-switcher" onclick="toggleBizDropdown()" aria-haspopup="true" aria-label="Switch business">
+        <span class="biz-dot" id="bizDot"></span>
+        <span id="bizSwitcherLabel" class="truncate">Loading…</span>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="dropdown-menu" id="bizMenu"></div>
+    </div>
+
+    <!-- Main nav -->
+    <nav class="topnav" role="navigation">
+      <a href="#dashboard"  onclick="navigate('dashboard')"  id="nav-dashboard">Dashboard</a>
+      <a href="#businesses" onclick="navigate('businesses')" id="nav-businesses">Businesses</a>
+      <a href="#team"       onclick="navigate('team')"       id="nav-team">Team</a>
+      <a href="#inventory"  onclick="navigate('inventory')"  id="nav-inventory">Inventory</a>
+      <a href="#ledger"     onclick="navigate('ledger')"     id="nav-ledger">Ledger</a>
+      <a href="#tax"        onclick="navigate('tax')"        id="nav-tax">Tax</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="exportWorkspace()">⬇ Export JSON</button>
+      <button class="btn btn-danger btn-sm" onclick="resetDemo()">↺ Reset Demo</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════ MAIN CONTENT -->
+<main class="shell" id="main">
+
+  <!-- ── DASHBOARD ──────────────────────────────────────── -->
+  <section id="dashboard" class="page">
+    <div class="section-head">
       <div>
-        <div class="badge-row">
-          <span class="badge primary">Multi-business</span>
-          <span class="badge success">Inventory-ledger sync</span>
-          <span class="badge info">Role-based collaboration</span>
-          <span class="badge warning">Entity-specific tax</span>
-        </div>
-        <h1>Run several businesses, track stock, control access, and estimate tax from one accounting cockpit.</h1>
-        <p>
-          This frontend prototype turns the repository into a single-page accounting workspace with business switching,
-          user access views, inventory controls, integrated transaction entry, and tax handling for sole traders,
-          limited companies, partnerships, and landlords.
-        </p>
-        <div class="button-row">
-          <button class="primary-button" id="seedDataButton" type="button">Reset Demo Data</button>
-          <button class="secondary-button" id="exportStateButton" type="button">Export Workspace JSON</button>
-        </div>
-        <div class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-label">Active Business</div>
-            <div class="stat-value" id="activeBusinessName">-</div>
-            <div class="stat-footnote" id="activeBusinessMeta">-</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-label">Portfolio Revenue</div>
-            <div class="stat-value" id="portfolioRevenue">£0.00</div>
-            <div class="stat-footnote" id="portfolioRevenueMeta">Across all businesses</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-label">Inventory Value</div>
-            <div class="stat-value" id="portfolioInventoryValue">£0.00</div>
-            <div class="stat-footnote" id="portfolioInventoryMeta">At weighted average cost</div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-label">Estimated Tax Exposure</div>
-            <div class="stat-value" id="portfolioTax">£0.00</div>
-            <div class="stat-footnote" id="portfolioTaxMeta">Based on current selected entities</div>
-          </article>
-        </div>
+        <div class="section-title" id="dashTitle">Dashboard</div>
+        <div class="section-sub" id="dashSub"></div>
       </div>
-
-      <aside class="stack">
-        <div class="glass-card">
-          <strong>Business switcher</strong>
-          <p class="small">Select the active entity. All inventory, users, ledger summaries, and tax calculations re-scope automatically.</p>
-          <label>
-            Active business
-            <select id="activeBusinessSelect"></select>
-          </label>
-        </div>
-        <div class="glass-card">
-          <strong>Control panel</strong>
-          <div class="hero-grid" style="margin-top: 12px;">
-            <div class="mini-metric">
-              Low stock alerts
-              <strong id="lowStockCount">0</strong>
-            </div>
-            <div class="mini-metric">
-              Team members
-              <strong id="teamMemberCount">0</strong>
-            </div>
-            <div class="mini-metric">
-              Open month-end tasks
-              <strong id="monthEndCount">0</strong>
-            </div>
-            <div class="mini-metric">
-              Business types
-              <strong id="businessTypeCount">0</strong>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </section>
-
-    <div class="section-heading">
-      <div>
-        <h2>Portfolio overview</h2>
-        <p>Executive KPIs update whenever you add stock, team members, or accounting activity.</p>
+      <div class="flex gap-2 wrap">
+        <span id="dashBadge"></span>
       </div>
     </div>
 
-    <section class="detail-grid">
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Business health</h2>
-            <p id="businessHealthText">-</p>
-          </div>
-        </div>
-        <div class="stack" id="businessHealthList"></div>
-      </article>
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Workflow controls</h2>
-            <p>Built-in operational checklists for close, compliance, and approvals.</p>
-          </div>
-        </div>
-        <div class="timeline" id="workflowTimeline"></div>
-      </article>
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Cross-module coverage</h2>
-            <p>What the prototype already models inside a single file.</p>
-          </div>
-        </div>
-        <div class="workflow-list">
-          <span class="pill">General ledger</span>
-          <span class="pill">Inventory valuation</span>
-          <span class="pill">Role assignments</span>
-          <span class="pill">Entity-aware tax</span>
-          <span class="pill">Business switching</span>
-          <span class="pill">Sales and restock flows</span>
-          <span class="pill">Month-end monitoring</span>
-          <span class="pill">Local persistence</span>
-        </div>
-      </article>
-    </section>
+    <!-- Portfolio strip -->
+    <div class="portfolio-bar" id="portfolioBar"></div>
 
-    <div class="section-heading" id="businesses">
-      <div>
-        <h2>Multi-business workspace</h2>
-        <p>Create separate legal entities with their own tax profile, currency, VAT posture, and ownership model.</p>
+    <!-- KPI cards -->
+    <div class="kpi-grid mt-4" id="kpiGrid"></div>
+
+    <!-- Two-col: recent postings + low-stock alerts -->
+    <div class="grid-2 mt-4">
+      <div class="card">
+        <div class="section-head mb-3">
+          <div class="section-title">Recent Ledger Postings</div>
+          <a href="#ledger" onclick="navigate('ledger')" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        <div id="dashPostings"></div>
+      </div>
+      <div class="card">
+        <div class="section-head mb-3">
+          <div class="section-title">⚠️ Low-Stock Alerts</div>
+          <a href="#inventory" onclick="navigate('inventory')" class="btn btn-ghost btn-sm">Manage</a>
+        </div>
+        <div id="dashLowStock"></div>
       </div>
     </div>
 
-    <section class="panel-grid">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Add business</h2>
-            <p>Supports sole traders, companies, partnerships, and landlords.</p>
-          </div>
-        </div>
-        <form id="businessForm">
-          <div class="form-grid">
-            <label>
-              Business name
-              <input type="text" id="businessName" placeholder="Northwind Studio" required>
-            </label>
-            <label>
-              Entity type
-              <select id="businessType" required>
-                <option value="sole_trader">Sole trader</option>
-                <option value="limited_company">Limited company</option>
-                <option value="partnership">Partnership</option>
-                <option value="landlord">Landlord / property business</option>
-              </select>
-            </label>
-            <label>
-              Tax region
-              <input type="text" id="businessTaxRegion" placeholder="UK" value="UK" required>
-            </label>
-            <label>
-              Base currency
-              <input type="text" id="businessCurrency" placeholder="GBP" value="GBP" maxlength="3" required>
-            </label>
-            <label>
-              VAT registered
-              <select id="businessVatRegistered">
-                <option value="yes">Yes</option>
-                <option value="no" selected>No</option>
-              </select>
-            </label>
-            <label>
-              Ownership / profit share %
-              <input type="number" id="businessOwnershipShare" value="100" min="1" max="100" required>
-            </label>
-          </div>
-          <label>
-            Operating notes
-            <textarea id="businessNotes" placeholder="Short notes about approvals, payroll, filing deadlines, inventory method, or exemptions."></textarea>
-          </label>
-          <div class="button-row">
-            <button class="primary-button" type="submit">Add business</button>
-          </div>
-        </form>
-      </article>
+    <!-- Tax snapshot -->
+    <div class="card mt-4" id="dashTaxCard"></div>
+  </section>
 
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Business directory</h2>
-            <p>Switch between entities without losing local state.</p>
-          </div>
-          <div class="badge-row">
-            <span class="badge info" id="businessCountBadge">0 businesses</span>
-          </div>
-        </div>
-        <div class="stack" id="businessList"></div>
-      </article>
-    </section>
-
-    <div class="section-heading" id="users">
+  <!-- ── BUSINESSES ─────────────────────────────────────── -->
+  <section id="businesses" class="page" style="display:none">
+    <div class="section-head">
       <div>
-        <h2>Multi-user accounts</h2>
-        <p>Simulate role-based access across the portfolio with per-business assignments and responsibilities.</p>
+        <div class="section-title">Businesses</div>
+        <div class="section-sub">Manage entities in your portfolio</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('bizModal')">＋ New Business</button>
+    </div>
+    <div class="biz-cards" id="bizList"></div>
+  </section>
+
+  <!-- ── TEAM ───────────────────────────────────────────── -->
+  <section id="team" class="page" style="display:none">
+    <div class="section-head">
+      <div>
+        <div class="section-title">Team &amp; Access</div>
+        <div class="section-sub">User roles and business permissions</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('userModal')">＋ Add User</button>
+    </div>
+    <div class="card">
+      <div class="overflow-x">
+        <table id="teamTable"></table>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="section-title mb-3">Access Matrix</div>
+      <div class="overflow-x">
+        <table class="matrix-table" id="matrixTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── INVENTORY ──────────────────────────────────────── -->
+  <section id="inventory" class="page" style="display:none">
+    <div class="section-head">
+      <div>
+        <div class="section-title">Inventory</div>
+        <div class="section-sub" id="invSub"></div>
+      </div>
+      <div class="flex gap-2 wrap">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('movModal')">↕ Record Movement</button>
+        <button class="btn btn-primary" onclick="openModal('itemModal')">＋ New Item</button>
+      </div>
+    </div>
+    <div id="invAlerts"></div>
+    <div class="card mt-3">
+      <div class="overflow-x">
+        <table id="invTable"></table>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="section-title mb-3">Stock Movement Timeline</div>
+      <div id="movTimeline"></div>
+    </div>
+  </section>
+
+  <!-- ── LEDGER ─────────────────────────────────────────── -->
+  <section id="ledger" class="page" style="display:none">
+    <div class="section-head">
+      <div>
+        <div class="section-title">Accounting Ledger</div>
+        <div class="section-sub" id="ledgerSub"></div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('postingModal')">＋ New Posting</button>
+    </div>
+    <div class="grid-2">
+      <div class="card" id="ledgerMetrics"></div>
+      <div class="card">
+        <div class="section-title mb-3">Account Balances</div>
+        <div id="accountBalances"></div>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="section-head mb-3">
+        <div class="section-title">Journal Entries</div>
+        <div class="flex gap-2 wrap">
+          <select id="ledgerFilter" onchange="renderLedger()" class="btn btn-ghost btn-sm" style="border-radius:8px;padding:6px 10px">
+            <option value="">All types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+            <option value="cogs">COGS</option>
+            <option value="asset">Asset</option>
+            <option value="liability">Liability</option>
+            <option value="equity">Equity</option>
+          </select>
+        </div>
+      </div>
+      <div class="overflow-x">
+        <table id="ledgerTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TAX ────────────────────────────────────────────── -->
+  <section id="tax" class="page" style="display:none">
+    <div class="section-head">
+      <div>
+        <div class="section-title">Tax Estimation</div>
+        <div class="section-sub">Entity-aware tax modelling</div>
       </div>
     </div>
 
-    <section class="panel-grid">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Add team member</h2>
-            <p>Assign finance owners, operators, and approvers to one or more businesses.</p>
-          </div>
-        </div>
-        <form id="userForm">
-          <div class="form-grid">
-            <label>
-              Full name
-              <input type="text" id="userName" placeholder="Ada Lovelace" required>
-            </label>
-            <label>
-              Email
-              <input type="email" id="userEmail" placeholder="ada@example.com" required>
-            </label>
-            <label>
-              Role
-              <select id="userRole" required>
-                <option value="Owner">Owner</option>
-                <option value="Finance Manager">Finance Manager</option>
-                <option value="Inventory Controller">Inventory Controller</option>
-                <option value="Bookkeeper">Bookkeeper</option>
-                <option value="Tax Advisor">Tax Advisor</option>
-                <option value="Auditor">Auditor</option>
-              </select>
-            </label>
-            <label>
-              Assigned business
-              <select id="userBusinessId"></select>
-            </label>
-          </div>
-          <label>
-            Responsibilities
-            <textarea id="userResponsibilities" placeholder="e.g. approve purchases, close month-end, maintain VAT records"></textarea>
-          </label>
-          <div class="button-row">
-            <button class="primary-button" type="submit">Add team member</button>
-          </div>
-        </form>
-      </article>
+    <!-- Portfolio summary -->
+    <div class="card" id="taxPortfolio"></div>
 
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Access matrix</h2>
-            <p>Who can operate within the selected entity.</p>
-          </div>
-        </div>
-        <div class="table-shell">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Business</th>
-                <th>Responsibilities</th>
-              </tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-          </table>
-        </div>
-      </article>
-    </section>
+    <!-- Entity tabs -->
+    <div class="card mt-4" id="taxDetail"></div>
+  </section>
 
-    <div class="section-heading" id="inventory">
-      <div>
-        <h2>Inventory management</h2>
-        <p>Track stock on hand, reorder thresholds, margin by SKU, and accounting impact of purchases and sales.</p>
+</main>
+
+<!-- ════════════════════ MODALS ════════════════════════════ -->
+
+<!-- Business modal -->
+<div class="modal-overlay" id="bizModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="bizModalTitle">New Business</span>
+      <button class="modal-close" onclick="closeModal('bizModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Business Name *</label>
+        <input id="bName" placeholder="e.g. Apex Consulting Ltd">
+      </div>
+      <div class="field">
+        <label>Entity Type</label>
+        <select id="bType">
+          <option value="ltd">Limited Company</option>
+          <option value="sole">Sole Trader</option>
+          <option value="partnership">Partnership</option>
+          <option value="landlord">Landlord</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tax Region</label>
+        <select id="bRegion">
+          <option value="uk">United Kingdom</option>
+          <option value="ie">Ireland</option>
+          <option value="us">United States</option>
+          <option value="eu">EU (Generic)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Base Currency</label>
+        <select id="bCurrency">
+          <option value="GBP">GBP – £</option>
+          <option value="EUR">EUR – €</option>
+          <option value="USD">USD – $</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>VAT Registered?</label>
+        <select id="bVat">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ownership Share (%)</label>
+        <input id="bShare" type="number" min="0" max="100" value="100">
+      </div>
+      <div class="field">
+        <label>Industry / Sector</label>
+        <input id="bIndustry" placeholder="e.g. Technology, Retail">
+      </div>
+      <div class="field">
+        <label>Financial Year End</label>
+        <select id="bFYE">
+          <option value="03-31">31 March</option>
+          <option value="03-05">5 April</option>
+          <option value="12-31">31 December</option>
+          <option value="04-30">30 April</option>
+          <option value="01-31">31 January</option>
+        </select>
       </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('bizModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBusiness()">Save Business</button>
+    </div>
+  </div>
+</div>
 
-    <section class="inventory-grid">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Add inventory item</h2>
-            <p>Each item belongs to a business and carries cost, price, and reorder policy.</p>
-          </div>
-        </div>
-        <form id="inventoryForm">
-          <div class="form-grid three">
-            <label>
-              Business
-              <select id="inventoryBusinessId"></select>
-            </label>
-            <label>
-              SKU
-              <input type="text" id="inventorySku" placeholder="SKU-1001" required>
-            </label>
-            <label>
-              Item name
-              <input type="text" id="inventoryName" placeholder="Wireless Keyboard" required>
-            </label>
-            <label>
-              Category
-              <input type="text" id="inventoryCategory" placeholder="Peripherals" required>
-            </label>
-            <label>
-              Quantity on hand
-              <input type="number" id="inventoryQuantity" min="0" value="0" required>
-            </label>
-            <label>
-              Reorder level
-              <input type="number" id="inventoryReorder" min="0" value="5" required>
-            </label>
-            <label>
-              Unit cost (£)
-              <input type="number" id="inventoryCost" step="0.01" min="0" value="0" required>
-            </label>
-            <label>
-              Unit sale price (£)
-              <input type="number" id="inventoryPrice" step="0.01" min="0" value="0" required>
-            </label>
-            <label>
-              VAT rate %
-              <input type="number" id="inventoryVatRate" step="0.01" min="0" value="20" required>
-            </label>
-          </div>
-          <div class="button-row">
-            <button class="primary-button" type="submit">Add inventory item</button>
-          </div>
-        </form>
-      </article>
-
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Record stock movement</h2>
-            <p>Posting sales and restocks automatically updates inventory and ledger activity.</p>
-          </div>
-        </div>
-        <form id="movementForm">
-          <div class="form-grid">
-            <label>
-              Business
-              <select id="movementBusinessId"></select>
-            </label>
-            <label>
-              Inventory item
-              <select id="movementItemId"></select>
-            </label>
-            <label>
-              Movement type
-              <select id="movementType">
-                <option value="restock">Restock purchase</option>
-                <option value="sale">Sale / issue stock</option>
-                <option value="adjustment">Manual adjustment</option>
-              </select>
-            </label>
-            <label>
-              Quantity
-              <input type="number" id="movementQuantity" min="1" value="1" required>
-            </label>
-            <label>
-              Unit value (£)
-              <input type="number" id="movementUnitValue" step="0.01" min="0" value="0" required>
-            </label>
-            <label>
-              Movement date
-              <input type="date" id="movementDate" required>
-            </label>
-          </div>
-          <label>
-            Note
-            <textarea id="movementNote" placeholder="PO number, sales channel, stock write-off reason, etc."></textarea>
-          </label>
-          <div class="button-row">
-            <button class="primary-button" type="submit">Post movement</button>
-          </div>
-        </form>
-      </article>
-    </section>
-
-    <section class="summary-grid" style="margin-top: 18px;">
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Inventory register</h2>
-            <p id="inventoryRegisterMeta">Current stock and margin posture for the active business.</p>
-          </div>
-        </div>
-        <div class="table-shell">
-          <table>
-            <thead>
-              <tr>
-                <th>SKU</th>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Cost</th>
-                <th>Price</th>
-                <th>Value</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="inventoryTableBody"></tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Recent inventory movements</h2>
-            <p>Last six stock-affecting events with automatic accounting context.</p>
-          </div>
-        </div>
-        <div class="timeline" id="movementTimeline"></div>
-      </article>
-    </section>
-
-    <div class="section-heading" id="accounting">
-      <div>
-        <h2>Accounting & subledger entry</h2>
-        <p>Post manual income, expense, equity, asset, liability, and COGS transactions for any business.</p>
+<!-- User modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Add Team Member</span>
+      <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Full Name *</label>
+        <input id="uName" placeholder="Jane Smith">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="uEmail" type="email" placeholder="jane@example.com">
+      </div>
+      <div class="field">
+        <label>Role</label>
+        <select id="uRole">
+          <option value="owner">Owner</option>
+          <option value="admin">Admin</option>
+          <option value="accountant">Accountant</option>
+          <option value="bookkeeper">Bookkeeper</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Assigned Business</label>
+        <select id="uBiz"></select>
+      </div>
+      <div class="field">
+        <label>Responsibilities</label>
+        <input id="uResp" placeholder="e.g. VAT returns, payroll">
       </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Add User</button>
+    </div>
+  </div>
+</div>
 
-    <section class="panel-grid">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Post transaction</h2>
-            <p>Use manual posting for fees, payroll, capital injections, loans, and tax adjustments.</p>
-          </div>
-        </div>
-        <form id="transactionForm">
-          <div class="form-grid three">
-            <label>
-              Business
-              <select id="transactionBusinessId"></select>
-            </label>
-            <label>
-              Date
-              <input type="date" id="transactionDate" required>
-            </label>
-            <label>
-              Entry type
-              <select id="transactionType" required>
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-                <option value="cogs">COGS</option>
-                <option value="asset">Asset</option>
-                <option value="liability">Liability</option>
-                <option value="equity">Equity</option>
-              </select>
-            </label>
-            <label>
-              Account / category
-              <input type="text" id="transactionAccount" placeholder="Software subscriptions" required>
-            </label>
-            <label>
-              Amount (£)
-              <input type="number" id="transactionAmount" min="0" step="0.01" required>
-            </label>
-            <label>
-              Tax treatment
-              <select id="transactionTaxTreatment">
-                <option value="standard">Standard taxable</option>
-                <option value="zero">Zero-rated</option>
-                <option value="exempt">Exempt</option>
-                <option value="capital_allowance">Capital allowance</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            Notes
-            <textarea id="transactionNote" placeholder="Describe vendor, customer, supporting document, or accrual rationale."></textarea>
-          </label>
-          <div class="button-row">
-            <button class="primary-button" type="submit">Post transaction</button>
-          </div>
-        </form>
-      </article>
-
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Active business snapshot</h2>
-            <p>Live numbers for the currently selected entity.</p>
-          </div>
-        </div>
-        <div class="stack" id="businessSnapshot"></div>
-      </article>
-    </section>
-
-    <section class="summary-grid" style="margin-top: 18px;">
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Ledger feed</h2>
-            <p>Most recent postings across manual entries and inventory-triggered transactions.</p>
-          </div>
-        </div>
-        <div class="table-shell">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Account</th>
-                <th>Source</th>
-                <th>Amount</th>
-                <th>Tax</th>
-              </tr>
-            </thead>
-            <tbody id="transactionTableBody"></tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Readiness checks</h2>
-            <p>Flags for scaling this UI into a full accounting platform.</p>
-          </div>
-        </div>
-        <div id="readinessChecks" class="stack"></div>
-      </article>
-    </section>
-
-    <div class="section-heading" id="tax">
-      <div>
-        <h2>Tax handling by business type</h2>
-        <p>Estimated liabilities adapt to the active entity profile using front-end only calculation logic.</p>
+<!-- Inventory item modal -->
+<div class="modal-overlay" id="itemModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">New Inventory Item</span>
+      <button class="modal-close" onclick="closeModal('itemModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>SKU *</label>
+        <input id="iSku" placeholder="e.g. PROD-001">
+      </div>
+      <div class="field">
+        <label>Name *</label>
+        <input id="iName" placeholder="Product name">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <input id="iCat" placeholder="e.g. Electronics">
+      </div>
+      <div class="field">
+        <label>Opening Qty</label>
+        <input id="iQty" type="number" min="0" value="0">
+      </div>
+      <div class="field">
+        <label>Reorder Level</label>
+        <input id="iReorder" type="number" min="0" value="10">
+      </div>
+      <div class="field">
+        <label>Cost Price (ex VAT)</label>
+        <input id="iCost" type="number" min="0" step="0.01" value="0">
+      </div>
+      <div class="field">
+        <label>Selling Price (ex VAT)</label>
+        <input id="iPrice" type="number" min="0" step="0.01" value="0">
+      </div>
+      <div class="field">
+        <label>VAT Rate (%)</label>
+        <select id="iVat">
+          <option value="20">20% (Standard)</option>
+          <option value="5">5% (Reduced)</option>
+          <option value="0">0% (Zero-rated)</option>
+        </select>
       </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('itemModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveItem()">Add Item</button>
+    </div>
+  </div>
+</div>
 
-    <section class="tax-grid">
-      <article class="panel">
-        <div class="panel-header">
+<!-- Stock movement modal -->
+<div class="modal-overlay" id="movModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Record Stock Movement</span>
+      <button class="modal-close" onclick="closeModal('movModal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Item *</label>
+        <select id="mItem"></select>
+      </div>
+      <div class="field">
+        <label>Movement Type</label>
+        <select id="mType">
+          <option value="restock">Restock / Purchase</option>
+          <option value="sale">Sale / Dispatch</option>
+          <option value="adjustment">Adjustment</option>
+          <option value="return">Return / RMA</option>
+          <option value="write-off">Write-off</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Quantity *</label>
+        <input id="mQty" type="number" min="1" value="1">
+      </div>
+      <div class="field">
+        <label>Unit Price (override, optional)</label>
+        <input id="mPrice" type="number" min="0" step="0.01" placeholder="Leave blank for item default">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input id="mDate" type="date">
+      </div>
+      <div class="field">
+        <label>Reference / Notes</label>
+        <input id="mRef" placeholder="e.g. PO-1023, INV-204">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('movModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMovement()">Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Posting modal -->
+<div class="modal-overlay" id="postingModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">New Journal Entry</span>
+      <button class="modal-close" onclick="closeModal('postingModal')">✕</button>
+    </div>
+    <div class="form-grid form-grid-2">
+      <div class="field">
+        <label>Date *</label>
+        <input id="pDate" type="date">
+      </div>
+      <div class="field">
+        <label>Account Type</label>
+        <select id="pType">
+          <option value="income">Income / Revenue</option>
+          <option value="expense">Expense</option>
+          <option value="cogs">Cost of Goods Sold</option>
+          <option value="asset">Asset</option>
+          <option value="liability">Liability</option>
+          <option value="equity">Equity</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Account Name</label>
+        <input id="pAccount" placeholder="e.g. Consulting Revenue">
+      </div>
+      <div class="field">
+        <label>Amount *</label>
+        <input id="pAmount" type="number" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="field">
+        <label>Tax Treatment</label>
+        <select id="pTax">
+          <option value="vat20">VAT 20%</option>
+          <option value="vat5">VAT 5%</option>
+          <option value="vat0">VAT 0% / Exempt</option>
+          <option value="outside">Outside Scope</option>
+          <option value="rcm">Reverse Charge</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Reference</label>
+        <input id="pRef" placeholder="e.g. INV-0042">
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>Notes</label>
+        <textarea id="pNotes" placeholder="Optional description…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('postingModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePosting()">Post Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Business-switcher modal (full list) -->
+<div class="modal-overlay" id="bizPickModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-head">
+      <span class="modal-title">Select Active Business</span>
+      <button class="modal-close" onclick="closeModal('bizPickModal')">✕</button>
+    </div>
+    <div class="biz-cards" id="bizPickList"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('bizPickModal')">Close</button>
+      <button class="btn btn-primary" onclick="openModal('bizModal');closeModal('bizPickModal')">＋ New Business</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" style="
+  display:none;position:fixed;bottom:24px;right:24px;z-index:500;
+  padding:12px 20px;border-radius:var(--radius);background:#111827;color:#fff;
+  font-size:.88rem;box-shadow:var(--shadow-lg);max-width:320px;
+  animation:toastIn .2s ease;
+" role="alert"></div>
+
+<style>
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   LedgerOS – single-file accounting + tax workspace
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Storage helpers ─────────────────────────────────── */
+const LS_KEY = 'ledgeros_v1';
+function load() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; } catch { return null; }
+}
+function save(state) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch { /* storage full */ }
+}
+
+/* ─── Currency helper ─────────────────────────────────── */
+const SYMBOLS = { GBP: '£', EUR: '€', USD: '$' };
+function sym(biz) { return SYMBOLS[biz?.currency || 'GBP'] || '£'; }
+function fmt(n, biz) { return sym(biz) + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtN(n) { return Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+/* ─── Colour palette for biz avatars ─────────────────── */
+const PALETTE = ['#4f46e5','#059669','#d97706','#dc2626','#0284c7','#7c3aed','#0891b2','#ca8a04'];
+function bizColor(i) { return PALETTE[i % PALETTE.length]; }
+
+/* ─── UUID ────────────────────────────────────────────── */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+/* ─── Default / demo data ─────────────────────────────── */
+function defaultState() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+
+  const businesses = [
+    { id: 'b1', name: 'Apex Consulting Ltd', type: 'ltd',         region: 'uk', currency: 'GBP', vat: 'yes', share: 100, industry: 'Technology',   fye: '03-31' },
+    { id: 'b2', name: 'Green Leaf Retail',   type: 'sole',        region: 'uk', currency: 'GBP', vat: 'yes', share: 100, industry: 'Retail',        fye: '03-05' },
+    { id: 'b3', name: 'Harbor Properties',   type: 'landlord',    region: 'uk', currency: 'GBP', vat: 'no',  share: 75,  industry: 'Property',      fye: '12-31' },
+    { id: 'b4', name: 'Nova Labs EU',         type: 'partnership', region: 'eu', currency: 'EUR', vat: 'yes', share: 50,  industry: 'R&D',           fye: '12-31' },
+  ];
+
+  const users = [
+    { id: 'u1', name: 'Alice Morgan',  email: 'alice@apexconsult.co.uk', role: 'owner',      bizId: 'b1', responsibilities: 'Director, strategy' },
+    { id: 'u2', name: 'Ben Patel',     email: 'ben@apexconsult.co.uk',   role: 'accountant', bizId: 'b1', responsibilities: 'VAT returns, CT600' },
+    { id: 'u3', name: 'Cara Williams', email: 'cara@greenleaf.co.uk',    role: 'owner',      bizId: 'b2', responsibilities: 'Sales, purchasing' },
+    { id: 'u4', name: 'Dan Hughes',    email: 'dan@harbor.co.uk',        role: 'admin',      bizId: 'b3', responsibilities: 'Property management' },
+    { id: 'u5', name: 'Elsa Koenig',   email: 'elsa@novalabs.eu',        role: 'bookkeeper', bizId: 'b4', responsibilities: 'Bookkeeping, payroll' },
+  ];
+
+  const items = [
+    { id: 'i1', bizId: 'b2', sku: 'LEAF-001', name: 'Organic Tea Blend',    category: 'Beverages',  qty: 120, reorder: 30, cost: 3.50,  price: 8.99,  vat: 20 },
+    { id: 'i2', bizId: 'b2', sku: 'LEAF-002', name: 'Bamboo Tote Bag',      category: 'Accessories',qty: 8,   reorder: 15, cost: 4.20,  price: 12.50, vat: 20 },
+    { id: 'i3', bizId: 'b2', sku: 'LEAF-003', name: 'Reusable Water Bottle', category: 'Accessories',qty: 45,  reorder: 20, cost: 6.00,  price: 18.00, vat: 20 },
+    { id: 'i4', bizId: 'b2', sku: 'LEAF-004', name: 'Herbal Soap Bar',       category: 'Wellness',   qty: 5,   reorder: 25, cost: 1.80,  price: 5.50,  vat: 20 },
+    { id: 'i5', bizId: 'b1', sku: 'APEX-SW1', name: 'SaaS Licence (annual)', category: 'Software',   qty: 200, reorder: 10, cost: 0,     price: 1200,  vat: 20 },
+  ];
+
+  const movements = [
+    { id: 'm1', bizId: 'b2', itemId: 'i1', type: 'restock',    qty: 50,  price: 3.50,  date: `${y}-${m}-02`, ref: 'PO-1010' },
+    { id: 'm2', bizId: 'b2', itemId: 'i2', type: 'sale',       qty: 12,  price: 12.50, date: `${y}-${m}-03`, ref: 'INV-201' },
+    { id: 'm3', bizId: 'b2', itemId: 'i4', type: 'sale',       qty: 20,  price: 5.50,  date: `${y}-${m}-04`, ref: 'INV-202' },
+    { id: 'm4', bizId: 'b2', itemId: 'i3', type: 'restock',    qty: 30,  price: 6.00,  date: `${y}-${m}-05`, ref: 'PO-1011' },
+    { id: 'm5', bizId: 'b2', itemId: 'i1', type: 'sale',       qty: 30,  price: 8.99,  date: `${y}-${m}-06`, ref: 'INV-203' },
+    { id: 'm6', bizId: 'b1', itemId: 'i5', type: 'sale',       qty: 3,   price: 1200,  date: `${y}-${m}-07`, ref: 'INV-A01' },
+    { id: 'm7', bizId: 'b2', itemId: 'i4', type: 'adjustment', qty: -5,  price: 1.80,  date: `${y}-${m}-08`, ref: 'ADJ-001' },
+  ];
+
+  const postings = [
+    { id: 'p1',  bizId: 'b1', date: `${y}-${m}-01`, type: 'income',    account: 'Consulting Revenue',      amount: 12500, tax: 'vat20', ref: 'INV-A001', notes: 'Q1 project milestone' },
+    { id: 'p2',  bizId: 'b1', date: `${y}-${m}-02`, type: 'expense',   account: 'Office Supplies',          amount: 340,   tax: 'vat20', ref: 'REC-001',  notes: '' },
+    { id: 'p3',  bizId: 'b1', date: `${y}-${m}-03`, type: 'expense',   account: 'Software Subscriptions',   amount: 890,   tax: 'vat20', ref: 'REC-002',  notes: 'Annual SaaS tools' },
+    { id: 'p4',  bizId: 'b1', date: `${y}-${m}-05`, type: 'income',    account: 'Consulting Revenue',       amount: 8750,  tax: 'vat20', ref: 'INV-A002', notes: 'Retainer payment' },
+    { id: 'p5',  bizId: 'b1', date: `${y}-${m}-08`, type: 'asset',     account: 'Computer Equipment',       amount: 2200,  tax: 'vat20', ref: 'PO-009',   notes: 'Laptop purchase' },
+    { id: 'p6',  bizId: 'b2', date: `${y}-${m}-01`, type: 'income',    account: 'Product Sales',            amount: 4200,  tax: 'vat20', ref: 'SALES-W1', notes: '' },
+    { id: 'p7',  bizId: 'b2', date: `${y}-${m}-03`, type: 'cogs',      account: 'Cost of Goods Sold',       amount: 1680,  tax: 'vat20', ref: 'COGS-001', notes: '' },
+    { id: 'p8',  bizId: 'b2', date: `${y}-${m}-06`, type: 'expense',   account: 'Shop Rent',                amount: 950,   tax: 'vat0',  ref: 'RENT-001', notes: 'Monthly rent' },
+    { id: 'p9',  bizId: 'b3', date: `${y}-${m}-01`, type: 'income',    account: 'Rental Income',            amount: 3600,  tax: 'vat0',  ref: 'RENT-IN',  notes: '3 properties' },
+    { id: 'p10', bizId: 'b3', date: `${y}-${m}-04`, type: 'expense',   account: 'Mortgage Interest',        amount: 1100,  tax: 'vat0',  ref: 'MORT-001', notes: '' },
+    { id: 'p11', bizId: 'b4', date: `${y}-${m}-02`, type: 'income',    account: 'Grant Income',             amount: 9500,  tax: 'vat0',  ref: 'GRANT-01', notes: 'R&D grant tranche' },
+    { id: 'p12', bizId: 'b4', date: `${y}-${m}-05`, type: 'expense',   account: 'Research Materials',       amount: 3200,  tax: 'vat20', ref: 'EXP-001',  notes: '' },
+  ];
+
+  return { activeBizId: 'b1', businesses, users, items, movements, postings };
+}
+
+/* ─── App state ───────────────────────────────────────── */
+let state = load() || defaultState();
+let activePage = 'dashboard';
+
+/* ─── Save convenience ────────────────────────────────── */
+function persist() { save(state); }
+
+/* ─── Active business ─────────────────────────────────── */
+function activeBiz() { return state.businesses.find(b => b.id === state.activeBizId) || state.businesses[0]; }
+function selectBiz(id) {
+  state.activeBizId = id;
+  persist();
+  renderAll();
+  closeModal('bizPickModal');
+  const b = activeBiz();
+  toast(`Switched to ${b.name}`);
+}
+
+/* ─── Navigation ──────────────────────────────────────── */
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(s => s.style.display = 'none');
+  const el = document.getElementById(page);
+  if (el) el.style.display = '';
+  activePage = page;
+  document.querySelectorAll('.topnav a').forEach(a => a.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  renderPage(page);
+}
+
+function renderPage(p) {
+  if (p === 'dashboard')   renderDashboard();
+  if (p === 'businesses')  renderBusinesses();
+  if (p === 'team')        renderTeam();
+  if (p === 'inventory')   renderInventory();
+  if (p === 'ledger')      renderLedger();
+  if (p === 'tax')         renderTax();
+}
+
+/* ─── Modal helpers ───────────────────────────────────── */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+window.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+});
+
+/* ─── Toast ───────────────────────────────────────────── */
+let _toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  const colors = { success: '#059669', error: '#dc2626', info: '#4f46e5', warning: '#d97706' };
+  el.style.background = colors[type] || '#111827';
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.style.display = 'none'; }, 3200);
+}
+
+/* ─── Business dropdown ───────────────────────────────── */
+function toggleBizDropdown() {
+  document.getElementById('bizMenu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('bizDropdown').contains(e.target))
+    document.getElementById('bizMenu').classList.remove('open');
+});
+
+function renderBizSwitcher() {
+  const b = activeBiz();
+  document.getElementById('bizSwitcherLabel').textContent = b.name;
+  document.getElementById('bizDot').style.background = bizColor(state.businesses.indexOf(b));
+
+  const menu = document.getElementById('bizMenu');
+  menu.innerHTML = state.businesses.map((biz, i) => `
+    <button class="dropdown-item${biz.id === state.activeBizId ? ' active' : ''}"
+      onclick="selectBiz('${biz.id}');toggleBizDropdown()">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${bizColor(i)};margin-right:8px;"></span>
+      ${esc(biz.name)} <span style="float:right;opacity:.6;font-size:.75rem">${biz.type.toUpperCase()}</span>
+    </button>
+  `).join('') + `
+    <hr class="dropdown-sep">
+    <button class="dropdown-item" onclick="openModal('bizPickModal');toggleBizDropdown()">⚙ Manage businesses…</button>
+  `;
+}
+
+/* ─── HTML escaping ───────────────────────────────────── */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ═══ RENDER DASHBOARD ═════════════════════════════════ */
+function renderDashboard() {
+  const b = activeBiz();
+  document.getElementById('dashTitle').textContent = b.name;
+  document.getElementById('dashSub').textContent = `${TYPE_LABELS[b.type]} · ${b.region.toUpperCase()} · ${b.currency}`;
+
+  const vatBadge = b.vat === 'yes'
+    ? '<span class="badge badge-success">VAT Registered</span>'
+    : '<span class="badge badge-gray">Not VAT Registered</span>';
+  document.getElementById('dashBadge').innerHTML = vatBadge;
+
+  // Portfolio strip
+  const all = state.postings;
+  const totalRev = all.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const totalExp = all.filter(p => p.type === 'expense').reduce((s, p) => s + p.amount, 0);
+  const totalInv = calcInventoryValue();
+  const estimatedTax = estimatePortfolioTax();
+  document.getElementById('portfolioBar').innerHTML = `
+    <div class="portfolio-item"><div class="label">Portfolio Revenue</div><div class="value">£${fmtN(totalRev)}</div></div>
+    <div class="portfolio-item"><div class="label">Total Expenses</div><div class="value">£${fmtN(totalExp)}</div></div>
+    <div class="portfolio-item"><div class="label">Net Profit</div><div class="value">£${fmtN(totalRev - totalExp)}</div></div>
+    <div class="portfolio-item"><div class="label">Inventory Value</div><div class="value">£${fmtN(totalInv)}</div></div>
+    <div class="portfolio-item"><div class="label">Est. Tax Exposure</div><div class="value">£${fmtN(estimatedTax)}</div></div>
+    <div class="portfolio-item"><div class="label">Active Businesses</div><div class="value">${state.businesses.length}</div></div>
+  `;
+
+  // KPI cards for active business
+  const bizPostings = state.postings.filter(p => p.bizId === b.id);
+  const rev   = bizPostings.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const exp   = bizPostings.filter(p => p.type === 'expense').reduce((s, p) => s + p.amount, 0);
+  const cogs  = bizPostings.filter(p => p.type === 'cogs').reduce((s, p) => s + p.amount, 0);
+  const gross = rev - cogs;
+  const net   = rev - exp - cogs;
+  const invVal= calcInventoryValueFor(b.id);
+  const s     = sym(b);
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi kpi-primary">
+      <div class="kpi-label">Revenue (YTD)</div>
+      <div class="kpi-value">${s}${fmtN(rev)}</div>
+      <div class="kpi-sub">${bizPostings.filter(p=>p.type==='income').length} income entries</div>
+    </div>
+    <div class="kpi kpi-${exp > rev * 0.6 ? 'warning' : 'success'}">
+      <div class="kpi-label">Expenses</div>
+      <div class="kpi-value">${s}${fmtN(exp + cogs)}</div>
+      <div class="kpi-sub">incl. ${s}${fmtN(cogs)} COGS</div>
+    </div>
+    <div class="kpi kpi-${gross < 0 ? 'danger' : 'success'}">
+      <div class="kpi-label">Gross Profit</div>
+      <div class="kpi-value">${s}${fmtN(gross)}</div>
+      <div class="kpi-sub">Margin: ${rev ? Math.round(gross / rev * 100) : 0}%</div>
+    </div>
+    <div class="kpi kpi-${net < 0 ? 'danger' : 'primary'}">
+      <div class="kpi-label">Net Position</div>
+      <div class="kpi-value">${s}${fmtN(net)}</div>
+      <div class="kpi-sub">After all costs</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Inventory Value</div>
+      <div class="kpi-value">${s}${fmtN(invVal)}</div>
+      <div class="kpi-sub">${state.items.filter(i => i.bizId === b.id).length} SKUs tracked</div>
+    </div>
+    <div class="kpi kpi-warning">
+      <div class="kpi-label">Est. Tax</div>
+      <div class="kpi-value">${s}${fmtN(calcTaxFor(b))}</div>
+      <div class="kpi-sub">${TYPE_LABELS[b.type]}</div>
+    </div>
+  `;
+
+  // Recent postings
+  const recent = [...state.postings].filter(p => p.bizId === b.id).sort((a,z) => z.date.localeCompare(a.date)).slice(0, 6);
+  document.getElementById('dashPostings').innerHTML = recent.length
+    ? `<div class="timeline">${recent.map(p => timelinePosting(p, b)).join('')}</div>`
+    : emptyState('No postings yet', 'Add your first journal entry in Ledger.');
+
+  // Low-stock
+  const lowItems = state.items.filter(i => i.bizId === b.id && i.qty <= i.reorder);
+  document.getElementById('dashLowStock').innerHTML = lowItems.length
+    ? lowItems.map(i => `
+        <div class="alert alert-${i.qty === 0 ? 'danger' : 'warning'} mt-2">
+          <span>${i.qty === 0 ? '🔴' : '🟡'}</span>
           <div>
-            <h2>Tax estimate</h2>
-            <p id="taxEstimateMeta">Entity-aware estimate for the selected business.</p>
+            <strong>${esc(i.name)}</strong> — ${i.qty} units remaining
+            <div class="text-xs text-muted">Reorder level: ${i.reorder} · SKU: ${esc(i.sku)}</div>
           </div>
-        </div>
-        <div class="stack" id="taxEstimateBreakdown"></div>
-      </article>
+        </div>`).join('')
+    : emptyState('✅', 'No low-stock alerts for this business.');
 
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Entity guidance</h2>
-            <p>Operational pointers for tax, compliance, and scaling decisions.</p>
+  // Tax card
+  const taxInfo = getTaxInfo(b);
+  document.getElementById('dashTaxCard').innerHTML = `
+    <div class="section-title mb-3">Tax Snapshot — ${esc(b.name)}</div>
+    <div class="kpi-grid">${taxInfo.kpis.map(k => `
+      <div class="kpi kpi-${k.style}">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-value">${k.value}</div>
+        <div class="kpi-sub">${k.sub}</div>
+      </div>`).join('')}
+    </div>
+    ${taxInfo.alerts.map(a => `<div class="alert alert-${a.type} mt-3">${a.msg}</div>`).join('')}
+  `;
+}
+
+/* ═══ RENDER BUSINESSES ════════════════════════════════ */
+const TYPE_LABELS = { ltd: 'Limited Co.', sole: 'Sole Trader', partnership: 'Partnership', landlord: 'Landlord' };
+
+function renderBusinesses() {
+  document.getElementById('bizList').innerHTML = state.businesses.map((b, i) => `
+    <div class="biz-card${b.id === state.activeBizId ? ' selected' : ''}" onclick="selectBiz('${b.id}')">
+      <div class="biz-card-header">
+        <div class="biz-avatar" style="background:${bizColor(i)}">${esc(b.name.slice(0,2).toUpperCase())}</div>
+        <div class="biz-card-info">
+          <h3>${esc(b.name)}</h3>
+          <small>${TYPE_LABELS[b.type]} · ${b.region.toUpperCase()} · ${b.currency}</small>
+        </div>
+        ${b.id === state.activeBizId ? '<span class="badge badge-primary" style="margin-left:auto">Active</span>' : ''}
+      </div>
+      <div class="biz-meta">
+        <span class="badge badge-gray">🏭 ${esc(b.industry || '—')}</span>
+        <span class="badge ${b.vat === 'yes' ? 'badge-success' : 'badge-gray'}">VAT: ${b.vat === 'yes' ? 'Yes' : 'No'}</span>
+        <span class="badge badge-info">Ownership: ${b.share}%</span>
+        <span class="badge badge-gray">FYE: ${b.fye}</span>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editBiz('${b.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBiz('${b.id}')">Remove</button>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="biz-card" style="border-style:dashed;opacity:.7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px" onclick="openModal('bizModal')">
+      <span style="font-size:2rem">＋</span>
+      <span class="text-muted text-sm">Add Business</span>
+    </div>
+  `;
+}
+
+function deleteBiz(id) {
+  if (state.businesses.length <= 1) { toast('Cannot delete the only business.', 'error'); return; }
+  if (!confirm('Remove this business and all its data?')) return;
+  state.businesses = state.businesses.filter(b => b.id !== id);
+  state.postings   = state.postings.filter(p => p.bizId !== id);
+  state.items      = state.items.filter(i => i.bizId !== id);
+  state.movements  = state.movements.filter(m => m.bizId !== id);
+  state.users      = state.users.filter(u => u.bizId !== id);
+  if (state.activeBizId === id) state.activeBizId = state.businesses[0].id;
+  persist(); renderAll(); toast('Business removed.');
+}
+
+let editingBizId = null;
+function editBiz(id) {
+  const b = state.businesses.find(x => x.id === id);
+  if (!b) return;
+  editingBizId = id;
+  document.getElementById('bizModalTitle').textContent = 'Edit Business';
+  document.getElementById('bName').value     = b.name;
+  document.getElementById('bType').value     = b.type;
+  document.getElementById('bRegion').value   = b.region;
+  document.getElementById('bCurrency').value = b.currency;
+  document.getElementById('bVat').value      = b.vat;
+  document.getElementById('bShare').value    = b.share;
+  document.getElementById('bIndustry').value = b.industry || '';
+  document.getElementById('bFYE').value      = b.fye || '03-31';
+  openModal('bizModal');
+}
+
+function saveBusiness() {
+  const name = document.getElementById('bName').value.trim();
+  if (!name) { toast('Business name required.', 'error'); return; }
+  const data = {
+    name,
+    type:     document.getElementById('bType').value,
+    region:   document.getElementById('bRegion').value,
+    currency: document.getElementById('bCurrency').value,
+    vat:      document.getElementById('bVat').value,
+    share:    Number(document.getElementById('bShare').value) || 100,
+    industry: document.getElementById('bIndustry').value.trim(),
+    fye:      document.getElementById('bFYE').value,
+  };
+  if (editingBizId) {
+    const b = state.businesses.find(x => x.id === editingBizId);
+    Object.assign(b, data);
+    editingBizId = null;
+    document.getElementById('bizModalTitle').textContent = 'New Business';
+    toast('Business updated.');
+  } else {
+    const nb = { id: uid(), ...data };
+    state.businesses.push(nb);
+    toast('Business added.');
+  }
+  // reset form
+  ['bName','bIndustry'].forEach(id => document.getElementById(id).value = '');
+  closeModal('bizModal');
+  persist(); renderAll();
+}
+
+/* ═══ RENDER TEAM ══════════════════════════════════════ */
+const ROLE_STYLES = { owner:'badge-primary', admin:'badge-info', accountant:'badge-success', bookkeeper:'badge-warning', viewer:'badge-gray' };
+const ROLE_PERMS = {
+  owner:      { view:1, post:1, inventory:1, users:1, settings:1 },
+  admin:      { view:1, post:1, inventory:1, users:1, settings:0 },
+  accountant: { view:1, post:1, inventory:0, users:0, settings:0 },
+  bookkeeper: { view:1, post:1, inventory:1, users:0, settings:0 },
+  viewer:     { view:1, post:0, inventory:0, users:0, settings:0 },
+};
+
+function renderTeam() {
+  const users = state.users;
+  if (!users.length) {
+    document.getElementById('teamTable').innerHTML = '';
+    return;
+  }
+  document.getElementById('teamTable').innerHTML = `
+    <thead><tr>
+      <th>Name</th><th>Email</th><th>Role</th><th>Business</th><th>Responsibilities</th><th></th>
+    </tr></thead>
+    <tbody>${users.map(u => {
+      const b = state.businesses.find(bz => bz.id === u.bizId);
+      return `<tr>
+        <td><strong>${esc(u.name)}</strong></td>
+        <td class="text-muted">${esc(u.email)}</td>
+        <td><span class="badge ${ROLE_STYLES[u.role] || 'badge-gray'}">${u.role}</span></td>
+        <td>${b ? esc(b.name) : '<span class="text-muted">—</span>'}</td>
+        <td class="text-muted text-sm">${esc(u.responsibilities || '—')}</td>
+        <td><button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">✕</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  `;
+
+  // Access matrix
+  const cols = ['view', 'post', 'inventory', 'users', 'settings'];
+  const colLabels = { view:'View Data', post:'Post Entries', inventory:'Inventory', users:'Manage Users', settings:'Settings' };
+  document.getElementById('matrixTable').innerHTML = `
+    <thead><tr>
+      <th>User / Role</th>
+      ${cols.map(c => `<th>${colLabels[c]}</th>`).join('')}
+    </tr></thead>
+    <tbody>${users.map(u => {
+      const perms = ROLE_PERMS[u.role] || {};
+      return `<tr>
+        <td><strong>${esc(u.name)}</strong> <span class="text-xs text-muted">(${u.role})</span></td>
+        ${cols.map(c => `<td class="text-center">${perms[c] ? '<span class="check-y">✓</span>' : '<span class="check-n">–</span>'}</td>`).join('')}
+      </tr>`;
+    }).join('')}</tbody>
+  `;
+}
+
+function deleteUser(id) {
+  if (!confirm('Remove this user?')) return;
+  state.users = state.users.filter(u => u.id !== id);
+  persist(); renderTeam(); toast('User removed.');
+}
+
+function saveUser() {
+  const name = document.getElementById('uName').value.trim();
+  if (!name) { toast('Name required.', 'error'); return; }
+  state.users.push({
+    id:   uid(),
+    name,
+    email:           document.getElementById('uEmail').value.trim(),
+    role:            document.getElementById('uRole').value,
+    bizId:           document.getElementById('uBiz').value,
+    responsibilities:document.getElementById('uResp').value.trim(),
+  });
+  ['uName','uEmail','uResp'].forEach(id => document.getElementById(id).value = '');
+  closeModal('userModal');
+  persist(); renderTeam(); toast('User added.');
+}
+
+function populateUserBizSelect() {
+  const sel = document.getElementById('uBiz');
+  sel.innerHTML = state.businesses.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
+  sel.value = state.activeBizId;
+}
+
+/* ═══ RENDER INVENTORY ══════════════════════════════════ */
+function calcInventoryValue() {
+  return state.items.reduce((s, i) => s + i.qty * i.cost, 0);
+}
+function calcInventoryValueFor(bizId) {
+  return state.items.filter(i => i.bizId === bizId).reduce((s, i) => s + i.qty * i.cost, 0);
+}
+
+function renderInventory() {
+  const b = activeBiz();
+  const items = state.items.filter(i => i.bizId === b.id);
+  document.getElementById('invSub').textContent = `${items.length} SKUs · ${esc(b.name)}`;
+
+  // Alerts
+  const low = items.filter(i => i.qty <= i.reorder && i.qty > 0);
+  const out  = items.filter(i => i.qty === 0);
+  let alertsHtml = '';
+  if (out.length)  alertsHtml += `<div class="alert alert-danger">🔴 <strong>${out.length} item(s) out of stock:</strong> ${out.map(i=>esc(i.name)).join(', ')}</div>`;
+  if (low.length)  alertsHtml += `<div class="alert alert-warning mt-2">🟡 <strong>${low.length} item(s) below reorder level:</strong> ${low.map(i=>esc(i.name)).join(', ')}</div>`;
+  document.getElementById('invAlerts').innerHTML = alertsHtml;
+
+  // Table
+  if (!items.length) {
+    document.getElementById('invTable').innerHTML = '';
+    document.getElementById('invTable').parentElement.innerHTML = emptyState('📦', 'No inventory items. Add your first SKU.');
+    return;
+  }
+  document.getElementById('invTable').innerHTML = `
+    <thead><tr>
+      <th>SKU</th><th>Name</th><th>Category</th><th>Qty</th><th>Stock Level</th>
+      <th>Cost</th><th>Sell Price</th><th>Stock Value</th><th>VAT</th><th>Status</th>
+    </tr></thead>
+    <tbody>${items.map(i => {
+      const pct = Math.min(100, i.reorder > 0 ? Math.round(i.qty / (i.reorder * 3) * 100) : 100);
+      const barColor = i.qty === 0 ? '#dc2626' : i.qty <= i.reorder ? '#d97706' : '#059669';
+      const status = i.qty === 0
+        ? '<span class="badge badge-danger">Out of stock</span>'
+        : i.qty <= i.reorder
+          ? '<span class="badge badge-warning">Low stock</span>'
+          : '<span class="badge badge-success">In stock</span>';
+      const s = sym(b);
+      return `<tr>
+        <td class="text-xs text-muted font-bold">${esc(i.sku)}</td>
+        <td><strong>${esc(i.name)}</strong></td>
+        <td>${esc(i.category || '—')}</td>
+        <td><strong>${i.qty}</strong> <span class="text-xs text-muted">/ reorder: ${i.reorder}</span></td>
+        <td>
+          <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </td>
+        <td>${s}${fmtN(i.cost)}</td>
+        <td>${s}${fmtN(i.price)}</td>
+        <td class="font-bold">${s}${fmtN(i.qty * i.cost)}</td>
+        <td>${i.vat}%</td>
+        <td>${status}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  `;
+
+  // Movements timeline
+  const movs = state.movements.filter(m => m.bizId === b.id).sort((a,z) => z.date.localeCompare(a.date)).slice(0, 12);
+  document.getElementById('movTimeline').innerHTML = movs.length
+    ? `<div class="timeline">${movs.map(m => {
+        const item = state.items.find(i => i.id === m.itemId);
+        const isIn = ['restock','return'].includes(m.type);
+        const isOut= ['sale','write-off'].includes(m.type);
+        const iconClass = isIn ? 'tl-icon-green' : isOut ? 'tl-icon-red' : 'tl-icon-blue';
+        const icon = isIn ? '↑' : isOut ? '↓' : '~';
+        const s = sym(b);
+        return `<div class="tl-item">
+          <div class="tl-icon ${iconClass}">${icon}</div>
+          <div class="tl-meta">
+            <div class="tl-title">${esc(item?.name || m.itemId)} <span class="badge badge-gray">${m.type}</span></div>
+            <div class="tl-sub">${m.date} · Ref: ${esc(m.ref || '—')}</div>
           </div>
-        </div>
-        <div class="stack" id="taxGuidanceList"></div>
-      </article>
-    </section>
-
-    <section class="summary-grid" style="margin: 18px 0 40px;">
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Platform roadmap inside this UI</h2>
-            <p>Frontend modules included to guide a later backend build-out.</p>
+          <div class="tl-amount ${isIn ? 'pos' : isOut ? 'neg' : ''}">
+            ${isOut ? '-' : '+'}${Math.abs(m.qty)} units<br>
+            <span class="text-xs text-muted">${s}${fmtN(Math.abs(m.qty) * (m.price || 0))}</span>
           </div>
+        </div>`;
+      }).join('')}</div>`
+    : emptyState('📋', 'No movements recorded yet.');
+}
+
+function saveItem() {
+  const b = activeBiz();
+  const sku  = document.getElementById('iSku').value.trim();
+  const name = document.getElementById('iName').value.trim();
+  if (!sku || !name) { toast('SKU and Name required.', 'error'); return; }
+  state.items.push({
+    id:      uid(),
+    bizId:   b.id,
+    sku,
+    name,
+    category:document.getElementById('iCat').value.trim(),
+    qty:     Number(document.getElementById('iQty').value) || 0,
+    reorder: Number(document.getElementById('iReorder').value) || 10,
+    cost:    Number(document.getElementById('iCost').value) || 0,
+    price:   Number(document.getElementById('iPrice').value) || 0,
+    vat:     Number(document.getElementById('iVat').value) || 20,
+  });
+  ['iSku','iName','iCat'].forEach(id => document.getElementById(id).value = '');
+  ['iQty','iReorder','iCost','iPrice'].forEach(id => document.getElementById(id).value = '0');
+  closeModal('itemModal');
+  persist(); renderInventory(); toast('Item added.');
+}
+
+function populateMovItemSelect() {
+  const b = activeBiz();
+  const items = state.items.filter(i => i.bizId === b.id);
+  document.getElementById('mItem').innerHTML = items.length
+    ? items.map(i => `<option value="${i.id}">${esc(i.sku)} – ${esc(i.name)}</option>`).join('')
+    : '<option value="">No items — add inventory first</option>';
+  document.getElementById('mDate').value = new Date().toISOString().slice(0, 10);
+}
+
+function saveMovement() {
+  const itemId = document.getElementById('mItem').value;
+  if (!itemId) { toast('Select an item.', 'error'); return; }
+  const item = state.items.find(i => i.id === itemId);
+  if (!item) { toast('Item not found.', 'error'); return; }
+
+  const type = document.getElementById('mType').value;
+  const qty  = Number(document.getElementById('mQty').value) || 1;
+  const priceOverride = document.getElementById('mPrice').value;
+  const price = priceOverride ? Number(priceOverride) : (type === 'sale' ? item.price : item.cost);
+
+  // Update qty
+  const delta = ['restock','return'].includes(type) ? qty : -qty;
+  item.qty = Math.max(0, item.qty + delta);
+
+  const b = activeBiz();
+  state.movements.push({
+    id:    uid(),
+    bizId: b.id,
+    itemId,
+    type,
+    qty:   delta,
+    price,
+    date:  document.getElementById('mDate').value || new Date().toISOString().slice(0, 10),
+    ref:   document.getElementById('mRef').value.trim(),
+  });
+  document.getElementById('mRef').value = '';
+  closeModal('movModal');
+  persist(); renderInventory(); toast('Movement recorded.');
+}
+
+/* ═══ RENDER LEDGER ════════════════════════════════════ */
+const ACCT_COLORS = { income:'badge-success', expense:'badge-danger', cogs:'badge-warning', asset:'badge-info', liability:'badge-primary', equity:'badge-gray' };
+const TAX_LABELS  = { vat20:'VAT 20%', vat5:'VAT 5%', vat0:'VAT 0%', outside:'Outside Scope', rcm:'Reverse Charge' };
+
+function renderLedger() {
+  const b  = activeBiz();
+  const s  = sym(b);
+  const all = state.postings.filter(p => p.bizId === b.id);
+  const filt = document.getElementById('ledgerFilter').value;
+  const shown = filt ? all.filter(p => p.type === filt) : all;
+
+  document.getElementById('ledgerSub').textContent = `${all.length} entries · ${esc(b.name)}`;
+
+  // Metrics
+  const rev   = all.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const exp   = all.filter(p => p.type === 'expense').reduce((s, p) => s + p.amount, 0);
+  const cogs  = all.filter(p => p.type === 'cogs').reduce((s, p) => s + p.amount, 0);
+  const assets= all.filter(p => p.type === 'asset').reduce((s, p) => s + p.amount, 0);
+  const liab  = all.filter(p => p.type === 'liability').reduce((s, p) => s + p.amount, 0);
+  const gross = rev - cogs;
+  const net   = gross - exp;
+  const invVal= calcInventoryValueFor(b.id);
+
+  document.getElementById('ledgerMetrics').innerHTML = `
+    <div class="section-title mb-3">Entity Snapshot</div>
+    <div class="kpi-grid">
+      <div class="kpi kpi-primary">
+        <div class="kpi-label">Revenue</div>
+        <div class="kpi-value">${s}${fmtN(rev)}</div>
+      </div>
+      <div class="kpi kpi-${exp + cogs > rev ? 'danger' : 'success'}">
+        <div class="kpi-label">Total Costs</div>
+        <div class="kpi-value">${s}${fmtN(exp + cogs)}</div>
+      </div>
+      <div class="kpi kpi-${gross < 0 ? 'danger' : 'success'}">
+        <div class="kpi-label">Gross Profit</div>
+        <div class="kpi-value">${s}${fmtN(gross)}</div>
+        <div class="kpi-sub">Margin ${rev ? Math.round(gross/rev*100) : 0}%</div>
+      </div>
+      <div class="kpi kpi-${net < 0 ? 'danger' : 'primary'}">
+        <div class="kpi-label">Net Profit</div>
+        <div class="kpi-value">${s}${fmtN(net)}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Assets</div>
+        <div class="kpi-value">${s}${fmtN(assets + invVal)}</div>
+        <div class="kpi-sub">incl. inventory</div>
+      </div>
+      <div class="kpi kpi-warning">
+        <div class="kpi-label">Liabilities</div>
+        <div class="kpi-value">${s}${fmtN(liab)}</div>
+      </div>
+    </div>
+  `;
+
+  // Account balances
+  const acctMap = {};
+  all.forEach(p => {
+    if (!acctMap[p.account]) acctMap[p.account] = { type: p.type, total: 0, count: 0 };
+    acctMap[p.account].total += p.amount;
+    acctMap[p.account].count++;
+  });
+  const acctRows = Object.entries(acctMap).sort((a,z) => z[1].total - a[1].total);
+  document.getElementById('accountBalances').innerHTML = acctRows.length
+    ? `<table>
+        <thead><tr><th>Account</th><th>Type</th><th class="text-right">Balance</th></tr></thead>
+        <tbody>${acctRows.map(([acc, d]) => `<tr>
+          <td>${esc(acc)}</td>
+          <td><span class="badge ${ACCT_COLORS[d.type] || 'badge-gray'}">${d.type}</span></td>
+          <td class="text-right font-bold">${s}${fmtN(d.total)}</td>
+        </tr>`).join('')}</tbody>
+       </table>`
+    : emptyState('📒', 'No postings yet.');
+
+  // Journal table
+  const sorted = [...shown].sort((a,z) => z.date.localeCompare(a.date));
+  if (!sorted.length) {
+    document.getElementById('ledgerTable').innerHTML = `<tbody><tr><td colspan="7">${emptyState('📒','No entries for this filter.')}</td></tr></tbody>`;
+    return;
+  }
+  document.getElementById('ledgerTable').innerHTML = `
+    <thead><tr>
+      <th>Date</th><th>Account</th><th>Type</th><th>Tax</th><th>Reference</th>
+      <th class="text-right">Amount</th><th>Notes</th><th></th>
+    </tr></thead>
+    <tbody>${sorted.map(p => `<tr>
+      <td class="text-sm">${p.date}</td>
+      <td><strong>${esc(p.account)}</strong></td>
+      <td><span class="badge ${ACCT_COLORS[p.type] || 'badge-gray'}">${p.type}</span></td>
+      <td class="text-xs text-muted">${TAX_LABELS[p.tax] || p.tax}</td>
+      <td class="text-xs text-muted">${esc(p.ref || '—')}</td>
+      <td class="text-right font-bold">${s}${fmtN(p.amount)}</td>
+      <td class="text-xs text-muted">${esc(p.notes || '—')}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="deletePosting('${p.id}')">✕</button></td>
+    </tr>`).join('')}</tbody>
+  `;
+}
+
+function deletePosting(id) {
+  if (!confirm('Delete this entry?')) return;
+  state.postings = state.postings.filter(p => p.id !== id);
+  persist(); renderLedger(); toast('Entry deleted.');
+}
+
+function savePosting() {
+  const b   = activeBiz();
+  const date   = document.getElementById('pDate').value;
+  const amount = parseFloat(document.getElementById('pAmount').value);
+  const account = document.getElementById('pAccount').value.trim();
+  if (!date || !amount || !account) { toast('Date, account and amount required.', 'error'); return; }
+  state.postings.push({
+    id:      uid(),
+    bizId:   b.id,
+    date,
+    type:    document.getElementById('pType').value,
+    account,
+    amount,
+    tax:     document.getElementById('pTax').value,
+    ref:     document.getElementById('pRef').value.trim(),
+    notes:   document.getElementById('pNotes').value.trim(),
+  });
+  ['pAmount','pAccount','pRef','pNotes'].forEach(id => document.getElementById(id).value = '');
+  closeModal('postingModal');
+  persist(); renderLedger(); if (activePage === 'dashboard') renderDashboard(); toast('Entry posted.');
+}
+
+/* ═══ TAX CALCULATIONS ══════════════════════════════════ */
+// UK Tax year 2024/25 approximations
+const TAX_CONFIG = {
+  ltd:         { ct: 0.25, smallProfit: 50000, smallRate: 0.19, marginalRelief: 250000 },
+  sole:        { personalAllowance: 12570, basic: 0.20, higher: 0.40, additional: 0.45, higherThreshold: 50270, addThreshold: 125140 },
+  partnership: { personalAllowance: 12570, basic: 0.20, higher: 0.40, higher_threshold: 50270 },
+  landlord:    { personalAllowance: 12570, basic: 0.20, higher: 0.40, higher_threshold: 50270, financeRestriction: 0.20 },
+};
+
+function calcTaxFor(b) {
+  const postings = state.postings.filter(p => p.bizId === b.id);
+  const rev  = postings.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const exp  = postings.filter(p => ['expense','cogs'].includes(p.type)).reduce((s, p) => s + p.amount, 0);
+  const profit = Math.max(0, rev - exp);
+
+  if (b.type === 'ltd') {
+    const cfg = TAX_CONFIG.ltd;
+    if (profit <= cfg.smallProfit) return profit * cfg.smallRate;
+    if (profit >= cfg.marginalRelief) return profit * cfg.ct;
+    // Marginal relief
+    const fraction = (cfg.marginalRelief - profit) / (cfg.marginalRelief - cfg.smallProfit);
+    const marginal = profit * cfg.ct - fraction * (cfg.ct - cfg.smallRate) * profit;
+    return Math.round(marginal * 100) / 100;
+  }
+
+  if (['sole','partnership','landlord'].includes(b.type)) {
+    const cfg = TAX_CONFIG[b.type] || TAX_CONFIG.sole;
+    const taxable = Math.max(0, profit - cfg.personalAllowance);
+    let tax = 0;
+    if (taxable <= (cfg.higher_threshold || cfg.higherThreshold) - cfg.personalAllowance)
+      tax = taxable * cfg.basic;
+    else {
+      tax = ((cfg.higher_threshold || cfg.higherThreshold) - cfg.personalAllowance) * cfg.basic;
+      tax += (taxable - ((cfg.higher_threshold || cfg.higherThreshold) - cfg.personalAllowance)) * cfg.higher;
+    }
+    if (b.type === 'landlord') {
+      // Finance cost restriction (basic rate tax relief only)
+      const finCosts = postings.filter(p => p.type === 'expense' && (p.account || '').toLowerCase().includes('mortgage')).reduce((s, p) => s + p.amount, 0);
+      tax += finCosts * cfg.financeRestriction;
+    }
+    return Math.round(tax * 100) / 100;
+  }
+  return 0;
+}
+
+function estimatePortfolioTax() {
+  return state.businesses.reduce((sum, b) => sum + calcTaxFor(b) * (b.share / 100), 0);
+}
+
+function getTaxInfo(b) {
+  const postings = state.postings.filter(p => p.bizId === b.id);
+  const rev  = postings.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const exp  = postings.filter(p => ['expense','cogs'].includes(p.type)).reduce((s, p) => s + p.amount, 0);
+  const profit = Math.max(0, rev - exp);
+  const tax = calcTaxFor(b);
+  const s = sym(b);
+
+  // VAT
+  const vatSales = postings.filter(p => p.type === 'income' && p.tax === 'vat20').reduce((sum, p) => sum + p.amount, 0);
+  const vatPurchases = postings.filter(p => ['expense','cogs'].includes(p.type) && p.tax === 'vat20').reduce((sum, p) => sum + p.amount, 0);
+  const vatOutput = vatSales * 0.20;
+  const vatInput = vatPurchases * 0.20;
+  const vatDue = Math.max(0, vatOutput - vatInput);
+
+  const kpis = [
+    { label: 'Taxable Profit', value: s + fmtN(profit), sub: 'Revenue − expenses', style: 'primary' },
+    { label: 'Est. Tax Liability', value: s + fmtN(tax), sub: TYPE_LABELS[b.type], style: tax > profit * 0.25 ? 'danger' : 'warning' },
+    { label: 'Effective Rate', value: profit > 0 ? Math.round(tax / profit * 100) + '%' : '0%', sub: 'of taxable profit', style: 'gray' },
+  ];
+
+  if (b.vat === 'yes') {
+    kpis.push({ label: 'VAT Output', value: s + fmtN(vatOutput), sub: 'On standard-rated sales', style: 'info' });
+    kpis.push({ label: 'VAT Input', value: s + fmtN(vatInput), sub: 'Reclaimable on purchases', style: 'success' });
+    kpis.push({ label: 'VAT Due', value: s + fmtN(vatDue), sub: 'Net VAT to HMRC', style: vatDue > 0 ? 'warning' : 'success' });
+  }
+
+  const alerts = [];
+  if (profit > 0 && profit < 12570 && ['sole','landlord','partnership'].includes(b.type))
+    alerts.push({ type: 'success', msg: '✅ Profit below personal allowance — no income tax due this period.' });
+  if (b.vat === 'no' && rev > 85000)
+    alerts.push({ type: 'danger', msg: '⚠️ Revenue exceeds VAT registration threshold (£85,000). Consider registering for VAT.' });
+  if (b.type === 'ltd' && profit > 50000 && profit < 250000)
+    alerts.push({ type: 'warning', msg: '📊 Marginal relief band applies. Consider timing of profit extraction.' });
+  if (b.type === 'ltd' && profit > 250000)
+    alerts.push({ type: 'warning', msg: '🏢 Full 25% Corporation Tax rate applies above £250,000 profit.' });
+
+  return { kpis, alerts };
+}
+
+/* ═══ RENDER TAX ════════════════════════════════════════ */
+function renderTax() {
+  // Portfolio
+  const rows = state.businesses.map(b => {
+    const postings = state.postings.filter(p => p.bizId === b.id);
+    const rev  = postings.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+    const exp  = postings.filter(p => ['expense','cogs'].includes(p.type)).reduce((s, p) => s + p.amount, 0);
+    const profit = Math.max(0, rev - exp);
+    const tax = calcTaxFor(b);
+    const s = sym(b);
+    return { b, rev, exp, profit, tax, s };
+  });
+
+  const totalTax = rows.reduce((sum, r) => sum + r.tax * (r.b.share / 100), 0);
+  const totalRev = rows.reduce((sum, r) => sum + r.rev, 0);
+
+  document.getElementById('taxPortfolio').innerHTML = `
+    <div class="section-title mb-3">Portfolio Tax Summary</div>
+    <div class="kpi-grid mb-4">
+      <div class="kpi kpi-primary">
+        <div class="kpi-label">Combined Revenue</div>
+        <div class="kpi-value">£${fmtN(totalRev)}</div>
+        <div class="kpi-sub">${state.businesses.length} entities</div>
+      </div>
+      <div class="kpi kpi-warning">
+        <div class="kpi-label">Total Est. Tax</div>
+        <div class="kpi-value">£${fmtN(totalTax)}</div>
+        <div class="kpi-sub">Ownership-weighted</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Inventory Value</div>
+        <div class="kpi-value">£${fmtN(calcInventoryValue())}</div>
+      </div>
+    </div>
+    <div class="overflow-x">
+    <table>
+      <thead><tr>
+        <th>Business</th><th>Type</th><th>Revenue</th><th>Profit</th>
+        <th>Est. Tax</th><th>Effective Rate</th><th>VAT Posture</th><th>Ownership</th>
+      </tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td><strong>${esc(r.b.name)}</strong></td>
+        <td><span class="badge badge-gray">${TYPE_LABELS[r.b.type]}</span></td>
+        <td>${r.s}${fmtN(r.rev)}</td>
+        <td>${r.s}${fmtN(r.profit)}</td>
+        <td class="font-bold">${r.s}${fmtN(r.tax)}</td>
+        <td>${r.profit > 0 ? Math.round(r.tax / r.profit * 100) + '%' : '—'}</td>
+        <td><span class="badge ${r.b.vat === 'yes' ? 'badge-success' : 'badge-gray'}">${r.b.vat === 'yes' ? 'VAT Reg.' : 'Not Reg.'}</span></td>
+        <td>${r.b.share}%</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    </div>
+  `;
+
+  // Per-entity detail tabs
+  const activeBizId = state.activeBizId;
+  const b = activeBiz();
+  const taxInfo = getTaxInfo(b);
+  const postings = state.postings.filter(p => p.bizId === b.id);
+  const rev  = postings.filter(p => p.type === 'income').reduce((s, p) => s + p.amount, 0);
+  const exp  = postings.filter(p => ['expense','cogs'].includes(p.type)).reduce((s, p) => s + p.amount, 0);
+  const profit = Math.max(0, rev - exp);
+  const s = sym(b);
+
+  const bandRows = getTaxBands(b, profit);
+
+  document.getElementById('taxDetail').innerHTML = `
+    <div class="section-head mb-3">
+      <div class="section-title">Entity Detail — ${esc(b.name)}</div>
+      <div class="flex gap-2 wrap">
+        ${state.businesses.map(bz => `
+          <button class="btn btn-${bz.id === activeBizId ? 'primary' : 'ghost'} btn-sm"
+            onclick="selectBiz('${bz.id}');renderTax()">${esc(bz.name)}</button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="kpi-grid">
+      ${taxInfo.kpis.map(k => `
+        <div class="kpi kpi-${k.style}">
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-value">${k.value}</div>
+          <div class="kpi-sub">${k.sub}</div>
+        </div>`).join('')}
+    </div>
+    ${taxInfo.alerts.map(a => `<div class="alert alert-${a.type} mt-3">${a.msg}</div>`).join('')}
+    <div class="mt-4">
+      <div class="section-title mb-3">Tax Band Breakdown</div>
+      <div class="overflow-x">
+      <table class="tax-band">
+        <thead><tr><th>Band</th><th>Income</th><th>Rate</th><th class="text-right">Tax</th></tr></thead>
+        <tbody>${bandRows.map(r => `<tr>
+          <td>${r.band}</td><td>${s}${fmtN(r.income)}</td><td>${r.rate}</td><td>${s}${fmtN(r.tax)}</td>
+        </tr>`).join('')}</tbody>
+        <tfoot><tr style="background:var(--primary-light)">
+          <td colspan="3"><strong>Total Estimated Tax</strong></td>
+          <td class="text-right font-bold">${s}${fmtN(bandRows.reduce((a, r) => a + r.tax, 0))}</td>
+        </tr></tfoot>
+      </table>
+      </div>
+    </div>
+  `;
+}
+
+function getTaxBands(b, profit) {
+  if (b.type === 'ltd') {
+    const cfg = TAX_CONFIG.ltd;
+    const rate = profit <= cfg.smallProfit ? 0.19 : profit >= cfg.marginalRelief ? 0.25 : null;
+    if (rate !== null) return [{ band: 'Corporation Tax', income: profit, rate: (rate * 100) + '%', tax: profit * rate }];
+    // Marginal
+    const fraction = (cfg.marginalRelief - profit) / (cfg.marginalRelief - cfg.smallProfit);
+    const mainTax = profit * 0.25;
+    const relief = fraction * (0.25 - 0.19) * profit;
+    return [
+      { band: 'CT Main Rate (25%)', income: profit, rate: '25%', tax: mainTax },
+      { band: 'Marginal Relief', income: profit, rate: '−', tax: -relief },
+    ];
+  }
+
+  const cfg = TAX_CONFIG[b.type] || TAX_CONFIG.sole;
+  const pa  = cfg.personalAllowance || 12570;
+  const ht  = cfg.higher_threshold || cfg.higherThreshold || 50270;
+  const bands = [];
+  let remaining = profit;
+
+  if (remaining > 0) {
+    const personalUse = Math.min(remaining, pa);
+    bands.push({ band: 'Personal Allowance', income: personalUse, rate: '0%', tax: 0 });
+    remaining -= personalUse;
+  }
+  if (remaining > 0) {
+    const basicBand = Math.min(remaining, ht - pa);
+    if (basicBand > 0) {
+      bands.push({ band: 'Basic Rate', income: basicBand, rate: '20%', tax: basicBand * 0.20 });
+      remaining -= basicBand;
+    }
+  }
+  if (remaining > 0) {
+    const addThreshold = cfg.addThreshold || 125140;
+    const higherBand = Math.min(remaining, addThreshold - ht);
+    if (higherBand > 0) {
+      bands.push({ band: 'Higher Rate', income: higherBand, rate: '40%', tax: higherBand * 0.40 });
+      remaining -= higherBand;
+    }
+  }
+  if (remaining > 0) {
+    bands.push({ band: 'Additional Rate', income: remaining, rate: '45%', tax: remaining * 0.45 });
+  }
+  return bands;
+}
+
+/* ═══ HELPER RENDERERS ══════════════════════════════════ */
+function timelinePosting(p, b) {
+  const s = sym(b);
+  const isIncome = p.type === 'income';
+  const iconClass = isIncome ? 'tl-icon-green' : p.type === 'expense' ? 'tl-icon-red' : 'tl-icon-blue';
+  const icon = isIncome ? '↑' : ['expense','cogs'].includes(p.type) ? '↓' : '●';
+  return `<div class="tl-item">
+    <div class="tl-icon ${iconClass}">${icon}</div>
+    <div class="tl-meta">
+      <div class="tl-title">${esc(p.account)} <span class="badge ${ACCT_COLORS[p.type] || 'badge-gray'}">${p.type}</span></div>
+      <div class="tl-sub">${p.date} · ${esc(p.ref || '—')}</div>
+    </div>
+    <div class="tl-amount ${isIncome ? 'pos' : ['expense','cogs'].includes(p.type) ? 'neg' : ''}">${s}${fmtN(p.amount)}</div>
+  </div>`;
+}
+
+function emptyState(icon, msg) {
+  return `<div class="empty-state"><div class="emo">${icon}</div><p>${msg}</p></div>`;
+}
+
+/* ─── BizPickModal list ───────────────────────────────── */
+function renderBizPickList() {
+  document.getElementById('bizPickList').innerHTML = state.businesses.map((b, i) => `
+    <div class="biz-card${b.id === state.activeBizId ? ' selected' : ''}" onclick="selectBiz('${b.id}')">
+      <div class="biz-card-header">
+        <div class="biz-avatar" style="background:${bizColor(i)}">${esc(b.name.slice(0,2).toUpperCase())}</div>
+        <div class="biz-card-info">
+          <h3>${esc(b.name)}</h3>
+          <small>${TYPE_LABELS[b.type]} · ${b.region.toUpperCase()}</small>
         </div>
-        <div class="stack">
-          <div class="notice success">Businesses, users, stock, tax, and ledger activity are persisted to <strong>localStorage</strong> so the workspace survives refreshes.</div>
-          <div class="notice">The prototype intentionally keeps logic in one file to match the requirement, but the data model mirrors future backend services: tenants, users, inventory, movements, and transactions.</div>
-        </div>
-      </article>
-
-      <article class="list-card">
-        <div class="panel-header">
-          <div>
-            <h2>Workspace export</h2>
-            <p>Use the export button in the hero to capture the full local state as JSON.</p>
-          </div>
-        </div>
-        <div class="stack">
-          <div class="notice warning">This is a frontend-only prototype. No server authentication, audit log, or database isolation exists yet.</div>
-          <div class="workflow-list">
-            <span class="pill">Future API</span>
-            <span class="pill">Tenant auth</span>
-            <span class="pill">Purchase orders</span>
-            <span class="pill">Sales invoices</span>
-            <span class="pill">Bank feeds</span>
-            <span class="pill">Approval engine</span>
-          </div>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <script>
-    const STORAGE_KEY = 'ledgeros-workspace-v1';
-    const GBP = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
-
-    const TAX_CONSTANTS = {
-      personalAllowance: 12570,
-      basicRateLimit: 50270,
-      higherRateLimit: 125140,
-      basicRate: 0.20,
-      higherRate: 0.40,
-      additionalRate: 0.45,
-      selfEmployedClass2Weekly: 3.45,
-      selfEmployedClass2Threshold: 6725,
-      selfEmployedClass4Main: 0.06,
-      selfEmployedClass4Higher: 0.02,
-      corporationSmallThreshold: 50000,
-      corporationMainThreshold: 250000,
-      corporationSmallRate: 0.19,
-      corporationMainRate: 0.25,
-      propertyAllowance: 1000,
-      vatThreshold: 90000
-    };
-
-    const ENTITY_GUIDANCE = {
-      sole_trader: [
-        'Monitor profits against the personal allowance and record every allowable cost.',
-        'Use capital allowance treatment for qualifying equipment instead of posting it as a normal expense.',
-        'Watch the VAT threshold as turnover scales.'
-      ],
-      limited_company: [
-        'Corporation tax is estimated on profit before owner drawings.',
-        'Keep salary, dividends, and inventory purchasing approval flows separate for auditability.',
-        'Use director and approver roles to enforce dual control.'
-      ],
-      partnership: [
-        'Profit share controls ownership allocation for the active partner view.',
-        'Maintain partner current accounts separately when moving to a backend ledger.',
-        'Document capital contributions and drawings distinctly from expense claims.'
-      ],
-      landlord: [
-        'Property businesses should monitor repairs, service charges, and exempt/zero-rated supplies separately.',
-        'Track capital improvements distinctly from repairs to support tax treatment.',
-        'Entity switching is useful when holding multiple SPVs or personal portfolios.'
-      ]
-    };
-
-    let state = loadState();
-
-    function createId(prefix) {
-      return `${prefix}-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36)}`;
-    }
-
-    function today() {
-      return new Date().toISOString().slice(0, 10);
-    }
-
-    function formatCurrency(value) {
-      return GBP.format(Number(value || 0));
-    }
-
-    function loadState() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (error) {
-          console.warn('Failed to parse saved state, seeding demo data.', error);
-        }
-      }
-      return seedState();
-    }
-
-    function seedState() {
-      const businesses = [
-        {
-          id: 'biz-northwind',
-          name: 'Northwind Studio',
-          type: 'sole_trader',
-          taxRegion: 'UK',
-          currency: 'GBP',
-          vatRegistered: false,
-          ownershipShare: 100,
-          notes: 'Creative services studio with small inventory and direct founder control.'
-        },
-        {
-          id: 'biz-harbor',
-          name: 'Harbor Retail Ltd',
-          type: 'limited_company',
-          taxRegion: 'UK',
-          currency: 'GBP',
-          vatRegistered: true,
-          ownershipShare: 100,
-          notes: 'Retail company with stock-led sales, separate finance manager, and VAT filing obligations.'
-        },
-        {
-          id: 'biz-elm',
-          name: 'Elm Street Lets',
-          type: 'landlord',
-          taxRegion: 'UK',
-          currency: 'GBP',
-          vatRegistered: false,
-          ownershipShare: 100,
-          notes: 'Property entity focused on rental income, repairs, and capital improvements.'
-        }
-      ];
-
-      const users = [
-        {
-          id: createId('user'),
-          name: 'Dozie Founder',
-          email: 'founder@ledgeros.demo',
-          role: 'Owner',
-          businessId: 'biz-northwind',
-          responsibilities: 'Approves spending, signs off tax, monitors profitability.'
-        },
-        {
-          id: createId('user'),
-          name: 'Maya Finch',
-          email: 'finance@harbor.demo',
-          role: 'Finance Manager',
-          businessId: 'biz-harbor',
-          responsibilities: 'Runs month-end close, VAT review, working capital reporting.'
-        },
-        {
-          id: createId('user'),
-          name: 'Leo Hart',
-          email: 'stock@harbor.demo',
-          role: 'Inventory Controller',
-          businessId: 'biz-harbor',
-          responsibilities: 'Maintains stock accuracy, purchase receipts, and reorder points.'
-        }
-      ];
-
-      const inventory = [
-        {
-          id: createId('item'),
-          businessId: 'biz-harbor',
-          sku: 'HR-KEY-01',
-          name: 'Wireless Keyboard',
-          category: 'Peripherals',
-          quantity: 18,
-          reorderLevel: 8,
-          unitCost: 28,
-          unitPrice: 54,
-          vatRate: 20
-        },
-        {
-          id: createId('item'),
-          businessId: 'biz-harbor',
-          sku: 'HR-MSE-02',
-          name: 'Ergonomic Mouse',
-          category: 'Peripherals',
-          quantity: 6,
-          reorderLevel: 10,
-          unitCost: 17,
-          unitPrice: 36,
-          vatRate: 20
-        }
-      ];
-
-      const transactions = [
-        {
-          id: createId('txn'),
-          businessId: 'biz-northwind',
-          date: '2026-07-05',
-          type: 'income',
-          account: 'Client project revenue',
-          amount: 18000,
-          note: 'Monthly design and strategy retainers.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-northwind',
-          date: '2026-07-08',
-          type: 'expense',
-          account: 'Software subscriptions',
-          amount: 1450,
-          note: 'Creative tooling and collaboration apps.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-harbor',
-          date: '2026-07-02',
-          type: 'income',
-          account: 'Retail sales',
-          amount: 42000,
-          note: 'Online and in-store sales to date.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-harbor',
-          date: '2026-07-06',
-          type: 'expense',
-          account: 'Warehouse rent',
-          amount: 6300,
-          note: 'Monthly warehouse lease.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-harbor',
-          date: '2026-07-07',
-          type: 'cogs',
-          account: 'Opening inventory relief',
-          amount: 9800,
-          note: 'Initial cost of goods baseline.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-elm',
-          date: '2026-07-03',
-          type: 'income',
-          account: 'Rental income',
-          amount: 9500,
-          note: 'Residential rent collection.',
-          source: 'manual',
-          taxTreatment: 'exempt'
-        },
-        {
-          id: createId('txn'),
-          businessId: 'biz-elm',
-          date: '2026-07-04',
-          type: 'expense',
-          account: 'Property repairs',
-          amount: 1850,
-          note: 'Plumbing and hallway lighting repairs.',
-          source: 'manual',
-          taxTreatment: 'standard'
-        }
-      ];
-
-      const movements = [
-        {
-          id: createId('move'),
-          businessId: 'biz-harbor',
-          itemId: inventory[0].id,
-          type: 'restock',
-          quantity: 10,
-          unitValue: 28,
-          date: '2026-07-05',
-          note: 'Supplier PO-4108'
-        },
-        {
-          id: createId('move'),
-          businessId: 'biz-harbor',
-          itemId: inventory[1].id,
-          type: 'sale',
-          quantity: 4,
-          unitValue: 36,
-          date: '2026-07-09',
-          note: 'Marketplace batch sale'
-        }
-      ];
-
-      return {
-        activeBusinessId: businesses[0].id,
-        businesses,
-        users,
-        inventory,
-        transactions,
-        movements
-      };
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function getBusiness(businessId = state.activeBusinessId) {
-      return state.businesses.find((business) => business.id === businessId) || state.businesses[0];
-    }
-
-    function getBusinessUsers(businessId = state.activeBusinessId) {
-      return state.users.filter((user) => user.businessId === businessId);
-    }
-
-    function getBusinessInventory(businessId = state.activeBusinessId) {
-      return state.inventory.filter((item) => item.businessId === businessId);
-    }
-
-    function getBusinessTransactions(businessId = state.activeBusinessId) {
-      return state.transactions.filter((transaction) => transaction.businessId === businessId);
-    }
-
-    function inventoryItemLabel(item) {
-      return `${item.sku} • ${item.name}`;
-    }
-
-    function profitSummary(businessId) {
-      const transactions = getBusinessTransactions(businessId);
-      const revenue = sumByType(transactions, 'income');
-      const expenses = sumByType(transactions, 'expense');
-      const cogs = sumByType(transactions, 'cogs');
-      const assets = sumByType(transactions, 'asset');
-      const liabilities = sumByType(transactions, 'liability');
-      const equity = sumByType(transactions, 'equity');
-      const inventoryValue = getBusinessInventory(businessId).reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
-      const grossProfit = revenue - cogs;
-      const netProfit = revenue - expenses - cogs;
-      return { revenue, expenses, cogs, assets, liabilities, equity, inventoryValue, grossProfit, netProfit };
-    }
-
-    function sumByType(transactions, type) {
-      return transactions
-        .filter((transaction) => transaction.type === type)
-        .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
-    }
-
-    function calculateIncomeTax(taxableIncome) {
-      if (taxableIncome <= 0) return 0;
-      const { personalAllowance, basicRateLimit, higherRateLimit, basicRate, higherRate, additionalRate } = TAX_CONSTANTS;
-      const basicBand = basicRateLimit - personalAllowance;
-      const higherBand = higherRateLimit - basicRateLimit;
-      let remaining = taxableIncome;
-      let tax = 0;
-
-      const basicSlice = Math.min(remaining, basicBand);
-      tax += basicSlice * basicRate;
-      remaining -= basicSlice;
-      if (remaining <= 0) return tax;
-
-      const higherSlice = Math.min(remaining, higherBand);
-      tax += higherSlice * higherRate;
-      remaining -= higherSlice;
-      if (remaining <= 0) return tax;
-
-      tax += remaining * additionalRate;
-      return tax;
-    }
-
-    function estimateTaxForBusiness(businessId = state.activeBusinessId) {
-      const business = getBusiness(businessId);
-      const summary = profitSummary(businessId);
-      const profit = Math.max(0, summary.netProfit);
-
-      if (!business) {
-        return { headline: 'No business selected', totalTax: 0, details: [], guidance: [] };
-      }
-
-      if (business.type === 'limited_company') {
-        let corporationRate = TAX_CONSTANTS.corporationSmallRate;
-        if (profit >= TAX_CONSTANTS.corporationMainThreshold) {
-          corporationRate = TAX_CONSTANTS.corporationMainRate;
-        } else if (profit > TAX_CONSTANTS.corporationSmallThreshold) {
-          const span = TAX_CONSTANTS.corporationMainThreshold - TAX_CONSTANTS.corporationSmallThreshold;
-          corporationRate += ((profit - TAX_CONSTANTS.corporationSmallThreshold) / span) * (TAX_CONSTANTS.corporationMainRate - TAX_CONSTANTS.corporationSmallRate);
-        }
-        const corporationTax = profit * corporationRate;
-        return {
-          headline: 'Corporation tax estimate',
-          totalTax: corporationTax,
-          details: [
-            ['Net profit', profit],
-            ['Applicable corporation tax rate', `${(corporationRate * 100).toFixed(2)}%`],
-            ['Estimated corporation tax', corporationTax],
-            ['Post-tax profit', Math.max(0, profit - corporationTax)]
-          ],
-          guidance: ENTITY_GUIDANCE[business.type] || []
-        };
-      }
-
-      if (business.type === 'partnership') {
-        const allocatedProfit = profit * (Number(business.ownershipShare || 100) / 100);
-        const taxableIncome = Math.max(0, allocatedProfit - TAX_CONSTANTS.personalAllowance);
-        const incomeTax = calculateIncomeTax(taxableIncome);
-        const class4Base = Math.max(0, Math.min(allocatedProfit, TAX_CONSTANTS.basicRateLimit) - TAX_CONSTANTS.personalAllowance);
-        const class4Higher = Math.max(0, allocatedProfit - TAX_CONSTANTS.basicRateLimit);
-        const class4Ni = (class4Base * TAX_CONSTANTS.selfEmployedClass4Main) + (class4Higher * TAX_CONSTANTS.selfEmployedClass4Higher);
-        const class2Ni = allocatedProfit > TAX_CONSTANTS.selfEmployedClass2Threshold ? TAX_CONSTANTS.selfEmployedClass2Weekly * 52 : 0;
-        return {
-          headline: 'Partner tax estimate',
-          totalTax: incomeTax + class4Ni + class2Ni,
-          details: [
-            ['Net business profit', profit],
-            ['Allocated profit share', allocatedProfit],
-            ['Income tax', incomeTax],
-            ['Class 4 NI', class4Ni],
-            ['Class 2 NI', class2Ni]
-          ],
-          guidance: ENTITY_GUIDANCE[business.type] || []
-        };
-      }
-
-      if (business.type === 'landlord') {
-        const allowanceUsed = summary.expenses < TAX_CONSTANTS.propertyAllowance ? TAX_CONSTANTS.propertyAllowance : summary.expenses;
-        const adjustedProfit = Math.max(0, summary.revenue - allowanceUsed);
-        const taxableIncome = Math.max(0, adjustedProfit - TAX_CONSTANTS.personalAllowance);
-        const incomeTax = calculateIncomeTax(taxableIncome);
-        return {
-          headline: 'Property income estimate',
-          totalTax: incomeTax,
-          details: [
-            ['Rental income', summary.revenue],
-            ['Deduction used', allowanceUsed],
-            ['Adjusted property profit', adjustedProfit],
-            ['Estimated income tax', incomeTax]
-          ],
-          guidance: ENTITY_GUIDANCE[business.type] || []
-        };
-      }
-
-      const taxableIncome = Math.max(0, profit - TAX_CONSTANTS.personalAllowance);
-      const incomeTax = calculateIncomeTax(taxableIncome);
-      const class4Base = Math.max(0, Math.min(profit, TAX_CONSTANTS.basicRateLimit) - TAX_CONSTANTS.personalAllowance);
-      const class4Higher = Math.max(0, profit - TAX_CONSTANTS.basicRateLimit);
-      const class4Ni = (class4Base * TAX_CONSTANTS.selfEmployedClass4Main) + (class4Higher * TAX_CONSTANTS.selfEmployedClass4Higher);
-      const class2Ni = profit > TAX_CONSTANTS.selfEmployedClass2Threshold ? TAX_CONSTANTS.selfEmployedClass2Weekly * 52 : 0;
-      return {
-        headline: 'Self-employment tax estimate',
-        totalTax: incomeTax + class4Ni + class2Ni,
-        details: [
-          ['Net profit', profit],
-          ['Income tax', incomeTax],
-          ['Class 4 NI', class4Ni],
-          ['Class 2 NI', class2Ni],
-          ['After-tax income', Math.max(0, profit - incomeTax - class4Ni - class2Ni)]
-        ],
-        guidance: ENTITY_GUIDANCE[business.type] || []
-      };
-    }
-
-    function calculatePortfolioTotals() {
-      return state.businesses.reduce((totals, business) => {
-        const summary = profitSummary(business.id);
-        const tax = estimateTaxForBusiness(business.id).totalTax;
-        totals.revenue += summary.revenue;
-        totals.inventoryValue += summary.inventoryValue;
-        totals.tax += tax;
-        return totals;
-      }, { revenue: 0, inventoryValue: 0, tax: 0 });
-    }
-
-    function renderSelectOptions() {
-      const businessOptions = state.businesses.map((business) => `<option value="${business.id}">${business.name}</option>`).join('');
-      ['activeBusinessSelect', 'userBusinessId', 'inventoryBusinessId', 'movementBusinessId', 'transactionBusinessId'].forEach((id) => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.innerHTML = businessOptions;
-        }
-      });
-
-      document.getElementById('activeBusinessSelect').value = state.activeBusinessId;
-      document.getElementById('userBusinessId').value = state.activeBusinessId;
-      document.getElementById('inventoryBusinessId').value = state.activeBusinessId;
-      document.getElementById('movementBusinessId').value = state.activeBusinessId;
-      document.getElementById('transactionBusinessId').value = state.activeBusinessId;
-
-      populateMovementItems();
-    }
-
-    function populateMovementItems() {
-      const businessId = document.getElementById('movementBusinessId').value || state.activeBusinessId;
-      const items = getBusinessInventory(businessId);
-      const movementItemId = document.getElementById('movementItemId');
-      if (!movementItemId) return;
-      if (!items.length) {
-        movementItemId.innerHTML = '<option value="">No inventory items</option>';
-        return;
-      }
-      movementItemId.innerHTML = items.map((item) => `<option value="${item.id}">${inventoryItemLabel(item)}</option>`).join('');
-      syncMovementValueToItem();
-    }
-
-    function syncMovementValueToItem() {
-      const itemId = document.getElementById('movementItemId').value;
-      const item = state.inventory.find((entry) => entry.id === itemId);
-      const movementType = document.getElementById('movementType').value;
-      if (!item) return;
-      document.getElementById('movementUnitValue').value = movementType === 'sale' ? item.unitPrice.toFixed(2) : item.unitCost.toFixed(2);
-    }
-
-    function renderHero() {
-      const activeBusiness = getBusiness();
-      const portfolio = calculatePortfolioTotals();
-      const lowStockCount = state.inventory.filter((item) => item.quantity <= item.reorderLevel).length;
-      const businessTypes = new Set(state.businesses.map((business) => business.type)).size;
-
-      document.getElementById('activeBusinessName').textContent = activeBusiness ? activeBusiness.name : 'No business';
-      document.getElementById('activeBusinessMeta').textContent = activeBusiness ? `${labelEntityType(activeBusiness.type)} • ${activeBusiness.taxRegion} • ${activeBusiness.currency}` : '-';
-      document.getElementById('portfolioRevenue').textContent = formatCurrency(portfolio.revenue);
-      document.getElementById('portfolioInventoryValue').textContent = formatCurrency(portfolio.inventoryValue);
-      document.getElementById('portfolioTax').textContent = formatCurrency(portfolio.tax);
-      document.getElementById('lowStockCount').textContent = String(lowStockCount);
-      document.getElementById('teamMemberCount').textContent = String(state.users.length);
-      document.getElementById('monthEndCount').textContent = String(generateReadinessChecks().filter((check) => !check.complete).length);
-      document.getElementById('businessTypeCount').textContent = String(businessTypes);
-    }
-
-    function renderPortfolioOverview() {
-      const healthList = document.getElementById('businessHealthList');
-      const entries = state.businesses.map((business) => {
-        const summary = profitSummary(business.id);
-        const tax = estimateTaxForBusiness(business.id).totalTax;
-        return `
-          <div class="business-card ${business.id === state.activeBusinessId ? 'active' : ''}">
-            <div class="split">
-              <div>
-                <h3>${business.name}</h3>
-                <p class="small">${labelEntityType(business.type)} • ${business.vatRegistered ? 'VAT registered' : 'Not VAT registered'}</p>
-              </div>
-              <button class="ghost-button" type="button" data-switch-business="${business.id}">Focus</button>
-            </div>
-            <div class="kpi-inline" style="margin-top: 10px;">
-              <span class="pill">Revenue ${formatCurrency(summary.revenue)}</span>
-              <span class="pill">Net profit ${formatCurrency(summary.netProfit)}</span>
-              <span class="pill">Tax ${formatCurrency(tax)}</span>
-            </div>
-          </div>
-        `;
-      });
-      healthList.innerHTML = entries.join('');
-      document.getElementById('businessHealthText').textContent = `${state.businesses.length} entities, ${state.users.length} team members, ${state.inventory.length} inventory lines.`;
-
-      const workflowTimeline = document.getElementById('workflowTimeline');
-      workflowTimeline.innerHTML = [
-        { title: 'Daily posting', text: 'Capture sales, purchases, expenses, and stock movement into one timeline.' },
-        { title: 'Weekly review', text: 'Watch low stock, margin dilution, and VAT exposure by business.' },
-        { title: 'Month-end close', text: 'Review reconciliations, accruals, tax estimate, and approval ownership.' }
-      ].map((item) => `
-        <div class="timeline-item">
-          <strong>${item.title}</strong>
-          <div class="small">${item.text}</div>
-        </div>
-      `).join('');
-    }
-
-    function renderBusinesses() {
-      const list = document.getElementById('businessList');
-      document.getElementById('businessCountBadge').textContent = `${state.businesses.length} businesses`;
-
-      if (!state.businesses.length) {
-        list.innerHTML = '<div class="empty-state">No businesses yet.</div>';
-        return;
-      }
-
-      list.innerHTML = state.businesses.map((business) => {
-        const summary = profitSummary(business.id);
-        return `
-          <div class="business-card ${business.id === state.activeBusinessId ? 'active' : ''}">
-            <div class="split">
-              <div>
-                <h3>${business.name}</h3>
-                <p class="small">${labelEntityType(business.type)} • ${business.taxRegion} • ${business.currency}</p>
-              </div>
-              <div class="badge-row">
-                <span class="badge ${business.vatRegistered ? 'info' : 'warning'}">${business.vatRegistered ? 'VAT registered' : 'No VAT'}</span>
-                <button class="ghost-button" type="button" data-switch-business="${business.id}">Set active</button>
-              </div>
-            </div>
-            <p class="muted">${business.notes || 'No notes yet.'}</p>
-            <div class="kpi-inline" style="margin-top: 10px;">
-              <span class="pill">Ownership ${business.ownershipShare}%</span>
-              <span class="pill">Revenue ${formatCurrency(summary.revenue)}</span>
-              <span class="pill">Net profit ${formatCurrency(summary.netProfit)}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderUsers() {
-      const tbody = document.getElementById('userTableBody');
-      const users = getBusinessUsers();
-      if (!users.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="muted">No users assigned to the active business.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = users.map((user) => `
-        <tr>
-          <td>
-            <strong>${user.name}</strong><br>
-            <span class="small">${user.email}</span>
-          </td>
-          <td>${user.role}</td>
-          <td>${getBusiness(user.businessId)?.name || '-'}</td>
-          <td>${user.responsibilities || '<span class="small">No responsibilities set</span>'}</td>
-        </tr>
-      `).join('');
-    }
-
-    function renderInventory() {
-      const tbody = document.getElementById('inventoryTableBody');
-      const items = getBusinessInventory();
-      document.getElementById('inventoryRegisterMeta').textContent = `${items.length} items for ${getBusiness()?.name || 'the active business'}.`;
-
-      if (!items.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="muted">No inventory items for this business.</td></tr>';
-      } else {
-        tbody.innerHTML = items.map((item) => {
-          const value = item.quantity * item.unitCost;
-          const low = item.quantity <= item.reorderLevel;
-          return `
-            <tr>
-              <td>${item.sku}</td>
-              <td>
-                <strong>${item.name}</strong><br>
-                <span class="small">${item.category}</span>
-              </td>
-              <td>${item.quantity}</td>
-              <td>${formatCurrency(item.unitCost)}</td>
-              <td>${formatCurrency(item.unitPrice)}</td>
-              <td>${formatCurrency(value)}</td>
-              <td><span class="badge ${low ? 'danger' : 'success'}">${low ? 'Reorder soon' : 'Healthy'}</span></td>
-            </tr>
-          `;
-        }).join('');
-      }
-
-      const timeline = document.getElementById('movementTimeline');
-      const movements = state.movements
-        .filter((movement) => movement.businessId === state.activeBusinessId)
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 6);
-
-      if (!movements.length) {
-        timeline.innerHTML = '<div class="empty-state">No stock movements posted yet.</div>';
-      } else {
-        timeline.innerHTML = movements.map((movement) => {
-          const item = state.inventory.find((entry) => entry.id === movement.itemId);
-          return `
-            <div class="timeline-item">
-              <strong>${capitalize(movement.type)} • ${item ? item.name : 'Unknown item'}</strong>
-              <div class="small">${movement.date} • Qty ${movement.quantity} at ${formatCurrency(movement.unitValue)}</div>
-              <div class="small">${movement.note || 'No note provided.'}</div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
-    function renderAccounting() {
-      const summary = profitSummary();
-      const snapshot = document.getElementById('businessSnapshot');
-      snapshot.innerHTML = [
-        ['Revenue', summary.revenue],
-        ['Expenses', summary.expenses],
-        ['COGS', summary.cogs],
-        ['Gross profit', summary.grossProfit],
-        ['Net profit', summary.netProfit],
-        ['Inventory value', summary.inventoryValue],
-        ['Assets posted', summary.assets],
-        ['Liabilities posted', summary.liabilities],
-        ['Equity posted', summary.equity]
-      ].map(([label, value]) => `
-        <div class="list-item">
-          <div class="split">
-            <strong>${label}</strong>
-            <span>${formatCurrency(value)}</span>
-          </div>
-        </div>
-      `).join('');
-
-      const tbody = document.getElementById('transactionTableBody');
-      const transactions = getBusinessTransactions()
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 12);
-
-      if (!transactions.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="muted">No transactions for this business yet.</td></tr>';
-      } else {
-        tbody.innerHTML = transactions.map((transaction) => `
-          <tr>
-            <td>${transaction.date}</td>
-            <td><span class="badge ${typeBadge(transaction.type)}">${capitalize(transaction.type)}</span></td>
-            <td>${transaction.account}</td>
-            <td>${capitalize(transaction.source || 'manual')}</td>
-            <td>${formatCurrency(transaction.amount)}</td>
-            <td>${labelTaxTreatment(transaction.taxTreatment)}</td>
-          </tr>
-        `).join('');
-      }
-
-      const readinessChecks = document.getElementById('readinessChecks');
-      readinessChecks.innerHTML = generateReadinessChecks().map((check) => `
-        <div class="list-item">
-          <div class="split">
-            <div>
-              <h3>${check.title}</h3>
-              <div class="small">${check.text}</div>
-            </div>
-            <span class="badge ${check.complete ? 'success' : 'warning'}">${check.complete ? 'Covered in UI' : 'Backend next'}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function generateReadinessChecks() {
-      const activeUsers = getBusinessUsers().length;
-      const activeInventory = getBusinessInventory().length;
-      const summary = profitSummary();
-      return [
-        {
-          title: 'Multi-business partitioning',
-          text: 'Business selector scopes users, inventory, transactions, and tax output.',
-          complete: state.businesses.length > 1
-        },
-        {
-          title: 'Role-based operating model',
-          text: 'Separate owners, finance managers, bookkeepers, and stock controllers.',
-          complete: activeUsers > 0
-        },
-        {
-          title: 'Inventory controls',
-          text: 'Low stock alerts, restocks, sales, and stock-linked accounting entries.',
-          complete: activeInventory > 0
-        },
-        {
-          title: 'Tax handling',
-          text: 'Entity-aware front-end tax estimate for the selected business profile.',
-          complete: true
-        },
-        {
-          title: 'Need production backend',
-          text: 'Authentication, audit logs, persistent database, and bank integrations still require services.',
-          complete: false
-        },
-        {
-          title: 'Working capital visibility',
-          text: `Current net profit stands at ${formatCurrency(summary.netProfit)} for the active business.`,
-          complete: summary.revenue > 0
-        }
-      ];
-    }
-
-    function renderTax() {
-      const business = getBusiness();
-      const estimate = estimateTaxForBusiness();
-      document.getElementById('taxEstimateMeta').textContent = `${estimate.headline} for ${business.name}.`;
-
-      document.getElementById('taxEstimateBreakdown').innerHTML = estimate.details.map(([label, value]) => `
-        <div class="list-item">
-          <div class="split">
-            <strong>${label}</strong>
-            <span>${typeof value === 'number' ? formatCurrency(value) : value}</span>
-          </div>
-        </div>
-      `).join('') + `
-        <div class="notice success">
-          <strong>Total estimated tax:</strong> ${formatCurrency(estimate.totalTax)}
-        </div>
-      `;
-
-      const guidanceList = document.getElementById('taxGuidanceList');
-      const guidance = estimate.guidance || [];
-      guidanceList.innerHTML = guidance.map((text) => `
-        <div class="list-item">
-          <div class="small">${text}</div>
-        </div>
-      `).join('') + `
-        <div class="notice ${business.vatRegistered ? 'success' : 'warning'}">
-          ${business.vatRegistered
-            ? `VAT registered: monitor taxable turnover and keep stock movement documentation for each sale.`
-            : `Not VAT registered: the portfolio should watch turnover approaching ${formatCurrency(TAX_CONSTANTS.vatThreshold)}.`}
-        </div>
-      `;
-    }
-
-    function renderAll() {
-      if (!state.businesses.length) {
-        state = seedState();
-        saveState();
-      }
-      renderSelectOptions();
-      renderHero();
-      renderPortfolioOverview();
-      renderBusinesses();
-      renderUsers();
-      renderInventory();
-      renderAccounting();
-      renderTax();
-    }
-
-    function labelEntityType(type) {
-      return {
-        sole_trader: 'Sole trader',
-        limited_company: 'Limited company',
-        partnership: 'Partnership',
-        landlord: 'Landlord business'
-      }[type] || type;
-    }
-
-    function labelTaxTreatment(value) {
-      return {
-        standard: 'Standard taxable',
-        zero: 'Zero-rated',
-        exempt: 'Exempt',
-        capital_allowance: 'Capital allowance'
-      }[value] || value;
-    }
-
-    function typeBadge(type) {
-      return {
-        income: 'success',
-        expense: 'danger',
-        cogs: 'warning',
-        asset: 'info',
-        liability: 'primary',
-        equity: 'primary'
-      }[type] || 'primary';
-    }
-
-    function capitalize(value) {
-      return value ? value.charAt(0).toUpperCase() + value.slice(1) : '';
-    }
-
-    function setActiveBusiness(businessId) {
-      state.activeBusinessId = businessId;
-      saveState();
-      renderAll();
-    }
-
-    function addBusiness(event) {
-      event.preventDefault();
-      const business = {
-        id: createId('biz'),
-        name: document.getElementById('businessName').value.trim(),
-        type: document.getElementById('businessType').value,
-        taxRegion: document.getElementById('businessTaxRegion').value.trim(),
-        currency: document.getElementById('businessCurrency').value.trim().toUpperCase(),
-        vatRegistered: document.getElementById('businessVatRegistered').value === 'yes',
-        ownershipShare: Number(document.getElementById('businessOwnershipShare').value || 100),
-        notes: document.getElementById('businessNotes').value.trim()
-      };
-      state.businesses.push(business);
-      state.activeBusinessId = business.id;
-      saveState();
-      event.target.reset();
-      document.getElementById('businessCurrency').value = 'GBP';
-      document.getElementById('businessTaxRegion').value = 'UK';
-      document.getElementById('businessOwnershipShare').value = '100';
-      renderAll();
-    }
-
-    function addUser(event) {
-      event.preventDefault();
-      state.users.push({
-        id: createId('user'),
-        name: document.getElementById('userName').value.trim(),
-        email: document.getElementById('userEmail').value.trim(),
-        role: document.getElementById('userRole').value,
-        businessId: document.getElementById('userBusinessId').value,
-        responsibilities: document.getElementById('userResponsibilities').value.trim()
-      });
-      saveState();
-      event.target.reset();
-      document.getElementById('userBusinessId').value = state.activeBusinessId;
-      renderAll();
-    }
-
-    function addInventory(event) {
-      event.preventDefault();
-      state.inventory.push({
-        id: createId('item'),
-        businessId: document.getElementById('inventoryBusinessId').value,
-        sku: document.getElementById('inventorySku').value.trim(),
-        name: document.getElementById('inventoryName').value.trim(),
-        category: document.getElementById('inventoryCategory').value.trim(),
-        quantity: Number(document.getElementById('inventoryQuantity').value || 0),
-        reorderLevel: Number(document.getElementById('inventoryReorder').value || 0),
-        unitCost: Number(document.getElementById('inventoryCost').value || 0),
-        unitPrice: Number(document.getElementById('inventoryPrice').value || 0),
-        vatRate: Number(document.getElementById('inventoryVatRate').value || 0)
-      });
-      saveState();
-      event.target.reset();
-      document.getElementById('inventoryBusinessId').value = state.activeBusinessId;
-      document.getElementById('inventoryQuantity').value = '0';
-      document.getElementById('inventoryReorder').value = '5';
-      document.getElementById('inventoryCost').value = '0';
-      document.getElementById('inventoryPrice').value = '0';
-      document.getElementById('inventoryVatRate').value = '20';
-      renderAll();
-    }
-
-    function recordMovement(event) {
-      event.preventDefault();
-      const businessId = document.getElementById('movementBusinessId').value;
-      const itemId = document.getElementById('movementItemId').value;
-      const type = document.getElementById('movementType').value;
-      const quantity = Number(document.getElementById('movementQuantity').value || 0);
-      const unitValue = Number(document.getElementById('movementUnitValue').value || 0);
-      const date = document.getElementById('movementDate').value;
-      const note = document.getElementById('movementNote').value.trim();
-      const item = state.inventory.find((entry) => entry.id === itemId);
-
-      if (!item || quantity <= 0) return;
-      if (type === 'sale' && item.quantity < quantity) {
-        alert('Not enough stock available for this sale.');
-        return;
-      }
-
-      if (type === 'restock') {
-        item.quantity += quantity;
-        state.transactions.push({
-          id: createId('txn'),
-          businessId,
-          date,
-          type: 'asset',
-          account: `Inventory purchase • ${item.name}`,
-          amount: quantity * unitValue,
-          note,
-          source: 'inventory',
-          taxTreatment: 'standard'
-        });
-      } else if (type === 'sale') {
-        item.quantity -= quantity;
-        state.transactions.push({
-          id: createId('txn'),
-          businessId,
-          date,
-          type: 'income',
-          account: `Inventory sale • ${item.name}`,
-          amount: quantity * unitValue,
-          note,
-          source: 'inventory',
-          taxTreatment: 'standard'
-        });
-        state.transactions.push({
-          id: createId('txn'),
-          businessId,
-          date,
-          type: 'cogs',
-          account: `Inventory COGS • ${item.name}`,
-          amount: quantity * item.unitCost,
-          note,
-          source: 'inventory',
-          taxTreatment: 'standard'
-        });
-      } else {
-        item.quantity += quantity;
-        state.transactions.push({
-          id: createId('txn'),
-          businessId,
-          date,
-          type: 'asset',
-          account: `Inventory adjustment • ${item.name}`,
-          amount: quantity * item.unitCost,
-          note,
-          source: 'inventory',
-          taxTreatment: 'capital_allowance'
-        });
-      }
-
-      state.movements.unshift({
-        id: createId('move'),
-        businessId,
-        itemId,
-        type,
-        quantity,
-        unitValue,
-        date,
-        note
-      });
-
-      saveState();
-      event.target.reset();
-      document.getElementById('movementBusinessId').value = state.activeBusinessId;
-      document.getElementById('movementDate').value = today();
-      renderAll();
-    }
-
-    function addTransaction(event) {
-      event.preventDefault();
-      state.transactions.push({
-        id: createId('txn'),
-        businessId: document.getElementById('transactionBusinessId').value,
-        date: document.getElementById('transactionDate').value,
-        type: document.getElementById('transactionType').value,
-        account: document.getElementById('transactionAccount').value.trim(),
-        amount: Number(document.getElementById('transactionAmount').value || 0),
-        note: document.getElementById('transactionNote').value.trim(),
-        source: 'manual',
-        taxTreatment: document.getElementById('transactionTaxTreatment').value
-      });
-      saveState();
-      event.target.reset();
-      document.getElementById('transactionBusinessId').value = state.activeBusinessId;
-      document.getElementById('transactionDate').value = today();
-      renderAll();
-    }
-
-    function attachEvents() {
-      document.getElementById('businessForm').addEventListener('submit', addBusiness);
-      document.getElementById('userForm').addEventListener('submit', addUser);
-      document.getElementById('inventoryForm').addEventListener('submit', addInventory);
-      document.getElementById('movementForm').addEventListener('submit', recordMovement);
-      document.getElementById('transactionForm').addEventListener('submit', addTransaction);
-      document.getElementById('activeBusinessSelect').addEventListener('change', (event) => setActiveBusiness(event.target.value));
-      document.getElementById('movementBusinessId').addEventListener('change', populateMovementItems);
-      document.getElementById('movementItemId').addEventListener('change', syncMovementValueToItem);
-      document.getElementById('movementType').addEventListener('change', syncMovementValueToItem);
-      document.getElementById('seedDataButton').addEventListener('click', () => {
-        state = seedState();
-        saveState();
-        renderAll();
-      });
-      document.getElementById('exportStateButton').addEventListener('click', exportState);
-      document.body.addEventListener('click', (event) => {
-        const businessId = event.target.getAttribute('data-switch-business');
-        if (businessId) {
-          setActiveBusiness(businessId);
-        }
-      });
-    }
-
-    function exportState() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'ledgeros-workspace.json';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(link.href);
-    }
-
-    function setDefaultDates() {
-      document.getElementById('movementDate').value = today();
-      document.getElementById('transactionDate').value = today();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      attachEvents();
-      setDefaultDates();
-      renderAll();
-    });
-  </script>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ─── Render all ──────────────────────────────────────── */
+function renderAll() {
+  renderBizSwitcher();
+  renderBizPickList();
+  renderPage(activePage);
+}
+
+/* ═══ GLOBAL ACTIONS ════════════════════════════════════ */
+function exportWorkspace() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ledgeros-workspace-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Workspace exported.');
+}
+
+function resetDemo() {
+  if (!confirm('Reset all data to demo defaults? This cannot be undone.')) return;
+  state = defaultState();
+  persist();
+  renderAll();
+  toast('Demo data restored.');
+}
+
+/* ─── Pre-fill date fields ────────────────────────────── */
+function prefillDates() {
+  const today = new Date().toISOString().slice(0, 10);
+  const d = document.getElementById('pDate');
+  if (d) d.value = today;
+}
+
+/* ─── Wire modal open hooks ───────────────────────────── */
+(function patchOpenModal() {
+  const orig = window.openModal;
+  window.openModal = function(id) {
+    if (id === 'userModal') populateUserBizSelect();
+    if (id === 'movModal')  populateMovItemSelect();
+    if (id === 'postingModal') prefillDates();
+    if (id === 'bizModal') editingBizId = null, document.getElementById('bizModalTitle').textContent = 'New Business';
+    orig(id);
+  };
+})();
+
+/* ═══ BOOT ══════════════════════════════════════════════ */
+(function init() {
+  navigate('dashboard');
+})();
+</script>
 </body>
-</html>
+  </html>
