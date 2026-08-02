@@ -3,2680 +3,2126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Comprehensive tax calculator and financial tracker for UK sole traders - Track income, expenses, depreciation, capital, and optimize tax with HMRC allowances">
-  <meta name="keywords" content="sole trader, tax calculator, UK tax, HMRC, income tracking, expense tracking, depreciation, capital allowances, home office relief, mileage allowance">
-  <title>Sole Trader Tax Calculator & Financial Tracker - UK HMRC</title>
+  <meta name="description" content="Comprehensive accounting workspace for inventory, multi-business operations, team access, and entity-specific tax planning.">
+  <title>LedgerOS - Comprehensive Accounting Workspace</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #f3f5fb;
+      --surface: #ffffff;
+      --surface-alt: #eef2ff;
+      --line: #d9e0f0;
+      --text: #172033;
+      --muted: #5f6b85;
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --success: #0f9d58;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --info: #0ea5e9;
+      --shadow: 0 14px 40px rgba(31, 41, 55, 0.08);
+      --radius: 18px;
     }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 45%, #eef2f7 100%);
+      color: var(--text);
     }
 
-    /* Navigation Header */
-    .nav-header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 15px 30px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .shell {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(243, 245, 251, 0.9);
+      border-bottom: 1px solid rgba(217, 224, 240, 0.8);
     }
 
-    .nav-container {
-      max-width: 1400px;
+    .topbar-inner {
+      max-width: 1500px;
       margin: 0 auto;
+      padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
-    .nav-brand {
-      font-size: 24px;
-      font-weight: bold;
-      color: #667eea;
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .nav-menu {
+    .brand strong {
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav {
       display: flex;
-      gap: 20px;
-      align-items: center;
       flex-wrap: wrap;
-    }
-
-    .nav-link {
-      color: #333;
-      text-decoration: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-
-    .nav-link:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    .auth-buttons {
-      display: flex;
       gap: 10px;
     }
 
-    .btn-login, .btn-logout {
-      padding: 8px 20px;
-      border: none;
-      border-radius: 5px;
+    .nav a,
+    .ghost-button {
+      text-decoration: none;
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+      font-size: 0.92rem;
       cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
     }
 
-    .btn-login {
-      background: #667eea;
+    .nav a:hover,
+    .ghost-button:hover {
+      border-color: var(--line);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      margin-top: 24px;
+      background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.22), transparent 30%), linear-gradient(135deg, #111827 0%, #312e81 55%, #4338ca 100%);
       color: white;
-    }
-
-    .btn-login:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-    }
-
-    .btn-logout {
-      background: #dc3545;
-      color: white;
-      display: none;
-    }
-
-    .btn-logout:hover {
-      background: #c82333;
-      transform: translateY(-2px);
-    }
-
-    /* Main Container */
-    .container {
-      max-width: 1400px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    /* Dashboard Overview */
-    .dashboard-section {
-      background: white;
-      border-radius: 10px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .section-title {
-      font-size: 28px;
-      color: #333;
-      margin-bottom: 20px;
-      border-bottom: 3px solid #667eea;
-      padding-bottom: 10px;
-    }
-
-    .stats-grid {
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: var(--shadow);
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 24px;
     }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 3.5vw, 3.1rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0 0 18px;
+      color: rgba(255, 255, 255, 0.86);
+      max-width: 70ch;
+    }
+
+    .hero-grid,
+    .stats-grid,
+    .panel-grid,
+    .inventory-grid,
+    .detail-grid,
+    .tax-grid,
+    .summary-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 22px; }
+    .panel-grid { grid-template-columns: 1.1fr 1fr; }
+    .inventory-grid { grid-template-columns: 1fr 1fr; }
+    .detail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tax-grid { grid-template-columns: 1.1fr 0.9fr; }
+    .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .glass-card,
+    .panel,
+    .stat-card,
+    .list-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(217, 224, 240, 0.8);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.18);
+      padding: 18px;
+    }
+
+    .panel,
+    .list-card {
+      padding: 22px;
+    }
+
+    .panel h2,
+    .list-card h2,
+    .section-heading h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin: 34px 0 18px;
+    }
+
+    .section-heading p,
+    .panel-header p,
+    .muted {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .panel-header .badge-row { margin-top: 8px; }
 
     .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
+      padding: 20px;
+      background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
     }
 
     .stat-label {
-      font-size: 14px;
-      opacity: 0.9;
+      color: var(--muted);
+      font-size: 0.88rem;
       margin-bottom: 10px;
     }
 
     .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-    }
-
-    /* Xero Connection */
-    .xero-connection {
-      background: white;
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    .xero-btn {
-      background: #13B5EA;
-      color: white;
-      padding: 15px 40px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .xero-btn:hover {
-      background: #0E9FCE;
-      transform: scale(1.05);
-    }
-
-    .connection-status {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: 600;
-    }
-
-    .status-connected {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .status-error {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    /* Content Grid */
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-title {
-      font-size: 22px;
-      color: #333;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Form Elements */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      color: #333;
+      font-size: 1.9rem;
+      font-weight: 700;
       margin-bottom: 8px;
     }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 5px;
-      font-size: 14px;
-      transition: border-color 0.3s;
+    .stat-footnote {
+      color: var(--muted);
+      font-size: 0.88rem;
     }
 
-    input:focus, select:focus, textarea:focus {
+    .badge-row,
+    .pill-row,
+    .workflow-list,
+    .kpi-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      border: 1px solid transparent;
+    }
+
+    .badge.primary { background: rgba(79, 70, 229, 0.14); color: #312e81; }
+    .badge.success { background: rgba(15, 157, 88, 0.14); color: #10683f; }
+    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #9a6700; }
+    .badge.danger { background: rgba(220, 38, 38, 0.14); color: #991b1b; }
+    .badge.info { background: rgba(14, 165, 233, 0.15); color: #0c4a6e; }
+    .pill { background: #f8fafc; border-color: var(--line); }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: rgba(79, 70, 229, 0.45);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
     }
 
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 96px;
     }
 
-    button {
-      background: #667eea;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    button:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: #6c757d;
-    }
-
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-
-    .btn-success {
-      background: #28a745;
-    }
-
-    .btn-success:hover {
-      background: #218838;
-    }
-
-    /* Invoice List */
-    .invoice-list, .expense-list {
-      margin-top: 20px;
-    }
-
-    .item-row {
-      background: #f8f9fa;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 5px;
+    .button-row {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
-      gap: 10px;
     }
 
-    .item-info {
-      flex: 1;
-    }
-
-    .item-title {
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .item-details {
-      font-size: 14px;
-      color: #666;
-    }
-
-    .item-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 15px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .badge-pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .badge-paid {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .badge-overdue {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    /* Tax Optimization */
-    .tax-result {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 5px;
-      margin-top: 20px;
-    }
-
-    .tax-metric {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .tax-metric:last-child {
-      border-bottom: none;
-    }
-
-    .metric-label {
-      color: #666;
-      font-weight: 500;
-    }
-
-    .metric-value {
-      color: #333;
-      font-weight: 600;
-    }
-
-    .metric-value.positive {
-      color: #28a745;
-    }
-
-    .result, .error {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 5px;
-    }
-
-    .result {
-      background: #d4edda;
-      color: #155724;
-      border-left: 5px solid #28a745;
-    }
-
-    .error {
-      background: #f8d7da;
-      color: #721c24;
-      border-left: 5px solid #dc3545;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-close {
-      background: none;
+    .primary-button,
+    .secondary-button,
+    .danger-button {
       border: none;
-      font-size: 28px;
-      color: #666;
+      border-radius: 12px;
+      padding: 12px 16px;
       cursor: pointer;
-      padding: 0;
-      width: 30px;
-      height: 30px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      font-weight: 700;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .nav-container {
-        flex-direction: column;
-        gap: 15px;
-      }
+    .primary-button { background: var(--primary); color: white; }
+    .secondary-button { background: #e2e8f0; color: var(--text); }
+    .danger-button { background: #fee2e2; color: #991b1b; }
 
-      .nav-menu {
-        width: 100%;
-        justify-content: center;
-      }
+    .primary-button:hover,
+    .secondary-button:hover,
+    .danger-button:hover { transform: translateY(-1px); }
 
-      .content-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .item-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .item-actions {
-        width: 100%;
-        justify-content: flex-end;
-      }
+    .table-shell {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
     }
 
-    /* Hidden by default */
-    .hidden {
-      display: none;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      background: white;
     }
 
-    /* Tax Rules Section Additional Styles */
-    .tax-rules-section {
-      margin-top: 30px;
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #edf2f7;
+      text-align: left;
+      font-size: 0.92rem;
+      vertical-align: top;
     }
 
-    .tax-rules-category {
-      margin-bottom: 25px;
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .tax-rules-category h4 {
-      color: #667eea;
-      margin-bottom: 10px;
-      font-size: 18px;
+    tr:last-child td { border-bottom: none; }
+
+    .stack {
+      display: grid;
+      gap: 12px;
     }
 
-    .info-box {
-      padding: 15px;
-      background: #e7f3ff;
-      border-radius: 5px;
-      border-left: 4px solid #667eea;
+    .list-item,
+    .workflow-item,
+    .business-card {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0%, #fafcff 100%);
     }
 
-    .info-box strong {
-      color: #333;
+    .business-card.active {
+      border-color: rgba(79, 70, 229, 0.42);
+      box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.18);
     }
 
-    .info-box ul {
-      margin-top: 10px;
-      padding-left: 20px;
-      color: #333;
+    .business-card h3,
+    .workflow-item h3,
+    .list-item h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
     }
 
-    /* Enhanced form styling */
-    #dynamicTaxFields {
-      max-width: 100%;
+    .split {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
     }
 
-    #entityDescription {
-      border-left: 4px solid #667eea;
+    .empty-state {
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      background: #f8fafc;
     }
 
-    /* Smooth scroll behavior */
-    html {
-      scroll-behavior: smooth;
+    .mini-metric {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--surface-alt);
+      border: 1px solid rgba(79, 70, 229, 0.08);
+    }
+
+    .mini-metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 1.15rem;
+    }
+
+    .notice {
+      padding: 16px 18px;
+      border-radius: 16px;
+      border-left: 4px solid var(--primary);
+      background: #eef2ff;
+      color: #312e81;
+    }
+
+    .notice.warning {
+      border-left-color: var(--warning);
+      background: #fff7ed;
+      color: #9a6700;
+    }
+
+    .notice.success {
+      border-left-color: var(--success);
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timeline-item {
+      padding: 14px 16px;
+      border-left: 3px solid rgba(79, 70, 229, 0.28);
+      background: white;
+      border-radius: 0 14px 14px 0;
+    }
+
+    .small { font-size: 0.84rem; color: var(--muted); }
+    .positive { color: var(--success); }
+    .negative { color: var(--danger); }
+
+    @media (max-width: 1200px) {
+      .hero,
+      .panel-grid,
+      .inventory-grid,
+      .tax-grid,
+      .summary-grid { grid-template-columns: 1fr; }
+
+      .stats-grid,
+      .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .shell,
+      .topbar-inner { padding: 16px; }
+
+      .hero { padding: 24px; }
+
+      .stats-grid,
+      .detail-grid,
+      .hero-grid,
+      .form-grid,
+      .form-grid.three { grid-template-columns: 1fr; }
+
+      .split,
+      .panel-header,
+      .section-heading,
+      .topbar-inner { flex-direction: column; align-items: stretch; }
+
+      table { min-width: 540px; }
     }
   </style>
 </head>
 <body>
-  <!-- Navigation Header -->
-  <nav class="nav-header">
-    <div class="nav-container">
-      <div class="nav-brand">💼 Sole Trader Tax Calculator</div>
-      <div class="nav-menu">
-        <a class="nav-link" onclick="showSection('dashboard')">Dashboard</a>
-        <a class="nav-link" onclick="showSection('income')">Income</a>
-        <a class="nav-link" onclick="showSection('expenses')">Expenses</a>
-        <a class="nav-link" onclick="showSection('depreciation')">Depreciation</a>
-        <a class="nav-link" onclick="showSection('capital')">Capital</a>
-        <a class="nav-link" onclick="showSection('tax')">Tax Estimator</a>
-        <a class="nav-link" onclick="scrollToTaxRules()">Tax Rules</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <strong>LedgerOS</strong>
+        <span>Single-file accounting platform prototype for multi-entity finance teams</span>
       </div>
-      <div class="auth-buttons">
-        <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
-        <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
-        <span id="userDisplay" style="display: none; color: #333; font-weight: 600; padding: 8px;"></span>
-      </div>
+      <nav class="nav">
+        <a href="#overview">Overview</a>
+        <a href="#businesses">Businesses</a>
+        <a href="#users">Users</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#accounting">Accounting</a>
+        <a href="#tax">Tax</a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <div class="container">
-    <!-- Welcome Section -->
-    <div class="xero-connection">
-      <h2 style="margin-bottom: 15px;">💼 Welcome to Sole Trader Tax Calculator</h2>
-      <p style="color: #666; margin-bottom: 20px;">Comprehensive financial tracking and tax optimization for UK sole traders - Track income, expenses, depreciation, capital, and optimize your tax with all HMRC allowances including home office and mileage relief.</p>
-    </div>
-
-    <!-- Dashboard Section -->
-    <div id="dashboardSection" class="dashboard-section">
-      <h2 class="section-title">📊 Dashboard Overview</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Income</div>
-          <div class="stat-value" id="totalIncome">£0</div>
+  <main class="shell">
+    <section id="overview" class="hero">
+      <div>
+        <div class="badge-row">
+          <span class="badge primary">Multi-business</span>
+          <span class="badge success">Inventory-ledger sync</span>
+          <span class="badge info">Role-based collaboration</span>
+          <span class="badge warning">Entity-specific tax</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Expenses</div>
-          <div class="stat-value" id="totalExpenses">£0</div>
+        <h1>Run several businesses, track stock, control access, and estimate tax from one accounting cockpit.</h1>
+        <p>
+          This frontend prototype turns the repository into a single-page accounting workspace with business switching,
+          user access views, inventory controls, integrated transaction entry, and tax handling for sole traders,
+          limited companies, partnerships, and landlords.
+        </p>
+        <div class="button-row">
+          <button class="primary-button" id="seedDataButton" type="button">Reset Demo Data</button>
+          <button class="secondary-button" id="exportStateButton" type="button">Export Workspace JSON</button>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Net Profit</div>
-          <div class="stat-value" id="netProfit">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Estimated Income Tax</div>
-          <div class="stat-value" id="estimatedTax">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">National Insurance</div>
-          <div class="stat-value" id="estimatedNI">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Tax Liability</div>
-          <div class="stat-value" id="totalTax">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Depreciation</div>
-          <div class="stat-value" id="totalDepreciation">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Capital</div>
-          <div class="stat-value" id="totalCapital">£0</div>
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-label">Active Business</div>
+            <div class="stat-value" id="activeBusinessName">-</div>
+            <div class="stat-footnote" id="activeBusinessMeta">-</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Portfolio Revenue</div>
+            <div class="stat-value" id="portfolioRevenue">£0.00</div>
+            <div class="stat-footnote" id="portfolioRevenueMeta">Across all businesses</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Inventory Value</div>
+            <div class="stat-value" id="portfolioInventoryValue">£0.00</div>
+            <div class="stat-footnote" id="portfolioInventoryMeta">At weighted average cost</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Estimated Tax Exposure</div>
+            <div class="stat-value" id="portfolioTax">£0.00</div>
+            <div class="stat-footnote" id="portfolioTaxMeta">Based on current selected entities</div>
+          </article>
         </div>
       </div>
-      
-      <!-- Tax Saving Suggestions -->
-      <div class="card" style="margin-top: 20px;">
-        <h3 class="card-title">💡 Tax Saving Suggestions</h3>
-        <div id="taxSuggestions">
-          <p style="color: #666;">Add income and expenses to see personalized tax-saving suggestions.</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- Income Section -->
-    <div id="incomeSection" class="content-grid hidden">
-      <div class="card">
-        <h3 class="card-title">💰 Add Income Source</h3>
-        <form id="incomeForm">
-          <div class="form-group">
-            <label>Income Source</label>
-            <input type="text" id="incomeSource" placeholder="E.g., Freelance work, Consulting, Sales" required>
-          </div>
-          <div class="form-group">
-            <label>Amount (£)</label>
-            <input type="number" id="incomeAmount" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Date Received</label>
-            <input type="date" id="incomeDate" required>
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="incomeCategory" required>
-              <option value="">Select category</option>
-              <option value="Services">Services</option>
-              <option value="Products">Products</option>
-              <option value="Consulting">Consulting</option>
-              <option value="Commission">Commission</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Notes (Optional)</label>
-            <textarea id="incomeNotes" placeholder="Additional details"></textarea>
-          </div>
-          <button type="submit" class="btn-success">Add Income</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <h3 class="card-title">📋 Income Breakdown</h3>
-        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-          <strong>Total Income: <span id="incomeTotal" style="color: #28a745;">£0.00</span></strong>
+      <aside class="stack">
+        <div class="glass-card">
+          <strong>Business switcher</strong>
+          <p class="small">Select the active entity. All inventory, users, ledger summaries, and tax calculations re-scope automatically.</p>
+          <label>
+            Active business
+            <select id="activeBusinessSelect"></select>
+          </label>
         </div>
-        <div class="expense-list" id="incomeList">
-          <!-- Income items will be added here -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Expenses Section -->
-    <div id="expensesSection" class="content-grid hidden">
-      <div class="card">
-        <h3 class="card-title">💰 Track Expense</h3>
-        <form id="expenseForm">
-          <div class="form-group">
-            <label>Expense Description</label>
-            <input type="text" id="expenseDescription" placeholder="Enter expense description" required>
-          </div>
-          <div class="form-group">
-            <label>Amount (£)</label>
-            <input type="number" id="expenseAmount" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="expenseCategory" required>
-              <option value="">Select category</option>
-              <option value="Office Supplies">Office Supplies</option>
-              <option value="Travel">Travel</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Software">Software</option>
-              <option value="Equipment">Equipment</option>
-              <option value="Home Office">Home Office</option>
-              <option value="Car Mileage">Car Mileage</option>
-              <option value="Professional Fees">Professional Fees</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Training">Training</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="expenseDate" required>
-          </div>
-          
-          <!-- Special fields for specific categories -->
-          <div id="mileageFields" style="display: none;">
-            <div class="form-group">
-              <label>Miles Travelled</label>
-              <input type="number" id="milesTravelled" placeholder="0" step="1">
+        <div class="glass-card">
+          <strong>Control panel</strong>
+          <div class="hero-grid" style="margin-top: 12px;">
+            <div class="mini-metric">
+              Low stock alerts
+              <strong id="lowStockCount">0</strong>
             </div>
-            <div class="form-group">
-              <label>Rate (£/mile)</label>
-              <select id="mileageRate">
-                <option value="0.45">45p (first 10,000 miles)</option>
-                <option value="0.25">25p (over 10,000 miles)</option>
-              </select>
+            <div class="mini-metric">
+              Team members
+              <strong id="teamMemberCount">0</strong>
+            </div>
+            <div class="mini-metric">
+              Open month-end tasks
+              <strong id="monthEndCount">0</strong>
+            </div>
+            <div class="mini-metric">
+              Business types
+              <strong id="businessTypeCount">0</strong>
             </div>
           </div>
-          
-          <div id="homeOfficeFields" style="display: none;">
-            <div class="form-group">
-              <label>Hours Worked from Home</label>
-              <input type="number" id="homeOfficeHours" placeholder="0" step="1">
-            </div>
-            <div class="form-group">
-              <label>Simplified Rate</label>
-              <select id="homeOfficeRate">
-                <option value="2">£2/month (25-50 hours)</option>
-                <option value="10">£10/month (51-100 hours)</option>
-                <option value="18">£18/month (101+ hours)</option>
-              </select>
-            </div>
-          </div>
-          
-          <button type="submit" class="btn-success">Add Expense</button>
-        </form>
-      </div>
+        </div>
+      </aside>
+    </section>
 
-      <div class="card">
-        <h3 class="card-title">📊 Expense List</h3>
-        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-          <strong>Total Expenses: <span id="expenseTotal" style="color: #dc3545;">£0.00</span></strong>
-        </div>
-        <div class="expense-list" id="expenseList">
-          <!-- Sample expenses will be added here -->
-        </div>
+    <div class="section-heading">
+      <div>
+        <h2>Portfolio overview</h2>
+        <p>Executive KPIs update whenever you add stock, team members, or accounting activity.</p>
       </div>
     </div>
 
-    <!-- Depreciation Section -->
-    <div id="depreciationSection" class="content-grid hidden">
-      <div class="card">
-        <h3 class="card-title">📉 Add Capital Asset for Depreciation</h3>
-        <form id="depreciationForm">
-          <div class="form-group">
-            <label>Asset Name</label>
-            <input type="text" id="assetName" placeholder="E.g., Computer, Vehicle, Machinery" required>
+    <section class="detail-grid">
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Business health</h2>
+            <p id="businessHealthText">-</p>
           </div>
-          <div class="form-group">
-            <label>Purchase Price (£)</label>
-            <input type="number" id="assetCost" placeholder="0.00" step="0.01" required>
+        </div>
+        <div class="stack" id="businessHealthList"></div>
+      </article>
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Workflow controls</h2>
+            <p>Built-in operational checklists for close, compliance, and approvals.</p>
           </div>
-          <div class="form-group">
-            <label>Purchase Date</label>
-            <input type="date" id="assetDate" required>
+        </div>
+        <div class="timeline" id="workflowTimeline"></div>
+      </article>
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Cross-module coverage</h2>
+            <p>What the prototype already models inside a single file.</p>
           </div>
-          <div class="form-group">
-            <label>Depreciation Method</label>
-            <select id="depreciationMethod" required>
-              <option value="">Select method</option>
-              <option value="AIA">Annual Investment Allowance (AIA) - 100%</option>
-              <option value="WDA">Writing Down Allowance (WDA) - 18%</option>
-              <option value="SBA">Structures & Buildings Allowance - 3%</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="assetCategory" required>
-              <option value="">Select category</option>
-              <option value="Equipment">Equipment</option>
-              <option value="Vehicles">Vehicles</option>
-              <option value="Computers">Computers</option>
-              <option value="Machinery">Machinery</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Buildings">Buildings</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Notes (Optional)</label>
-            <textarea id="assetNotes" placeholder="Additional details"></textarea>
-          </div>
-          <button type="submit" class="btn-success">Add Asset</button>
-        </form>
-      </div>
+        </div>
+        <div class="workflow-list">
+          <span class="pill">General ledger</span>
+          <span class="pill">Inventory valuation</span>
+          <span class="pill">Role assignments</span>
+          <span class="pill">Entity-aware tax</span>
+          <span class="pill">Business switching</span>
+          <span class="pill">Sales and restock flows</span>
+          <span class="pill">Month-end monitoring</span>
+          <span class="pill">Local persistence</span>
+        </div>
+      </article>
+    </section>
 
-      <div class="card">
-        <h3 class="card-title">📊 Depreciation Summary</h3>
-        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-          <strong>Total Assets Value: <span id="assetsTotal" style="color: #667eea;">£0.00</span></strong><br>
-          <strong>Current Year Depreciation: <span id="depreciationTotal" style="color: #dc3545;">£0.00</span></strong>
-        </div>
-        <div class="expense-list" id="depreciationList">
-          <!-- Depreciation items will be added here -->
-        </div>
+    <div class="section-heading" id="businesses">
+      <div>
+        <h2>Multi-business workspace</h2>
+        <p>Create separate legal entities with their own tax profile, currency, VAT posture, and ownership model.</p>
       </div>
     </div>
 
-    <!-- Capital Section -->
-    <div id="capitalSection" class="content-grid hidden">
-      <div class="card">
-        <h3 class="card-title">💎 Add Capital / Investment</h3>
-        <form id="capitalForm">
-          <div class="form-group">
-            <label>Capital Item</label>
-            <input type="text" id="capitalName" placeholder="E.g., Owner's Capital, Investment, Retained Profit" required>
+    <section class="panel-grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Add business</h2>
+            <p>Supports sole traders, companies, partnerships, and landlords.</p>
           </div>
-          <div class="form-group">
-            <label>Amount (£)</label>
-            <input type="number" id="capitalAmount" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="capitalDate" required>
-          </div>
-          <div class="form-group">
-            <label>Type</label>
-            <select id="capitalType" required>
-              <option value="">Select type</option>
-              <option value="Owner Capital">Owner's Capital</option>
-              <option value="Investment">Investment</option>
-              <option value="Retained Profit">Retained Profit</option>
-              <option value="Loan">Loan</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Notes (Optional)</label>
-            <textarea id="capitalNotes" placeholder="Additional details"></textarea>
-          </div>
-          <button type="submit" class="btn-success">Add Capital</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <h3 class="card-title">📋 Capital Summary</h3>
-        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-          <strong>Total Capital: <span id="capitalTotal" style="color: #28a745;">£0.00</span></strong>
         </div>
-        <div class="expense-list" id="capitalList">
-          <!-- Capital items will be added here -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Tax Optimization Section -->
-    <div id="taxSection" class="dashboard-section hidden">
-      <h2 class="section-title">💼 Sole Trader Tax Estimator & Optimizer</h2>
-      <p style="color: #666; margin-bottom: 20px;">Calculate your tax liability and discover optimization opportunities with HMRC reliefs and allowances</p>
-      
-      <!-- Quick Tax Calculation -->
-      <div class="card" style="margin-bottom: 20px;">
-        <h3 class="card-title">🧮 Quick Tax Calculation</h3>
-        <button type="button" class="btn-success" onclick="calculateTaxFromData()" style="width: 100%;">
-          Calculate Tax from Current Data
-        </button>
-      </div>
-
-      <!-- Tax Relief & Allowances -->
-      <div class="card" style="margin-bottom: 20px;">
-        <h3 class="card-title">💡 Tax Reliefs & Allowances</h3>
-        <form id="taxReliefForm">
-          <div class="form-group">
+        <form id="businessForm">
+          <div class="form-grid">
             <label>
-              <input type="checkbox" id="useHomeOfficeRelief"> Use Home Office Relief
+              Business name
+              <input type="text" id="businessName" placeholder="Northwind Studio" required>
             </label>
-            <p style="font-size: 12px; color: #666; margin-left: 20px;">
-              Simplified flat rate: £2-£18/month depending on hours worked
-            </p>
-          </div>
-          
-          <div id="homeOfficeReliefDetails" style="display: none; margin-left: 20px;">
-            <div class="form-group">
-              <label>Monthly Hours Worked from Home</label>
-              <input type="number" id="homeOfficeMonthlyHours" placeholder="100" step="1">
-            </div>
-          </div>
-
-          <div class="form-group">
             <label>
-              <input type="checkbox" id="useMileageAllowance"> Use Mileage Allowance Relief
+              Entity type
+              <select id="businessType" required>
+                <option value="sole_trader">Sole trader</option>
+                <option value="limited_company">Limited company</option>
+                <option value="partnership">Partnership</option>
+                <option value="landlord">Landlord / property business</option>
+              </select>
             </label>
-            <p style="font-size: 12px; color: #666; margin-left: 20px;">
-              45p per mile (first 10,000), 25p per mile (thereafter)
-            </p>
+            <label>
+              Tax region
+              <input type="text" id="businessTaxRegion" placeholder="UK" value="UK" required>
+            </label>
+            <label>
+              Base currency
+              <input type="text" id="businessCurrency" placeholder="GBP" value="GBP" maxlength="3" required>
+            </label>
+            <label>
+              VAT registered
+              <select id="businessVatRegistered">
+                <option value="yes">Yes</option>
+                <option value="no" selected>No</option>
+              </select>
+            </label>
+            <label>
+              Ownership / profit share %
+              <input type="number" id="businessOwnershipShare" value="100" min="1" max="100" required>
+            </label>
           </div>
-          
-          <div id="mileageAllowanceDetails" style="display: none; margin-left: 20px;">
-            <div class="form-group">
-              <label>Annual Business Miles</label>
-              <input type="number" id="annualBusinessMiles" placeholder="5000" step="1">
-            </div>
+          <label>
+            Operating notes
+            <textarea id="businessNotes" placeholder="Short notes about approvals, payroll, filing deadlines, inventory method, or exemptions."></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Add business</button>
           </div>
-
-          <div class="form-group">
-            <label>Additional Allowable Expenses (£)</label>
-            <input type="number" id="additionalExpenses" placeholder="0.00" step="0.01" value="0">
-            <p style="font-size: 12px; color: #666;">E.g., Professional subscriptions, training costs</p>
-          </div>
-          
-          <button type="button" class="btn-success" onclick="calculateOptimizedTax()" style="margin-top: 15px;">
-            Calculate Optimized Tax
-          </button>
         </form>
-      </div>
+      </article>
 
-      <!-- Tax Results -->
-      <div id="taxResults" class="card" style="display: none;">
-        <h3 class="card-title">📊 Tax Calculation Results</h3>
-        <div id="taxBreakdown"></div>
-      </div>
-
-      <!-- Tax Rules & Information Section -->
-      <div class="card" style="margin-top: 30px;">
-        <h3 class="card-title">📚 UK HMRC Tax Rules & Information (2024/25)</h3>
-        <div id="taxRulesContent">
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">Income Tax Allowances & Rates</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Personal Allowance</span>
-              <span class="metric-value">£12,570</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Basic Rate (20%)</span>
-              <span class="metric-value">£12,571 - £50,270</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Higher Rate (40%)</span>
-              <span class="metric-value">£50,271 - £125,140</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Additional Rate (45%)</span>
-              <span class="metric-value">Over £125,140</span>
-            </div>
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Business directory</h2>
+            <p>Switch between entities without losing local state.</p>
           </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">National Insurance (NI) Contributions</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Class 1 (Employees) - 12%</span>
-              <span class="metric-value">£12,570 - £50,270</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Class 1 (Employees) - 2%</span>
-              <span class="metric-value">Over £50,270</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Class 2 (Self-Employed)</span>
-              <span class="metric-value">£3.45/week if profits over £6,725</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Class 4 (Self-Employed) - 9%</span>
-              <span class="metric-value">£12,570 - £50,270</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Class 4 (Self-Employed) - 2%</span>
-              <span class="metric-value">Over £50,270</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">Corporation Tax</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Small Profits Rate (19%)</span>
-              <span class="metric-value">Up to £50,000</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Marginal Rate</span>
-              <span class="metric-value">£50,001 - £250,000</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Main Rate (25%)</span>
-              <span class="metric-value">Over £250,000</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">Capital Gains Tax (CGT)</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Annual Exemption</span>
-              <span class="metric-value">£3,000 (2024/25)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Basic Rate Taxpayer</span>
-              <span class="metric-value">10% (18% property)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Higher/Additional Rate</span>
-              <span class="metric-value">20% (24% property)</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">VAT Rates</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Standard Rate</span>
-              <span class="metric-value">20%</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Reduced Rate</span>
-              <span class="metric-value">5% (e.g., domestic fuel, children's car seats)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Zero Rate</span>
-              <span class="metric-value">0% (e.g., most food, books, children's clothes)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">VAT Registration Threshold</span>
-              <span class="metric-value">£90,000 annual turnover</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">Withholding Tax (WHT)</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Interest Payments</span>
-              <span class="metric-value">20% (unless treaty relief applies)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Royalty Payments</span>
-              <span class="metric-value">20% (unless treaty relief applies)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Dividend Payments</span>
-              <span class="metric-value">Generally 0% (varies by treaty)</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 25px;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">Key Allowances & Reliefs</h4>
-            <div class="tax-metric">
-              <span class="metric-label">Trading Allowance</span>
-              <span class="metric-value">£1,000 (self-employed/sole traders)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Property Allowance</span>
-              <span class="metric-value">£1,000 (landlords)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Dividend Allowance</span>
-              <span class="metric-value">£500 (2024/25)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Personal Savings Allowance</span>
-              <span class="metric-value">£1,000 (basic) / £500 (higher) / £0 (additional)</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Marriage Allowance</span>
-              <span class="metric-value">£1,260 transferable</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Pension Tax Relief</span>
-              <span class="metric-value">Up to £60,000 annual allowance</span>
-            </div>
-          </div>
-
-          <div style="padding: 15px; background: #e7f3ff; border-radius: 5px; border-left: 4px solid #667eea;">
-            <strong>ℹ️ Important Notes:</strong>
-            <ul style="margin-top: 10px; padding-left: 20px; color: #333;">
-              <li>Tax rates and allowances are for the 2024/25 tax year</li>
-              <li>Scottish Income Tax rates may differ</li>
-              <li>Welsh Income Tax rates may have variations</li>
-              <li>Always consult HMRC guidance or a tax professional for specific advice</li>
-              <li>Deadline for Self Assessment: 31 January following the tax year</li>
-              <li>Corporation Tax payment: 9 months and 1 day after accounting period end</li>
-            </ul>
+          <div class="badge-row">
+            <span class="badge info" id="businessCountBadge">0 businesses</span>
           </div>
         </div>
+        <div class="stack" id="businessList"></div>
+      </article>
+    </section>
+
+    <div class="section-heading" id="users">
+      <div>
+        <h2>Multi-user accounts</h2>
+        <p>Simulate role-based access across the portfolio with per-business assignments and responsibilities.</p>
       </div>
     </div>
-  </div>
+
+    <section class="panel-grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Add team member</h2>
+            <p>Assign finance owners, operators, and approvers to one or more businesses.</p>
+          </div>
+        </div>
+        <form id="userForm">
+          <div class="form-grid">
+            <label>
+              Full name
+              <input type="text" id="userName" placeholder="Ada Lovelace" required>
+            </label>
+            <label>
+              Email
+              <input type="email" id="userEmail" placeholder="ada@example.com" required>
+            </label>
+            <label>
+              Role
+              <select id="userRole" required>
+                <option value="Owner">Owner</option>
+                <option value="Finance Manager">Finance Manager</option>
+                <option value="Inventory Controller">Inventory Controller</option>
+                <option value="Bookkeeper">Bookkeeper</option>
+                <option value="Tax Advisor">Tax Advisor</option>
+                <option value="Auditor">Auditor</option>
+              </select>
+            </label>
+            <label>
+              Assigned business
+              <select id="userBusinessId"></select>
+            </label>
+          </div>
+          <label>
+            Responsibilities
+            <textarea id="userResponsibilities" placeholder="e.g. approve purchases, close month-end, maintain VAT records"></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Add team member</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Access matrix</h2>
+            <p>Who can operate within the selected entity.</p>
+          </div>
+        </div>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Business</th>
+                <th>Responsibilities</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <div class="section-heading" id="inventory">
+      <div>
+        <h2>Inventory management</h2>
+        <p>Track stock on hand, reorder thresholds, margin by SKU, and accounting impact of purchases and sales.</p>
+      </div>
+    </div>
+
+    <section class="inventory-grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Add inventory item</h2>
+            <p>Each item belongs to a business and carries cost, price, and reorder policy.</p>
+          </div>
+        </div>
+        <form id="inventoryForm">
+          <div class="form-grid three">
+            <label>
+              Business
+              <select id="inventoryBusinessId"></select>
+            </label>
+            <label>
+              SKU
+              <input type="text" id="inventorySku" placeholder="SKU-1001" required>
+            </label>
+            <label>
+              Item name
+              <input type="text" id="inventoryName" placeholder="Wireless Keyboard" required>
+            </label>
+            <label>
+              Category
+              <input type="text" id="inventoryCategory" placeholder="Peripherals" required>
+            </label>
+            <label>
+              Quantity on hand
+              <input type="number" id="inventoryQuantity" min="0" value="0" required>
+            </label>
+            <label>
+              Reorder level
+              <input type="number" id="inventoryReorder" min="0" value="5" required>
+            </label>
+            <label>
+              Unit cost (£)
+              <input type="number" id="inventoryCost" step="0.01" min="0" value="0" required>
+            </label>
+            <label>
+              Unit sale price (£)
+              <input type="number" id="inventoryPrice" step="0.01" min="0" value="0" required>
+            </label>
+            <label>
+              VAT rate %
+              <input type="number" id="inventoryVatRate" step="0.01" min="0" value="20" required>
+            </label>
+          </div>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Add inventory item</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Record stock movement</h2>
+            <p>Posting sales and restocks automatically updates inventory and ledger activity.</p>
+          </div>
+        </div>
+        <form id="movementForm">
+          <div class="form-grid">
+            <label>
+              Business
+              <select id="movementBusinessId"></select>
+            </label>
+            <label>
+              Inventory item
+              <select id="movementItemId"></select>
+            </label>
+            <label>
+              Movement type
+              <select id="movementType">
+                <option value="restock">Restock purchase</option>
+                <option value="sale">Sale / issue stock</option>
+                <option value="adjustment">Manual adjustment</option>
+              </select>
+            </label>
+            <label>
+              Quantity
+              <input type="number" id="movementQuantity" min="1" value="1" required>
+            </label>
+            <label>
+              Unit value (£)
+              <input type="number" id="movementUnitValue" step="0.01" min="0" value="0" required>
+            </label>
+            <label>
+              Movement date
+              <input type="date" id="movementDate" required>
+            </label>
+          </div>
+          <label>
+            Note
+            <textarea id="movementNote" placeholder="PO number, sales channel, stock write-off reason, etc."></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Post movement</button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section class="summary-grid" style="margin-top: 18px;">
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Inventory register</h2>
+            <p id="inventoryRegisterMeta">Current stock and margin posture for the active business.</p>
+          </div>
+        </div>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Cost</th>
+                <th>Price</th>
+                <th>Value</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Recent inventory movements</h2>
+            <p>Last six stock-affecting events with automatic accounting context.</p>
+          </div>
+        </div>
+        <div class="timeline" id="movementTimeline"></div>
+      </article>
+    </section>
+
+    <div class="section-heading" id="accounting">
+      <div>
+        <h2>Accounting & subledger entry</h2>
+        <p>Post manual income, expense, equity, asset, liability, and COGS transactions for any business.</p>
+      </div>
+    </div>
+
+    <section class="panel-grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Post transaction</h2>
+            <p>Use manual posting for fees, payroll, capital injections, loans, and tax adjustments.</p>
+          </div>
+        </div>
+        <form id="transactionForm">
+          <div class="form-grid three">
+            <label>
+              Business
+              <select id="transactionBusinessId"></select>
+            </label>
+            <label>
+              Date
+              <input type="date" id="transactionDate" required>
+            </label>
+            <label>
+              Entry type
+              <select id="transactionType" required>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+                <option value="cogs">COGS</option>
+                <option value="asset">Asset</option>
+                <option value="liability">Liability</option>
+                <option value="equity">Equity</option>
+              </select>
+            </label>
+            <label>
+              Account / category
+              <input type="text" id="transactionAccount" placeholder="Software subscriptions" required>
+            </label>
+            <label>
+              Amount (£)
+              <input type="number" id="transactionAmount" min="0" step="0.01" required>
+            </label>
+            <label>
+              Tax treatment
+              <select id="transactionTaxTreatment">
+                <option value="standard">Standard taxable</option>
+                <option value="zero">Zero-rated</option>
+                <option value="exempt">Exempt</option>
+                <option value="capital_allowance">Capital allowance</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Notes
+            <textarea id="transactionNote" placeholder="Describe vendor, customer, supporting document, or accrual rationale."></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Post transaction</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Active business snapshot</h2>
+            <p>Live numbers for the currently selected entity.</p>
+          </div>
+        </div>
+        <div class="stack" id="businessSnapshot"></div>
+      </article>
+    </section>
+
+    <section class="summary-grid" style="margin-top: 18px;">
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Ledger feed</h2>
+            <p>Most recent postings across manual entries and inventory-triggered transactions.</p>
+          </div>
+        </div>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Account</th>
+                <th>Source</th>
+                <th>Amount</th>
+                <th>Tax</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Readiness checks</h2>
+            <p>Flags for scaling this UI into a full accounting platform.</p>
+          </div>
+        </div>
+        <div id="readinessChecks" class="stack"></div>
+      </article>
+    </section>
+
+    <div class="section-heading" id="tax">
+      <div>
+        <h2>Tax handling by business type</h2>
+        <p>Estimated liabilities adapt to the active entity profile using front-end only calculation logic.</p>
+      </div>
+    </div>
+
+    <section class="tax-grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Tax estimate</h2>
+            <p id="taxEstimateMeta">Entity-aware estimate for the selected business.</p>
+          </div>
+        </div>
+        <div class="stack" id="taxEstimateBreakdown"></div>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Entity guidance</h2>
+            <p>Operational pointers for tax, compliance, and scaling decisions.</p>
+          </div>
+        </div>
+        <div class="stack" id="taxGuidanceList"></div>
+      </article>
+    </section>
+
+    <section class="summary-grid" style="margin: 18px 0 40px;">
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Platform roadmap inside this UI</h2>
+            <p>Frontend modules included to guide a later backend build-out.</p>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="notice success">Businesses, users, stock, tax, and ledger activity are persisted to <strong>localStorage</strong> so the workspace survives refreshes.</div>
+          <div class="notice">The prototype intentionally keeps logic in one file to match the requirement, but the data model mirrors future backend services: tenants, users, inventory, movements, and transactions.</div>
+        </div>
+      </article>
+
+      <article class="list-card">
+        <div class="panel-header">
+          <div>
+            <h2>Workspace export</h2>
+            <p>Use the export button in the hero to capture the full local state as JSON.</p>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="notice warning">This is a frontend-only prototype. No server authentication, audit log, or database isolation exists yet.</div>
+          <div class="workflow-list">
+            <span class="pill">Future API</span>
+            <span class="pill">Tenant auth</span>
+            <span class="pill">Purchase orders</span>
+            <span class="pill">Sales invoices</span>
+            <span class="pill">Bank feeds</span>
+            <span class="pill">Approval engine</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
 
   <script>
-    // Global state
-    let isLoggedIn = false;
-    let income = [];
-    let expenses = [];
-    let depreciation = [];
-    let capital = [];
-    let incomeIdCounter = 1;
-    let expenseIdCounter = 1;
-    let depreciationIdCounter = 1;
-    let capitalIdCounter = 1;
+    const STORAGE_KEY = 'ledgeros-workspace-v1';
+    const GBP = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 
-    // Initialize app
-    function init() {
-      loadSampleData();
-      showSection('dashboard');
-      updateFinancialStats();
-      setupEventListeners();
-    }
-    
-    // Setup event listeners
-    function setupEventListeners() {
-      // Category change listeners for expenses
-      const expenseCategoryEl = document.getElementById('expenseCategory');
-      if (expenseCategoryEl) {
-        expenseCategoryEl.addEventListener('change', function() {
-          const mileageFields = document.getElementById('mileageFields');
-          const homeOfficeFields = document.getElementById('homeOfficeFields');
-          
-          if (this.value === 'Car Mileage') {
-            mileageFields.style.display = 'block';
-            homeOfficeFields.style.display = 'none';
-          } else if (this.value === 'Home Office') {
-            homeOfficeFields.style.display = 'block';
-            mileageFields.style.display = 'none';
-          } else {
-            mileageFields.style.display = 'none';
-            homeOfficeFields.style.display = 'none';
-          }
-        });
-      }
-      
-      // Tax relief checkboxes
-      const homeOfficeReliefCb = document.getElementById('useHomeOfficeRelief');
-      if (homeOfficeReliefCb) {
-        homeOfficeReliefCb.addEventListener('change', function() {
-          document.getElementById('homeOfficeReliefDetails').style.display = 
-            this.checked ? 'block' : 'none';
-        });
-      }
-      
-      const mileageAllowanceCb = document.getElementById('useMileageAllowance');
-      if (mileageAllowanceCb) {
-        mileageAllowanceCb.addEventListener('change', function() {
-          document.getElementById('mileageAllowanceDetails').style.display = 
-            this.checked ? 'block' : 'none';
-        });
-      }
-      
-      // Income form
-      const incomeForm = document.getElementById('incomeForm');
-      if (incomeForm) {
-        incomeForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const newIncome = {
-            id: incomeIdCounter++,
-            source: document.getElementById('incomeSource').value,
-            amount: parseFloat(document.getElementById('incomeAmount').value),
-            category: document.getElementById('incomeCategory').value,
-            date: document.getElementById('incomeDate').value,
-            notes: document.getElementById('incomeNotes').value
-          };
-
-          income.push(newIncome);
-          renderIncome();
-          updateFinancialStats();
-          this.reset();
-          showNotification('Income added successfully!', 'success');
-        });
-      }
-      
-      // Expense form
-      const expenseForm = document.getElementById('expenseForm');
-      if (expenseForm) {
-        expenseForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          let amount = parseFloat(document.getElementById('expenseAmount').value);
-          const category = document.getElementById('expenseCategory').value;
-          
-          // Calculate mileage amount if applicable
-          if (category === 'Car Mileage') {
-            const miles = parseFloat(document.getElementById('milesTravelled').value) || 0;
-            const rate = parseFloat(document.getElementById('mileageRate').value);
-            amount = miles * rate;
-          }
-          
-          // Calculate home office amount if applicable
-          if (category === 'Home Office') {
-            const hours = parseFloat(document.getElementById('homeOfficeHours').value) || 0;
-            const rate = parseFloat(document.getElementById('homeOfficeRate').value);
-            amount = rate; // Monthly rate
-          }
-          
-          const newExpense = {
-            id: expenseIdCounter++,
-            description: document.getElementById('expenseDescription').value,
-            amount: amount,
-            category: category,
-            date: document.getElementById('expenseDate').value
-          };
-
-          expenses.push(newExpense);
-          renderExpenses();
-          updateFinancialStats();
-          this.reset();
-          showNotification('Expense added successfully!', 'success');
-        });
-      }
-      
-      // Depreciation form
-      const depreciationForm = document.getElementById('depreciationForm');
-      if (depreciationForm) {
-        depreciationForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const cost = parseFloat(document.getElementById('assetCost').value);
-          const method = document.getElementById('depreciationMethod').value;
-          let depreciationAmount = 0;
-          
-          // Calculate depreciation based on method
-          if (method === 'AIA') {
-            depreciationAmount = cost; // 100% in first year
-          } else if (method === 'WDA') {
-            depreciationAmount = cost * 0.18; // 18% per year
-          } else if (method === 'SBA') {
-            depreciationAmount = cost * 0.03; // 3% per year
-          }
-          
-          const newAsset = {
-            id: depreciationIdCounter++,
-            name: document.getElementById('assetName').value,
-            cost: cost,
-            date: document.getElementById('assetDate').value,
-            method: method,
-            category: document.getElementById('assetCategory').value,
-            depreciation: depreciationAmount,
-            notes: document.getElementById('assetNotes').value
-          };
-
-          depreciation.push(newAsset);
-          renderDepreciation();
-          updateFinancialStats();
-          this.reset();
-          showNotification('Asset added successfully!', 'success');
-        });
-      }
-      
-      // Capital form
-      const capitalForm = document.getElementById('capitalForm');
-      if (capitalForm) {
-        capitalForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const newCapital = {
-            id: capitalIdCounter++,
-            name: document.getElementById('capitalName').value,
-            amount: parseFloat(document.getElementById('capitalAmount').value),
-            type: document.getElementById('capitalType').value,
-            date: document.getElementById('capitalDate').value,
-            notes: document.getElementById('capitalNotes').value
-          };
-
-          capital.push(newCapital);
-          renderCapital();
-          updateFinancialStats();
-          this.reset();
-          showNotification('Capital entry added successfully!', 'success');
-        });
-      }
-    }
-
-    // Load sample data
-    function loadSampleData() {
-      income = [
-        { id: 1, source: 'Freelance web development', amount: 15000, category: 'Services', date: '2024-12-15', notes: 'Project for ABC Ltd' },
-        { id: 2, source: 'Consulting services', amount: 8500, category: 'Consulting', date: '2024-12-20', notes: 'Monthly retainer' }
-      ];
-      incomeIdCounter = income.length + 1;
-
-      expenses = [
-        { id: 1, description: 'Office supplies', amount: 250, category: 'Office Supplies', date: '2024-12-01' },
-        { id: 2, description: 'Marketing campaign', amount: 850, category: 'Marketing', date: '2024-12-05' },
-        { id: 3, description: 'Software licenses', amount: 450, category: 'Software', date: '2024-12-10' }
-      ];
-      expenseIdCounter = expenses.length + 1;
-      
-      depreciation = [
-        { id: 1, name: 'Laptop', cost: 1200, date: '2024-01-15', method: 'AIA', category: 'Computers', depreciation: 1200, notes: 'Main work computer' }
-      ];
-      depreciationIdCounter = depreciation.length + 1;
-      
-      capital = [
-        { id: 1, name: 'Owner\'s Capital', amount: 10000, type: 'Owner Capital', date: '2024-01-01', notes: 'Initial investment' }
-      ];
-      capitalIdCounter = capital.length + 1;
-
-      renderIncome();
-      renderExpenses();
-      renderDepreciation();
-      renderCapital();
-    }
-
-    // Authentication
-    function login() {
-      isLoggedIn = true;
-      document.getElementById('loginBtn').style.display = 'none';
-      document.getElementById('logoutBtn').style.display = 'inline-block';
-      document.getElementById('userDisplay').style.display = 'inline-block';
-      document.getElementById('userDisplay').textContent = '👤 John Doe';
-      showNotification('Successfully logged in!', 'success');
-    }
-
-    function logout() {
-      isLoggedIn = false;
-      document.getElementById('loginBtn').style.display = 'inline-block';
-      document.getElementById('logoutBtn').style.display = 'none';
-      document.getElementById('userDisplay').style.display = 'none';
-      showNotification('Successfully logged out!', 'success');
-    }
-
-    // Navigation
-    function showSection(section) {
-      document.getElementById('dashboardSection').classList.add('hidden');
-      document.getElementById('incomeSection').classList.add('hidden');
-      document.getElementById('expensesSection').classList.add('hidden');
-      document.getElementById('depreciationSection').classList.add('hidden');
-      document.getElementById('capitalSection').classList.add('hidden');
-      document.getElementById('taxSection').classList.add('hidden');
-
-      if (section === 'dashboard') {
-        document.getElementById('dashboardSection').classList.remove('hidden');
-      } else if (section === 'income') {
-        document.getElementById('incomeSection').classList.remove('hidden');
-      } else if (section === 'expenses') {
-        document.getElementById('expensesSection').classList.remove('hidden');
-      } else if (section === 'depreciation') {
-        document.getElementById('depreciationSection').classList.remove('hidden');
-      } else if (section === 'capital') {
-        document.getElementById('capitalSection').classList.remove('hidden');
-      } else if (section === 'tax') {
-        document.getElementById('taxSection').classList.remove('hidden');
-      }
-    }
-
-    // Income Management - Render and Delete functions
-    function renderIncome() {
-      const listDiv = document.getElementById('incomeList');
-      const totalDiv = document.getElementById('incomeTotal');
-      
-      const total = income.reduce((sum, item) => sum + item.amount, 0);
-      totalDiv.textContent = `£${total.toFixed(2)}`;
-      
-      if (income.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No income entries yet. Add your first income source!</p>';
-        return;
-      }
-
-      listDiv.innerHTML = income.map(item => `
-        <div class="item-row">
-          <div class="item-info">
-            <div class="item-title">${item.source} - £${item.amount.toFixed(2)}</div>
-            <div class="item-details">
-              Date: ${item.date} | Category: ${item.category}
-              ${item.notes ? '<br>' + item.notes : ''}
-            </div>
-          </div>
-          <div class="item-actions">
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteIncome(${item.id})">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function deleteIncome(id) {
-      if (confirm('Are you sure you want to delete this income entry?')) {
-        income = income.filter(item => item.id !== id);
-        renderIncome();
-        updateFinancialStats();
-        showNotification('Income deleted successfully!', 'success');
-      }
-    }
-
-    // Expense Management - Render and Delete functions
-    function renderExpenses() {
-      const listDiv = document.getElementById('expenseList');
-      const totalDiv = document.getElementById('expenseTotal');
-      
-      const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      totalDiv.textContent = `£${total.toFixed(2)}`;
-      
-      if (expenses.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No expenses yet. Track your first expense!</p>';
-        return;
-      }
-
-      listDiv.innerHTML = expenses.map(expense => `
-        <div class="item-row">
-          <div class="item-info">
-            <div class="item-title">${expense.description} - £${expense.amount.toFixed(2)}</div>
-            <div class="item-details">${expense.category} | ${expense.date}</div>
-          </div>
-          <div class="item-actions">
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteExpense(${expense.id})">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function deleteExpense(id) {
-      if (confirm('Are you sure you want to delete this expense?')) {
-        expenses = expenses.filter(exp => exp.id !== id);
-        renderExpenses();
-        updateFinancialStats();
-        showNotification('Expense deleted successfully!', 'success');
-      }
-    }
-
-    // Depreciation Management - Render and Delete functions
-    function renderDepreciation() {
-      const listDiv = document.getElementById('depreciationList');
-      const assetsTotalDiv = document.getElementById('assetsTotal');
-      const depreciationTotalDiv = document.getElementById('depreciationTotal');
-      
-      const assetsTotal = depreciation.reduce((sum, item) => sum + item.cost, 0);
-      const depreciationTotal = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
-      
-      assetsTotalDiv.textContent = `£${assetsTotal.toFixed(2)}`;
-      depreciationTotalDiv.textContent = `£${depreciationTotal.toFixed(2)}`;
-      
-      if (depreciation.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No capital assets yet. Add your first asset!</p>';
-        return;
-      }
-
-      listDiv.innerHTML = depreciation.map(item => `
-        <div class="item-row">
-          <div class="item-info">
-            <div class="item-title">${item.name} - £${item.cost.toFixed(2)}</div>
-            <div class="item-details">
-              ${item.category} | ${item.method} | Depreciation: £${item.depreciation.toFixed(2)}
-              ${item.notes ? '<br>' + item.notes : ''}
-            </div>
-          </div>
-          <div class="item-actions">
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteDepreciation(${item.id})">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function deleteDepreciation(id) {
-      if (confirm('Are you sure you want to delete this asset?')) {
-        depreciation = depreciation.filter(item => item.id !== id);
-        renderDepreciation();
-        updateFinancialStats();
-        showNotification('Asset deleted successfully!', 'success');
-      }
-    }
-
-    // Capital Management - Render and Delete functions
-    function renderCapital() {
-      const listDiv = document.getElementById('capitalList');
-      const totalDiv = document.getElementById('capitalTotal');
-      
-      const total = capital.reduce((sum, item) => sum + item.amount, 0);
-      totalDiv.textContent = `£${total.toFixed(2)}`;
-      
-      if (capital.length === 0) {
-        listDiv.innerHTML = '<p style="color: #666; text-align: center;">No capital entries yet. Add your first capital item!</p>';
-        return;
-      }
-
-      listDiv.innerHTML = capital.map(item => `
-        <div class="item-row">
-          <div class="item-info">
-            <div class="item-title">${item.name} - £${item.amount.toFixed(2)}</div>
-            <div class="item-details">
-              ${item.type} | ${item.date}
-              ${item.notes ? '<br>' + item.notes : ''}
-            </div>
-          </div>
-          <div class="item-actions">
-            <button class="btn-sm" style="background: #dc3545;" onclick="deleteCapital(${item.id})">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function deleteCapital(id) {
-      if (confirm('Are you sure you want to delete this capital entry?')) {
-        capital = capital.filter(item => item.id !== id);
-        renderCapital();
-        updateFinancialStats();
-        showNotification('Capital entry deleted successfully!', 'success');
-      }
-    }
-
-    // Financial Stats Update
-    function updateFinancialStats() {
-      try {
-        const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
-        const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-        const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
-        const totalCapitalAmount = capital.reduce((sum, item) => sum + item.amount, 0);
-        
-        const netProfit = totalIncome - totalExpenses - totalDepreciation;
-        
-        // Calculate tax (simplified)
-        // const taxResult = calculateSoleTraderTax(netProfit, 0, 0, 0);
-        
-        document.getElementById('totalIncome').textContent = `£${totalIncome.toFixed(2)}`;
-        document.getElementById('totalExpenses').textContent = `£${totalExpenses.toFixed(2)}`;
-        document.getElementById('netProfit').textContent = `£${netProfit.toFixed(2)}`;
-        document.getElementById('estimatedTax').textContent = `£0`;
-        document.getElementById('estimatedNI').textContent = `£0`;
-        document.getElementById('totalTax').textContent = `£0`;
-        document.getElementById('totalDepreciation').textContent = `£${totalDepreciation.toFixed(2)}`;
-        document.getElementById('totalCapital').textContent = `£${totalCapitalAmount.toFixed(2)}`;
-        
-        // updateTaxSuggestions(totalIncome, totalExpenses, netProfit);
-      } catch (error) {
-        console.error('Error updating financial stats:', error);
-        console.error('Error stack:', error.stack);
-      }
-    }
-
-    // HMRC Tax Rules and Constants (2024/25)
-    const TAX_RULES = {
+    const TAX_CONSTANTS = {
       personalAllowance: 12570,
-      personalAllowanceTaperThreshold: 100000,
       basicRateLimit: 50270,
       higherRateLimit: 125140,
       basicRate: 0.20,
       higherRate: 0.40,
       additionalRate: 0.45,
-      niClass1Rate: 0.12,
-      niClass1ReducedRate: 0.02,
-      niClass2Weekly: 3.45,
-      niClass2Threshold: 6725,
-      niClass4Rate: 0.09,
-      niClass4ReducedRate: 0.02,
-      corporationSmallRate: 0.19,
-      corporationMainRate: 0.25,
+      selfEmployedClass2Weekly: 3.45,
+      selfEmployedClass2Threshold: 6725,
+      selfEmployedClass4Main: 0.06,
+      selfEmployedClass4Higher: 0.02,
       corporationSmallThreshold: 50000,
       corporationMainThreshold: 250000,
-      cgtAnnualExemption: 3000,
-      cgtBasicRate: 0.10,
-      cgtHigherRate: 0.20,
-      cgtPropertyBasicRate: 0.18,
-      cgtPropertyHigherRate: 0.24,
-      vatStandardRate: 0.20,
-      vatReducedRate: 0.05,
-      vatThreshold: 90000,
-      whtRate: 0.20,
-      tradingAllowance: 1000,
+      corporationSmallRate: 0.19,
+      corporationMainRate: 0.25,
       propertyAllowance: 1000,
-      dividendAllowance: 500,
-      dividendBasicRate: 0.0875,
-      dividendHigherRate: 0.3375,
-      dividendAdditionalRate: 0.3938,
-      savingsAllowanceBasic: 1000,
-      savingsAllowanceHigher: 500,
-      marriageAllowance: 1260,
-      pensionAnnualAllowance: 60000,
-      studentLoanPlan1Threshold: 22015,
-      studentLoanPlan2Threshold: 27295,
-      studentLoanPlan4Threshold: 27660,
-      studentLoanPostgradThreshold: 21000,
-      studentLoanPlan1Rate: 0.09,
-      studentLoanPlan2Rate: 0.09,
-      studentLoanPlan4Rate: 0.09,
-      studentLoanPostgradRate: 0.06
+      vatThreshold: 90000
     };
 
-    // Helper function to calculate personal allowance with tapering
-    function calculatePersonalAllowance(adjustedIncome) {
-      if (adjustedIncome <= TAX_RULES.personalAllowanceTaperThreshold) {
-        return TAX_RULES.personalAllowance;
-      }
-      
-      // Taper: reduce by £1 for every £2 over £100,000
-      const excessIncome = adjustedIncome - TAX_RULES.personalAllowanceTaperThreshold;
-      const reduction = Math.floor(excessIncome / 2);
-      const allowance = Math.max(0, TAX_RULES.personalAllowance - reduction);
-      
-      return allowance;
-    }
-
-    // Tax Suggestions
-    function updateTaxSuggestions(totalIncome, totalExpenses, netProfit) {
-      const suggestionsDiv = document.getElementById('taxSuggestions');
-      const suggestions = [];
-      
-      if (netProfit > 12570) {
-        suggestions.push('💡 Consider maximizing your allowable expenses to reduce taxable profit');
-      }
-      
-      if (totalExpenses < totalIncome * 0.2) {
-        suggestions.push('💡 Review if you\'re claiming all allowable business expenses');
-      }
-      
-      suggestions.push('💡 Use the simplified home office rate (£2-£18/month) if you work from home');
-      suggestions.push('💡 Claim mileage allowance for business trips (45p first 10,000 miles, 25p thereafter)');
-      
-      if (netProfit > 50270) {
-        suggestions.push('💡 Consider pension contributions to reduce higher rate tax');
-      }
-      
-      if (depreciation.length === 0) {
-        suggestions.push('💡 Add capital assets to claim Annual Investment Allowance (AIA) up to £1,000,000');
-      }
-      
-      suggestionsDiv.innerHTML = '<ul style="padding-left: 20px;">' + 
-        suggestions.map(s => `<li style="margin: 10px 0; color: #333;">${s}</li>`).join('') + 
-        '</ul>';
-    }
-
-    // Calculate Sole Trader Tax
-    function calculateSoleTraderTax(profit, homeOfficeRelief = 0, mileageAllowance = 0, additionalExpenses = 0) {
-      // Adjust profit with reliefs
-      const adjustedProfit = Math.max(0, profit - homeOfficeRelief - mileageAllowance - additionalExpenses);
-      
-      // Personal allowance
-      const personalAllowance = calculatePersonalAllowance(adjustedProfit);
-      const taxableIncome = Math.max(0, adjustedProfit - personalAllowance);
-      
-      // Calculate income tax
-      let incomeTax = 0;
-      if (taxableIncome > 0) {
-        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
-        const higherRateBand = TAX_RULES.higherRateLimit - TAX_RULES.personalAllowance; // £112,570
-        
-        if (taxableIncome <= basicRateBand) {
-          // Basic rate only
-          incomeTax = taxableIncome * TAX_RULES.basicRate;
-        } else if (taxableIncome <= higherRateBand) {
-          // Basic + Higher rate
-          const basicAmount = basicRateBand;
-          const higherAmount = taxableIncome - basicRateBand;
-          incomeTax = (basicAmount * TAX_RULES.basicRate) + (higherAmount * TAX_RULES.higherRate);
-        } else {
-          // Basic + Higher + Additional rate
-          const basicAmount = basicRateBand;
-          const higherAmount = higherRateBand - basicRateBand;
-          const additionalAmount = taxableIncome - higherRateBand;
-          incomeTax = (basicAmount * TAX_RULES.basicRate) + 
-                      (higherAmount * TAX_RULES.higherRate) + 
-                      (additionalAmount * TAX_RULES.additionalRate);
-        }
-      }
-      
-      // Calculate National Insurance
-      let nationalInsurance = 0;
-      
-      // Class 2 NI (flat weekly rate if profit > £6,725)
-      if (adjustedProfit > TAX_RULES.niClass2Threshold) {
-        nationalInsurance += TAX_RULES.niClass2Weekly * 52; // £179.40 per year
-      }
-      
-      // Class 4 NI (9% on profits between £12,570 and £50,270, 2% thereafter)
-      if (adjustedProfit > TAX_RULES.personalAllowance) {
-        const niableProfit = adjustedProfit - TAX_RULES.personalAllowance;
-        const basicRateBand = TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance; // £37,700
-        
-        if (niableProfit <= basicRateBand) {
-          nationalInsurance += niableProfit * TAX_RULES.niClass4Rate;
-        } else {
-          const class4Basic = basicRateBand * TAX_RULES.niClass4Rate;
-          const class4Higher = (niableProfit - basicRateBand) * TAX_RULES.niClass4ReducedRate;
-          nationalInsurance += class4Basic + class4Higher;
-        }
-      }
-      
-      return {
-        adjustedProfit,
-        personalAllowance,
-        taxableIncome,
-        incomeTax,
-        nationalInsurance,
-        totalTax: incomeTax + nationalInsurance
-      };
-    }
-
-    // Calculate tax from current data
-    function calculateTaxFromData() {
-      const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
-      const netProfit = totalIncome - totalExpenses - totalDepreciation;
-      
-      const taxResult = calculateSoleTraderTax(netProfit, 0, 0, 0);
-      displayTaxResults(taxResult, 0, 0, 0, false);
-    }
-
-    // Calculate optimized tax with reliefs
-    function calculateOptimizedTax() {
-      const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const totalDepreciation = depreciation.reduce((sum, item) => sum + item.depreciation, 0);
-      const netProfit = totalIncome - totalExpenses - totalDepreciation;
-      
-      let homeOfficeRelief = 0;
-      let mileageAllowance = 0;
-      
-      // Calculate home office relief
-      const homeOfficeCheckbox = document.getElementById('useHomeOfficeRelief');
-      if (homeOfficeCheckbox && homeOfficeCheckbox.checked) {
-        const hoursInput = document.getElementById('homeOfficeMonthlyHours');
-        const hours = hoursInput ? (parseFloat(hoursInput.value) || 0) : 0;
-        let monthlyRate = 0;
-        if (hours >= 25 && hours <= 50) monthlyRate = 2;
-        else if (hours >= 51 && hours <= 100) monthlyRate = 10;
-        else if (hours > 100) monthlyRate = 18;
-        homeOfficeRelief = monthlyRate * 12; // Annual
-      }
-      
-      // Calculate mileage allowance
-      const mileageCheckbox = document.getElementById('useMileageAllowance');
-      if (mileageCheckbox && mileageCheckbox.checked) {
-        const milesInput = document.getElementById('annualBusinessMiles');
-        const miles = milesInput ? (parseFloat(milesInput.value) || 0) : 0;
-        if (miles <= 10000) {
-          mileageAllowance = miles * 0.45;
-        } else {
-          mileageAllowance = (10000 * 0.45) + ((miles - 10000) * 0.25);
-        }
-      }
-      
-      const additionalExpensesInput = document.getElementById('additionalExpenses');
-      const additionalExpenses = additionalExpensesInput ? (parseFloat(additionalExpensesInput.value) || 0) : 0;
-      
-      const taxResult = calculateSoleTraderTax(netProfit, homeOfficeRelief, mileageAllowance, additionalExpenses);
-      displayTaxResults(taxResult, homeOfficeRelief, mileageAllowance, additionalExpenses, true);
-    }
-
-    // Display tax results
-    function displayTaxResults(taxResult, homeOfficeRelief, mileageAllowance, additionalExpenses, showOptimization) {
-      const resultsDiv = document.getElementById('taxResults');
-      const breakdownDiv = document.getElementById('taxBreakdown');
-      
-      let html = `
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-          <h4 style="color: #667eea; margin-bottom: 15px;">Income & Expenses Summary</h4>
-          <div class="tax-metric">
-            <span class="metric-label">Total Income</span>
-            <span class="metric-value">£${income.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Total Expenses</span>
-            <span class="metric-value">£${expenses.reduce((sum, exp) => sum + exp.amount, 0).toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Depreciation Allowances</span>
-            <span class="metric-value">£${depreciation.reduce((sum, item) => sum + item.depreciation, 0).toFixed(2)}</span>
-          </div>
-      `;
-      
-      if (showOptimization) {
-        html += `
-          <div class="tax-metric">
-            <span class="metric-label">Home Office Relief</span>
-            <span class="metric-value">£${homeOfficeRelief.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Mileage Allowance</span>
-            <span class="metric-value">£${mileageAllowance.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Additional Expenses</span>
-            <span class="metric-value">£${additionalExpenses.toFixed(2)}</span>
-          </div>
-        `;
-      }
-      
-      html += `
-          <div class="tax-metric" style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px;">
-            <span class="metric-label"><strong>Adjusted Profit</strong></span>
-            <span class="metric-value"><strong>£${taxResult.adjustedProfit.toFixed(2)}</strong></span>
-          </div>
-        </div>
-        
-        <div style="background: #fff; padding: 20px; border-radius: 10px; border: 2px solid #667eea;">
-          <h4 style="color: #667eea; margin-bottom: 15px;">Tax Calculation</h4>
-          <div class="tax-metric">
-            <span class="metric-label">Personal Allowance</span>
-            <span class="metric-value">£${taxResult.personalAllowance.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Taxable Income</span>
-            <span class="metric-value">£${taxResult.taxableIncome.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">Income Tax</span>
-            <span class="metric-value" style="color: #dc3545;">£${taxResult.incomeTax.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric">
-            <span class="metric-label">National Insurance (Class 2 & 4)</span>
-            <span class="metric-value" style="color: #dc3545;">£${taxResult.nationalInsurance.toFixed(2)}</span>
-          </div>
-          <div class="tax-metric" style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; font-size: 18px;">
-            <span class="metric-label"><strong>Total Tax Liability</strong></span>
-            <span class="metric-value" style="color: #dc3545;"><strong>£${taxResult.totalTax.toFixed(2)}</strong></span>
-          </div>
-          <div class="tax-metric" style="background: #e7f3ff; padding: 10px; border-radius: 5px; margin-top: 10px;">
-            <span class="metric-label"><strong>Net Income After Tax</strong></span>
-            <span class="metric-value" style="color: #28a745;"><strong>£${(taxResult.adjustedProfit - taxResult.totalTax).toFixed(2)}</strong></span>
-          </div>
-        </div>
-      `;
-      
-      if (showOptimization && (homeOfficeRelief > 0 || mileageAllowance > 0 || additionalExpenses > 0)) {
-        const basicResult = calculateSoleTraderTax(income.reduce((sum, item) => sum + item.amount, 0) - expenses.reduce((sum, exp) => sum + exp.amount, 0) - depreciation.reduce((sum, item) => sum + item.depreciation, 0), 0, 0, 0);
-        const savings = basicResult.totalTax - taxResult.totalTax;
-        
-        html += `
-          <div style="background: #d4edda; padding: 20px; border-radius: 10px; margin-top: 20px; border: 2px solid #28a745;">
-            <h4 style="color: #155724; margin-bottom: 10px;">💰 Tax Savings with Optimization</h4>
-            <p style="color: #155724; font-size: 18px; margin: 0;">
-              <strong>You save £${savings.toFixed(2)}</strong> with the applied reliefs and allowances!
-            </p>
-          </div>
-        `;
-      }
-      
-      breakdownDiv.innerHTML = html;
-      resultsDiv.style.display = 'block';
-      
-      // Scroll to results
-      resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // Entity Descriptions
-    const ENTITY_DESCRIPTIONS = {
-      sole_trader: {
-        title: 'Sole Trader / Self-Employed',
-        text: 'As a sole trader, you pay Income Tax on your profits and Class 2 and Class 4 National Insurance. You can claim the Trading Allowance (£1,000) and various business expenses.'
-      },
-      company: {
-        title: 'Limited Company',
-        text: 'Limited companies pay Corporation Tax on profits. Directors can take salary and dividends, with different tax treatments. Consider dividend allowance and tax-efficient salary/dividend mix.'
-      },
-      landlord: {
-        title: 'Landlord / Property Owner',
-        text: 'Rental income is subject to Income Tax. You can claim the Property Allowance (£1,000) or deduct actual expenses. CGT applies when selling properties.'
-      },
-      employee: {
-        title: 'Employee (PAYE)',
-        text: 'Employees pay Income Tax and Class 1 National Insurance through PAYE. You benefit from Personal Allowance and may have additional income requiring Self Assessment.'
-      }
+    const ENTITY_GUIDANCE = {
+      sole_trader: [
+        'Monitor profits against the personal allowance and record every allowable cost.',
+        'Use capital allowance treatment for qualifying equipment instead of posting it as a normal expense.',
+        'Watch the VAT threshold as turnover scales.'
+      ],
+      limited_company: [
+        'Corporation tax is estimated on profit before owner drawings.',
+        'Keep salary, dividends, and inventory purchasing approval flows separate for auditability.',
+        'Use director and approver roles to enforce dual control.'
+      ],
+      partnership: [
+        'Profit share controls ownership allocation for the active partner view.',
+        'Maintain partner current accounts separately when moving to a backend ledger.',
+        'Document capital contributions and drawings distinctly from expense claims.'
+      ],
+      landlord: [
+        'Property businesses should monitor repairs, service charges, and exempt/zero-rated supplies separately.',
+        'Track capital improvements distinctly from repairs to support tax treatment.',
+        'Entity switching is useful when holding multiple SPVs or personal portfolios.'
+      ]
     };
 
-    // Entity Type Selection Handler
-    function updateTaxCalculator() {
-      const entityType = document.getElementById('entityType').value;
-      const descDiv = document.getElementById('entityDescription');
-      const formDiv = document.getElementById('taxCalculatorForm');
-      const fieldsDiv = document.getElementById('dynamicTaxFields');
-      const syncCard = document.getElementById('dataSyncCard');
-      
-      if (!entityType) {
-        descDiv.style.display = 'none';
-        formDiv.style.display = 'none';
-        syncCard.style.display = 'none';
-        return;
-      }
+    let state = loadState();
 
-      // Show entity description
-      const desc = ENTITY_DESCRIPTIONS[entityType];
-      document.getElementById('entityDescTitle').textContent = desc.title;
-      document.getElementById('entityDescText').textContent = desc.text;
-      descDiv.style.display = 'block';
-      syncCard.style.display = 'block';
-      formDiv.style.display = 'block';
-
-      // Generate dynamic fields based on entity type
-      let fieldsHTML = '';
-      
-      if (entityType === 'sole_trader') {
-        fieldsHTML = `
-          <div class="form-group">
-            <label>Gross Income (£)</label>
-            <input type="number" id="grossIncome" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Allowable Expenses (£)</label>
-            <input type="number" id="allowableExpenses" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Use Trading Allowance instead of expenses? (£1,000)</label>
-            <select id="useTradingAllowance">
-              <option value="no">No - Use actual expenses</option>
-              <option value="yes">Yes - Claim £1,000 Trading Allowance</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Pension Contributions (£)</label>
-            <input type="number" id="pensionContributions" placeholder="0.00" step="0.01" value="0">
-          </div>
-          <div class="form-group">
-            <label>VAT Registered?</label>
-            <select id="vatRegistered">
-              <option value="no">No</option>
-              <option value="yes">Yes</option>
-            </select>
-          </div>
-          <div class="form-group" id="vatSection" style="display:none;">
-            <label>VAT Collected (£)</label>
-            <input type="number" id="vatCollected" placeholder="0.00" step="0.01" value="0">
-          </div>
-        `;
-      } else if (entityType === 'company') {
-        fieldsHTML = `
-          <div class="form-group">
-            <label>Company Profit Before Tax (£)</label>
-            <input type="number" id="companyProfit" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Director's Salary (£)</label>
-            <input type="number" id="directorSalary" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Dividends Taken (£)</label>
-            <input type="number" id="dividends" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>VAT Registered?</label>
-            <select id="vatRegistered">
-              <option value="no">No</option>
-              <option value="yes">Yes</option>
-            </select>
-          </div>
-          <div class="form-group" id="vatSection" style="display:none;">
-            <label>VAT Collected (£)</label>
-            <input type="number" id="vatCollected" placeholder="0.00" step="0.01" value="0">
-          </div>
-        `;
-      } else if (entityType === 'landlord') {
-        fieldsHTML = `
-          <div class="form-group">
-            <label>Rental Income (£)</label>
-            <input type="number" id="rentalIncome" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Property Expenses (£)</label>
-            <input type="number" id="propertyExpenses" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Use Property Allowance instead of expenses? (£1,000)</label>
-            <select id="usePropertyAllowance">
-              <option value="no">No - Use actual expenses</option>
-              <option value="yes">Yes - Claim £1,000 Property Allowance</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Capital Gains from Property Sale (£)</label>
-            <input type="number" id="capitalGains" placeholder="0.00" step="0.01" value="0">
-          </div>
-          <div class="form-group">
-            <label>Other Income (£)</label>
-            <input type="number" id="otherIncome" placeholder="0.00" step="0.01" value="0">
-          </div>
-        `;
-      } else if (entityType === 'employee') {
-        fieldsHTML = `
-          <div class="form-group">
-            <label>Annual Gross Salary (£)</label>
-            <input type="number" id="grossSalary" placeholder="0.00" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label>Bonus / Commission (£)</label>
-            <input type="number" id="bonus" placeholder="0.00" step="0.01" value="0">
-          </div>
-          <div class="form-group">
-            <label>Other Income (e.g., rental, dividends) (£)</label>
-            <input type="number" id="otherIncome" placeholder="0.00" step="0.01" value="0">
-          </div>
-          <div class="form-group">
-            <label>Pension Contributions (£)</label>
-            <input type="number" id="pensionContributions" placeholder="0.00" step="0.01" value="0">
-          </div>
-          <div class="form-group">
-            <label>Student Loan?</label>
-            <select id="studentLoan">
-              <option value="none">No Student Loan</option>
-              <option value="plan1">Plan 1</option>
-              <option value="plan2">Plan 2</option>
-              <option value="plan4">Plan 4</option>
-              <option value="postgrad">Postgraduate Loan</option>
-            </select>
-          </div>
-        `;
-      }
-
-      fieldsDiv.innerHTML = fieldsHTML;
-
-      // Add VAT section toggle listener
-      const vatSelect = document.getElementById('vatRegistered');
-      if (vatSelect) {
-        vatSelect.addEventListener('change', function() {
-          const vatSection = document.getElementById('vatSection');
-          vatSection.style.display = this.value === 'yes' ? 'block' : 'none';
-        });
-      }
+    function createId(prefix) {
+      return `${prefix}-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36)}`;
     }
 
-    // Advanced Tax Form Submission
-    document.addEventListener('DOMContentLoaded', function() {
-      const taxForm = document.getElementById('advancedTaxForm');
-      if (taxForm) {
-        taxForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          calculateAdvancedTax();
-        });
-      }
-    });
-
-    // Calculate Advanced Tax
-    async function calculateAdvancedTax() {
-      const entityType = document.getElementById('entityType').value;
-      const resultContainer = document.getElementById('resultContainer');
-      
-      resultContainer.innerHTML = '<p style="color: #666;">Calculating comprehensive tax analysis...</p>';
-      
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        let results = {};
-        
-        if (entityType === 'sole_trader') {
-          results = calculateSoleTraderTax();
-        } else if (entityType === 'company') {
-          results = calculateCompanyTax();
-        } else if (entityType === 'landlord') {
-          results = calculateLandlordTax();
-        } else if (entityType === 'employee') {
-          results = calculateEmployeeTax();
-        }
-
-        displayTaxResults(results);
-        resultContainer.innerHTML = '<div class="result"><strong>✓ Tax calculation completed successfully!</strong></div>';
-        
-      } catch (error) {
-        resultContainer.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
-      }
+    function today() {
+      return new Date().toISOString().slice(0, 10);
     }
 
-    // Sole Trader Tax Calculation
-    function calculateSoleTraderTax() {
-      const grossIncome = parseFloat(document.getElementById('grossIncome').value) || 0;
-      const allowableExpenses = parseFloat(document.getElementById('allowableExpenses').value) || 0;
-      const useTradingAllowance = document.getElementById('useTradingAllowance').value === 'yes';
-      const pensionContributions = parseFloat(document.getElementById('pensionContributions').value) || 0;
-      const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
-      const vatCollected = vatRegistered ? (parseFloat(document.getElementById('vatCollected').value) || 0) : 0;
-
-      const expenses = useTradingAllowance ? TAX_RULES.tradingAllowance : allowableExpenses;
-      const profit = grossIncome - expenses;
-      const adjustedProfit = Math.max(0, profit - pensionContributions);
-
-      // Income Tax
-      const personalAllowance = calculatePersonalAllowance(adjustedProfit);
-      const taxableIncome = Math.max(0, adjustedProfit - personalAllowance);
-      
-      let incomeTax = 0;
-      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
-        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
-        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
-      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
-        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
-      } else {
-        incomeTax = taxableIncome * TAX_RULES.basicRate;
-      }
-
-      // National Insurance Class 2 and 4
-      const class2NI = profit > TAX_RULES.niClass2Threshold ? TAX_RULES.niClass2Weekly * 52 : 0;
-      
-      let class4NI = 0;
-      const class4Taxable = Math.max(0, profit - TAX_RULES.personalAllowance);
-      if (class4Taxable > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
-        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass4Rate;
-        const upperBand = (class4Taxable - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass4ReducedRate;
-        class4NI = lowerBand + upperBand;
-      } else {
-        class4NI = class4Taxable * TAX_RULES.niClass4Rate;
-      }
-
-      const totalNI = class2NI + class4NI;
-      const totalTax = incomeTax + totalNI;
-      const netIncome = profit - totalTax;
-
-      const tips = [
-        useTradingAllowance ? 'You\'re using the Trading Allowance - consider if actual expenses are higher' : 'Review all allowable business expenses',
-        pensionContributions < TAX_RULES.pensionAnnualAllowance ? 'Consider increasing pension contributions for tax relief' : 'Maximizing pension contributions',
-        !vatRegistered && grossIncome > TAX_RULES.vatThreshold * 0.8 ? 'Approaching VAT threshold - plan ahead' : '',
-        'Keep accurate records of all business income and expenses',
-        'Consider incorporation if profits consistently exceed £50,000'
-      ].filter(tip => tip);
-
-      return {
-        breakdown: [
-          { label: 'Gross Income', value: grossIncome },
-          { label: 'Less: Expenses', value: -expenses },
-          { label: 'Trading Profit', value: profit, highlight: true },
-          { label: 'Less: Pension Contributions', value: -pensionContributions },
-          { label: 'Adjusted Profit', value: adjustedProfit },
-          { label: 'Personal Allowance', value: personalAllowance },
-          { label: 'Taxable Income', value: taxableIncome, highlight: true },
-          { label: 'Income Tax', value: incomeTax, isTax: true },
-          { label: 'Class 2 NI', value: class2NI, isTax: true },
-          { label: 'Class 4 NI', value: class4NI, isTax: true },
-          { label: 'Total Tax & NI', value: totalTax, highlight: true, isTax: true },
-          { label: 'Net Income After Tax', value: netIncome, highlight: true, positive: true }
-        ],
-        vat: vatRegistered ? { collected: vatCollected, rate: TAX_RULES.vatStandardRate } : null,
-        tips: tips
-      };
+    function formatCurrency(value) {
+      return GBP.format(Number(value || 0));
     }
 
-    // Company Tax Calculation
-    function calculateCompanyTax() {
-      const companyProfit = parseFloat(document.getElementById('companyProfit').value) || 0;
-      const directorSalary = parseFloat(document.getElementById('directorSalary').value) || 0;
-      const dividends = parseFloat(document.getElementById('dividends').value) || 0;
-      const vatRegistered = document.getElementById('vatRegistered').value === 'yes';
-      const vatCollected = vatRegistered ? (parseFloat(document.getElementById('vatCollected').value) || 0) : 0;
-
-      // Corporation Tax
-      let corporationTax = 0;
-      if (companyProfit <= TAX_RULES.corporationSmallThreshold) {
-        corporationTax = companyProfit * TAX_RULES.corporationSmallRate;
-      } else if (companyProfit >= TAX_RULES.corporationMainThreshold) {
-        corporationTax = companyProfit * TAX_RULES.corporationMainRate;
-      } else {
-        // Marginal relief calculation
-        const marginalRate = TAX_RULES.corporationSmallRate + 
-          ((companyProfit - TAX_RULES.corporationSmallThreshold) / 
-          (TAX_RULES.corporationMainThreshold - TAX_RULES.corporationSmallThreshold)) * 
-          (TAX_RULES.corporationMainRate - TAX_RULES.corporationSmallRate);
-        corporationTax = companyProfit * marginalRate;
-      }
-
-      // Director's PAYE
-      const totalIncome = directorSalary + dividends;
-      const personalAllowance = calculatePersonalAllowance(totalIncome);
-      const taxableSalary = Math.max(0, directorSalary - personalAllowance);
-      
-      let salaryIncomeTax = 0;
-      if (taxableSalary > TAX_RULES.basicRateLimit - personalAllowance) {
-        const higherBand = taxableSalary - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        salaryIncomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
-      } else {
-        salaryIncomeTax = taxableSalary * TAX_RULES.basicRate;
-      }
-
-      // Employee NI (Class 1)
-      let employeeNI = 0;
-      const niableSalary = Math.max(0, directorSalary - TAX_RULES.personalAllowance);
-      if (niableSalary > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
-        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass1Rate;
-        const upperBand = (niableSalary - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass1ReducedRate;
-        employeeNI = lowerBand + upperBand;
-      } else {
-        employeeNI = niableSalary * TAX_RULES.niClass1Rate;
-      }
-
-      // Dividend Tax
-      const dividendAllowance = TAX_RULES.dividendAllowance;
-      const taxableDividends = Math.max(0, dividends - dividendAllowance);
-      
-      let dividendTax = 0;
-      
-      if (totalIncome > TAX_RULES.higherRateLimit) {
-        // All dividends taxed at additional rate
-        dividendTax = taxableDividends * TAX_RULES.dividendAdditionalRate;
-      } else if (totalIncome > TAX_RULES.basicRateLimit) {
-        // Some dividends in higher rate, possibly some in additional rate
-        const incomeInHigherBand = totalIncome - TAX_RULES.basicRateLimit;
-        if (incomeInHigherBand >= taxableDividends) {
-          // All dividends in higher rate band
-          dividendTax = taxableDividends * TAX_RULES.dividendHigherRate;
-        } else {
-          // Split between higher and additional rate
-          const higherRateDividends = incomeInHigherBand;
-          const additionalRateDividends = taxableDividends - higherRateDividends;
-          dividendTax = (higherRateDividends * TAX_RULES.dividendHigherRate) + 
-                       (additionalRateDividends * TAX_RULES.dividendAdditionalRate);
-        }
-      } else {
-        // Dividends in basic rate, possibly some in higher rate
-        const incomeInBasicBand = TAX_RULES.basicRateLimit - (totalIncome - taxableDividends);
-        if (incomeInBasicBand >= taxableDividends) {
-          // All dividends in basic rate
-          dividendTax = taxableDividends * TAX_RULES.dividendBasicRate;
-        } else {
-          // Split between basic and higher rate
-          const basicRateDividends = Math.max(0, incomeInBasicBand);
-          const higherRateDividends = taxableDividends - basicRateDividends;
-          dividendTax = (basicRateDividends * TAX_RULES.dividendBasicRate) + 
-                       (higherRateDividends * TAX_RULES.dividendHigherRate);
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (error) {
+          console.warn('Failed to parse saved state, seeding demo data.', error);
         }
       }
-
-      const totalPersonalTax = salaryIncomeTax + employeeNI + dividendTax;
-      const totalTax = corporationTax + totalPersonalTax;
-      const netIncome = (directorSalary + dividends) - totalPersonalTax;
-
-      const tips = [
-        'Optimal salary is around £12,570 (personal allowance) to minimize NI',
-        dividends > TAX_RULES.dividendAllowance ? 'Consider timing of dividend payments' : 'You have unused dividend allowance',
-        'Employer NI (13.8%) also applies to salary above £9,100',
-        'Consider pension contributions through the company for tax efficiency',
-        companyProfit > TAX_RULES.corporationMainThreshold ? 'High profit - explore profit extraction strategies' : ''
-      ].filter(tip => tip);
-
-      return {
-        breakdown: [
-          { label: 'Company Profit', value: companyProfit },
-          { label: 'Corporation Tax', value: corporationTax, isTax: true },
-          { label: 'Profit After Tax', value: companyProfit - corporationTax, highlight: true },
-          { label: 'Director\'s Salary', value: directorSalary },
-          { label: 'Income Tax on Salary', value: salaryIncomeTax, isTax: true },
-          { label: 'Employee NI', value: employeeNI, isTax: true },
-          { label: 'Dividends Paid', value: dividends },
-          { label: 'Dividend Tax', value: dividendTax, isTax: true },
-          { label: 'Total Tax (Corp + Personal)', value: totalTax, highlight: true, isTax: true },
-          { label: 'Net Personal Income', value: netIncome, highlight: true, positive: true }
-        ],
-        vat: vatRegistered ? { collected: vatCollected, rate: TAX_RULES.vatStandardRate } : null,
-        tips: tips
-      };
+      return seedState();
     }
 
-    // Landlord Tax Calculation
-    function calculateLandlordTax() {
-      const rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
-      const propertyExpenses = parseFloat(document.getElementById('propertyExpenses').value) || 0;
-      const usePropertyAllowance = document.getElementById('usePropertyAllowance').value === 'yes';
-      const capitalGains = parseFloat(document.getElementById('capitalGains').value) || 0;
-      const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
-
-      const expenses = usePropertyAllowance ? TAX_RULES.propertyAllowance : propertyExpenses;
-      const rentalProfit = Math.max(0, rentalIncome - expenses);
-      const totalIncome = rentalProfit + otherIncome;
-
-      // Income Tax on Rental Income
-      const personalAllowance = calculatePersonalAllowance(totalIncome);
-      const taxableIncome = Math.max(0, totalIncome - personalAllowance);
-      
-      let incomeTax = 0;
-      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
-        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
-        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
-      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
-        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
-      } else {
-        incomeTax = taxableIncome * TAX_RULES.basicRate;
-      }
-
-      // Capital Gains Tax
-      let cgt = 0;
-      if (capitalGains > TAX_RULES.cgtAnnualExemption) {
-        const taxableGains = capitalGains - TAX_RULES.cgtAnnualExemption;
-        const isHigherRate = totalIncome > TAX_RULES.basicRateLimit;
-        cgt = taxableGains * (isHigherRate ? TAX_RULES.cgtPropertyHigherRate : TAX_RULES.cgtPropertyBasicRate);
-      }
-
-      const totalTax = incomeTax + cgt;
-      const netIncome = totalIncome - incomeTax;
-
-      const tips = [
-        usePropertyAllowance ? 'You\'re using Property Allowance - check if actual expenses are higher' : 'Keep records of all property expenses',
-        capitalGains > 0 ? 'CGT annual exemption is £3,000 - consider timing of property sales' : '',
-        'Mortgage interest is no longer fully deductible - only 20% tax credit available',
-        'Consider property ownership structure (personal vs company) for tax efficiency',
-        'Keep records for at least 5 years after the tax year'
-      ].filter(tip => tip);
-
-      return {
-        breakdown: [
-          { label: 'Rental Income', value: rentalIncome },
-          { label: 'Less: Expenses', value: -expenses },
-          { label: 'Rental Profit', value: rentalProfit, highlight: true },
-          { label: 'Other Income', value: otherIncome },
-          { label: 'Total Income', value: totalIncome },
-          { label: 'Personal Allowance', value: personalAllowance },
-          { label: 'Taxable Income', value: taxableIncome, highlight: true },
-          { label: 'Income Tax', value: incomeTax, isTax: true },
-          { label: 'Capital Gains', value: capitalGains },
-          { label: 'CGT Annual Exemption', value: TAX_RULES.cgtAnnualExemption },
-          { label: 'Capital Gains Tax', value: cgt, isTax: true },
-          { label: 'Total Tax', value: totalTax, highlight: true, isTax: true },
-          { label: 'Net Income After Tax', value: netIncome, highlight: true, positive: true }
-        ],
-        vat: null,
-        tips: tips
-      };
-    }
-
-    // Employee Tax Calculation
-    function calculateEmployeeTax() {
-      const grossSalary = parseFloat(document.getElementById('grossSalary').value) || 0;
-      const bonus = parseFloat(document.getElementById('bonus').value) || 0;
-      const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
-      const pensionContributions = parseFloat(document.getElementById('pensionContributions').value) || 0;
-      const studentLoan = document.getElementById('studentLoan').value;
-
-      const totalGrossIncome = grossSalary + bonus + otherIncome;
-      const adjustedIncome = totalGrossIncome - pensionContributions;
-
-      // Income Tax
-      const personalAllowance = calculatePersonalAllowance(adjustedIncome);
-      const taxableIncome = Math.max(0, adjustedIncome - personalAllowance);
-      
-      let incomeTax = 0;
-      if (taxableIncome > TAX_RULES.higherRateLimit - personalAllowance) {
-        const additionalBand = taxableIncome - (TAX_RULES.higherRateLimit - personalAllowance);
-        const higherBand = (TAX_RULES.higherRateLimit - personalAllowance) - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate) + (additionalBand * TAX_RULES.additionalRate);
-      } else if (taxableIncome > TAX_RULES.basicRateLimit - personalAllowance) {
-        const higherBand = taxableIncome - (TAX_RULES.basicRateLimit - personalAllowance);
-        const basicBand = TAX_RULES.basicRateLimit - personalAllowance;
-        incomeTax = (basicBand * TAX_RULES.basicRate) + (higherBand * TAX_RULES.higherRate);
-      } else {
-        incomeTax = taxableIncome * TAX_RULES.basicRate;
-      }
-
-      // National Insurance (Class 1)
-      let nationalInsurance = 0;
-      const niableIncome = Math.max(0, totalGrossIncome - TAX_RULES.personalAllowance);
-      if (niableIncome > TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) {
-        const lowerBand = (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance) * TAX_RULES.niClass1Rate;
-        const upperBand = (niableIncome - (TAX_RULES.basicRateLimit - TAX_RULES.personalAllowance)) * TAX_RULES.niClass1ReducedRate;
-        nationalInsurance = lowerBand + upperBand;
-      } else {
-        nationalInsurance = niableIncome * TAX_RULES.niClass1Rate;
-      }
-
-      // Student Loan Repayment
-      let studentLoanRepayment = 0;
-      const studentLoanThresholds = {
-        plan1: TAX_RULES.studentLoanPlan1Threshold,
-        plan2: TAX_RULES.studentLoanPlan2Threshold,
-        plan4: TAX_RULES.studentLoanPlan4Threshold,
-        postgrad: TAX_RULES.studentLoanPostgradThreshold
-      };
-      
-      const studentLoanRates = {
-        plan1: TAX_RULES.studentLoanPlan1Rate,
-        plan2: TAX_RULES.studentLoanPlan2Rate,
-        plan4: TAX_RULES.studentLoanPlan4Rate,
-        postgrad: TAX_RULES.studentLoanPostgradRate
-      };
-      
-      if (studentLoan !== 'none') {
-        const threshold = studentLoanThresholds[studentLoan];
-        const rate = studentLoanRates[studentLoan];
-        if (totalGrossIncome > threshold) {
-          studentLoanRepayment = (totalGrossIncome - threshold) * rate;
-        }
-      }
-
-      const totalDeductions = incomeTax + nationalInsurance + studentLoanRepayment + pensionContributions;
-      const netIncome = totalGrossIncome - totalDeductions;
-
-      const tips = [
-        pensionContributions < TAX_RULES.pensionAnnualAllowance ? 'Consider salary sacrifice pension contributions' : 'Maximizing pension contributions',
-        otherIncome > 0 ? 'You may need to complete a Self Assessment for additional income' : '',
-        bonus > 0 ? 'Bonuses can push you into a higher tax band - consider timing' : '',
-        totalGrossIncome > 100000 ? 'Personal allowance tapers above £100k - effective 60% tax rate' : '',
-        'Check if you\'re eligible for Marriage Allowance (transfer £1,260)'
-      ].filter(tip => tip);
-
-      return {
-        breakdown: [
-          { label: 'Gross Salary', value: grossSalary },
-          { label: 'Bonus/Commission', value: bonus },
-          { label: 'Other Income', value: otherIncome },
-          { label: 'Total Gross Income', value: totalGrossIncome, highlight: true },
-          { label: 'Pension Contributions', value: pensionContributions },
-          { label: 'Personal Allowance', value: personalAllowance },
-          { label: 'Taxable Income', value: taxableIncome, highlight: true },
-          { label: 'Income Tax (PAYE)', value: incomeTax, isTax: true },
-          { label: 'National Insurance', value: nationalInsurance, isTax: true },
-          { label: 'Student Loan Repayment', value: studentLoanRepayment, isTax: true },
-          { label: 'Total Deductions', value: totalDeductions, highlight: true, isTax: true },
-          { label: 'Net Take-Home Pay', value: netIncome, highlight: true, positive: true }
-        ],
-        vat: null,
-        tips: tips
-      };
-    }
-
-    // Display Tax Results
-    function displayTaxResults(results) {
-      const breakdownDiv = document.getElementById('taxBreakdown');
-      const tipsDiv = document.getElementById('tipsList');
-
-      // Display breakdown
-      let breakdownHTML = '';
-      results.breakdown.forEach(item => {
-        const valueClass = item.isTax ? 'metric-value' : (item.positive ? 'metric-value positive' : 'metric-value');
-        const rowStyle = item.highlight ? 'font-weight: bold; background: #f0f7ff;' : '';
-        breakdownHTML += `
-          <div class="tax-metric" style="${rowStyle}">
-            <span class="metric-label">${item.label}</span>
-            <span class="${valueClass}">£${Math.abs(item.value).toFixed(2)}</span>
-          </div>
-        `;
-      });
-
-      // Add VAT section if applicable
-      if (results.vat) {
-        breakdownHTML += `
-          <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-            <h4 style="color: #667eea; margin-bottom: 10px;">VAT Summary</h4>
-            <div class="tax-metric">
-              <span class="metric-label">VAT Collected (${(results.vat.rate * 100).toFixed(0)}%)</span>
-              <span class="metric-value">£${results.vat.collected.toFixed(2)}</span>
-            </div>
-            <div class="tax-metric">
-              <span class="metric-label">Net VAT Due (after input VAT)</span>
-              <span class="metric-value">Calculate separately</span>
-            </div>
-          </div>
-        `;
-      }
-
-      breakdownDiv.innerHTML = breakdownHTML;
-
-      // Display tips
-      let tipsHTML = '';
-      results.tips.forEach(tip => {
-        tipsHTML += `<li>${tip}</li>`;
-      });
-      tipsDiv.innerHTML = tipsHTML;
-
-      document.getElementById('taxResults').style.display = 'block';
-    }
-
-    // Tax Data Synchronization Functions
-    let syncedTaxData = null;
-    const SYNC_DELAY_MS = 1500; // Delay for simulated API call
-
-    async function syncTaxData() {
-      const statusDiv = document.getElementById('syncStatus');
-      statusDiv.style.display = 'block';
-      statusDiv.innerHTML = '<p style="color: #666;">🔄 Synchronizing tax data from postings...</p>';
-      
-      try {
-        // Simulate API call to backend synchronization
-        await new Promise(resolve => setTimeout(resolve, SYNC_DELAY_MS));
-        
-        // In a real implementation, this would call the backend tax_sync.py module
-        // For now, we'll simulate with mock data
-        const response = await fetch('output/tax_synchronized_data.json')
-          .catch(() => {
-            // If file doesn't exist, use mock data
-            return {
-              ok: false,
-              json: () => generateMockSyncData()
-            };
-          });
-        
-        if (response.ok) {
-          syncedTaxData = await response.json();
-        } else {
-          syncedTaxData = generateMockSyncData();
-        }
-        
-        statusDiv.innerHTML = '<div class="result">✓ Tax data synchronized successfully from postings!</div>';
-        showNotification('Tax data synchronized from postings!', 'success');
-        
-        // Auto-populate form if entity is selected
-        const entityType = document.getElementById('entityType').value;
-        if (entityType && syncedTaxData.entities[entityType]) {
-          populateFormWithSyncedData(entityType);
-        }
-        
-        setTimeout(() => {
-          statusDiv.style.display = 'none';
-        }, 3000);
-        
-      } catch (error) {
-        statusDiv.innerHTML = `<div class="error">✗ Synchronization failed: ${error.message}</div>`;
-        showNotification('Failed to sync tax data', 'error');
-      }
-    }
-
-    function generateMockSyncData() {
-      // Generate mock synchronized data based on current financial stats
-      const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/[£,]/g, '')) || 45320;
-      const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace(/[£,]/g, '')) || 12450;
-      
-      return {
-        synchronization_date: new Date().toISOString(),
-        entities: {
-          sole_trader: {
-            gross_income: totalIncome,
-            allowable_expenses: totalExpenses,
-            capital_allowance: {
-              aia_relief: 5000,
-              wda_relief: 900,
-              total_relief: 5900
-            },
-            trading_allowance: 1000,
-            use_trading_allowance: false,
-            profit: totalIncome - totalExpenses,
-            vat_collected: 0
-          },
-          company: {
-            company_profit: totalIncome - totalExpenses,
-            director_salary: 12570,
-            dividends: totalIncome - totalExpenses - 12570,
-            revenue: totalIncome,
-            expenses: totalExpenses,
-            vat_collected: 0
-          },
-          landlord: {
-            rental_income: totalIncome * 0.7,
-            property_expenses: totalExpenses * 0.6,
-            property_allowance: 1000,
-            use_property_allowance: false,
-            capital_gains: 0,
-            other_income: totalIncome * 0.3
-          },
-          employee: {
-            gross_salary: totalIncome,
-            bonus: 0,
-            other_income: 0,
-            pension_contributions: 0
-          }
+    function seedState() {
+      const businesses = [
+        {
+          id: 'biz-northwind',
+          name: 'Northwind Studio',
+          type: 'sole_trader',
+          taxRegion: 'UK',
+          currency: 'GBP',
+          vatRegistered: false,
+          ownershipShare: 100,
+          notes: 'Creative services studio with small inventory and direct founder control.'
         },
-        allowances: {
-          personal_allowance: 12570,
-          trading_allowance: 1000,
-          property_allowance: 1000,
-          dividend_allowance: 500,
-          capital_gains_allowance: 3000
+        {
+          id: 'biz-harbor',
+          name: 'Harbor Retail Ltd',
+          type: 'limited_company',
+          taxRegion: 'UK',
+          currency: 'GBP',
+          vatRegistered: true,
+          ownershipShare: 100,
+          notes: 'Retail company with stock-led sales, separate finance manager, and VAT filing obligations.'
+        },
+        {
+          id: 'biz-elm',
+          name: 'Elm Street Lets',
+          type: 'landlord',
+          taxRegion: 'UK',
+          currency: 'GBP',
+          vatRegistered: false,
+          ownershipShare: 100,
+          notes: 'Property entity focused on rental income, repairs, and capital improvements.'
         }
+      ];
+
+      const users = [
+        {
+          id: createId('user'),
+          name: 'Dozie Founder',
+          email: 'founder@ledgeros.demo',
+          role: 'Owner',
+          businessId: 'biz-northwind',
+          responsibilities: 'Approves spending, signs off tax, monitors profitability.'
+        },
+        {
+          id: createId('user'),
+          name: 'Maya Finch',
+          email: 'finance@harbor.demo',
+          role: 'Finance Manager',
+          businessId: 'biz-harbor',
+          responsibilities: 'Runs month-end close, VAT review, working capital reporting.'
+        },
+        {
+          id: createId('user'),
+          name: 'Leo Hart',
+          email: 'stock@harbor.demo',
+          role: 'Inventory Controller',
+          businessId: 'biz-harbor',
+          responsibilities: 'Maintains stock accuracy, purchase receipts, and reorder points.'
+        }
+      ];
+
+      const inventory = [
+        {
+          id: createId('item'),
+          businessId: 'biz-harbor',
+          sku: 'HR-KEY-01',
+          name: 'Wireless Keyboard',
+          category: 'Peripherals',
+          quantity: 18,
+          reorderLevel: 8,
+          unitCost: 28,
+          unitPrice: 54,
+          vatRate: 20
+        },
+        {
+          id: createId('item'),
+          businessId: 'biz-harbor',
+          sku: 'HR-MSE-02',
+          name: 'Ergonomic Mouse',
+          category: 'Peripherals',
+          quantity: 6,
+          reorderLevel: 10,
+          unitCost: 17,
+          unitPrice: 36,
+          vatRate: 20
+        }
+      ];
+
+      const transactions = [
+        {
+          id: createId('txn'),
+          businessId: 'biz-northwind',
+          date: '2026-07-05',
+          type: 'income',
+          account: 'Client project revenue',
+          amount: 18000,
+          note: 'Monthly design and strategy retainers.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-northwind',
+          date: '2026-07-08',
+          type: 'expense',
+          account: 'Software subscriptions',
+          amount: 1450,
+          note: 'Creative tooling and collaboration apps.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-harbor',
+          date: '2026-07-02',
+          type: 'income',
+          account: 'Retail sales',
+          amount: 42000,
+          note: 'Online and in-store sales to date.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-harbor',
+          date: '2026-07-06',
+          type: 'expense',
+          account: 'Warehouse rent',
+          amount: 6300,
+          note: 'Monthly warehouse lease.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-harbor',
+          date: '2026-07-07',
+          type: 'cogs',
+          account: 'Opening inventory relief',
+          amount: 9800,
+          note: 'Initial cost of goods baseline.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-elm',
+          date: '2026-07-03',
+          type: 'income',
+          account: 'Rental income',
+          amount: 9500,
+          note: 'Residential rent collection.',
+          source: 'manual',
+          taxTreatment: 'exempt'
+        },
+        {
+          id: createId('txn'),
+          businessId: 'biz-elm',
+          date: '2026-07-04',
+          type: 'expense',
+          account: 'Property repairs',
+          amount: 1850,
+          note: 'Plumbing and hallway lighting repairs.',
+          source: 'manual',
+          taxTreatment: 'standard'
+        }
+      ];
+
+      const movements = [
+        {
+          id: createId('move'),
+          businessId: 'biz-harbor',
+          itemId: inventory[0].id,
+          type: 'restock',
+          quantity: 10,
+          unitValue: 28,
+          date: '2026-07-05',
+          note: 'Supplier PO-4108'
+        },
+        {
+          id: createId('move'),
+          businessId: 'biz-harbor',
+          itemId: inventory[1].id,
+          type: 'sale',
+          quantity: 4,
+          unitValue: 36,
+          date: '2026-07-09',
+          note: 'Marketplace batch sale'
+        }
+      ];
+
+      return {
+        activeBusinessId: businesses[0].id,
+        businesses,
+        users,
+        inventory,
+        transactions,
+        movements
       };
     }
 
-    async function loadSyncedData() {
-      const statusDiv = document.getElementById('syncStatus');
-      statusDiv.style.display = 'block';
-      statusDiv.innerHTML = '<p style="color: #666;">📥 Loading synchronized data...</p>';
-      
-      try {
-        const response = await fetch('output/tax_synchronized_data.json');
-        if (response.ok) {
-          syncedTaxData = await response.json();
-          statusDiv.innerHTML = '<div class="result">✓ Synced data loaded successfully!</div>';
-          showNotification('Synced data loaded!', 'success');
-          
-          // Auto-populate form if entity is selected
-          const entityType = document.getElementById('entityType').value;
-          if (entityType && syncedTaxData.entities[entityType]) {
-            populateFormWithSyncedData(entityType);
-          }
-        } else {
-          throw new Error('Synchronized data file not found');
-        }
-        
-        setTimeout(() => {
-          statusDiv.style.display = 'none';
-        }, 3000);
-        
-      } catch (error) {
-        statusDiv.innerHTML = `<div class="error">✗ Failed to load synced data. Please sync data first.</div>`;
-        showNotification('No synced data available', 'error');
-      }
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    function populateFormWithSyncedData(entityType) {
-      if (!syncedTaxData || !syncedTaxData.entities[entityType]) {
+    function getBusiness(businessId = state.activeBusinessId) {
+      return state.businesses.find((business) => business.id === businessId) || state.businesses[0];
+    }
+
+    function getBusinessUsers(businessId = state.activeBusinessId) {
+      return state.users.filter((user) => user.businessId === businessId);
+    }
+
+    function getBusinessInventory(businessId = state.activeBusinessId) {
+      return state.inventory.filter((item) => item.businessId === businessId);
+    }
+
+    function getBusinessTransactions(businessId = state.activeBusinessId) {
+      return state.transactions.filter((transaction) => transaction.businessId === businessId);
+    }
+
+    function inventoryItemLabel(item) {
+      return `${item.sku} • ${item.name}`;
+    }
+
+    function profitSummary(businessId) {
+      const transactions = getBusinessTransactions(businessId);
+      const revenue = sumByType(transactions, 'income');
+      const expenses = sumByType(transactions, 'expense');
+      const cogs = sumByType(transactions, 'cogs');
+      const assets = sumByType(transactions, 'asset');
+      const liabilities = sumByType(transactions, 'liability');
+      const equity = sumByType(transactions, 'equity');
+      const inventoryValue = getBusinessInventory(businessId).reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
+      const grossProfit = revenue - cogs;
+      const netProfit = revenue - expenses - cogs;
+      return { revenue, expenses, cogs, assets, liabilities, equity, inventoryValue, grossProfit, netProfit };
+    }
+
+    function sumByType(transactions, type) {
+      return transactions
+        .filter((transaction) => transaction.type === type)
+        .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+    }
+
+    function calculateIncomeTax(taxableIncome) {
+      if (taxableIncome <= 0) return 0;
+      const { personalAllowance, basicRateLimit, higherRateLimit, basicRate, higherRate, additionalRate } = TAX_CONSTANTS;
+      const basicBand = basicRateLimit - personalAllowance;
+      const higherBand = higherRateLimit - basicRateLimit;
+      let remaining = taxableIncome;
+      let tax = 0;
+
+      const basicSlice = Math.min(remaining, basicBand);
+      tax += basicSlice * basicRate;
+      remaining -= basicSlice;
+      if (remaining <= 0) return tax;
+
+      const higherSlice = Math.min(remaining, higherBand);
+      tax += higherSlice * higherRate;
+      remaining -= higherSlice;
+      if (remaining <= 0) return tax;
+
+      tax += remaining * additionalRate;
+      return tax;
+    }
+
+    function estimateTaxForBusiness(businessId = state.activeBusinessId) {
+      const business = getBusiness(businessId);
+      const summary = profitSummary(businessId);
+      const profit = Math.max(0, summary.netProfit);
+
+      if (!business) {
+        return { headline: 'No business selected', totalTax: 0, details: [], guidance: [] };
+      }
+
+      if (business.type === 'limited_company') {
+        let corporationRate = TAX_CONSTANTS.corporationSmallRate;
+        if (profit >= TAX_CONSTANTS.corporationMainThreshold) {
+          corporationRate = TAX_CONSTANTS.corporationMainRate;
+        } else if (profit > TAX_CONSTANTS.corporationSmallThreshold) {
+          const span = TAX_CONSTANTS.corporationMainThreshold - TAX_CONSTANTS.corporationSmallThreshold;
+          corporationRate += ((profit - TAX_CONSTANTS.corporationSmallThreshold) / span) * (TAX_CONSTANTS.corporationMainRate - TAX_CONSTANTS.corporationSmallRate);
+        }
+        const corporationTax = profit * corporationRate;
+        return {
+          headline: 'Corporation tax estimate',
+          totalTax: corporationTax,
+          details: [
+            ['Net profit', profit],
+            ['Applicable corporation tax rate', `${(corporationRate * 100).toFixed(2)}%`],
+            ['Estimated corporation tax', corporationTax],
+            ['Post-tax profit', Math.max(0, profit - corporationTax)]
+          ],
+          guidance: ENTITY_GUIDANCE[business.type] || []
+        };
+      }
+
+      if (business.type === 'partnership') {
+        const allocatedProfit = profit * (Number(business.ownershipShare || 100) / 100);
+        const taxableIncome = Math.max(0, allocatedProfit - TAX_CONSTANTS.personalAllowance);
+        const incomeTax = calculateIncomeTax(taxableIncome);
+        const class4Base = Math.max(0, Math.min(allocatedProfit, TAX_CONSTANTS.basicRateLimit) - TAX_CONSTANTS.personalAllowance);
+        const class4Higher = Math.max(0, allocatedProfit - TAX_CONSTANTS.basicRateLimit);
+        const class4Ni = (class4Base * TAX_CONSTANTS.selfEmployedClass4Main) + (class4Higher * TAX_CONSTANTS.selfEmployedClass4Higher);
+        const class2Ni = allocatedProfit > TAX_CONSTANTS.selfEmployedClass2Threshold ? TAX_CONSTANTS.selfEmployedClass2Weekly * 52 : 0;
+        return {
+          headline: 'Partner tax estimate',
+          totalTax: incomeTax + class4Ni + class2Ni,
+          details: [
+            ['Net business profit', profit],
+            ['Allocated profit share', allocatedProfit],
+            ['Income tax', incomeTax],
+            ['Class 4 NI', class4Ni],
+            ['Class 2 NI', class2Ni]
+          ],
+          guidance: ENTITY_GUIDANCE[business.type] || []
+        };
+      }
+
+      if (business.type === 'landlord') {
+        const allowanceUsed = summary.expenses < TAX_CONSTANTS.propertyAllowance ? TAX_CONSTANTS.propertyAllowance : summary.expenses;
+        const adjustedProfit = Math.max(0, summary.revenue - allowanceUsed);
+        const taxableIncome = Math.max(0, adjustedProfit - TAX_CONSTANTS.personalAllowance);
+        const incomeTax = calculateIncomeTax(taxableIncome);
+        return {
+          headline: 'Property income estimate',
+          totalTax: incomeTax,
+          details: [
+            ['Rental income', summary.revenue],
+            ['Deduction used', allowanceUsed],
+            ['Adjusted property profit', adjustedProfit],
+            ['Estimated income tax', incomeTax]
+          ],
+          guidance: ENTITY_GUIDANCE[business.type] || []
+        };
+      }
+
+      const taxableIncome = Math.max(0, profit - TAX_CONSTANTS.personalAllowance);
+      const incomeTax = calculateIncomeTax(taxableIncome);
+      const class4Base = Math.max(0, Math.min(profit, TAX_CONSTANTS.basicRateLimit) - TAX_CONSTANTS.personalAllowance);
+      const class4Higher = Math.max(0, profit - TAX_CONSTANTS.basicRateLimit);
+      const class4Ni = (class4Base * TAX_CONSTANTS.selfEmployedClass4Main) + (class4Higher * TAX_CONSTANTS.selfEmployedClass4Higher);
+      const class2Ni = profit > TAX_CONSTANTS.selfEmployedClass2Threshold ? TAX_CONSTANTS.selfEmployedClass2Weekly * 52 : 0;
+      return {
+        headline: 'Self-employment tax estimate',
+        totalTax: incomeTax + class4Ni + class2Ni,
+        details: [
+          ['Net profit', profit],
+          ['Income tax', incomeTax],
+          ['Class 4 NI', class4Ni],
+          ['Class 2 NI', class2Ni],
+          ['After-tax income', Math.max(0, profit - incomeTax - class4Ni - class2Ni)]
+        ],
+        guidance: ENTITY_GUIDANCE[business.type] || []
+      };
+    }
+
+    function calculatePortfolioTotals() {
+      return state.businesses.reduce((totals, business) => {
+        const summary = profitSummary(business.id);
+        const tax = estimateTaxForBusiness(business.id).totalTax;
+        totals.revenue += summary.revenue;
+        totals.inventoryValue += summary.inventoryValue;
+        totals.tax += tax;
+        return totals;
+      }, { revenue: 0, inventoryValue: 0, tax: 0 });
+    }
+
+    function renderSelectOptions() {
+      const businessOptions = state.businesses.map((business) => `<option value="${business.id}">${business.name}</option>`).join('');
+      ['activeBusinessSelect', 'userBusinessId', 'inventoryBusinessId', 'movementBusinessId', 'transactionBusinessId'].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.innerHTML = businessOptions;
+        }
+      });
+
+      document.getElementById('activeBusinessSelect').value = state.activeBusinessId;
+      document.getElementById('userBusinessId').value = state.activeBusinessId;
+      document.getElementById('inventoryBusinessId').value = state.activeBusinessId;
+      document.getElementById('movementBusinessId').value = state.activeBusinessId;
+      document.getElementById('transactionBusinessId').value = state.activeBusinessId;
+
+      populateMovementItems();
+    }
+
+    function populateMovementItems() {
+      const businessId = document.getElementById('movementBusinessId').value || state.activeBusinessId;
+      const items = getBusinessInventory(businessId);
+      const movementItemId = document.getElementById('movementItemId');
+      if (!movementItemId) return;
+      if (!items.length) {
+        movementItemId.innerHTML = '<option value="">No inventory items</option>';
         return;
       }
-      
-      const data = syncedTaxData.entities[entityType];
-      
-      try {
-        if (entityType === 'sole_trader') {
-          if (document.getElementById('grossIncome')) {
-            document.getElementById('grossIncome').value = data.gross_income.toFixed(2);
-          }
-          if (document.getElementById('allowableExpenses')) {
-            document.getElementById('allowableExpenses').value = data.allowable_expenses.toFixed(2);
-          }
-          if (document.getElementById('useTradingAllowance')) {
-            document.getElementById('useTradingAllowance').value = data.use_trading_allowance ? 'yes' : 'no';
-          }
-          showNotification('Sole trader data populated from postings!', 'success');
-        } else if (entityType === 'company') {
-          if (document.getElementById('companyProfit')) {
-            document.getElementById('companyProfit').value = data.company_profit.toFixed(2);
-          }
-          if (document.getElementById('directorSalary')) {
-            document.getElementById('directorSalary').value = data.director_salary.toFixed(2);
-          }
-          if (document.getElementById('dividends')) {
-            document.getElementById('dividends').value = data.dividends.toFixed(2);
-          }
-          showNotification('Company data populated from postings!', 'success');
-        } else if (entityType === 'landlord') {
-          if (document.getElementById('rentalIncome')) {
-            document.getElementById('rentalIncome').value = data.rental_income.toFixed(2);
-          }
-          if (document.getElementById('propertyExpenses')) {
-            document.getElementById('propertyExpenses').value = data.property_expenses.toFixed(2);
-          }
-          if (document.getElementById('usePropertyAllowance')) {
-            document.getElementById('usePropertyAllowance').value = data.use_property_allowance ? 'yes' : 'no';
-          }
-          if (document.getElementById('otherIncome')) {
-            document.getElementById('otherIncome').value = data.other_income.toFixed(2);
-          }
-          showNotification('Landlord data populated from postings!', 'success');
-        } else if (entityType === 'employee') {
-          if (document.getElementById('grossSalary')) {
-            document.getElementById('grossSalary').value = data.gross_salary.toFixed(2);
-          }
-          if (document.getElementById('bonus')) {
-            document.getElementById('bonus').value = data.bonus.toFixed(2);
-          }
-          if (document.getElementById('otherIncome')) {
-            document.getElementById('otherIncome').value = data.other_income.toFixed(2);
-          }
-          if (document.getElementById('pensionContributions')) {
-            document.getElementById('pensionContributions').value = data.pension_contributions.toFixed(2);
-          }
-          showNotification('Employee data populated from postings!', 'success');
-        }
-      } catch (error) {
-        console.error('Error populating form:', error);
-        showNotification('Some fields could not be populated', 'error');
+      movementItemId.innerHTML = items.map((item) => `<option value="${item.id}">${inventoryItemLabel(item)}</option>`).join('');
+      syncMovementValueToItem();
+    }
+
+    function syncMovementValueToItem() {
+      const itemId = document.getElementById('movementItemId').value;
+      const item = state.inventory.find((entry) => entry.id === itemId);
+      const movementType = document.getElementById('movementType').value;
+      if (!item) return;
+      document.getElementById('movementUnitValue').value = movementType === 'sale' ? item.unitPrice.toFixed(2) : item.unitCost.toFixed(2);
+    }
+
+    function renderHero() {
+      const activeBusiness = getBusiness();
+      const portfolio = calculatePortfolioTotals();
+      const lowStockCount = state.inventory.filter((item) => item.quantity <= item.reorderLevel).length;
+      const businessTypes = new Set(state.businesses.map((business) => business.type)).size;
+
+      document.getElementById('activeBusinessName').textContent = activeBusiness ? activeBusiness.name : 'No business';
+      document.getElementById('activeBusinessMeta').textContent = activeBusiness ? `${labelEntityType(activeBusiness.type)} • ${activeBusiness.taxRegion} • ${activeBusiness.currency}` : '-';
+      document.getElementById('portfolioRevenue').textContent = formatCurrency(portfolio.revenue);
+      document.getElementById('portfolioInventoryValue').textContent = formatCurrency(portfolio.inventoryValue);
+      document.getElementById('portfolioTax').textContent = formatCurrency(portfolio.tax);
+      document.getElementById('lowStockCount').textContent = String(lowStockCount);
+      document.getElementById('teamMemberCount').textContent = String(state.users.length);
+      document.getElementById('monthEndCount').textContent = String(generateReadinessChecks().filter((check) => !check.complete).length);
+      document.getElementById('businessTypeCount').textContent = String(businessTypes);
+    }
+
+    function renderPortfolioOverview() {
+      const healthList = document.getElementById('businessHealthList');
+      const entries = state.businesses.map((business) => {
+        const summary = profitSummary(business.id);
+        const tax = estimateTaxForBusiness(business.id).totalTax;
+        return `
+          <div class="business-card ${business.id === state.activeBusinessId ? 'active' : ''}">
+            <div class="split">
+              <div>
+                <h3>${business.name}</h3>
+                <p class="small">${labelEntityType(business.type)} • ${business.vatRegistered ? 'VAT registered' : 'Not VAT registered'}</p>
+              </div>
+              <button class="ghost-button" type="button" data-switch-business="${business.id}">Focus</button>
+            </div>
+            <div class="kpi-inline" style="margin-top: 10px;">
+              <span class="pill">Revenue ${formatCurrency(summary.revenue)}</span>
+              <span class="pill">Net profit ${formatCurrency(summary.netProfit)}</span>
+              <span class="pill">Tax ${formatCurrency(tax)}</span>
+            </div>
+          </div>
+        `;
+      });
+      healthList.innerHTML = entries.join('');
+      document.getElementById('businessHealthText').textContent = `${state.businesses.length} entities, ${state.users.length} team members, ${state.inventory.length} inventory lines.`;
+
+      const workflowTimeline = document.getElementById('workflowTimeline');
+      workflowTimeline.innerHTML = [
+        { title: 'Daily posting', text: 'Capture sales, purchases, expenses, and stock movement into one timeline.' },
+        { title: 'Weekly review', text: 'Watch low stock, margin dilution, and VAT exposure by business.' },
+        { title: 'Month-end close', text: 'Review reconciliations, accruals, tax estimate, and approval ownership.' }
+      ].map((item) => `
+        <div class="timeline-item">
+          <strong>${item.title}</strong>
+          <div class="small">${item.text}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderBusinesses() {
+      const list = document.getElementById('businessList');
+      document.getElementById('businessCountBadge').textContent = `${state.businesses.length} businesses`;
+
+      if (!state.businesses.length) {
+        list.innerHTML = '<div class="empty-state">No businesses yet.</div>';
+        return;
+      }
+
+      list.innerHTML = state.businesses.map((business) => {
+        const summary = profitSummary(business.id);
+        return `
+          <div class="business-card ${business.id === state.activeBusinessId ? 'active' : ''}">
+            <div class="split">
+              <div>
+                <h3>${business.name}</h3>
+                <p class="small">${labelEntityType(business.type)} • ${business.taxRegion} • ${business.currency}</p>
+              </div>
+              <div class="badge-row">
+                <span class="badge ${business.vatRegistered ? 'info' : 'warning'}">${business.vatRegistered ? 'VAT registered' : 'No VAT'}</span>
+                <button class="ghost-button" type="button" data-switch-business="${business.id}">Set active</button>
+              </div>
+            </div>
+            <p class="muted">${business.notes || 'No notes yet.'}</p>
+            <div class="kpi-inline" style="margin-top: 10px;">
+              <span class="pill">Ownership ${business.ownershipShare}%</span>
+              <span class="pill">Revenue ${formatCurrency(summary.revenue)}</span>
+              <span class="pill">Net profit ${formatCurrency(summary.netProfit)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('userTableBody');
+      const users = getBusinessUsers();
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="muted">No users assigned to the active business.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map((user) => `
+        <tr>
+          <td>
+            <strong>${user.name}</strong><br>
+            <span class="small">${user.email}</span>
+          </td>
+          <td>${user.role}</td>
+          <td>${getBusiness(user.businessId)?.name || '-'}</td>
+          <td>${user.responsibilities || '<span class="small">No responsibilities set</span>'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderInventory() {
+      const tbody = document.getElementById('inventoryTableBody');
+      const items = getBusinessInventory();
+      document.getElementById('inventoryRegisterMeta').textContent = `${items.length} items for ${getBusiness()?.name || 'the active business'}.`;
+
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="muted">No inventory items for this business.</td></tr>';
+      } else {
+        tbody.innerHTML = items.map((item) => {
+          const value = item.quantity * item.unitCost;
+          const low = item.quantity <= item.reorderLevel;
+          return `
+            <tr>
+              <td>${item.sku}</td>
+              <td>
+                <strong>${item.name}</strong><br>
+                <span class="small">${item.category}</span>
+              </td>
+              <td>${item.quantity}</td>
+              <td>${formatCurrency(item.unitCost)}</td>
+              <td>${formatCurrency(item.unitPrice)}</td>
+              <td>${formatCurrency(value)}</td>
+              <td><span class="badge ${low ? 'danger' : 'success'}">${low ? 'Reorder soon' : 'Healthy'}</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const timeline = document.getElementById('movementTimeline');
+      const movements = state.movements
+        .filter((movement) => movement.businessId === state.activeBusinessId)
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 6);
+
+      if (!movements.length) {
+        timeline.innerHTML = '<div class="empty-state">No stock movements posted yet.</div>';
+      } else {
+        timeline.innerHTML = movements.map((movement) => {
+          const item = state.inventory.find((entry) => entry.id === movement.itemId);
+          return `
+            <div class="timeline-item">
+              <strong>${capitalize(movement.type)} • ${item ? item.name : 'Unknown item'}</strong>
+              <div class="small">${movement.date} • Qty ${movement.quantity} at ${formatCurrency(movement.unitValue)}</div>
+              <div class="small">${movement.note || 'No note provided.'}</div>
+            </div>
+          `;
+        }).join('');
       }
     }
 
-    // Scroll to Tax Rules Section
-    function scrollToTaxRules() {
-      showSection('tax');
-      setTimeout(() => {
-        const taxRulesCard = document.querySelector('#taxSection .card:last-child');
-        if (taxRulesCard) {
-          taxRulesCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
+    function renderAccounting() {
+      const summary = profitSummary();
+      const snapshot = document.getElementById('businessSnapshot');
+      snapshot.innerHTML = [
+        ['Revenue', summary.revenue],
+        ['Expenses', summary.expenses],
+        ['COGS', summary.cogs],
+        ['Gross profit', summary.grossProfit],
+        ['Net profit', summary.netProfit],
+        ['Inventory value', summary.inventoryValue],
+        ['Assets posted', summary.assets],
+        ['Liabilities posted', summary.liabilities],
+        ['Equity posted', summary.equity]
+      ].map(([label, value]) => `
+        <div class="list-item">
+          <div class="split">
+            <strong>${label}</strong>
+            <span>${formatCurrency(value)}</span>
+          </div>
+        </div>
+      `).join('');
 
-    // Modal Management
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
+      const tbody = document.getElementById('transactionTableBody');
+      const transactions = getBusinessTransactions()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 12);
 
-    // Notifications
-    function showNotification(message, type) {
-      const notification = document.createElement('div');
-      notification.className = type === 'success' ? 'result' : 'error';
-      notification.textContent = message;
-      notification.style.position = 'fixed';
-      notification.style.top = '80px';
-      notification.style.right = '20px';
-      notification.style.zIndex = '3000';
-      notification.style.minWidth = '250px';
-      
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-
-    // Close modal on outside click
-    window.addEventListener('click', function(e) {
-      if (e.target.classList.contains('modal')) {
-        e.target.classList.remove('active');
+      if (!transactions.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="muted">No transactions for this business yet.</td></tr>';
+      } else {
+        tbody.innerHTML = transactions.map((transaction) => `
+          <tr>
+            <td>${transaction.date}</td>
+            <td><span class="badge ${typeBadge(transaction.type)}">${capitalize(transaction.type)}</span></td>
+            <td>${transaction.account}</td>
+            <td>${capitalize(transaction.source || 'manual')}</td>
+            <td>${formatCurrency(transaction.amount)}</td>
+            <td>${labelTaxTreatment(transaction.taxTreatment)}</td>
+          </tr>
+        `).join('');
       }
+
+      const readinessChecks = document.getElementById('readinessChecks');
+      readinessChecks.innerHTML = generateReadinessChecks().map((check) => `
+        <div class="list-item">
+          <div class="split">
+            <div>
+              <h3>${check.title}</h3>
+              <div class="small">${check.text}</div>
+            </div>
+            <span class="badge ${check.complete ? 'success' : 'warning'}">${check.complete ? 'Covered in UI' : 'Backend next'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function generateReadinessChecks() {
+      const activeUsers = getBusinessUsers().length;
+      const activeInventory = getBusinessInventory().length;
+      const summary = profitSummary();
+      return [
+        {
+          title: 'Multi-business partitioning',
+          text: 'Business selector scopes users, inventory, transactions, and tax output.',
+          complete: state.businesses.length > 1
+        },
+        {
+          title: 'Role-based operating model',
+          text: 'Separate owners, finance managers, bookkeepers, and stock controllers.',
+          complete: activeUsers > 0
+        },
+        {
+          title: 'Inventory controls',
+          text: 'Low stock alerts, restocks, sales, and stock-linked accounting entries.',
+          complete: activeInventory > 0
+        },
+        {
+          title: 'Tax handling',
+          text: 'Entity-aware front-end tax estimate for the selected business profile.',
+          complete: true
+        },
+        {
+          title: 'Need production backend',
+          text: 'Authentication, audit logs, persistent database, and bank integrations still require services.',
+          complete: false
+        },
+        {
+          title: 'Working capital visibility',
+          text: `Current net profit stands at ${formatCurrency(summary.netProfit)} for the active business.`,
+          complete: summary.revenue > 0
+        }
+      ];
+    }
+
+    function renderTax() {
+      const business = getBusiness();
+      const estimate = estimateTaxForBusiness();
+      document.getElementById('taxEstimateMeta').textContent = `${estimate.headline} for ${business.name}.`;
+
+      document.getElementById('taxEstimateBreakdown').innerHTML = estimate.details.map(([label, value]) => `
+        <div class="list-item">
+          <div class="split">
+            <strong>${label}</strong>
+            <span>${typeof value === 'number' ? formatCurrency(value) : value}</span>
+          </div>
+        </div>
+      `).join('') + `
+        <div class="notice success">
+          <strong>Total estimated tax:</strong> ${formatCurrency(estimate.totalTax)}
+        </div>
+      `;
+
+      const guidanceList = document.getElementById('taxGuidanceList');
+      const guidance = estimate.guidance || [];
+      guidanceList.innerHTML = guidance.map((text) => `
+        <div class="list-item">
+          <div class="small">${text}</div>
+        </div>
+      `).join('') + `
+        <div class="notice ${business.vatRegistered ? 'success' : 'warning'}">
+          ${business.vatRegistered
+            ? `VAT registered: monitor taxable turnover and keep stock movement documentation for each sale.`
+            : `Not VAT registered: the portfolio should watch turnover approaching ${formatCurrency(TAX_CONSTANTS.vatThreshold)}.`}
+        </div>
+      `;
+    }
+
+    function renderAll() {
+      if (!state.businesses.length) {
+        state = seedState();
+        saveState();
+      }
+      renderSelectOptions();
+      renderHero();
+      renderPortfolioOverview();
+      renderBusinesses();
+      renderUsers();
+      renderInventory();
+      renderAccounting();
+      renderTax();
+    }
+
+    function labelEntityType(type) {
+      return {
+        sole_trader: 'Sole trader',
+        limited_company: 'Limited company',
+        partnership: 'Partnership',
+        landlord: 'Landlord business'
+      }[type] || type;
+    }
+
+    function labelTaxTreatment(value) {
+      return {
+        standard: 'Standard taxable',
+        zero: 'Zero-rated',
+        exempt: 'Exempt',
+        capital_allowance: 'Capital allowance'
+      }[value] || value;
+    }
+
+    function typeBadge(type) {
+      return {
+        income: 'success',
+        expense: 'danger',
+        cogs: 'warning',
+        asset: 'info',
+        liability: 'primary',
+        equity: 'primary'
+      }[type] || 'primary';
+    }
+
+    function capitalize(value) {
+      return value ? value.charAt(0).toUpperCase() + value.slice(1) : '';
+    }
+
+    function setActiveBusiness(businessId) {
+      state.activeBusinessId = businessId;
+      saveState();
+      renderAll();
+    }
+
+    function addBusiness(event) {
+      event.preventDefault();
+      const business = {
+        id: createId('biz'),
+        name: document.getElementById('businessName').value.trim(),
+        type: document.getElementById('businessType').value,
+        taxRegion: document.getElementById('businessTaxRegion').value.trim(),
+        currency: document.getElementById('businessCurrency').value.trim().toUpperCase(),
+        vatRegistered: document.getElementById('businessVatRegistered').value === 'yes',
+        ownershipShare: Number(document.getElementById('businessOwnershipShare').value || 100),
+        notes: document.getElementById('businessNotes').value.trim()
+      };
+      state.businesses.push(business);
+      state.activeBusinessId = business.id;
+      saveState();
+      event.target.reset();
+      document.getElementById('businessCurrency').value = 'GBP';
+      document.getElementById('businessTaxRegion').value = 'UK';
+      document.getElementById('businessOwnershipShare').value = '100';
+      renderAll();
+    }
+
+    function addUser(event) {
+      event.preventDefault();
+      state.users.push({
+        id: createId('user'),
+        name: document.getElementById('userName').value.trim(),
+        email: document.getElementById('userEmail').value.trim(),
+        role: document.getElementById('userRole').value,
+        businessId: document.getElementById('userBusinessId').value,
+        responsibilities: document.getElementById('userResponsibilities').value.trim()
+      });
+      saveState();
+      event.target.reset();
+      document.getElementById('userBusinessId').value = state.activeBusinessId;
+      renderAll();
+    }
+
+    function addInventory(event) {
+      event.preventDefault();
+      state.inventory.push({
+        id: createId('item'),
+        businessId: document.getElementById('inventoryBusinessId').value,
+        sku: document.getElementById('inventorySku').value.trim(),
+        name: document.getElementById('inventoryName').value.trim(),
+        category: document.getElementById('inventoryCategory').value.trim(),
+        quantity: Number(document.getElementById('inventoryQuantity').value || 0),
+        reorderLevel: Number(document.getElementById('inventoryReorder').value || 0),
+        unitCost: Number(document.getElementById('inventoryCost').value || 0),
+        unitPrice: Number(document.getElementById('inventoryPrice').value || 0),
+        vatRate: Number(document.getElementById('inventoryVatRate').value || 0)
+      });
+      saveState();
+      event.target.reset();
+      document.getElementById('inventoryBusinessId').value = state.activeBusinessId;
+      document.getElementById('inventoryQuantity').value = '0';
+      document.getElementById('inventoryReorder').value = '5';
+      document.getElementById('inventoryCost').value = '0';
+      document.getElementById('inventoryPrice').value = '0';
+      document.getElementById('inventoryVatRate').value = '20';
+      renderAll();
+    }
+
+    function recordMovement(event) {
+      event.preventDefault();
+      const businessId = document.getElementById('movementBusinessId').value;
+      const itemId = document.getElementById('movementItemId').value;
+      const type = document.getElementById('movementType').value;
+      const quantity = Number(document.getElementById('movementQuantity').value || 0);
+      const unitValue = Number(document.getElementById('movementUnitValue').value || 0);
+      const date = document.getElementById('movementDate').value;
+      const note = document.getElementById('movementNote').value.trim();
+      const item = state.inventory.find((entry) => entry.id === itemId);
+
+      if (!item || quantity <= 0) return;
+      if (type === 'sale' && item.quantity < quantity) {
+        alert('Not enough stock available for this sale.');
+        return;
+      }
+
+      if (type === 'restock') {
+        item.quantity += quantity;
+        state.transactions.push({
+          id: createId('txn'),
+          businessId,
+          date,
+          type: 'asset',
+          account: `Inventory purchase • ${item.name}`,
+          amount: quantity * unitValue,
+          note,
+          source: 'inventory',
+          taxTreatment: 'standard'
+        });
+      } else if (type === 'sale') {
+        item.quantity -= quantity;
+        state.transactions.push({
+          id: createId('txn'),
+          businessId,
+          date,
+          type: 'income',
+          account: `Inventory sale • ${item.name}`,
+          amount: quantity * unitValue,
+          note,
+          source: 'inventory',
+          taxTreatment: 'standard'
+        });
+        state.transactions.push({
+          id: createId('txn'),
+          businessId,
+          date,
+          type: 'cogs',
+          account: `Inventory COGS • ${item.name}`,
+          amount: quantity * item.unitCost,
+          note,
+          source: 'inventory',
+          taxTreatment: 'standard'
+        });
+      } else {
+        item.quantity += quantity;
+        state.transactions.push({
+          id: createId('txn'),
+          businessId,
+          date,
+          type: 'asset',
+          account: `Inventory adjustment • ${item.name}`,
+          amount: quantity * item.unitCost,
+          note,
+          source: 'inventory',
+          taxTreatment: 'capital_allowance'
+        });
+      }
+
+      state.movements.unshift({
+        id: createId('move'),
+        businessId,
+        itemId,
+        type,
+        quantity,
+        unitValue,
+        date,
+        note
+      });
+
+      saveState();
+      event.target.reset();
+      document.getElementById('movementBusinessId').value = state.activeBusinessId;
+      document.getElementById('movementDate').value = today();
+      renderAll();
+    }
+
+    function addTransaction(event) {
+      event.preventDefault();
+      state.transactions.push({
+        id: createId('txn'),
+        businessId: document.getElementById('transactionBusinessId').value,
+        date: document.getElementById('transactionDate').value,
+        type: document.getElementById('transactionType').value,
+        account: document.getElementById('transactionAccount').value.trim(),
+        amount: Number(document.getElementById('transactionAmount').value || 0),
+        note: document.getElementById('transactionNote').value.trim(),
+        source: 'manual',
+        taxTreatment: document.getElementById('transactionTaxTreatment').value
+      });
+      saveState();
+      event.target.reset();
+      document.getElementById('transactionBusinessId').value = state.activeBusinessId;
+      document.getElementById('transactionDate').value = today();
+      renderAll();
+    }
+
+    function attachEvents() {
+      document.getElementById('businessForm').addEventListener('submit', addBusiness);
+      document.getElementById('userForm').addEventListener('submit', addUser);
+      document.getElementById('inventoryForm').addEventListener('submit', addInventory);
+      document.getElementById('movementForm').addEventListener('submit', recordMovement);
+      document.getElementById('transactionForm').addEventListener('submit', addTransaction);
+      document.getElementById('activeBusinessSelect').addEventListener('change', (event) => setActiveBusiness(event.target.value));
+      document.getElementById('movementBusinessId').addEventListener('change', populateMovementItems);
+      document.getElementById('movementItemId').addEventListener('change', syncMovementValueToItem);
+      document.getElementById('movementType').addEventListener('change', syncMovementValueToItem);
+      document.getElementById('seedDataButton').addEventListener('click', () => {
+        state = seedState();
+        saveState();
+        renderAll();
+      });
+      document.getElementById('exportStateButton').addEventListener('click', exportState);
+      document.body.addEventListener('click', (event) => {
+        const businessId = event.target.getAttribute('data-switch-business');
+        if (businessId) {
+          setActiveBusiness(businessId);
+        }
+      });
+    }
+
+    function exportState() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'ledgeros-workspace.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function setDefaultDates() {
+      document.getElementById('movementDate').value = today();
+      document.getElementById('transactionDate').value = today();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      attachEvents();
+      setDefaultDates();
+      renderAll();
     });
-
-    // Initialize app on load
-    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
-                  </html>
+</html>
